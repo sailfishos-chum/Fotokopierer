@@ -21,188 +21,188 @@ import QtGraphicalEffects 1.0
 import Fotokopierer 1.0
 
 Item {
-	 id: pane
+    id: pane
 
-	 property real markerRadius: 10
-	 property color markerColor: "white"
+    property real markerRadius: 10
+    property color markerColor: "white"
 
-	 property color lineColor: "green"
-	 property color invalidLineColor: "red"
+    property color lineColor: "green"
+    property color invalidLineColor: "red"
 
-	 property bool valid: true
+    property bool valid: true
 
-	 property int angle: 0
+    property int angle: 0
 
-	 property point tl : mapPoint(topleft.center)
-	 property point tr : mapPoint(topright.center)
-	 property point br : mapPoint(bottomright.center)
-	 property point bl : mapPoint(bottomleft.center)
+    property point tl : mapPoint(topleft.center)
+    property point tr : mapPoint(topright.center)
+    property point br : mapPoint(bottomright.center)
+    property point bl : mapPoint(bottomleft.center)
 
-	 function rotateLeft() {
-		  angle = (angle - 90) % 360
-	 }
+    function rotateLeft() {
+        angle = (angle - 90) % 360
+    }
 
-	 function rotateRight() {
-		  angle = (angle + 90) % 360
-	 }
+    function rotateRight() {
+        angle = (angle + 90) % 360
+    }
 
-	 function selectAll() {
-		  topleft.x = (pane.width - image.paintedWidth) / 2 - markerRadius;
-		  topleft.y = (pane.height - image.paintedHeight) / 2 - markerRadius;
-		  bottomright.x = (pane.width + image.paintedWidth) / 2 - markerRadius;
-		  bottomright.y = (pane.height + image.paintedHeight) / 2 - markerRadius;
-		  topright.x = bottomright.x
-		  topright.y = topleft.y
-		  bottomleft.x = topleft.x
-		  bottomleft.y = bottomright.y
-	 }
+    function selectAll() {
+        topleft.x = (pane.width - image.paintedWidth) / 2 - markerRadius;
+        topleft.y = (pane.height - image.paintedHeight) / 2 - markerRadius;
+        bottomright.x = (pane.width + image.paintedWidth) / 2 - markerRadius;
+        bottomright.y = (pane.height + image.paintedHeight) / 2 - markerRadius;
+        topright.x = bottomright.x
+        topright.y = topleft.y
+        bottomleft.x = topleft.x
+        bottomleft.y = bottomright.y
+    }
 
-	 ScannedImage {
-		  id: img
-	 }
+    ScannedImage {
+        id: img
+    }
 
-	 Image {
-		  id: image
-		  anchors.fill: parent
-		  fillMode: Image.PreserveAspectFit
-		  source: "image://Scanned/" + img.original + "/" + angle
-	 }
+    Image {
+        id: image
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        source: "image://Scanned/" + img.original + "/" + angle
+    }
 
-	 Canvas {
-		  id: frame
-		  anchors.fill: parent
-		  onPaint: {
-				var ctx = getContext("2d")
-				ctx.fillStyle = Qt.rgba(0, 0, 0, 0.2);
-				ctx.fillRect(0, 0, width, height)
-				ctx.fillStyle = Qt.rgba(0, 0, 0, 0);
-				ctx.globalCompositeOperation = "copy"
-				ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
-				ctx.beginPath()
-				ctx.moveTo(topleft.center.x, topleft.center.y)
-				ctx.lineTo(topright.center.x, topright.center.y)
-				ctx.lineTo(bottomright.center.x, bottomright.center.y)
-				ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
-				ctx.closePath()
-				ctx.fill()
-				ctx.stroke()
-		  }
-	 }
+    Canvas {
+        id: frame
+        anchors.fill: parent
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.fillStyle = Qt.rgba(0, 0, 0, 0.2);
+            ctx.fillRect(0, 0, width, height)
+            ctx.fillStyle = Qt.rgba(0, 0, 0, 0);
+            ctx.globalCompositeOperation = "copy"
+            ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
+            ctx.beginPath()
+            ctx.moveTo(topleft.center.x, topleft.center.y)
+            ctx.lineTo(topright.center.x, topright.center.y)
+            ctx.lineTo(bottomright.center.x, bottomright.center.y)
+            ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
+            ctx.closePath()
+            ctx.fill()
+            ctx.stroke()
+        }
+    }
 
-	 DropArea {
-		  id: dropTarget
-		  anchors.fill: parent
-		  onDropped: {
-				drop.source.x = drop.x
-				drop.source.y = drop.y
-		  }
-	 }
+    DropArea {
+        id: dropTarget
+        anchors.fill: parent
+        onDropped: {
+            drop.source.x = drop.x
+            drop.source.y = drop.y
+        }
+    }
 
-	 CornerMarker {
-	 	  id: topleft
-		  color: pane.markerColor
-	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-	 	  y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
-		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
-		  radius: markerRadius
-		  onCenterChanged: pane.update(x, y)
-		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
-	 }
+    CornerMarker {
+        id: topleft
+        color: pane.markerColor
+        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(x, y)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+    }
 
-	 CornerMarker {
-		  id: topright
-		  color: pane.markerColor
-	 	  x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-	 	  y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
-		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
-		  radius: markerRadius
-		  onCenterChanged: pane.update(x, y)
-		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
-	 }
+    CornerMarker {
+        id: topright
+        color: pane.markerColor
+        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
+        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(x, y)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+    }
 
-	 CornerMarker {
-		  id: bottomleft
-		  color: pane.markerColor
-	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-	 	  y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
-		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
-		  radius: markerRadius
-		  onCenterChanged: pane.update(x, y)
-		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
-	 }
+    CornerMarker {
+        id: bottomleft
+        color: pane.markerColor
+        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(x, y)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+    }
 
-	 CornerMarker {
-		  id: bottomright
-		  color: pane.markerColor
-	 	  x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-	 	  y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
-		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
-		  radius: markerRadius
-		  onCenterChanged: pane.update(x, y)
-		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
-	 }
+    CornerMarker {
+        id: bottomright
+        color: pane.markerColor
+        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
+        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(x, y)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+    }
 
-	 ZoomImage {
-		  id: zoomimg
+    ZoomImage {
+        id: zoomimg
 
-		  image: image
+        image: image
 
-		  color: pane.markerColor
-		  crossColor: pane.lineColor
+        color: pane.markerColor
+        crossColor: pane.lineColor
 
-		  anchors.left: pane.left
-		  anchors.top: pane.top
-		  anchors.margins: 5
+        anchors.left: pane.left
+        anchors.top: pane.top
+        anchors.margins: 5
 
-		  imagex: bottomright.x
-		  imagey: bottomright.y
+        imagex: bottomright.x
+        imagey: bottomright.y
 
-		  visible: false
-	 }
+        visible: false
+    }
 
-	 function update(x, y) {
-		  pane.valid = img.set_cut_box(
-				mapPoint(topleft.center),
-				mapPoint(topright.center),
-				mapPoint(bottomright.center),
-				mapPoint(bottomleft.center))
-		  zoomimg.imagex = x
-		  zoomimg.imagey = y
+    function update(x, y) {
+        pane.valid = img.set_cut_box(
+            mapPoint(topleft.center),
+            mapPoint(topright.center),
+            mapPoint(bottomright.center),
+            mapPoint(bottomleft.center))
+        zoomimg.imagex = x
+        zoomimg.imagey = y
 
-		  if (x < image.width / 2) {
-				zoomimg.anchors.left = undefined
-				zoomimg.anchors.right = pane.right
-		  } else {
-				zoomimg.anchors.right = undefined
-				zoomimg.anchors.left = pane.left
-		  }
+        if (x < image.width / 2) {
+            zoomimg.anchors.left = undefined
+            zoomimg.anchors.right = pane.right
+        } else {
+            zoomimg.anchors.right = undefined
+            zoomimg.anchors.left = pane.left
+        }
 
-		  if (y < image.height / 2) {
-				zoomimg.anchors.top = undefined
-				zoomimg.anchors.bottom = pane.bottom
-		  } else {
-				zoomimg.anchors.bottom = undefined
-				zoomimg.anchors.top = pane.top
-		  }
+        if (y < image.height / 2) {
+            zoomimg.anchors.top = undefined
+            zoomimg.anchors.bottom = pane.bottom
+        } else {
+            zoomimg.anchors.bottom = undefined
+            zoomimg.anchors.top = pane.top
+        }
 
-		  frame.requestPaint()
-	 }
+        frame.requestPaint()
+    }
 
-	 function mapPoint(p) {
-		  var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
-		  var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
-		  return Qt.point(x, y)
-	 }
+    function mapPoint(p) {
+        var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
+        var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
+        return Qt.point(x, y)
+    }
 }

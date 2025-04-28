@@ -21,65 +21,65 @@ import Sailfish.Silica 1.0
 import "../../common"
 
 Page {
-	 id: page
+    id: page
 
-	 PageHeader {
-		  title: qsTr("Cut & Rotate")
-	 }
+    PageHeader {
+        title: qsTr("Cut & Rotate")
+    }
 
-	 CutImage {
-		  id: img
-		  anchors.top: parent.top
-		  anchors.left: parent.left
-		  anchors.right: parent.right
-		  anchors.bottom: buttons.top
-		  markerColor: Theme.primaryColor
-		  lineColor: Theme.highlightColor
-	 }
+    CutImage {
+        id: img
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: buttons.top
+        markerColor: Theme.primaryColor
+        lineColor: Theme.highlightColor
+    }
 
-	 DockedPanel {
-		  id: buttons
-		  open: true
+    DockedPanel {
+        id: buttons
+        open: true
 
-		  width: parent.width
-		  height: Theme.iconSizeLarge
-		  dock: Dock.Bottom
+        width: parent.width
+        height: Theme.iconSizeLarge
+        dock: Dock.Bottom
 
-		  SilicaGridView {
-				id: grid
+        SilicaGridView {
+            id: grid
 
-				anchors.fill: parent
+            anchors.fill: parent
 
-				ListModel {
-					 id: listModel
+            ListModel {
+                id: listModel
 
-					 ListElement {
-						  icon: "image://theme/icon-m-rotate-left"
-						  name: "left"
-					 }
+                ListElement {
+                    icon: "image://theme/icon-m-rotate-left"
+                    name: "left"
+                }
 
-					 ListElement {
-						  icon: "image://theme/icon-m-rotate-right"
-						  name: "right"
-					 }
+                ListElement {
+                    icon: "image://theme/icon-m-rotate-right"
+                    name: "right"
+                }
 
-					 property var actions : {
-						  "left": function () { img.rotateLeft() },
-						  "right": function () { img.rotateRight() }
-					 }
-				}
+                property var actions : {
+                    "left": function () { img.rotateLeft() },
+                    "right": function () { img.rotateRight() }
+                }
+            }
 
-				model: listModel
+            model: listModel
 
-				cellWidth: grid.width / 2
-				cellHeight: grid.height
+            cellWidth: grid.width / 2
+            cellHeight: grid.height
 
-				delegate: IconButton {
-					 width: grid.cellWidth
-					 height: grid.cellHeight
-					 icon.source: model.icon
-					 onClicked: listModel.actions[name]()
-				}
-		  }
-	 }
+            delegate: IconButton {
+                width: grid.cellWidth
+                height: grid.cellHeight
+                icon.source: model.icon
+                onClicked: listModel.actions[name]()
+            }
+        }
+    }
 }

@@ -19,79 +19,79 @@ import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
 Item {
-	 id: zoom
+    id: zoom
 
-	 property real scaleFactor : 5
-	 property real imagex
-	 property real imagey
-	 property color color: "white"
-	 property color crossColor: "green"
+    property real scaleFactor : 5
+    property real imagex
+    property real imagey
+    property color color: "white"
+    property color crossColor: "green"
 
-	 property Image image
+    property Image image
 
-	 width: 100
-	 height: 100
+    width: 100
+    height: 100
 
-	 Rectangle {
-		  id: frame
-		  radius: width / 2
-		  anchors.fill: parent
-		  color: "black"
-		  border.width: 5
-		  border.color: zoom.color
-	 }
+    Rectangle {
+        id: frame
+        radius: width / 2
+        anchors.fill: parent
+        color: "black"
+        border.width: 5
+        border.color: zoom.color
+    }
 
-	 DropShadow {
-	 	  anchors.fill: parent
-	 	  horizontalOffset: 3
-	 	  verticalOffset: 3
-	 	  radius: 8
-	 	  samples: 17
-	 	  color: "#80000000"
-	 	  source: frame
-	 }
+    DropShadow {
+        anchors.fill: parent
+        horizontalOffset: 3
+        verticalOffset: 3
+        radius: 8
+        samples: 17
+        color: "#80000000"
+        source: frame
+    }
 
-	 Item {
-		  id: zoombox
+    Item {
+        id: zoombox
 
-		  layer.enabled: true
-		  layer.effect: OpacityMask {
-				maskSource: Item {
-					 width: zoombox.width
-					 height: zoombox.height
-					 Rectangle {
-					 	  anchors.fill: parent
-					 	  radius: width / 2
-					 }
-				}
-		  }
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: Item {
+                width: zoombox.width
+                height: zoombox.height
+                Rectangle {
+                    anchors.fill: parent
+                    radius: width / 2
+                }
+            }
+        }
 
-		  Image {
-				id: zoomimg
-				fillMode: Image.PreserveAspectFit
-				width: image.paintedWidth * zoom.scaleFactor
-				height: image.paintedHeight * zoom.scaleFactor
-				source: image.source
-				x: (-zoom.imagex + (pane.width - image.paintedWidth) / 2) * zoom.scaleFactor - zoombox.anchors.leftMargin
-				y: (-zoom.imagey + (pane.height - image.paintedHeight) / 2) * zoom.scaleFactor - zoombox.anchors.rightMargin
-		  }
+        Image {
+            id: zoomimg
+            fillMode: Image.PreserveAspectFit
+            width: image.paintedWidth * zoom.scaleFactor
+            height: image.paintedHeight * zoom.scaleFactor
+            source: image.source
+            x: (-zoom.imagex + (pane.width - image.paintedWidth) / 2) * zoom.scaleFactor - zoombox.anchors.leftMargin
+            y: (-zoom.imagey + (pane.height - image.paintedHeight) / 2) * zoom.scaleFactor - zoombox.anchors.rightMargin
+        }
 
-		  anchors.fill: parent
-		  anchors.margins: 5
-	 }
+        anchors.fill: parent
+        anchors.margins: 5
+    }
 
-	 Canvas {
-		  anchors.fill: parent
-		  onPaint: {
-				var ctx = getContext("2d")
-				ctx.clearRect(0, 0, width, height)
-				ctx.strokeStyle = zoom.crossColor
-				ctx.beginPath()
-				ctx.moveTo(x + width / 2 - width / 5, y + height / 2)
-				ctx.lineTo(x + width / 2 + width / 5, y + height / 2)
-				ctx.moveTo(x + width / 2, y + height / 2 - height / 5)
-				ctx.lineTo(x + width / 2, y + height / 2 + height / 5)
-				ctx.stroke()
-		  }
-	 }
+    Canvas {
+        anchors.fill: parent
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.clearRect(0, 0, width, height)
+            ctx.strokeStyle = zoom.crossColor
+            ctx.beginPath()
+            ctx.moveTo(x + width / 2 - width / 5, y + height / 2)
+            ctx.lineTo(x + width / 2 + width / 5, y + height / 2)
+            ctx.moveTo(x + width / 2, y + height / 2 - height / 5)
+            ctx.lineTo(x + width / 2, y + height / 2 + height / 5)
+            ctx.stroke()
+        }
+    }
 }

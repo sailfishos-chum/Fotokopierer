@@ -21,9 +21,9 @@ import "pages"
 
 ApplicationWindow
 {
-	 initialPage: Component { CutPage { } }
+    initialPage: Component { CutPage { } }
 
-	 Component.onCompleted: {
-		  pageStack.pushAttached(Qt.resolvedUrl("pages/Documents.qml"))
-	 }
+    Component.onCompleted: {
+        pageStack.pushAttached(Qt.resolvedUrl("pages/Documents.qml"))
+    }
 }
