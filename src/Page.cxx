@@ -350,7 +350,7 @@ bool Page::read(const QJsonObject& json)
     }
 
     // Verify that the result file exist.
-    if (!QFileInfo(page_result_path.toString()).exists()) {
+    if (!QFileInfo::exists(page_result_path.toString())) {
         return false;
     }
 
