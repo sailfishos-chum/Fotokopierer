@@ -79,10 +79,12 @@ QImage CutImage::transform(const QImage& image)
                                    QPointF{br.x - w / 2, br.y - h / 2} / 100,
                                    QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
 
-    qDebug() << "Approximate aspect ratio: " << ratio;
+    if (qIsNaN(ratio)) return {};
 
     float height = std::max(cv::norm(tr - tl), cv::norm(br - bl));
     float width = height * ratio;
+
+    qDebug() << "Approximate aspect ratio: " << ratio;
 
     cv::Point2f src[4] = {tl, tr, br, bl};
     cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
