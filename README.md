@@ -20,10 +20,6 @@ holask (Slovak translation)
 
 Åke Engelbrektson (Swedish translation)
 
-## Contact
-
-Talk with the developers in [#fotokopierer][IRC] on [libera.chat](https://libera.chat)
-
 ## License
 
 Licensed under GNU GPLv3
@@ -73,9 +69,9 @@ Finally, build the project using the build engine:
     
 ## Download sources    
 
-Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
+Latest development version: [Fotokopierer-main.tar.gz][TRUNK]
 
-Latest release version: [harbour-fotokopierer-0.4.8.tar.gz][STABLE]
+Latest release version: [Fotokopierer-v0.4.8.tar.gz][STABLE]
 
 ## Help with translations
 
@@ -99,5 +95,5 @@ This project uses
 [harbour]: https://harbour.jolla.com/
 [IRC]: https://web.libera.chat/#fotokopierer
 
-[TRUNK]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-trunk.tar.gz?name=harbour-fotokopierer
-[STABLE]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-0.4.8.tar.gz?uuid=v0.4.8
+[TRUNK]: https://codeberg.org/fifr/Fotokopierer/archive/main.tar.gz
+[STABLE]: https://codeberg.org/fifr/Fotokopierer/archive/v0.4.8.tar.gz 
