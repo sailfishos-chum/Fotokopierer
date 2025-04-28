@@ -135,7 +135,7 @@ if (SAILFISH_FOUND)
   find_package(OpenSSL REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
 
-  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include/freetype2)
+  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg-turbo,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include/freetype2)
   set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
 
   set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
