@@ -45,6 +45,7 @@ const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 namespace
 {
+/// Error when reading a document from files.
 class ReadError : public QException
 {
 public:
@@ -194,6 +195,12 @@ QVariant Document::data(const QModelIndex &index, int role) const
             }
             break;
         }
+        case PageRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QVariant::fromValue(d->doc.pages[index.row()].data());
+            }
+            break;
+        }
     }
 
     return {};
@@ -203,7 +210,8 @@ QHash<int, QByteArray> Document::roleNames() const
 {
     static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
                                                  {ResultRole, "role_result"},
-                                                 {CreationTimeRole, "role_creationTime"}};
+                                                 {CreationTimeRole, "role_creationTime"},
+                                                 {PageRole, "role_page"}};
     return roles;
 }
 
@@ -256,6 +264,7 @@ void Document::addPage(QImage original, QImage result)
     QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
 
     connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+    connect(p.data(), &Page::statusChanged, this, &Document::updatePage);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
     d->doc.pages.push_back(p);
@@ -263,6 +272,46 @@ void Document::addPage(QImage original, QImage result)
 
     save();
     emit pagesChanged();
+}
+
+void Document::addScannedPage(ScanImage *image)
+{
+    if (d->status != Ready) {
+        emit error(tr("Cannot add page, document is not ready"));
+        return;
+    }
+
+    setStatus(Adding);
+
+    auto dir = QFileInfo(d->doc.filename).dir();
+    if (!dir.exists()) dir.mkpath(QStringLiteral("."));
+
+    QSharedPointer<Page> page(new Page(dir, image, this));
+    connect(page.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+    connect(page.data(), &Page::statusChanged, this, &Document::updatePage);
+
+    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
+    d->doc.pages.push_back(page);
+    endInsertRows();
+}
+
+void Document::updatePage()
+{
+    Page *page = qobject_cast<Page *>(sender());
+    // TODO: this only works reliably if at most one page is modified at the same time
+    if (page->status() == Page::Invalid) {
+        setStatus(Ready);
+        for (int i = 0; i < d->doc.pages.size(); i++) {
+            if (page == d->doc.pages[i]) {
+                deletePage(i);
+                break;
+            }
+        }
+    } else if (page->status() != Page::Ready) {
+        setStatus(Adding);
+    } else {
+        setStatus(Ready);
+    }
 }
 
 void Document::deletePage(int pageIndex)
@@ -390,6 +439,7 @@ Document::DocData Document::DocData::fromFile(const QString &filename)
         if (!p->read(page.toObject())) {
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
+        p->moveToThread(QCoreApplication::instance()->thread());
         docpages.push_back(p);
     }
 

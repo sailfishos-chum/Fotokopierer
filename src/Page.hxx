@@ -19,9 +19,12 @@
 #define __FOTOKOPIERER_PAGE_HXX__
 
 #include <QtCore/QDateTime>
+#include <QtCore/QDir>
 #include <QtCore/QObject>
 #include <QtCore/QScopedPointer>
 #include <QtGui/QImage>
+
+class ScanImage;
 
 /// A single scanned page.
 class Page : public QObject
@@ -31,9 +34,20 @@ class Page : public QObject
     Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
     static const int ThumbnailSize = 500;
+
+    enum Status {
+        Ready,       ///< the page is ready
+        Generating,  ///< the page is being generated
+        Loading,     ///< the page is being loaded
+        Thumbnail,   ///< the thumbnail is being created
+        Invalid,     ///< the page is invalid
+    };
+
+    Q_ENUM(Status)
 
 public:
     explicit Page(QObject* parent = nullptr);
@@ -44,6 +58,11 @@ public:
          const QString& thumbnail_path,
          QObject* parent);
 
+    /// Create a new page from a scanned image.
+    ///
+    /// The document is placed in the given directory.
+    Page(const QDir& dir, const ScanImage* scanImage, QObject* parent);
+
     ~Page() override;
 
     QDateTime creationTime() const;
@@ -53,6 +72,8 @@ public:
     QString getOriginalImagePath() const;
 
     QString result() const;
+
+    Status status() const;
 
     bool write(QJsonObject& json) const;
 
@@ -66,12 +87,18 @@ private:
     QString updateThumbnail(const QString& filename) const;
 
 private slots:
+    void generationFinished();
+
     void thumbnailFinished();
+
+    void setStatus(Status status);
 
 signals:
     void thumbnailChanged();
 
     void resultChanged();
+
+    void statusChanged();
 
 private:
     struct Data;

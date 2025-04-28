@@ -81,7 +81,7 @@ Page {
                 newPage.item.addPage.connect(function() {
                     var doc = DocumentList.newDocument()
                     if (doc != null) {
-                        scanImage.saveAndClear(doc)
+                        doc.addScannedPage(scanImage)
                     }
                 })
                 pageStack.push(newPage.item)

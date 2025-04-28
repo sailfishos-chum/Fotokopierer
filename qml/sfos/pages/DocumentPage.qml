@@ -111,7 +111,7 @@ Page {
                 newPage.item.scanImage = scanImage
                 newPage.item.destination = docpage
                 newPage.item.addPage.connect(function() {
-                    scanImage.saveAndClear(document)
+                    document.addScannedPage(scanImage)
                 })
                 pageStack.push(newPage.item)
             }
@@ -130,6 +130,12 @@ Page {
 
             RemorseItem {
                 id: remorse
+            }
+
+            BusyIndicator {
+                size: BusyIndicatorSize.Large
+                anchors.centerIn: parent
+                running: role_page != null && role_page.status != DocPage.Ready
             }
         }
 

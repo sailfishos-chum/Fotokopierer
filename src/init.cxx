@@ -32,6 +32,7 @@
 #include "Document.hxx"
 #include "DocumentList.hxx"
 #include "Global.hxx"
+#include "Page.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
@@ -54,6 +55,8 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         0,
         "Document",
         QStringLiteral("Document cannot be used as QML component"));
+    qmlRegisterUncreatableType<Page>(
+        "Fotokopierer", 1, 0, "DocPage", QStringLiteral("Page cannot be used as QML component"));
 
     qmlRegisterUncreatableType<RotateFilter>(
         "Fotokopierer",

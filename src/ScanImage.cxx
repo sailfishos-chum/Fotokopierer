@@ -57,6 +57,20 @@ ScanImage::~ScanImage()
     }
 }
 
+QImage ScanImage::original() const
+{
+    return d->original;
+}
+
+QImage ScanImage::computeFilteredImage() const
+{
+    QImage image = d->original;
+    for (auto filter : d->filter) {
+        image = filter->apply(std::move(image));
+    }
+    return image;
+}
+
 Filter* ScanImage::filter(FilterType type)
 {
     if (type == FilterType::None)
