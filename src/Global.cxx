@@ -16,10 +16,17 @@
  */
 
 #include "Global.hxx"
+#include "Fotokopierer.hxx"
 
+#include <QtCore/QDateTime>
 #include <QtCore/QLineF>
 
 bool Fotokopierer::isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4)
 {
     return QLineF(x1, x3).intersect(QLineF(x2, x4), nullptr) == QLineF::BoundedIntersection;
+}
+
+QString Fotokopierer::newImagePath()
+{
+    return getDocumentDirectory().absoluteFilePath(QDateTime::currentDateTime().toString(FilenameFormat) + QStringLiteral(".jpg"));
 }

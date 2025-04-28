@@ -30,6 +30,8 @@ public:
         : QObject(parent) {}
 
     Q_INVOKABLE bool isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4);
+
+    Q_INVOKABLE QString newImagePath();
 };
 
 #endif
