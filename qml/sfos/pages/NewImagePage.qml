@@ -30,6 +30,8 @@ Page {
     property Page acceptDestinationInstance
     property Page acceptDestinationReplaceTarget
 
+    property bool _haveResolution: false
+
     signal addPage()
 
     onStatusChanged: {
@@ -152,12 +154,13 @@ Page {
         metaData.orientation: orientation
 
         onCameraStatusChanged: {
-            if (cameraStatus == Camera.ActiveStatus) {
+            if (cameraStatus == Camera.ActiveStatus && !_haveResolution) {
                 var res = Fotokopierer.defaultResolution(imageCapture)
                 if (res.width > 0) {
                     imageCapture.resolution = res
                     console.log("set resolution: " + res)
                 }
+                _haveResolution = true
             }
         }
     }
@@ -173,6 +176,7 @@ Page {
         VideoOutput {
             anchors.fill: parent
 
+            visible: camera.cameraStatus == Camera.ActiveStatus && _haveResolution
             fillMode: VideoOutput.Stretch
             orientation: camera.orientation
             focus: visible
