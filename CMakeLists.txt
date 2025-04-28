@@ -143,6 +143,7 @@ set(SOURCES
   src/RotImage.cxx
   src/TransformWorker.cxx
   src/Util.cxx
+  src/ZoomImage.cxx
   src/init.cxx)
 
 if (SAILFISH_FOUND)

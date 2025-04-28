@@ -184,19 +184,18 @@ Item {
     ZoomImage {
         id: zoomimg
 
-        image: rotimage
-
-        color: pane.markerColor
+        borderColor: pane.markerColor
         crossColor: pane.lineColor
+
+        width: Math.min(parent.width, parent.height) / 4
+        height: Math.min(parent.width, parent.height) / 4
+
+        viewSize: Qt.point(2.0 * markerRadius / rotimage.paintedWidth, 2.0 * markerRadius / rotimage.paintedHeight)
+        source: rotimage
 
         anchors.left: pane.left
         anchors.top: pane.top
         anchors.margins: Math.min(parent.width, parent.height) / 20
-
-        imagex: bottomright.x
-        imagey: bottomright.y
-
-        size: Math.min(parent.width, parent.height) / 4
 
         visible: false
     }
@@ -207,8 +206,7 @@ Item {
             mapPoint(topright.center),
             mapPoint(bottomright.center),
             mapPoint(bottomleft.center))
-        zoomimg.imagex = x
-        zoomimg.imagey = y
+        zoomimg.center = mapPoint(Qt.point(x + markerRadius, y + markerRadius))
 
         if (x < rotimage.width / 2) {
             zoomimg.anchors.left = undefined

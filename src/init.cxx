@@ -26,6 +26,8 @@
 #include "CutImage.hxx"
 #include "PlainImage.hxx"
 #include "RotImage.hxx"
+#include "ZoomImage.hxx"
+
 #include "Util.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
@@ -38,6 +40,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterType<CutImage>("Fotokopierer", 1, 0, "CutImage");
     qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
     qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
+    qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
