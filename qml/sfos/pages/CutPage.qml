@@ -46,7 +46,7 @@ Page {
         anchors.bottom: buttons.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
-        markerColor: Theme.primaryColor
+        markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
     }
 
