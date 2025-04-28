@@ -17,6 +17,7 @@
 
 #include "CutView.hxx"
 
+#include "Convert.hxx"
 #include "EdgeDetection.hxx"
 #include "ScanImage.hxx"
 #include "Scanner.hxx"
@@ -426,7 +427,7 @@ void CutView::onNewImage()
             d->orientationChangedConnection = connect(d->scanImage.get(), &ScanImage::orientationChanged, this, &CutView::onOrientationChanged);
 
             // ... and its edge-detection data structure
-            d->edges = std::make_unique<EdgeDetection>(d->scanImage->original());
+            d->edges = std::make_unique<EdgeDetection>(QImageToCvMat(d->scanImage->original()));
             connect(d->edges.get(), &EdgeDetection::hasAutoDetectionChanged, this, &CutView::hasAutoSelectionChanged);
             connect(d->edges.get(), &EdgeDetection::isAutoDetectionRunningChanged, this, &CutView::isAutoDetectionRunningChanged);
 
