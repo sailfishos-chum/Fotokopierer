@@ -40,7 +40,7 @@ public:
     Q_ENUM(ColorMode)
 
 public:
-    ColorizeImage();
+    ColorizeImage(QQuickItem* parent = nullptr);
 
     ~ColorizeImage();
 

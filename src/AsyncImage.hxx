@@ -28,7 +28,7 @@ class AsyncImage : public BaseImage
     friend class AsyncImageTask;
 
 public:
-    AsyncImage();
+    AsyncImage(QQuickItem* parent = nullptr);
 
     ~AsyncImage();
 

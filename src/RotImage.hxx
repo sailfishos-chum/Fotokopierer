@@ -29,7 +29,7 @@ public:
     Q_PROPERTY(int rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
 
 public:
-    RotImage();
+    RotImage(QQuickItem* parent = nullptr);
 
     ~RotImage();
 

@@ -38,7 +38,7 @@ struct CutImage::Data {
                           const QPointF& bl);
 };
 
-CutImage::CutImage() : d(new Data) {}
+CutImage::CutImage(QQuickItem* parent) : AsyncImage(parent), d(new Data) {}
 
 CutImage::~CutImage() = default;
 

@@ -28,6 +28,8 @@ class Fotokopierer : public QObject
     Q_OBJECT
 
 public:
+    Fotokopierer(QObject* parent = nullptr) : QObject(parent) {}
+
     Q_INVOKABLE bool isConvex(const QPointF& x1,
                               const QPointF& x2,
                               const QPointF& x3,

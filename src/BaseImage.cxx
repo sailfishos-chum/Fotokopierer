@@ -27,7 +27,7 @@ struct BaseImage::Data {
     BaseImage* base_image = nullptr;  ///< pointer to the source image producer
 };
 
-BaseImage::BaseImage() : d(new Data)
+BaseImage::BaseImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data)
 {
     connect(this, &BaseImage::sourceChanged, [this]() { this->updateImage(); });
 }

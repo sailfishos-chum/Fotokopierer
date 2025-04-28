@@ -30,7 +30,7 @@ struct ColorizeImage::Data {
     ColorMode colormode = ColorMode::BlackAndWhite;
 };
 
-ColorizeImage::ColorizeImage() : d(new Data) {}
+ColorizeImage::ColorizeImage(QQuickItem* parent) : AsyncImage(parent), d(new Data) {}
 
 ColorizeImage::~ColorizeImage() = default;
 

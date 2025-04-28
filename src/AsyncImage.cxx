@@ -29,7 +29,7 @@ struct AsyncImage::Data {
     QFutureWatcher<QImage> result_image;
 };
 
-AsyncImage::AsyncImage() : d(new Data)
+AsyncImage::AsyncImage(QQuickItem* parent) : BaseImage(parent), d(new Data)
 {
     connect(
         &d->result_image, &QFutureWatcher<QImage>::finished, this, &AsyncImage::finishTransform);

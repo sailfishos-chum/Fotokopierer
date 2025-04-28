@@ -27,7 +27,7 @@ struct PlainImage::Data {
     int maxSize = 1000;
 };
 
-PlainImage::PlainImage() : d(new Data) {}
+PlainImage::PlainImage(QQuickItem* parent) : BaseImage(parent), d(new Data) {}
 
 PlainImage::~PlainImage() = default;
 

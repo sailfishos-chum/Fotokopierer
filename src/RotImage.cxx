@@ -19,7 +19,7 @@
 
 #include <QtGui/QImage>
 
-RotImage::RotImage() : rotation_(0) {}
+RotImage::RotImage(QQuickItem* parent) : BaseImage(parent), rotation_(0) {}
 
 RotImage::~RotImage() = default;
 

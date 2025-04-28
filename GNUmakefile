@@ -1,7 +1,7 @@
 target = harbour-fotokopierer
 
-#arch := i486
-arch := armv7hl
+arch := i486
+#arch := armv7hl
 
 sdk_dir := $(HOME)/SailfishOS
 sfos_version := SailfishOS-2.2.1.18-$(arch)

@@ -31,7 +31,7 @@ class PlainImage : public BaseImage
     Q_PROPERTY(bool maxSize READ maxSize WRITE setMaxSize NOTIFY maxSizeChanged)
 
 public:
-    PlainImage();
+    PlainImage(QQuickItem* parent = nullptr);
 
     ~PlainImage();
 
