@@ -204,7 +204,6 @@ QPointF EdgeDetection::bottomLeft() const
 
 void EdgeDetection::setTopPoint(const QPointF& p)
 {
-    // move the top line
     QLineF left(d->quad.tl, d->quad.bl);
     QLineF right(d->quad.tr, d->quad.br);
     QLineF top(d->quad.tl, d->quad.tr);
@@ -220,6 +219,12 @@ QPointF EdgeDetection::topPoint() const
 
 void EdgeDetection::setBottomPoint(const QPointF& p)
 {
+    QLineF left(d->quad.tl, d->quad.bl);
+    QLineF right(d->quad.tr, d->quad.br);
+    QLineF bottom(d->quad.bl, d->quad.br);
+    bottom.translate(p - bottom.center());
+    bottom.intersect(left, &d->quad.bl);
+    bottom.intersect(right, &d->quad.br);
 }
 
 QPointF EdgeDetection::bottomPoint() const
@@ -229,6 +234,12 @@ QPointF EdgeDetection::bottomPoint() const
 
 void EdgeDetection::setLeftPoint(const QPointF& p)
 {
+    QLineF left(d->quad.tl, d->quad.bl);
+    QLineF top(d->quad.tl, d->quad.tr);
+    QLineF bottom(d->quad.bl, d->quad.br);
+    left.translate(p - left.center());
+    left.intersect(top, &d->quad.tl);
+    left.intersect(bottom, &d->quad.bl);
 }
 
 QPointF EdgeDetection::leftPoint() const
@@ -238,6 +249,12 @@ QPointF EdgeDetection::leftPoint() const
 
 void EdgeDetection::setRightPoint(const QPointF& p)
 {
+    QLineF right(d->quad.tr, d->quad.br);
+    QLineF top(d->quad.tl, d->quad.tr);
+    QLineF bottom(d->quad.bl, d->quad.br);
+    right.translate(p - right.center());
+    right.intersect(top, &d->quad.tr);
+    right.intersect(bottom, &d->quad.br);
 }
 
 QPointF EdgeDetection::rightPoint() const
