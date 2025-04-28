@@ -32,7 +32,7 @@ class Page : public QObject
     Q_PROPERTY(QImage thumbnail READ thumbnail NOTIFY thumbnailChanged)
 
 public:
-    static const int ThumbnailSize = 100;
+    static const int ThumbnailSize = 300;
 
 public:
     Page(QObject* parent = nullptr);
