@@ -40,41 +40,64 @@ public:
 
     ~EdgeList();
 
+    /// Set the lower threshold value for canny edge detection.
     void setCannyMinValue(int minVal);
 
+    /// Return the lower threshold value for canny edge detection.
     int cannyMinValue() const;
 
+    /// Set the upper threshold value for canny edge detection.
     void setCannyMaxValue(int maxVal);
 
+    /// Return the upper threshold value for canny edge detection.
     int cannyMaxValue() const;
 
+    /// Set the radius for Gaussian blur preprocessing.
     void setBlurRadius(int radius);
 
+    /// Return the radius for Gaussian blur preprocessing.
     int blurRadius() const;
 
+    /// Set the contrast scaling factor before running canny edge detection.
     void setContrastFactor(qreal factor);
 
+    /// Return the contrast scaling factor before running canny edge detection.
     qreal contrastFactor() const;
 
-    QImage image() const;
-    QImage gray_image() const;
-    QImage bw_image() const;
-
-    std::vector<QLineF> vertical_lines() const;
-
-    std::vector<QLineF> horizontal_lines() const;
-
-    std::vector<QPointF> points() const;
-
-    QPointF best_topLeft() const;
-    QPointF best_topRight() const;
-    QPointF best_bottomLeft() const;
-    QPointF best_bottomRight() const;
-
+    /// Rerun the edge detection after changing some parameter.
     void update();
 
-    void corner_points(int top, int bottom, int left, int right, QPointF& topleft, QPointF& topright, QPointF& bottomright, QPointF& bottomleft);
+    /// Return the original image.
+    QImage image() const;
 
+    /// Return the gray image.
+    QImage gray_image() const;
+
+    /// Return the result image of canny edge detection.
+    QImage bw_image() const;
+
+    /// Return the list of detected vertical lines.
+    std::vector<QLineF> vertical_lines() const;
+
+    /// Return the list of detected horizontal lines.
+    std::vector<QLineF> horizontal_lines() const;
+
+    /// Return a list of potential candidate points.
+    std::vector<QPointF> points() const;
+
+    /// Return the top left point of the detected rectangle.
+    QPointF best_topLeft() const;
+
+    /// Return the top right point of the detected rectangle.
+    QPointF best_topRight() const;
+
+    /// Return the bottom left point of the detected rectangle.
+    QPointF best_bottomLeft() const;
+
+    /// Return the bottom right point of the detected rectangle.
+    QPointF best_bottomRight() const;
+
+    /// Return a new edge list for the given image.
     static EdgeList detect_in_image(const QImage& image);
 
 private:
