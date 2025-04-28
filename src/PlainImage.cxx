@@ -24,6 +24,7 @@
 struct PlainImage::Data {
     QImage image;
     bool scale = true;
+    int maxSize = 1000;
 };
 
 PlainImage::PlainImage() : d(new Data) {}
@@ -33,6 +34,11 @@ PlainImage::~PlainImage() = default;
 bool PlainImage::scale() const
 {
     return d->scale;
+}
+
+int PlainImage::maxSize() const
+{
+    return d->maxSize;
 }
 
 QImage PlainImage::sourceImage() const
@@ -45,6 +51,15 @@ void PlainImage::setScale(bool enabled)
     if (enabled != d->scale) {
         d->scale = enabled;
         emit scaleChanged();
+    }
+}
+
+void PlainImage::setMaxSize(int maxSize)
+{
+    maxSize = qMax(0, maxSize);
+    if (maxSize != d->maxSize) {
+        d->maxSize = maxSize;
+        emit maxSizeChanged();
     }
 }
 
@@ -65,11 +80,11 @@ void PlainImage::loadFile(const QString& file_name)
 
 QImage PlainImage::transform(const QImage& image)
 {
-    if (d->scale && std::max(image.width(), image.height()) > 1000) {
+    if (d->scale && std::max(image.width(), image.height()) > d->maxSize) {
         if (image.width() > image.height()) {
-            return image.scaledToWidth(1000);
+            return image.scaledToWidth(d->maxSize);
         } else {
-            return image.scaledToHeight(1000);
+            return image.scaledToHeight(d->maxSize);
         }
     } else {
         return image;

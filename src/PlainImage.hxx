@@ -28,6 +28,7 @@ class PlainImage : public BaseImage
     Q_OBJECT
 
     Q_PROPERTY(bool scale READ scale WRITE setScale NOTIFY scaleChanged)
+    Q_PROPERTY(bool maxSize READ maxSize WRITE setMaxSize NOTIFY maxSizeChanged)
 
 public:
     PlainImage();
@@ -38,16 +39,22 @@ public:
 
     bool scale() const;
 
+    int maxSize() const;
+
     Q_INVOKABLE void loadFile(const QString& file_name);
 
 public slots:
     void setScale(bool enabled);
+
+    void setMaxSize(int maxSize);
 
 signals:
     /// Emitted if loading a file failed.
     void loadFailed();
 
     void scaleChanged();
+
+    void maxSizeChanged();
 
 protected:
     QImage transform(const QImage& image);
