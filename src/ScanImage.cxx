@@ -78,17 +78,17 @@ Filter* ScanImage::filter(FilterType type)
     if (type == FilterType::None)
         return nullptr;
     else
-        return d->filter[static_cast<int>(type)];
+        return d->filter.at(static_cast<int>(type));
 }
 
 RotateFilter* ScanImage::rotateFilter() const
 {
-    return qobject_cast<RotateFilter*>(d->filter[static_cast<int>(FilterType::Rotate)]);
+    return qobject_cast<RotateFilter*>(d->filter.at(static_cast<int>(FilterType::Rotate)));
 }
 
 CutFilter* ScanImage::cutFilter() const
 {
-    return qobject_cast<CutFilter*>(d->filter[static_cast<int>(FilterType::Cut)]);
+    return qobject_cast<CutFilter*>(d->filter.at(static_cast<int>(FilterType::Cut)));
 }
 
 ColorizeFilter* ScanImage::colorizeFilter() const
