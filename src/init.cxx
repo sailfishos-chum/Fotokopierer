@@ -42,9 +42,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
 
     qmlRegisterSingletonType<Document>(
         "Fotokopierer", 1, 0, "TestDocument", [](QQmlEngine*, QJSEngine*) -> QObject* {
-            auto doc = new Document;
-            doc->save();
-            return doc;
+            return new Document;
         });
 
     qmlRegisterType<ColorizeImage>("Fotokopierer", 1, 0, "ColorizeImage");

@@ -28,7 +28,6 @@ Page {
 
     DelegateModel {
         id: visualModel
-        model: TestDocument
         delegate: PageDelegate {
             width: grid.cellWidth
             height: grid.cellHeight
@@ -41,6 +40,15 @@ Page {
         }
 
         Component.onCompleted: {
+            visualModel.items.insert({"role_page": null})
+        }
+    }
+
+    Component.onCompleted: {
+        if (!TestDocument.load("/home/nemo/fotokopierer/doc1/doc.json", null)) {
+            console.log("can't load document file")
+        } else {
+            visualModel.model = TestDocument
             visualModel.items.insert({"role_page": null})
         }
     }

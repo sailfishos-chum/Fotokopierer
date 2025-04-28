@@ -43,26 +43,33 @@ struct Document::Data {
 
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
 {
-    QString path = QDir::homePath() + QStringLiteral("/fotokopierer/doc1");
-    d->title = QStringLiteral("TestDocument");
-    d->filename = path + QStringLiteral("/doc.json");
-    d->creation_time = QDateTime::currentDateTime();
+    // QString path = QDir::homePath() + QStringLiteral("/fotokopierer/doc1");
+    // d->title = QStringLiteral("TestDocument");
+    // d->filename = path + QStringLiteral("/doc.json");
+    // d->creation_time = QDateTime::currentDateTime();
 
-    d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
-                                                     path + QStringLiteral("/page1-original.jpg"),
-                                                     path + QStringLiteral("/page1-result.jpg"),
-                                                     {},
-                                                     this)));
-    d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
-                                                     path + QStringLiteral("/page2-original.jpg"),
-                                                     path + QStringLiteral("/page2-result.jpg"),
-                                                     {},
-                                                     this)));
-    d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
-                                                     path + QStringLiteral("/page3-original.jpg"),
-                                                     path + QStringLiteral("/page3-result.jpg"),
-                                                     {},
-                                                     this)));
+    // // d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
+    // //                                                  path +
+    // //                                                  QStringLiteral("/page1-original.jpg"),
+    // path
+    // //                                                  + QStringLiteral("/page1-result.jpg"),
+    // //                                                  {},
+    // //                                                  this)));
+    // // d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
+    // //                                                  path +
+    // //                                                  QStringLiteral("/page2-original.jpg"),
+    // path
+    // //                                                  + QStringLiteral("/page2-result.jpg"),
+    // //                                                  {},
+    // //                                                  this)));
+    // // d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
+    // //                                                  path +
+    // //                                                  QStringLiteral("/page3-original.jpg"),
+    // path
+    // //                                                  + QStringLiteral("/page3-result.jpg"),
+    // //                                                  {},
+    // //                                                  this)));
+    // load(d->filename);
 }
 
 Document::~Document() = default;
@@ -110,7 +117,7 @@ void Document::move(int from, int to)
 bool Document::save() const
 {
     QFileInfo finfo(d->filename);
-    qDebug() << "DIR " << finfo.dir();
+
     if (!finfo.dir().exists()) {
         finfo.dir().mkpath(QStringLiteral("."));
     }
@@ -120,7 +127,6 @@ bool Document::save() const
         qWarning() << tr("Can't write document file %1").arg(d->filename);
         return false;
     }
-
     QJsonObject doc;
 
     doc[QStringLiteral("title")] = d->title;
