@@ -32,7 +32,7 @@ BaseImage::BaseImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data
     connect(this, &BaseImage::sourceChanged, this, &BaseImage::updateImage);
 }
 
-BaseImage::~BaseImage() {}
+BaseImage::~BaseImage() = default;
 
 void BaseImage::paint(QPainter* painter)
 {
