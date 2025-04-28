@@ -428,7 +428,10 @@ Page {
         interval: 1
         running: false
         repeat: false
-        onTriggered: visualModel.items.insert({"role_thumbnail": false, "role_selected": false})
+        onTriggered: {
+            visualModel.items.insert({"role_thumbnail": false, "role_selected": false})
+            visualModel.items.get(visualModel.items.count - 1).inShown = true
+        }
     }
 
     onDocumentChanged: {
