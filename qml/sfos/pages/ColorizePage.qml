@@ -159,19 +159,29 @@ Dialog {
             ValueSlider {
                 id: contrast_slider
                 icon: Qt.resolvedUrl("/icons/contrast.svg")
+                visible: colview.colorMode == ColorizeView.Gray || colview.colorMode == ColorizeView.FullColor
                 onValueChanged: colview.contrast = value / 100
             }
 
             ValueSlider {
                 id: brightness_slider
                 icon: Qt.resolvedUrl("/icons/brightness.svg")
+                visible: contrast_slider.visible
                 onValueChanged: colview.brightness = value / 100
             }
 
             ValueSlider {
-                id: details_slider
+                id: threshold_slider
                 icon: Qt.resolvedUrl("image://theme/icon-m-search")
-                onValueChanged: colview.details = value / 100
+                visible: !contrast_slider.visible
+                onValueChanged: colview.threshold = value / 100
+            }
+
+            ValueSlider {
+                id: blocksize_slider
+                icon: Qt.resolvedUrl("image://theme/icon-m-search")
+                visible: !contrast_slider.visible
+                onValueChanged: colview.blockSize = value / 100
             }
         }
     }
