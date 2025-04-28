@@ -116,7 +116,7 @@ struct EdgeList::Data {
     void find_best_match();
 
     static bool distances_to_intersection(const Edge& l1, const Edge& l2, qreal& alpha, qreal& beta);
-    std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, qreal max_area) const;
+    std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const;
 };
 
 EdgeList::EdgeList(std::unique_ptr<Data>&& d)
@@ -500,7 +500,7 @@ void EdgeList::Data::find_best_match()
                 auto a = 0, b = 0;
                 while (a < bottom_lines[l].size() && b < bottom_lines[r].size()) {
                     if (bottom_lines[l][a] == bottom_lines[r][b]) {
-                        auto [area, q] = compute_area(l, r, i, bottom_lines[l][a], max_area);
+                        auto [area, q] = compute_area(l, r, i, bottom_lines[l][a]);
                         if (area > max_area) {
                             max_area = area;
                             quad = q;
@@ -518,7 +518,7 @@ void EdgeList::Data::find_best_match()
     }
 }
 
-auto EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, double max_area) const -> std::pair<qreal, Quadrangle>
+auto EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const -> std::pair<qreal, Quadrangle>
 {
     qreal alpha = NAN;
     qreal beta = NAN;
