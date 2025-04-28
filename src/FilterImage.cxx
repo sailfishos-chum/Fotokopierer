@@ -133,12 +133,13 @@ void FilterImage::paint(QPainter* painter)
 {
     QImage image;
 
-    if (d->filter)
+    if (d->filter != nullptr) {
         image = d->filteredImage.result();
-    else if (d->image)
+    } else if (d->image != nullptr) {
         image = d->image->originalImage();
-    else
+    } else {
         return;
+    }
 
     if (image.width() > 0 && image.height() > 0) {
         auto wratio = static_cast<qreal>(width()) / image.width();

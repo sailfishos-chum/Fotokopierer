@@ -40,6 +40,11 @@ class FilterImage : public QQuickPaintedItem
 public:
     FilterImage(QQuickItem* parent = nullptr);
 
+    FilterImage(const FilterImage&) = delete;
+    FilterImage(FilterImage&&) = delete;
+    FilterImage& operator=(const FilterImage&) = delete;
+    FilterImage& operator=(FilterImage&&) = delete;
+
     ~FilterImage() override;
 
     qreal paintedWidth() const;
