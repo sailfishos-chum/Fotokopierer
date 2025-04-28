@@ -326,7 +326,7 @@ QImage ScanImage::cutImage(bool wait) const
             }));
         }
 
-        if (wait) d->cut.result();
+        if (wait) return d->cut.result();
     }
 
     if (d->cutReady) {
