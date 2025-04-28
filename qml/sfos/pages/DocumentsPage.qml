@@ -104,6 +104,12 @@ Page {
                 onCanceled: docpage.deleting = false
                 onTriggered: docpage.deleting = false
             }
+
+            BusyIndicator {
+                size: BusyIndicatorSize.Large
+                anchors.centerIn: parent
+                running: role_document != null && role_document.status != Document.Ready
+            }
         }
 
         Component.onCompleted: {
