@@ -87,7 +87,7 @@ Page {
                 anchors.topMargin: Theme.fontSizeLarge
                 font.pixelSize: Theme.fontSizeLarge
 
-                text: "Translations"
+                text: qsTr("Translations")
             }
 
             Label {
