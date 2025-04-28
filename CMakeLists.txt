@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.2.6)
+set(FOTOKOPIERER_VERSION 0.3.0)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.14)
 set(FREETYPE_VERSION 2.10.4)
@@ -29,19 +29,21 @@ else()
 endif()
 
 set(SOURCES
-  src/ColorizeFilter.cxx
-  src/Convert.cxx
-  src/CutFilter.cxx
-  src/Document.cxx
   src/DocumentList.cxx
-  src/EdgeDetection.cxx
-  src/Filter.cxx
-  src/FilterImage.cxx
-  src/Fotokopierer.cxx
+  src/Document.cxx
   src/Page.cxx
-  src/RotateFilter.cxx
+
   src/Scanner.cxx
+  src/ScanImage.cxx
+  src/ScanImageView.cxx
+  src/CutView.cxx
+  src/ColorizeView.cxx
   src/ZoomImage.cxx
+
+  src/Fotokopierer.cxx
+  src/Convert.cxx
+  src/EdgeDetection.cxx
+
   src/init.cxx)
 
 set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
