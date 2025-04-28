@@ -328,15 +328,14 @@ void CutView::paint(QPainter* painter)
 void CutView::onNewImage()
 {
     disconnect(d->rotatedImageChangedConnection);
+    d->rotatedImageChangedConnection = {};
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
             d->rotatedImageChangedConnection = connect(d->scanImage.get(), &ScanImage::rotatedImageChanged, this, &CutView::onRotatedImageChanged);
-            return;
         }
     }
 
-    d->rotatedImageChangedConnection = {};
     update();
 }
 
