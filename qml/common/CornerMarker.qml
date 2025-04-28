@@ -55,15 +55,6 @@ Item {
         Drag.hotSpot.x: width / 2
         Drag.hotSpot.y: height / 2
 
-        Rectangle {
-            anchors.fill: parent
-            antialiasing: true
-            radius: width / 2
-            color: Qt.rgba(root.color.r, root.color.g, root.color.b, root.fillOpacity)
-            border.color: root.color
-            border.width: root.linewidth
-        }
-
         MouseArea {
             id: mouseArea
             anchors.fill: parent
@@ -91,8 +82,25 @@ Item {
         }
     }
 
+    Rectangle {
+        id: marker
+
+        width: root.radius * 2
+        height: root.radius * 2
+        x: dragArea.x
+        y: dragArea.y
+
+        antialiasing: true
+        radius: width / 2
+        color: Qt.rgba(root.color.r, root.color.g, root.color.b, root.fillOpacity)
+        border.color: root.color
+        border.width: root.linewidth
+    }
+
     /// Set the visible position of the marker unless a drag is active.
     function setCenter(point) {
+        marker.x = point.x - root.radius
+        marker.y = point.y - root.radius
         if (!dragActive) {
             dragArea.x = point.x - root.radius
             dragArea.y = point.y - root.radius
