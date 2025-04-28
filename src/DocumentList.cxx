@@ -42,9 +42,8 @@ DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new 
         docdir.cd(path);
         if (docdir.exists(QStringLiteral("doc.json"))) {
             auto doc = QSharedPointer<Document>(new Document());
-            if (doc->load(docdir.filePath(QStringLiteral("doc.json")))) {
-                addDocument(doc);
-            }
+            addDocument(doc);
+            doc->loadAsync(docdir.filePath(QStringLiteral("doc.json")));
         }
     }
 }
@@ -56,6 +55,11 @@ void DocumentList::addDocument(const QSharedPointer<Document> &doc)
     connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
+    connect(doc.data(), &Document::statusChanged, [this, doc]() {
+        if (doc->status() == Document::Invalid) {
+            deleteDocument(d->docs.indexOf(doc));
+        }
+    });
 
     beginInsertRows({}, d->docs.size(), d->docs.size());
     d->docs.push_back(doc);
