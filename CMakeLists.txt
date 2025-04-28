@@ -80,10 +80,8 @@ if (NOT OpenCV_FOUND)
   set(JPEG_LIBRARY libjpeg)
   set(PNG_LIBRARY libpng)
   set(TIFF_LIBRARY libtiff)
-  set(PODOFO_3RDPARTY_INCLUDE_PATH
-	 ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg
-	 ${OpenCV_SOURCE_DIR}/3rdparty/libpng
-	 ${OpenCV_SOURCE_DIR}/3rdparty/libtiff)
+  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libpng,${OpenCV_SOURCE_DIR}/3rdparty/libtiff)
+  set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
   link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
 else()
   find_package(JPEG REQUIRED)
@@ -102,9 +100,11 @@ ExternalProject_Add(podofo-3rdparty
   PREFIX ${PODOFO_PREFIX}
   UPDATE_COMMAND ""
   INSTALL_COMMAND ""
+  LIST_SEPARATOR ,
   CMAKE_ARGS
   -DPODOFO_BUILD_LIB_ONLY:BOOL=true
   -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
+  -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
   -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
   -DCMAKE_LIBRARY_PATH=${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
 
