@@ -42,7 +42,7 @@ public:
 public:
     explicit ColorizeImage(QQuickItem* parent = nullptr);
 
-    ~ColorizeImage();
+    ~ColorizeImage() override;
 
     /// Return the contrast level.
     double contrast() const;
@@ -76,7 +76,7 @@ signals:
     void colorModeChanged();
 
 protected:
-    QImage transform(const QImage& image);
+    QImage transform(const QImage& image) override;
 
 private:
     struct Data;

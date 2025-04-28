@@ -30,7 +30,7 @@ class AsyncImage : public BaseImage
 public:
     explicit AsyncImage(QQuickItem* parent = nullptr);
 
-    ~AsyncImage();
+    ~AsyncImage() override;
 
 signals:
     void startTransform(const QImage& image);
