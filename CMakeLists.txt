@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.0)
 set(FOTOKOPIERER_VERSION 0.2.4)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.0)
+set(FREETYPE_VERSION 2.10.4)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
@@ -110,12 +111,12 @@ if (SAILFISH_FOUND)
   endif ()
 
   # We must use our own freetype library
-  set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1-${CMAKE_SYSTEM_PROCESSOR})
+  set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
   ExternalProject_Add(freetype-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://download.savannah.gnu.org/releases/freetype/freetype-2.9.1.tar.gz"
-    URL_HASH SHA256=ec391504e55498adceb30baceebd147a6e963f636eb617424bcfc47a169898ce
+    URL "https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
+    URL_HASH SHA256=5eab795ebb23ac77001cfb68b7d4d50b5d6c7469247b0b01b2c953269f658dac
     SOURCE_DIR ${FREETYPE_SOURCE_DIR}
     PREFIX ${FREETYPE_PREFIX}
     LIST_SEPARATOR ,
