@@ -358,7 +358,7 @@ bool Document::save() const
     doc[QStringLiteral("creationTime")] = d->doc.creation_time.toString(FilenameFormat);
 
     QJsonArray pages;
-    for (auto page : d->doc.pages) {
+    for (auto &page : d->doc.pages) {
         QJsonObject p;
         if (!page->write(p)) return false;
         pages << p;
@@ -434,7 +434,7 @@ Document::DocData Document::DocData::fromFile(const QString &filename)
     }
 
     QVector<QSharedPointer<Page>> docpages;
-    for (auto page : pages.toArray()) {
+    for (auto &&page : pages.toArray()) {
         if (!page.isObject()) {
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
         }
