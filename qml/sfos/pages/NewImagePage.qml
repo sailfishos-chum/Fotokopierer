@@ -107,6 +107,8 @@ Page {
             exposureCompensation: -1.0
             exposureMode: Camera.ExposurePortrait
         }
+
+        metaData.orientation: orientation
     }
 
     Rectangle {
@@ -119,7 +121,7 @@ Page {
             anchors.fill: parent
 
             fillMode: VideoOutput.Stretch
-
+            orientation: camera.orientation
             focus: visible
             source: camera
         }
