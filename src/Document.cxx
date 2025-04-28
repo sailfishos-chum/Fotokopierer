@@ -73,8 +73,8 @@ struct PageData {
     bool selected = false;
 
     PageData() = default;
-    PageData(QSharedPointer<Page>&& page)
-        : page(std::move(page)) {}
+    PageData(const QSharedPointer<Page>& page)
+        : page(page) {}
     PageData(const PageData&) = default;
     PageData(PageData&&) = default;
     PageData& operator=(const PageData&) = default;
@@ -370,7 +370,7 @@ Page* Document::newPage()
     connect(page.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back({std::move(page)});
+    d->doc.pages.push_back({page});
     endInsertRows();
 
     emit pagesChanged();
