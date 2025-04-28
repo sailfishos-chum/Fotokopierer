@@ -15,6 +15,9 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
+#ifndef __FOTOKOPIERER_CONVERT_HXX__
+#define __FOTOKOPIERER_CONVERT_HXX__
+
 /// \file
 /// Functions to convert between OpenCV's cv::Mat and Qt's QImage and QPixmap.
 ///
@@ -55,3 +58,5 @@ QPixmap cvMatToQPixmap(const cv::Mat& inMat);
 /// \note Format_RGB888 is an exception since we need to use a local
 /// QImage and thus must clone the data regardless
 cv::Mat QPixmapToCvMat(const QPixmap& inPixmap, bool inCloneImageData = true);
+
+#endif
