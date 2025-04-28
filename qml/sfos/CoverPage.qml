@@ -26,7 +26,28 @@ CoverBackground {
     property var _numPages: _document ? _document.numPages : 0
 
     Label {
+        id: nodoc
+
+        visible: !_document
+
+        anchors.top: parent.top
+        anchors.bottom: coverActionArea.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.9
+        height: parent.height * 0.9
+
+        font.pixelSize: Theme.fontSizeHuge
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        wrapMode: Text.WordWrap
+
+        text: qsTr("Take a new picture")
+    }
+
+    Label {
         id: pages
+
+        visible: _document
 
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
@@ -36,6 +57,8 @@ CoverBackground {
     }
 
     Item {
+        visible: _document
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: pages.bottom
