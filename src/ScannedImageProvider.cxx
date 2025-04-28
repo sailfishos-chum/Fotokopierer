@@ -17,15 +17,13 @@
 
 #include "ScannedImageProvider.hxx"
 
-#include "asmOpenCV.h"
+#include "Convert.hxx"
 
 #include <QtCore/QMap>
 #include <QtGui/QPixmap>
 
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
-using namespace ASM;
 
 namespace
 {

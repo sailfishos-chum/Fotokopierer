@@ -122,7 +122,12 @@ set(PODOFO_LIBS
   ${TIFF_LIBRARY}
   ${PNG_LIBRARY})
 
-set(SOURCES src/init.cxx src/ScannedImage.cxx src/ScannedImageProvider.cxx src/Util.cxx)
+set(SOURCES
+  src/Convert.cxx
+  src/ScannedImage.cxx
+  src/ScannedImageProvider.cxx
+  src/Util.cxx
+  src/init.cxx)
 
 if (SAILFISH_FOUND)
   qt5_add_resources(RESOURCES sfos.qrc common.qrc translations.qrc)
