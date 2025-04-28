@@ -326,7 +326,7 @@ Page {
         newPage.item.acceptDestination = docpage
         newPage.item.acceptDestinationAction = PageStackAction.Pop
         newPage.item.addPage.connect(function() {
-            document.addScannedPage(Scanner)
+            Scanner.addPage(document)
         })
         pageStack.push(newPage.item)
     }

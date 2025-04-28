@@ -52,17 +52,6 @@ public:
 public:
     explicit Page(QObject* parent = nullptr);
 
-    Page(const QDateTime& creation_time,
-         const QString& original_path,
-         const QString& result_path,
-         const QString& thumbnail_path,
-         QObject* parent);
-
-    /// Create a new page from a scanned image.
-    ///
-    /// The document is placed in the given directory.
-    Page(const QDir& dir, const Scanner* scanner, QObject* parent);
-
     Page(const Page&) = delete;
     Page(Page&&) = delete;
     Page& operator=(const Page&) = delete;
@@ -74,11 +63,16 @@ public:
 
     QString thumbnail();
 
-    QString getOriginalImagePath() const;
+    QString originalImagePath() const;
 
     QString result() const;
 
     Status status() const;
+
+    /// Initialize this page from the results of a Scanner.
+    ///
+    /// The page files are stored in the document directory `dir`.
+    void loadFromScanner(const QDir& dir, const Scanner* scanner);
 
     bool write(QJsonObject& json) const;
 

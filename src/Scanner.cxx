@@ -19,7 +19,9 @@
 
 #include "ColorizeFilter.hxx"
 #include "CutFilter.hxx"
+#include "Document.hxx"
 #include "Filter.hxx"
+#include "Page.hxx"
 #include "RotateFilter.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
@@ -106,6 +108,20 @@ void Scanner::setDeleteOriginalOnClear(bool enabled)
 bool Scanner::deleteOriginalOnClear() const
 {
     return d->deleteOriginalOnClear;
+}
+
+void Scanner::addPage(Document* doc)
+{
+    if (doc == nullptr) {
+        return;
+    }
+
+    auto page = doc->newPage();
+    if (page == nullptr) {
+        return;
+    }
+
+    page->loadFromScanner(doc->directory(), this);
 }
 
 bool Scanner::loadFile(const QString& file_name)

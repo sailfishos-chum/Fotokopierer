@@ -76,28 +76,17 @@ Page::Page(QObject* parent)
     connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
 }
 
-Page::Page(const QDateTime& creation_time,
-           const QString& original_path,
-           const QString& result_path,
-           const QString& thumbnail_path,
-           QObject* parent)
-    : Page(parent)
-{
-    d->creation_time = creation_time;
-    d->original_path = original_path;
-    d->result_path = result_path;
-    d->thumbnail_path = thumbnail_path;
-}
+Page::~Page() = default;
 
-Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
-    : Page(parent)
+void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
 {
     setStatus(Generating);
 
+    remove();
+
     auto ctime = QDateTime::currentDateTime();
 
-    auto original_path =
-        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
+    auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
 
     auto ext = QStringLiteral("png");
     switch (scanner->colorizeFilter()->colorMode()) {
@@ -105,10 +94,9 @@ Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
         case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
         default: break;
     }
-    auto result_path =
-        dir.filePath(QStringLiteral("%1-result.%2")
-                         .arg(ctime.toString(FilenameFormat))
-                         .arg(ext));
+    auto result_path = dir.filePath(QStringLiteral("%1-result.%2")
+                                        .arg(ctime.toString(FilenameFormat))
+                                        .arg(ext));
 
     d->creation_time = ctime;
     d->original_path = original_path;
@@ -133,8 +121,6 @@ Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
         return true;
     }));
 }
-
-Page::~Page() = default;
 
 Page::Status Page::status() const
 {
@@ -189,7 +175,7 @@ void Page::onThumbnailFinished()
     setStatus(Ready);
 }
 
-QString Page::getOriginalImagePath() const
+QString Page::originalImagePath() const
 {
     return d->original_path;
 }
@@ -201,9 +187,15 @@ QString Page::result() const
 
 void Page::remove()
 {
-    QFile(d->original_path).remove();
-    QFile(d->result_path).remove();
-    QFile(d->thumbnail_path).remove();
+    if (!d->original_path.isEmpty()) {
+        QFile(d->original_path).remove();
+    }
+    if (!d->result_path.isEmpty()) {
+        QFile(d->result_path).remove();
+    }
+    if (!d->thumbnail_path.isEmpty()) {
+        QFile(d->thumbnail_path).remove();
+    }
 }
 
 void Page::onGenerationFinished()

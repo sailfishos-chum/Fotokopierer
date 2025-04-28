@@ -25,7 +25,8 @@
 #include <memory>
 
 class Page;
-class Scanner;
+
+class QDir;
 
 /// A scanned document
 ///
@@ -98,11 +99,10 @@ public:
     /// accessibly as a property.
     QStringList thumbnails() const;
 
-    /// Add a newly scanned page to the document.
+    /// Create and return a new empty page.
     ///
-    /// The new page will be created with the given original and result image
-    /// and the current time. It will be the last page of the current document.
-    Q_INVOKABLE void addScannedPage(Scanner *scanner);
+    /// Return nullptr if the document is not Ready.
+    Page *newPage();
 
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
@@ -124,18 +124,15 @@ public:
     /// Return the current status.
     Status status() const;
 
+    /// Return the document's directory.
+    QDir directory() const;
+
 public slots:
     /// Set the document title.
     void setTitle(const QString &title);
 
     /// Move a page `from` to position `to`.
     void move(int from, int to);
-
-    /// Add a newly scanned page to the document.
-    ///
-    /// The new page will be created with the given original and result image
-    /// and the current time. It will be the last page of the current document.
-    void addPage(const QImage &original, const QImage &result);
 
     /// Export document as PDF to a file with the given name.
     ///

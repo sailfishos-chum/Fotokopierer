@@ -167,7 +167,7 @@ Page {
         newPage.item.addPage.connect(function() {
             var doc = DocumentList.newDocument()
             if (doc != null) {
-                doc.addScannedPage(Scanner)
+                Scanner.addPage(doc)
                 newPage.item.acceptDestinationInstance.document = doc
             }
         })
