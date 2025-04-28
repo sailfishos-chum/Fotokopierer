@@ -21,8 +21,9 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QObject>
-#include <QtCore/QScopedPointer>
 #include <QtGui/QImage>
+
+#include <memory>
 
 class Scanner;
 
@@ -137,7 +138,7 @@ signals:
 
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif
