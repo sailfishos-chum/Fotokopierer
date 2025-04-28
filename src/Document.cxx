@@ -45,36 +45,7 @@ struct Document::Data {
     QList<QSharedPointer<Page>> pages;  ///< page of the document
 };
 
-Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
-{
-    // QString path = QDir::homePath() + QStringLiteral("/fotokopierer/doc1");
-    // d->title = QStringLiteral("TestDocument");
-    // d->filename = path + QStringLiteral("/doc.json");
-    // d->creation_time = QDateTime::currentDateTime();
-
-    // // d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
-    // //                                                  path +
-    // //                                                  QStringLiteral("/page1-original.jpg"),
-    // path
-    // //                                                  + QStringLiteral("/page1-result.jpg"),
-    // //                                                  {},
-    // //                                                  this)));
-    // // d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
-    // //                                                  path +
-    // //                                                  QStringLiteral("/page2-original.jpg"),
-    // path
-    // //                                                  + QStringLiteral("/page2-result.jpg"),
-    // //                                                  {},
-    // //                                                  this)));
-    // // d->pages.push_back(QSharedPointer<Page>(new Page(QDateTime::currentDateTime(),
-    // //                                                  path +
-    // //                                                  QStringLiteral("/page3-original.jpg"),
-    // path
-    // //                                                  + QStringLiteral("/page3-result.jpg"),
-    // //                                                  {},
-    // //                                                  this)));
-    // load(d->filename);
-}
+Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
 
 Document::~Document() = default;
 
