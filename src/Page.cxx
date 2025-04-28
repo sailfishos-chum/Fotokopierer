@@ -226,7 +226,7 @@ void Page::initCopy(const QDir& dir, Document* sourceDoc, Page* source, bool mov
             }
 
             if (move && sourceDoc != nullptr) {
-                sourceDoc->deletePage(source);
+                emit deleteSourcePage(sourceDoc, source);
             }
 
             emit generationFinished(original_path, result_path);

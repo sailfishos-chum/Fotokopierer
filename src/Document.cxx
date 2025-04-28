@@ -232,6 +232,9 @@ void Document::setDocData(DocData&& docdata)
     d->doc = std::move(docdata);
     for (auto& p : d->doc.pages) {
         connect(p.page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+        connect(p.page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
+        connect(p.page.data(), &Page::error, this, &Document::error);
+        connect(p.page.data(), &Page::deleteSourcePage, this, &Document::onDeleteSourcePage);
     }
     emit titleChanged();
 }
@@ -399,6 +402,7 @@ Page* Document::newPage()
     connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
+    connect(page.data(), &Page::deleteSourcePage, this, &Document::onDeleteSourcePage);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
     d->doc.pages.push_back({page});
@@ -611,6 +615,7 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
         connect(p.data(), &Page::thumbnailChanged, document, &Document::onThumbnailUpdated);
         connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
         connect(p.data(), &Page::error, document, &Document::error);
+        connect(p.data(), &Page::deleteSourcePage, document, &Document::onDeleteSourcePage);
 
         if (!p->read(page.toObject(), docpath)) {
             qDebug() << QStringLiteral("Error reading page from document file %1").arg(filename);

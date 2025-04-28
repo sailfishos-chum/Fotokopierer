@@ -227,6 +227,7 @@ private:
     static void ensureNoMedia(const QString &path);
 
 private slots:
+    void onDeleteSourcePage(Document *sourceDoc, Page *source);
     void onThumbnailUpdated();
 
 private:

@@ -135,6 +135,8 @@ signals:
 
     void statusChanged();
 
+    void deleteSourcePage(Document* sourceDoc, Page* source);
+
     void generationFinished(const QString& original_path, const QString& result_path);
 
     void thumbnailFinished(const QString& thumbnail_path);
