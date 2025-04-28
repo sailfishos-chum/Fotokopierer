@@ -12,7 +12,7 @@ Summary:    Document Scanner
 Version:    0.1
 Release:    1
 Group:      Qt/Qt
-License:    LICENSE
+License:    GPLv3+
 URL:        https://fifr.spdns.de/fossils/harbour-fotokopierer
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-fotokopierer.yaml
