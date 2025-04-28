@@ -49,6 +49,9 @@ public:
 
     QImage originalImage() const;
 
+signals:
+    void originalImageChanged();
+
 private:
     struct Data;
     std::unique_ptr<Data> d;
