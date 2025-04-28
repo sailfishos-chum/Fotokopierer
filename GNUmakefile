@@ -51,6 +51,7 @@ install:
 	$(mersdk_ssh) '$(mersdk_mb2) make-install'
 
 rpm: lrelease
+	touch rpm/*.yaml
 	$(mersdk_ssh) '$(mersdk_mb2) package'
 
 deploy-emu: all rpm
