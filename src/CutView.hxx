@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,18 +15,20 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_CUTFILTER_HXX__
-#define __FOTOKOPIERER_CUTFILTER_HXX__
+#ifndef __FOTOKOPIERER_CUTVIEW_HXX__
+#define __FOTOKOPIERER_CUTVIEW_HXX__
 
-#include "Filter.hxx"
-
-#include <QtCore/QPointF>
+#include "ScanImageView.hxx"
 
 #include <memory>
 
-class CutFilter : public Filter
+class Scanner;
+
+class CutView : public ScanImageView
 {
     Q_OBJECT
+
+    Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
     Q_PROPERTY(QPointF topLeft READ topLeft WRITE setTopLeft NOTIFY topLeftChanged)
     Q_PROPERTY(QPointF topRight READ topRight WRITE setTopRight NOTIFY topRightChanged)
@@ -39,26 +41,13 @@ class CutFilter : public Filter
     Q_PROPERTY(QPointF right READ right WRITE setRight NOTIFY rightChanged)
 
 public:
-    explicit CutFilter(Scanner* image);
+    CutView(QQuickItem* parent = nullptr);
 
-    CutFilter(Scanner* image, Filter* previous_filter);
+    ~CutView() override;
 
-    CutFilter(const CutFilter&) = delete;
-    CutFilter(CutFilter&&) = delete;
-    CutFilter& operator=(const CutFilter&) = delete;
-    CutFilter& operator=(CutFilter&&) = delete;
+    int orientation() const;
 
-    ~CutFilter() override;
-
-    void reset() override;
-
-    QString name() const override;
-
-    QJsonObject saveJson() const override;
-
-    void loadJson(const QJsonObject& object) override;
-
-    QImage apply(QImage&& image) override;
+    void setOrientation(int orientation);
 
     QPointF topLeft() const;
 
@@ -92,32 +81,28 @@ public:
 
     QPointF right() const;
 
-    /// Rotate the selection counterclockwise.
+    void paint(QPainter* painter) override;
+
+public:
     Q_INVOKABLE void rotateLeft();
 
-    /// Rotate the selection clockwise.
     Q_INVOKABLE void rotateRight();
 
-    /// Fix the current selection as new state for snappy edges.
-    Q_INVOKABLE void fixSnappyEdges();
+    Q_INVOKABLE void selectAll();
 
-    /// Select everything.
-    Q_INVOKABLE QVariantList selectAll();
+    Q_INVOKABLE void selectAuto();
 
-    /// Return the auto-detected cut box.
-    ///
-    /// The method returns a list of four points (topleft, topright,
-    /// bottomright, bottomleft).
-    Q_INVOKABLE QVariantList autoDetectCutRect();
+    /// Update the snappy edges.
+    Q_INVOKABLE void updateSnappyEdges();
 
-public slots:
-    /// Apply the current cut area to the image.
-    ///
-    /// The function returns true if the action has been successful. It returns
-    /// false if the current box is invalid (i.e. non-convex).
-    bool updateCut();
+    /// Apply the current cut to the scan image.
+    Q_INVOKABLE void apply();
 
 signals:
+    void scannerChanged();
+
+    void orientationChanged();
+
     void topLeftChanged();
     void topRightChanged();
     void bottomRightChanged();
@@ -127,6 +112,17 @@ signals:
     void bottomChanged();
     void leftChanged();
     void rightChanged();
+
+    void rotationChanged();
+
+protected:
+    QImage image() const override;
+
+protected slots:
+    void onNewImage() override;
+
+private slots:
+    void onRotatedImageChanged();
 
 private:
     struct Data;

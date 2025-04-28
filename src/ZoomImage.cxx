@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,7 +17,7 @@
 
 #include "ZoomImage.hxx"
 
-#include "Filter.hxx"
+#include "ScanImage.hxx"
 
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
@@ -28,9 +28,7 @@ struct ZoomImage::Data {
     QColor cross_color = Qt::red;
     QColor border_color = Qt::white;
 
-    Scanner* image = nullptr;
-    Scanner::FilterType filter_type = Scanner::FilterType::None;
-    Filter* filter = nullptr;
+    Scanner* scanner = nullptr;
 };
 
 ZoomImage::ZoomImage(QQuickItem* parent)
@@ -97,57 +95,34 @@ void ZoomImage::setCrossColor(const QColor& color)
     }
 }
 
-void ZoomImage::setImage(Scanner* image)
+void ZoomImage::setScanner(Scanner* scanner)
 {
-    if (image != d->image) {
-        d->image = image;
-        updateFilter();
-        emit imageChanged();
+    if (scanner != d->scanner) {
+        if (d->scanner != nullptr) {
+            disconnect(d->scanner, &Scanner::currentImageChanged, this, &ZoomImage::onImageChanged);
+        }
+        d->scanner = scanner;
+        if (d->scanner != nullptr) {
+            connect(d->scanner, &Scanner::currentImageChanged, this, &ZoomImage::onImageChanged);
+        }
+
+        emit scannerChanged();
+
         update();
     }
 }
 
-Scanner* ZoomImage::image() const
+Scanner* ZoomImage::scanner() const
 {
-    return d->image;
-}
-
-void ZoomImage::setFilterType(Scanner::FilterType filter_type)
-{
-    if (filter_type != d->filter_type) {
-        d->filter_type = filter_type;
-        updateFilter();
-        emit filterTypeChanged();
-    }
-}
-
-Scanner::FilterType ZoomImage::filterType() const
-{
-    return d->filter_type;
-}
-
-void ZoomImage::updateFilter()
-{
-    if (d->filter != nullptr) {
-        disconnect(d->filter, &Filter::filterChanged, this, &ZoomImage::onFilterChanged);
-    }
-
-    if (d->image != nullptr && d->filter_type != Scanner::FilterType::None) {
-        d->filter = d->image->filter(d->filter_type);
-        connect(d->filter, &Filter::filterChanged, this, &ZoomImage::onFilterChanged);
-    }
-    update();
+    return d->scanner;
 }
 
 void ZoomImage::paint(QPainter* p)
 {
-    QImage image;
+    auto scanImage = d->scanner->currentImage();
+    if (scanImage == nullptr) return;
 
-    if (d->filter != nullptr)
-        image = d->filter->filteredImage();
-    else if (d->image != nullptr)
-        image = d->image->originalImage();
-
+    auto image = scanImage->rotatedImage();
     if (image.isNull()) return;
 
     auto w = width();
@@ -191,7 +166,7 @@ void ZoomImage::paint(QPainter* p)
     p->drawLine(w / 2 - w / 6, h / 2, w / 2 + w / 6, h / 2);
 }
 
-void ZoomImage::onFilterChanged()
+void ZoomImage::onImageChanged()
 {
     update();
 }

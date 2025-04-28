@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -22,10 +22,8 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QtQml>
 
-#include "ColorizeFilter.hxx"
-#include "CutFilter.hxx"
-#include "FilterImage.hxx"
-#include "RotateFilter.hxx"
+#include "ColorizeView.hxx"
+#include "CutView.hxx"
 #include "Scanner.hxx"
 #include "ZoomImage.hxx"
 
@@ -57,7 +55,8 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         });
 
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
-    qmlRegisterType<FilterImage>("Fotokopierer", 1, 0, "FilterImage");
+    qmlRegisterType<ColorizeView>("Fotokopierer", 1, 0, "ColorizeView");
+    qmlRegisterType<CutView>("Fotokopierer", 1, 0, "CutView");
     qmlRegisterUncreatableType<Document>(
         "Fotokopierer",
         1,
@@ -66,25 +65,6 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         QStringLiteral("Document cannot be used as QML component"));
     qmlRegisterUncreatableType<Page>(
         "Fotokopierer", 1, 0, "DocPage", QStringLiteral("Page cannot be used as QML component"));
-
-    qmlRegisterUncreatableType<RotateFilter>(
-        "Fotokopierer",
-        1,
-        0,
-        "RotateFilter",
-        QStringLiteral("RotateFilter cannot be used as QML component"));
-    qmlRegisterUncreatableType<CutFilter>(
-        "Fotokopierer",
-        1,
-        0,
-        "CutFilter",
-        QStringLiteral("RotateFilter cannot be used as QML component"));
-    qmlRegisterUncreatableType<ColorizeFilter>(
-        "Fotokopierer",
-        1,
-        0,
-        "ColorizeFilter",
-        QStringLiteral("RotateFilter cannot be used as QML component"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QStringLiteral(QT_VERSION_STR));
