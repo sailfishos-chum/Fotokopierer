@@ -55,8 +55,8 @@ set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
   )
 
 if (SAILFISH_FOUND)
-  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION})
-  set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-${PODOFO_VERSION})
+  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
+  set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-${PODOFO_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
 
   include(ExternalProject)
 
@@ -100,6 +100,7 @@ if (SAILFISH_FOUND)
     -DBUILD_opencv_videoio=OFF
     -DBUILD_opencv_videostab=OFF
     -DBUILD_opencv_world=OFF
+    -DENABLE_PRECOMPILED_HEADERS=OFF
     -DWITH_JASPER=OFF
     -DWITH_OPENEXR=OFF
     -DWITH_WEBP=OFF)
@@ -114,7 +115,7 @@ if (SAILFISH_FOUND)
   endif ()
 
   # We must use our own freetype library
-  set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1)
+  set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1-${CMAKE_SYSTEM_PROCESSOR})
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
   ExternalProject_Add(freetype-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
