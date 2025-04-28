@@ -17,6 +17,7 @@
 
 #include "Document.hxx"
 
+#include "Clipboard.hxx"
 #include "Fotokopierer.hxx"
 #include "Page.hxx"
 
@@ -324,6 +325,32 @@ void Document::clearSelection()
     }
 }
 
+void Document::copySelectedPages()
+{
+    QVector<Page*> pages;
+    for (auto& p : d->doc.pages) {
+        if (p.selected) {
+            pages.push_back(p.page.data());
+        }
+    }
+    Clipboard::instance()->copy(this, pages);
+}
+
+void Document::cutSelectedPages()
+{
+    QVector<Page*> pages;
+    for (auto& p : d->doc.pages) {
+        if (p.selected) {
+            pages.push_back(p.page.data());
+        }
+    }
+    Clipboard::instance()->cut(this, pages);
+}
+
+void Document::pastePages()
+{
+}
+
 Page* Document::newPage()
 {
     if (d->status != Ready) {
@@ -350,6 +377,20 @@ Page* Document::newPage()
     QQmlEngine::setObjectOwnership(page.data(), QQmlEngine::CppOwnership);
 
     return page.data();
+}
+
+Page* Document::newCopiedPage(const Page* source)
+{
+    if (source == nullptr) {
+        return nullptr;
+    }
+
+    auto page = newPage();
+    if (page != nullptr) {
+        page->initCopy(directory(), source);
+    }
+
+    return page;
 }
 
 void Document::onPageUpdated()
@@ -379,6 +420,16 @@ void Document::deletePage(int pageIndex)
     endRemoveRows();
     emit pagesChanged();
     save();
+}
+
+void Document::deletePage(Page* page)
+{
+    for (int pageIndex = 0; pageIndex < d->doc.pages.count(); pageIndex++) {
+        if (d->doc.pages[pageIndex].page == page) {
+            deletePage(pageIndex);
+            break;
+        }
+    }
 }
 
 void Document::remove()

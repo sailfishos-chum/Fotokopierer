@@ -108,6 +108,12 @@ public:
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
 
+    /// Delete a page from the document.
+    void deletePage(Page *page);
+
+    /// Create and return a new page which is a copy of the given page.
+    Page *newCopiedPage(const Page *source);
+
     /// Delete this document.
     ///
     /// Calling this function removes all files associated with this document.
@@ -137,6 +143,15 @@ public slots:
 
     /// Cancel the selection of all pages.
     void clearSelection();
+
+    /// Copy the currently selected pages to the clipboard.
+    void copySelectedPages();
+
+    /// Cut the currently selected pages to the clipboard.
+    void cutSelectedPages();
+
+    /// Paste pages from the clipboard.
+    void pastePages();
 
     /// Export document as PDF to a file with the given name.
     ///
