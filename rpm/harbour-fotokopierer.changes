@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
+- Update translation
+
 * Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-1
 - Selection is rotated when the image is rotated
 - Add mode for using full colors
