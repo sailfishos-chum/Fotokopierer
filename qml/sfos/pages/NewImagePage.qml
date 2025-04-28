@@ -177,6 +177,7 @@ Page {
 
         Rectangle {
             id: focusCircle
+            visible: camera.cameraStatus == Camera.ActiveStatus
             height: Theme.itemSizeHuge
             width: height
             radius: width / 2
