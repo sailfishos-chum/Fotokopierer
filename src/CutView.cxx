@@ -23,6 +23,7 @@
 
 #include <QDebug>
 #include <QtGui/QImage>
+#include <QtGui/QPainter>
 
 static QPointF scale(const QPointF& p, int width, int height)
 {
@@ -358,7 +359,40 @@ void CutView::selectAuto()
 
 void CutView::paint(QPainter* painter)
 {
-    ScanImageView::paint(painter);
+    QImage image = d->scanImage->original();
+
+    auto orien = orientation();
+    auto imgw = image.width();
+    auto imgh = image.height();
+
+    if (imgw > 0 && imgh > 0) {
+        auto wratio = static_cast<qreal>(orien % 2 == 0 ? width() : height()) / imgw;
+        auto hratio = static_cast<qreal>(orien % 2 == 0 ? height() : width()) / imgh;
+        auto ratio = std::min(wratio, hratio);
+
+        auto w = imgw * ratio;
+        auto h = imgh * ratio;
+
+        if (orien % 2 == 1) std::swap(w, h);
+
+        setPaintedSize(w, h);
+
+        painter->save();
+        painter->rotate(orien * 90);
+
+        QPointF target;
+        switch (orien) {
+            case 0: target = {(width() - w) / 2, (height() - h) / 2}; break;
+            case 1: target = {height() / 2 - h / 2, -width() / 2 - w / 2}; break;
+            case 2: target = {-width() / 2 - w / 2, -height() / 2 - h / 2}; break;
+            case 3: target = {-height() / 2 - h / 2, width() / 2 - w / 2}; break;
+            default: Q_ASSERT(false);
+        }
+
+        painter->drawImage(QRectF{target, QSize(imgw * ratio, imgh * ratio)}, image);
+
+        painter->restore();
+    }
 
     if (d->doRotate == 1) {
         // We need to postpone the rotation until the repaint is complete because
@@ -400,11 +434,6 @@ void CutView::onNewImage()
             // start right away
             d->edges->startAutoDetect();
 
-            // For now we just rotate the image
-            QTransform transform;
-            transform.rotate(d->scanImage->orientation() * 90.0);
-            d->image = d->image.transformed(transform);
-
             // this means that the settings will be initialized from the scanImage
             d->setPoint(0, d->scanImage->topLeft());
             d->setPoint(1, d->scanImage->topRight());
@@ -434,10 +463,6 @@ QImage CutView::image() const
 void CutView::onOrientationChanged()
 {
     if (d->scanImage != nullptr) {
-        QTransform transform;
-        transform.rotate(orientation() * 90.0);
-        d->image = d->scanImage->original().transformed(transform);
-
         update();
     }
 
