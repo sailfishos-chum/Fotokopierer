@@ -82,8 +82,10 @@ public:
     /// Calling this function removes all files associated with this document.
     void remove();
 
+    /// Save document.
     Q_INVOKABLE bool save() const;
 
+    /// Load document from the given file.
     Q_INVOKABLE bool load(const QString &filename);
 
     /// Return the current status.
