@@ -10,6 +10,8 @@ Frank Fischer <frank-fischer@shadow-soft.de>
 
 Tobias Planitzer (Icons)
 
+Åke Engelbrektson (Swedish translation)
+
 ## Contact
 
 Talk with the developers in [#fotokopierer][IRC] on [Freenode](http://freenode.net)

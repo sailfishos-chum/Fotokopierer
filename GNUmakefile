@@ -27,7 +27,7 @@ endif
 emu_ssh := ssh -p 2223 -i $(emu_dir)/nemo nemo@localhost
 emu_ssh_root := ssh -p 2223 -i $(emu_dir)/root root@localhost
 
-TRANSLATIONS = de
+TRANSLATIONS = de sv
 
 .PHONY: all build buildall clean install rpm run deploy-emu
 all: compile
