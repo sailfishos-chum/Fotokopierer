@@ -8,6 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Thr Jun 24 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.2-1
+- add copy & paste for pages
+- access parameters for black/white mode directly
+- add custom color mapping for colorization mode
+- several small ui improvements
+
 * Wed Jun 9 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.2-1
 - replace some forbidden characters in pdf file name
 
