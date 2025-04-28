@@ -277,6 +277,19 @@ Page {
         }
     }
 
+    // This timer is only used as a workaround for an unexpected crash.
+    //
+    // If the "AddPage" is added immediately when the document has been changed,
+    // the program crashed. We use the timer to delay the addition of the
+    // "AddPage", probably so that the DelegateModel is properly initialized.
+    Timer {
+        id: addpagetimer
+        interval: 1
+        running: false
+        repeat: false
+        onTriggered: visualModel.items.insert({"role_thumbnail": false})
+    }
+
     onDocumentChanged: {
         // remove the "AddPage" (if exists)
         if (visualModel.items.count > 0) {
@@ -287,8 +300,9 @@ Page {
             visualModel.model = document
             document.errorPdfExists.connect(_onPdfExists)
             document.exportToPdfFinished.connect(_onExportToPdfFinished)
-            // add the "AddPage"
-            visualModel.items.insert({"role_thumbnail": null})
+            // add the "AddPage" (we use the timer as adding the page
+            // immediately crashes the program)
+            addpagetimer.running = true
         } else {
             // no document has been specified, use the dummy model
             visualModel.model = emptymodel
