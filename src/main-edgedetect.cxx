@@ -80,7 +80,7 @@ public:
     void updateEdges()
     {
         QImage image = img_orig_;
-        auto edges = EdgeDetection::detect_in_image(image);
+        auto edges = EdgeDetection(image);
         edges.setCannyMinValue(minValue_);
         edges.setCannyMaxValue(maxValue_);
         edges.autoDetect();

@@ -30,6 +30,9 @@ class QPointF;
 class EdgeDetection
 {
 public:
+    /// Initialize edge detection for the given image.
+    EdgeDetection(const QImage& image);
+
     EdgeDetection(const EdgeDetection&) = delete;
 
     EdgeDetection(EdgeDetection&&) noexcept;

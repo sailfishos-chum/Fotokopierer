@@ -87,6 +87,12 @@ struct EdgeDetection::Data {
     std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const;
 };
 
+EdgeDetection::EdgeDetection(const QImage& image)
+    : d(std::make_unique<Data>())
+{
+    d->image = image;
+}
+
 EdgeDetection::EdgeDetection(std::unique_ptr<Data>&& d)
     : d(std::move(d)) {}
 
@@ -297,9 +303,7 @@ void EdgeDetection::autoDetect()
 
 EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
 {
-    auto d = std::make_unique<Data>();
-    d->image = image;
-    auto edges = EdgeDetection(std::move(d));
+    auto edges = EdgeDetection(image);
     edges.autoDetect();
     return edges;
 }
