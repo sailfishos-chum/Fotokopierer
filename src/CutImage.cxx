@@ -91,7 +91,7 @@ QImage CutImage::transform(const QImage& image)
     cv::Mat cut;
     cv::warpPerspective(rotated, cut, M, {(int)width, (int)height});
 
-    return cvMatToQImage(cut);
+    return cvMatToQImage(cut).copy();
 }
 
 QVariantList CutImage::autoDetectCutRect()

@@ -110,7 +110,7 @@ QImage ColorizeImage::transform(const QImage& image)
     cv::cvtColor(img_bright, img_gray, cv::COLOR_BGR2GRAY);
 
     if (d->colormode == Gray) {
-        return cvMatToQImage(img_gray);
+        return cvMatToQImage(img_gray).copy();
     }
 
     // Threshold filter for background mask.
@@ -124,7 +124,7 @@ QImage ColorizeImage::transform(const QImage& image)
     }
 
     if (d->colormode == BlackAndWhite) {
-        return cvMatToQImage(bg_mask);
+        return cvMatToQImage(bg_mask).copy();
     }
 
     /// Set background to white
@@ -177,5 +177,5 @@ QImage ColorizeImage::transform(const QImage& image)
 
     cv::Mat colorized;
     img_col.convertTo(colorized, CV_8U);
-    return cvMatToQImage(colorized);
+    return cvMatToQImage(colorized).copy();
 }
