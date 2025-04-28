@@ -155,6 +155,38 @@ void Page::updateFromScanner(const Scanner* scanner,
     }));
 }
 
+void Page::initCopy(const QDir& dir, const Page* source)
+{
+    setStatus(Generating);
+
+    setCreationTime(source->d->creation_time);
+
+    d->settings = source->d->settings;
+    d->creation_time = source->d->creation_time;
+
+    auto src_original_path = source->d->original_path;
+    auto src_result_path = source->d->result_path;
+
+    auto original_path = dir.filePath(QFileInfo(src_original_path).fileName());
+    auto result_path = dir.filePath(QFileInfo(src_result_path).fileName());
+
+    d->generating.setFuture(QtConcurrent::run(
+        [this, src_original_path, src_result_path, original_path, result_path]() {
+            if (!QFile::copy(src_original_path, original_path)) {
+                return false;
+            }
+
+            if (!QFile::copy(src_result_path, result_path)) {
+                QFile::remove(original_path);
+                return false;
+            }
+
+            emit generationFinished(original_path, result_path);
+
+            return true;
+        }));
+}
+
 Page::Status Page::status() const
 {
     return d->status;

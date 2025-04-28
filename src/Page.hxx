@@ -83,6 +83,11 @@ public:
     /// The page files reuse (and overwrite) the current files.
     void updateFromScanner(const Scanner* scanner);
 
+    /// Make this page a copy of another page.
+    ///
+    /// The page is copied to directory `dir`.
+    void initCopy(const QDir& dir, const Page* source);
+
     bool write(QJsonObject& json) const;
 
     bool read(const QJsonObject& json);
