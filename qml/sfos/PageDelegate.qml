@@ -26,6 +26,8 @@ DragDelegate {
     id: dragDelegate
 
     property string thumbnail
+    property int pagenumber
+    property date creationTime
     property bool isAddButton: false
 
     canBeDragged: !isAddButton
@@ -58,6 +60,8 @@ DragDelegate {
         id: pageView
         PageView {
             thumbnail: dragDelegate.thumbnail
+            pagenumber: dragDelegate.pagenumber
+            creationTime: dragDelegate.creationTime
         }
     }
 

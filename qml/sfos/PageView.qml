@@ -24,6 +24,7 @@ Item {
 
     property string thumbnail
     property int pagenumber
+    property date creationTime
 
     Rectangle {
         anchors.fill: parent
@@ -52,6 +53,10 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
-        text: "Blaaa"
+        color: Theme.highlightColor
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+
+        text: qsTr("Page %1\n%2").arg(pagenumber).arg(creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
     }
 }

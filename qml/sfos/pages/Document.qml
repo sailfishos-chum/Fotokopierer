@@ -67,8 +67,13 @@ Page {
             id: pageDelegate
             width: grid.cellWidth
             height: grid.cellHeight
-            dragEnabled: docpage.editing || docpage.dragging
+
+
             thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
+            pagenumber: DelegateModel.itemsIndex
+            creationTime: role_creationTime || Date.new()
+
+            dragEnabled: docpage.editing || docpage.dragging
             isAddButton: role_thumbnail == null
             visible: !isAddButton || (!docpage.editing && !docpage.dragging)
 
