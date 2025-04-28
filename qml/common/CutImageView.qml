@@ -58,10 +58,10 @@ Item {
     }
 
     function rotateLeft() {
-        var tl = mapPoint(topleft.center)
-        var tr = mapPoint(topright.center)
-        var br = mapPoint(bottomright.center)
-        var bl = mapPoint(bottomleft.center)
+        var tl = mapPoint(topleft.markerPos)
+        var tr = mapPoint(topright.markerPos)
+        var br = mapPoint(bottomright.markerPos)
+        var bl = mapPoint(bottomleft.markerPos)
 
         // compute and store the points of the rotated selection
         _next_tl = Qt.point(tr.y, 1-tr.x)
@@ -73,10 +73,10 @@ Item {
     }
 
     function rotateRight() {
-        var tl = mapPoint(topleft.center)
-        var tr = mapPoint(topright.center)
-        var br = mapPoint(bottomright.center)
-        var bl = mapPoint(bottomleft.center)
+        var tl = mapPoint(topleft.markerPos)
+        var tr = mapPoint(topright.markerPos)
+        var br = mapPoint(bottomright.markerPos)
+        var bl = mapPoint(bottomleft.markerPos)
 
         // compute and store the points of the rotated selection
         _next_tl = Qt.point(1-bl.y, bl.x)
@@ -120,10 +120,10 @@ Item {
 
     function cutImage() {
         var f = Scanner.cutFilter
-        f.topLeft = mapPoint(topleft.center)
-        f.topRight = mapPoint(topright.center)
-        f.bottomRight = mapPoint(bottomright.center)
-        f.bottomLeft = mapPoint(bottomleft.center)
+        f.topLeft = mapPoint(topleft.markerPos)
+        f.topRight = mapPoint(topright.markerPos)
+        f.bottomRight = mapPoint(bottomright.markerPos)
+        f.bottomLeft = mapPoint(bottomleft.markerPos)
         Scanner.cutFilter.updateCut()
     }
 
@@ -138,10 +138,10 @@ Item {
             ctx.globalCompositeOperation = "copy"
             ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
             ctx.beginPath()
-            ctx.moveTo(topleft.center.x, topleft.center.y)
-            ctx.lineTo(topright.center.x, topright.center.y)
-            ctx.lineTo(bottomright.center.x, bottomright.center.y)
-            ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
+            ctx.moveTo(topleft.markerPos.x, topleft.markerPos.y)
+            ctx.lineTo(topright.markerPos.x, topright.markerPos.y)
+            ctx.lineTo(bottomright.markerPos.x, bottomright.markerPos.y)
+            ctx.lineTo(bottomleft.markerPos.x, bottomleft.markerPos.y)
             ctx.closePath()
             ctx.fill()
             ctx.stroke()
@@ -160,169 +160,141 @@ Item {
     CornerMarker {
         id: topleft
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                pane.dontchange = true;
-                Scanner.cutFilter.topLeft = mapPoint(center)
-                top.setCenter(unmapPoint(Scanner.cutFilter.top))
-                left.setCenter(unmapPoint(Scanner.cutFilter.left))
-                pane.update(center)
-                pane.dontchange = false;
-            }
+        onDragged: {
+            Scanner.cutFilter.topLeft = mapPoint(markerPos)
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+            pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
     }
 
     CornerMarker {
         id: topright
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                pane.dontchange = true;
-                Scanner.cutFilter.topRight = mapPoint(center)
-                top.setCenter(unmapPoint(Scanner.cutFilter.top))
-                right.setCenter(unmapPoint(Scanner.cutFilter.right))
-                pane.update(center)
-                pane.dontchange = false;
-            }
+        onDragged: {
+            Scanner.cutFilter.topRight = mapPoint(markerPos)
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+            pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
     }
 
     CornerMarker {
         id: bottomleft
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                pane.dontchange = true;
-                Scanner.cutFilter.bottomLeft = mapPoint(center)
-                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-                left.setCenter(unmapPoint(Scanner.cutFilter.left))
-                pane.update(center)
-                pane.dontchange = false;
-            }
+        onDragged: {
+            Scanner.cutFilter.bottomLeft = mapPoint(markerPos)
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+            pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
     }
 
     CornerMarker {
         id: bottomright
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                pane.dontchange = true;
-                Scanner.cutFilter.bottomRight = mapPoint(center)
-                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-                right.setCenter(unmapPoint(Scanner.cutFilter.right))
-                pane.update(center)
-                pane.dontchange = false;
-            }
+        onDragged: {
+            Scanner.cutFilter.bottomRight = mapPoint(markerPos)
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+            pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
     }
 
     CornerMarker {
         id: top
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                Scanner.cutFilter.top = mapPoint(center)
-                pane.dontchange = true
-                topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
-                topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
-                pane.dontchange = false
-                pane.update(center)
+        onDragged: {
+            Scanner.cutFilter.top = mapPoint(markerPos)
+            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                top.setCenter(unmapPoint(Scanner.cutFilter.top))
             }
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     CornerMarker {
         id: bottom
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                Scanner.cutFilter.bottom = mapPoint(center)
-                pane.dontchange = true
-                bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
-                bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
-                pane.dontchange = false
-                pane.update(center)
+        onDragged: {
+            Scanner.cutFilter.bottom = mapPoint(markerPos)
+            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
             }
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     CornerMarker {
         id: left
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                Scanner.cutFilter.left = mapPoint(center)
-                pane.dontchange = true
-                topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
-                bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
-                pane.dontchange = false
-                pane.update(center)
+        onDragged: {
+            Scanner.cutFilter.left = mapPoint(markerPos)
+            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                left.setCenter(unmapPoint(Scanner.cutFilter.left))
             }
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     CornerMarker {
         id: right
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: {
-            if (!pane.dontchange) {
-                Scanner.cutFilter.right = mapPoint(center)
-                pane.dontchange = true
-                topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
-                bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
-                pane.dontchange = false
-                pane.update(center)
+        onDragged: {
+            Scanner.cutFilter.right = mapPoint(markerPos)
+            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                right.setCenter(unmapPoint(Scanner.cutFilter.right))
             }
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     ZoomImage {
@@ -348,10 +320,10 @@ Item {
 
     function update(zoompoint) {
         pane.valid = Fotokopierer.isConvex(
-            mapPoint(topleft.center),
-            mapPoint(topright.center),
-            mapPoint(bottomright.center),
-            mapPoint(bottomleft.center))
+            mapPoint(topleft.markerPos),
+            mapPoint(topright.markerPos),
+            mapPoint(bottomright.markerPos),
+            mapPoint(bottomleft.markerPos))
         zoomimg.center = mapPoint(zoompoint)
 
         if (zoompoint.x < image.width / 2) {
