@@ -137,10 +137,10 @@ QVariantList CutFilter::autoDetectCutRect()
 
     auto edges = EdgeList::detect_in_image(img);
 
-    d->topleft = scale(edges.best_topLeft(), img);
-    d->topright = scale(edges.best_topRight(), img);
-    d->bottomright = scale(edges.best_bottomRight(), img);
-    d->bottomleft = scale(edges.best_bottomLeft(), img);
+    d->topleft = scale(edges.topLeft(), img);
+    d->topright = scale(edges.topRight(), img);
+    d->bottomright = scale(edges.bottomRight(), img);
+    d->bottomleft = scale(edges.bottomLeft(), img);
 
     QVariantList lst;
     lst << d->topleft << d->topright << d->bottomright << d->bottomleft;

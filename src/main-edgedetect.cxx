@@ -108,10 +108,10 @@ public:
             p.drawEllipse(pnt, 20, 20);
         }
 
-        p.drawLine(edges.best_topLeft(), edges.best_topRight());
-        p.drawLine(edges.best_topLeft(), edges.best_bottomLeft());
-        p.drawLine(edges.best_bottomRight(), edges.best_topRight());
-        p.drawLine(edges.best_bottomLeft(), edges.best_bottomRight());
+        p.drawLine(edges.topLeft(), edges.topRight());
+        p.drawLine(edges.topLeft(), edges.bottomLeft());
+        p.drawLine(edges.bottomRight(), edges.topRight());
+        p.drawLine(edges.bottomLeft(), edges.bottomRight());
 
         img_gray_ = edges.gray_image();
         img_bw_ = edges.bw_image();

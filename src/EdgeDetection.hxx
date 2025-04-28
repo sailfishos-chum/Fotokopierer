@@ -86,16 +86,16 @@ public:
     std::vector<QPointF> points() const;
 
     /// Return the top left point of the detected rectangle.
-    QPointF best_topLeft() const;
+    QPointF topLeft() const;
 
     /// Return the top right point of the detected rectangle.
-    QPointF best_topRight() const;
+    QPointF topRight() const;
 
     /// Return the bottom left point of the detected rectangle.
-    QPointF best_bottomLeft() const;
+    QPointF bottomLeft() const;
 
     /// Return the bottom right point of the detected rectangle.
-    QPointF best_bottomRight() const;
+    QPointF bottomRight() const;
 
     /// Return a new edge list for the given image.
     static EdgeList detect_in_image(const QImage& image);

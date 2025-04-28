@@ -86,7 +86,8 @@ struct EdgeList::Data {
 
     std::vector<std::vector<std::size_t>> left_lines, right_lines;
     std::vector<std::vector<std::size_t>> top_lines, bottom_lines;
-    std::vector<QPointF> points;
+
+    QPointF topLeft, topRight, bottomLeft, bottomRight;
 
     int width = 0;
     int height = 0;
@@ -94,8 +95,6 @@ struct EdgeList::Data {
     QImage image;
     QImage gray_image;
     QImage bw_image;
-
-    QPoint topLeft, topRight, bottomLeft, bottomRight;
 
     void find_edge_candidates(std::vector<Edge>& all_lines);
     static void filter_by_length(std::vector<Edge>& edges);
@@ -176,27 +175,27 @@ QImage EdgeList::bw_image() const
 
 std::vector<QPointF> EdgeList::points() const
 {
-    return d->points;
+    return {d->topLeft, d->topRight, d->bottomRight, d->bottomLeft};
 }
 
-QPointF EdgeList::best_topLeft() const
+QPointF EdgeList::topLeft() const
 {
-    return d->points.at(0);
+    return d->topLeft;
 }
 
-QPointF EdgeList::best_topRight() const
+QPointF EdgeList::topRight() const
 {
-    return d->points.at(1);
+    return d->topRight;
 }
 
-QPointF EdgeList::best_bottomLeft() const
+QPointF EdgeList::bottomLeft() const
 {
-    return d->points.at(2);
+    return d->bottomLeft;
 }
 
-QPointF EdgeList::best_bottomRight() const
+QPointF EdgeList::bottomRight() const
 {
-    return d->points.at(3);
+    return d->bottomRight;
 }
 
 std::vector<QLineF> EdgeList::vertical_lines() const
@@ -504,11 +503,6 @@ void EdgeList::Data::find_best_match()
             }
         }
     }
-
-    points.push_back(topLeft);
-    points.push_back(topRight);
-    points.push_back(bottomLeft);
-    points.push_back(bottomRight);
 }
 
 qreal EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, double max_area)
