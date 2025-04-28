@@ -57,19 +57,19 @@ public:
 
     QPointF topLeft() const;
 
-    void setTopLeft(const QPointF& topleft);
+    void setTopLeft(QPointF topleft);
 
     QPointF topRight() const;
 
-    void setTopRight(const QPointF& topright);
+    void setTopRight(QPointF topright);
 
     QPointF bottomRight() const;
 
-    void setBottomRight(const QPointF& bottomright);
+    void setBottomRight(QPointF bottomright);
 
     QPointF bottomLeft() const;
 
-    void setBottomLeft(const QPointF& bottomleft);
+    void setBottomLeft(QPointF bottomleft);
 
     /// Return the auto-detected cut box.
     ///

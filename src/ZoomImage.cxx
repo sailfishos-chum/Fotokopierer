@@ -99,11 +99,12 @@ void ZoomImage::setCrossColor(const QColor& color)
 
 void ZoomImage::setImage(Scanner* image)
 {
-    if (image == d->image) return;
-    d->image = image;
-    updateFilter();
-    emit imageChanged();
-    update();
+    if (image != d->image) {
+        d->image = image;
+        updateFilter();
+        emit imageChanged();
+        update();
+    }
 }
 
 Scanner* ZoomImage::image() const

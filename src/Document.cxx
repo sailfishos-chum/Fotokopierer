@@ -503,7 +503,7 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
         return;
     }
 
-    if (QFileInfo(filename).exists() && !overwrite) {
+    if (QFileInfo::exists(filename) && !overwrite) {
         emit errorPdfExists(QFileInfo(filename).fileName());
         return;
     }
