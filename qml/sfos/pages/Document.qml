@@ -88,7 +88,9 @@ Page {
                     docpage.dragging = false
                     docpage.editing = false
                     docpage.deleting = true
-                    remorse.execute(pageDelegate, qsTr("Delete page"), function () { console.log("BAAAAAM")})
+                    remorse.execute(pageDelegate, qsTr("Delete page"), function () {
+                        document.deletePage(pageDelegate.DelegateModel.itemsIndex)
+                    })
                 }
             }
 
