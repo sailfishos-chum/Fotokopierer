@@ -62,8 +62,8 @@ tar -xzf %{SOURCE3}
 
 %build
 # >> build pre
-#rm -rf rpmbuilddir-%{_arch}
-mkdir -p rpmbuilddir-%{_arch}
+rm -rf rpmbuilddir-%{_arch}
+mkdir rpmbuilddir-%{_arch}
 
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/opencv
 pushd rpmbuilddir-%{_arch}/3rdparty/opencv
@@ -80,10 +80,10 @@ cmake %{_sourcedir}/../3rdparty/opencv-3.4.16 \
       -DBUILD_PERF_TESTS=OFF \
       -DBUILD_SHARED_LIBS=OFF \
       -DBUILD_TESTS=OFF \
-      -DBUILD_TIFF=ON \
-      -DBUILD_JPEG=ON \
+      -DBUILD_PROTOBUF=On \
+      -DBUILD_TIFF=OFF \
+      -DBUILD_JPEG=OFF \
       -DBUILD_JPEG_TURBO_DISABLE=ON \
-      -DBUILD_PROTOBUF=ON \
       -DBUILD_opencv_apps=OFF \
       -DBUILD_opencv_calib3d=OFF \
       -DBUILD_opencv_dnn=OFF \
@@ -108,8 +108,8 @@ cmake %{_sourcedir}/../3rdparty/opencv-3.4.16 \
       -DWITH_JASPER=OFF \
       -DWITH_OPENEXR=OFF \
       -DWITH_WEBP=OFF
-make VERBOSE=1
-make VERBOSE=1 install
+make VERBOSE=1 %{?_smp_mflags}
+make VERBOSE=1 libjpeg libtiff %{?_smp_mflags}
 popd
 
 
@@ -120,7 +120,7 @@ cmake %{_sourcedir}/../3rdparty/freetype-2.11.1 \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_SHARED_LIBS:BOOL=false \
       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
-make VERBOSE=1
+make VERBOSE=1 %{?_smp_mflags}
 make VERBOSE=1 install
 popd
 
@@ -128,7 +128,7 @@ popd
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/podofo
 pushd rpmbuilddir-%{_arch}/3rdparty/podofo
 cmake %{_sourcedir}/../3rdparty/podofo-0.9.7 \
-      -DCMAKE_INSTALL_PREFIX:PATH=%{_builddir}/rpmbuilddir-%{_arch}/usr \
+      -DCMAKE_INSTALL_PREFIX:PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr" \
       -DPODOFO_BUILD_LIB_ONLY:BOOL=true \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true \
@@ -137,15 +137,15 @@ cmake %{_sourcedir}/../3rdparty/podofo-0.9.7 \
       -DCMAKE_CXX_FLAGS="-isystem %{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/libtiff" \
       -DLIBJPEG_LIBRARY_NAMES=jpeg
 
-make VERBOSE=1
+make VERBOSE=1 %{?_smp_mflags}
 make VERBOSE=1 install
 popd
 
 
 pushd rpmbuilddir-%{_arch} &&  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-                                     -DCMAKE_PREFIX_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr" \
+                                     -DCMAKE_PREFIX_PATH="%{_builddir}/%{name}-%{version}/rpmbuilddir-%{_arch}/3rdparty/opencv;%{_builddir}/rpmbuilddir-%{_arch}/usr" \
                                      -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libtiff;%{_builddir}/rpmbuilddir-%{_arch}/usr/include" \
-                                     -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib;%{_builddir}/rpmbuilddir-%{_arch}/usr/lib" \
+                                     -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr/lib;%{_builddir}/%{name}-%{version}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib" \
                                      -DCMAKE_INSTALL_PREFIX=/usr %{_builddir}
 popd
 make -C rpmbuilddir-%{_arch} VERBOSE=1 %{?_smp_mflags}
