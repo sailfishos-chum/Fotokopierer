@@ -506,10 +506,6 @@ void EdgeDetection::Data::doAutoDetect()
     find_best_match();
 
     find_snappy_edges();
-
-    project_quadrangle();
-
-    autoquad = quad;
 }
 
 void EdgeDetection::selectAll()
@@ -677,10 +673,10 @@ void EdgeDetection::Data::find_best_match()
 
     // By default we simply select everything. This is a fallback in case we can't
     // detect proper points.
-    quad.tl = {0, 0};
-    quad.tr = {static_cast<qreal>(image.width()), 0};
-    quad.br = {static_cast<qreal>(image.width()), static_cast<qreal>(image.height())};
-    quad.bl = {0, static_cast<qreal>(image.height())};
+    autoquad.tl = {0, 0};
+    autoquad.tr = {static_cast<qreal>(image.width()), 0};
+    autoquad.br = {static_cast<qreal>(image.width()), static_cast<qreal>(image.height())};
+    autoquad.bl = {0, static_cast<qreal>(image.height())};
 
     qreal max_area = 0;
     for (auto i : indices(hlines)) {
@@ -694,7 +690,7 @@ void EdgeDetection::Data::find_best_match()
                         auto [area, q] = compute_area(l, r, i, bottom_lines[l][a]);
                         if (area > max_area) {
                             max_area = area;
-                            quad = q;
+                            autoquad = q;
                         }
                         ++a;
                         ++b;
@@ -707,6 +703,12 @@ void EdgeDetection::Data::find_best_match()
             }
         }
     }
+
+    // finally project auto rect onto image boundaries
+    autoquad.tl = project(autoquad.tl);
+    autoquad.tr = project(autoquad.tr);
+    autoquad.br = project(autoquad.br);
+    autoquad.bl = project(autoquad.bl);
 }
 
 void EdgeDetection::Data::find_snappy_edges()
