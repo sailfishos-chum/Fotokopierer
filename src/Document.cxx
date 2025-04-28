@@ -266,7 +266,7 @@ void Document::addPage(QImage original, QImage result)
     emit pagesChanged();
 }
 
-void Document::addScannedPage(const ScanImage *image)
+void Document::addScannedPage(ScanImage *image)
 {
     if (d->status != Ready) {
         emit error(tr("Cannot add page, document is not ready"));

@@ -82,7 +82,7 @@ public:
     ///
     /// The new page will be created with the given original and result image
     /// and the current time. It will be the last page of the current document.
-    Q_INVOKABLE void addScannedPage(const ScanImage *image);
+    Q_INVOKABLE void addScannedPage(ScanImage *image);
 
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
