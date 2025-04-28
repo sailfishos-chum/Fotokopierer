@@ -94,7 +94,9 @@ Page {
 
     Component {
         id: cutpage
-        CutPage {}
+        CutPage {
+            autoDetectOnInit: true
+        }
     }
 
     Component {

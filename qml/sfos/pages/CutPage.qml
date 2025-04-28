@@ -24,11 +24,17 @@ import "../../common"
 Page {
     id: page
 
+    property bool autoDetectOnInit: false
+
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            cutview.initSelection()
+            if (autoDetectOnInit) {
+                cutview.selectAuto()
+            } else {
+                cutview.initSelection()
+            }
         }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
