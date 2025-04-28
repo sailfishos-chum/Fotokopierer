@@ -15,39 +15,43 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-import QtQuick 2.2
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Fotokopierer 1.0
-import "pages"
 
-ApplicationWindow
-{
-    initialPage: Component { Document { } }
+Item {
+    id: item
 
-    PlainImage {
-        id: image
-        visible: false
+    property var page
+    property int pagenumber
+
+    Rectangle {
+        anchors.fill: parent
+        color: "transparent"
+        border.color: Theme.highlightColor
     }
 
-    CutPage {
-        id: cutpage
-        source: image
+    Rectangle {
+        color: Theme.secondaryHighlightColor
 
-        Component.onCompleted: {
-            if (Qt.application.arguments.length > 1) {
-                console.log("FILE: " + Qt.application.arguments[1])
-                image.loadFile(Qt.application.arguments[1])
-            }
-        }
+        anchors.top: parent.top
+        anchors.bottom: info.top
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-        onStatusChanged: {
-            if (status == PageStatus.Active) {
-                pageContainer.pushAttached(Qt.resolvedUrl("pages/ColorizePage.qml"), {source: cutpage.image})
-            }
+        Thumbnail {
+            id: thumbnail
+            page: item.page
+            anchors.fill: parent
         }
     }
 
-    Component.onCompleted: {
-        pageStack.pushAttached(cutpage)
+    Text {
+        id: info
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
+        text: "Blaaa"
     }
 }

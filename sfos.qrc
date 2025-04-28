@@ -1,8 +1,10 @@
 <RCC>
   <qresource>
 	 <file>qml/sfos/main.qml</file>
+	 <file>qml/sfos/PageView.qml</file>
 	 <file>qml/sfos/pages/CutPage.qml</file>
 	 <file>qml/sfos/pages/ColorizePage.qml</file>
+	 <file>qml/sfos/pages/Document.qml</file>
 	 <file>qml/sfos/pages/Documents.qml</file>
   </qresource>
 </RCC>

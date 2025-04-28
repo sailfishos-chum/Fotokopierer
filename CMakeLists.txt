@@ -29,8 +29,11 @@ set(SOURCES
   src/ColorizeImage.cxx
   src/Convert.cxx
   src/CutImage.cxx
+  src/Document.cxx
+  src/Page.cxx
   src/PlainImage.cxx
   src/RotImage.cxx
+  src/Thumbnail.cxx
   src/TransformWorker.cxx
   src/Util.cxx
   src/ZoomImage.cxx

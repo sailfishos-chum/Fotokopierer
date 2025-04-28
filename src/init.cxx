@@ -26,8 +26,11 @@
 #include "CutImage.hxx"
 #include "PlainImage.hxx"
 #include "RotImage.hxx"
+#include "Thumbnail.hxx"
 #include "ZoomImage.hxx"
 
+#include "Document.hxx"
+#include "Page.hxx"
 #include "Util.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
@@ -36,11 +39,22 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         "Fotokopierer", 1, 0, "Util", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new Util();
         });
+
+    qmlRegisterSingletonType<Document>(
+        "Fotokopierer", 1, 0, "TestDocument", [](QQmlEngine*, QJSEngine*) -> QObject* {
+            auto doc = new Document;
+            doc->save();
+            return doc;
+        });
+
     qmlRegisterType<ColorizeImage>("Fotokopierer", 1, 0, "ColorizeImage");
     qmlRegisterType<CutImage>("Fotokopierer", 1, 0, "CutImage");
     qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
     qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
+    qmlRegisterUncreatableType<Page>(
+        "Fotokopierer", 1, 0, "ScannedPage", QObject::tr("ScannedPage objects cannot be created"));
+    qmlRegisterType<Thumbnail>("Fotokopierer", 1, 0, "Thumbnail");
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
