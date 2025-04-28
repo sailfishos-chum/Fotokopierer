@@ -17,6 +17,7 @@
 
 #include "ColorizeView.hxx"
 
+#include "Convert.hxx"
 #include "ScanImage.hxx"
 #include "Scanner.hxx"
 
@@ -25,6 +26,8 @@
 #include <QtCore/QFutureWatcher>
 #include <QtGui/QImage>
 
+#include <opencv2/imgproc.hpp>
+
 struct ColorizeView::Data {
     qreal contrast = 0.5;
     qreal brightness = 0.5;
@@ -32,9 +35,9 @@ struct ColorizeView::Data {
     ColorMode colorMode = ColorMode::FullColor;
 
     std::shared_ptr<ScanImage> scanImage = nullptr;
-    QImage scaled;
+    cv::Mat scaled;
 
-    QFutureWatcher<QImage> image = QFutureWatcher<QImage>();
+    QFutureWatcher<cv::Mat> image = QFutureWatcher<cv::Mat>();
     bool hasImage = false;
     bool need_restart = false;
 
@@ -111,7 +114,7 @@ void ColorizeView::setColorMode(ColorMode colormode)
 
 void ColorizeView::updateView()
 {
-    if (!d->scaled.isNull()) {
+    if (!d->scaled.empty()) {
         d->hasImage = false;
         if (d->image.isRunning()) {
             d->need_restart = true;
@@ -163,7 +166,7 @@ void ColorizeView::onImageUpdated()
 QImage ColorizeView::image() const
 {
     if (d->image.isFinished() && d->hasImage) {
-        return d->image.result();
+        return cvMatToQImage(d->image.result()).copy();
     } else {
         return {};
     };
@@ -173,10 +176,9 @@ void ColorizeView::onCutImageChanged()
 {
     auto image = d->scanImage->cutImage();
 
-    if (image.width() > image.height()) {
-        d->scaled = image.scaledToWidth(qMin(image.width(), 1000));
-    } else {
-        d->scaled = image.scaledToHeight(qMin(image.height(), 1000));
+    if (!image.empty()) {
+        auto factor = 1000.0 / std::max(image.cols, image.rows);
+        cv::resize(image, d->scaled, cv::Size(), factor, factor);
     }
 
     updateView();

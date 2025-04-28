@@ -359,7 +359,8 @@ void CutView::selectAuto()
 
 void CutView::paint(QPainter* painter)
 {
-    QImage image = d->scanImage->original();
+    auto cv_image = d->scanImage->original();
+    auto image = cvMatToQImage(cv_image);
 
     auto orien = orientation();
     auto imgw = image.width();
@@ -427,7 +428,7 @@ void CutView::onNewImage()
             d->orientationChangedConnection = connect(d->scanImage.get(), &ScanImage::orientationChanged, this, &CutView::onOrientationChanged);
 
             // ... and its edge-detection data structure
-            d->edges = std::make_unique<EdgeDetection>(QImageToCvMat(d->scanImage->original()));
+            d->edges = std::make_unique<EdgeDetection>(d->scanImage->original());
             connect(d->edges.get(), &EdgeDetection::hasAutoDetectionChanged, this, &CutView::hasAutoSelectionChanged);
             connect(d->edges.get(), &EdgeDetection::isAutoDetectionRunningChanged, this, &CutView::isAutoDetectionRunningChanged);
 
@@ -460,7 +461,7 @@ void CutView::onNewImage()
 
 QImage CutView::image() const
 {
-    return d->scanImage->original();
+    return cvMatToQImage(d->scanImage->original()).copy();
 }
 
 void CutView::onOrientationChanged()

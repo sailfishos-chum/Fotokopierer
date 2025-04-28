@@ -17,6 +17,7 @@
 
 #include "Page.hxx"
 
+#include "Convert.hxx"
 #include "Fotokopierer.hxx"
 #include "ScanImage.hxx"
 
@@ -153,15 +154,15 @@ void Page::updateImage(const std::shared_ptr<ScanImage>& scanImage,
     d->settings = scanImage->saveJson();
 
     d->generating.setFuture(QtConcurrent::run([this, scanImage, original_path, result_path]() {
-        QImage original = scanImage->original();
-        QImage result = scanImage->colorizedImage(true);
+        auto original = scanImage->original();
+        auto result = scanImage->colorizedImage(true);
 
-        if (!original.save(original_path)) {
+        if (!cvMatToQImage(original).save(original_path)) {
             qWarning() << "Page could not be created: error saving original image";
             throw GeneratingError(tr("Page could not be created: error saving original image"));
         };
 
-        if (!result.save(result_path)) {
+        if (!cvMatToQImage(result).save(result_path)) {
             qWarning() << "Page could not be created: error saving result image";
             throw GeneratingError(tr("Page could not be created: error saving result image"));
         };

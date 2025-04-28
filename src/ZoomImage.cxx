@@ -17,6 +17,7 @@
 
 #include "ZoomImage.hxx"
 
+#include "Convert.hxx"
 #include "ScanImage.hxx"
 
 #include <QtGui/QImage>
@@ -123,14 +124,14 @@ void ZoomImage::paint(QPainter* p)
     if (scanImage == nullptr) return;
 
     auto image = scanImage->rotatedImage();
-    if (image.isNull()) return;
+    if (image.empty()) return;
 
     auto w = width();
     auto h = height();
 
     // get the source image
-    auto iw = image.width();
-    auto ih = image.height();
+    auto iw = image.cols;
+    auto ih = image.rows;
 
     // prepare the clipping path (a circle) so that the picture is only shown
     // within the preview area.
@@ -145,7 +146,7 @@ void ZoomImage::paint(QPainter* p)
     p->fillRect(0, 0, w, h, Qt::black);
 
     p->drawImage(QRectF{0, 0, w, h},
-                 image,
+                 cvMatToQImage(image),
                  QRectF(iw * (d->center.x() - d->viewSize.x() / 2),
                         ih * (d->center.y() - d->viewSize.y() / 2),
                         iw * d->viewSize.x(),

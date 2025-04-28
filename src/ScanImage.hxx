@@ -21,6 +21,7 @@
 #include <QtCore/QObject>
 
 #include <memory>
+#include <opencv2/core.hpp>
 
 #include "ColorizeView.hxx"
 
@@ -63,7 +64,7 @@ public:
     ~ScanImage() override;
 
     /// Return the original image.
-    QImage original() const;
+    cv::Mat original() const;
 
     /// Return the rotated image.
     ///
@@ -72,7 +73,7 @@ public:
     ///
     /// If `wait` is `true` the function will not return before the
     /// image is ready.
-    QImage rotatedImage(bool wait = false) const;
+    cv::Mat rotatedImage(bool wait = false) const;
 
     /// Return the cut image.
     ///
@@ -81,7 +82,7 @@ public:
     ///
     /// If `wait` is `true` the function will not return before the
     /// image is ready.
-    QImage cutImage(bool wait = false) const;
+    cv::Mat cutImage(bool wait = false) const;
 
     /// Return the colorized image.
     ///
@@ -90,7 +91,7 @@ public:
     ///
     /// If `wait` is `true` the function will not return before the
     /// image is ready.
-    QImage colorizedImage(bool wait = false) const;
+    cv::Mat colorizedImage(bool wait = false) const;
 
     /// Return the orientation/rotation of the image.
     int orientation() const;
@@ -185,6 +186,6 @@ private:
     std::unique_ptr<Data> d;
 };
 
-QImage computeColorizedImage(const QImage& image, qreal contrast_, qreal brightness_, qreal details_, ScanImage::ColorMode colorMode);
+cv::Mat computeColorizedImage(const cv::Mat& image, qreal contrast_, qreal brightness_, qreal details_, ScanImage::ColorMode colorMode);
 
 #endif
