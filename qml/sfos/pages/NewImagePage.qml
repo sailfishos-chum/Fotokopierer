@@ -115,7 +115,6 @@ Page {
         }
 
         imageCapture {
-            resolution: Qt.size(4000, 3000)
             onImageCaptured: {
                 //photoPreview.source = preview
                 console.log("image captured: " + preview)
@@ -151,6 +150,16 @@ Page {
         }
 
         metaData.orientation: orientation
+
+        onCameraStatusChanged: {
+            if (cameraStatus == Camera.ActiveStatus) {
+                var res = Fotokopierer.defaultResolution(imageCapture)
+                if (res.width > 0) {
+                    imageCapture.resolution = res
+                    console.log("set resolution: " + res)
+                }
+            }
+        }
     }
 
     Item {
