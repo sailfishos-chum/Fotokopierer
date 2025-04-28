@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.4.6)
+set(FOTOKOPIERER_VERSION 0.4.7)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 

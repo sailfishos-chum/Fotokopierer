@@ -8,6 +8,12 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat May 20 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.7-1
+- fix linking podofo against libjpeg in rpm build
+- add package icon for chum
+- update FreeType to 2.13.0
+- update PoDoFo to 0.9.8
+
 * Sun May 1 2022 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.6-1
 - move build of 3rd-party packages from CMakeLists.txt to rpm (for obs)
 
