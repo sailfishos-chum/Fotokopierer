@@ -17,7 +17,7 @@
 
 #include "Page.hxx"
 
-#include "Document.hxx"
+#include "Fotokopierer.hxx"
 #include "ScanImage.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
@@ -89,9 +89,8 @@ Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent) : Page(
     auto ctime = QDateTime::currentDateTime();
 
     auto original_path =
-        dir.filePath(ctime.toString(Document::FilenameFormat) + QStringLiteral("-original.jpg"));
-    auto result_path =
-        dir.filePath(ctime.toString(Document::FilenameFormat) + QStringLiteral("-result.png"));
+        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
+    auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
 
     d->creation_time = ctime;
     d->original_path = original_path;
@@ -227,7 +226,7 @@ QString Page::updateThumbnail(const QString& filename) const
 
 bool Page::write(QJsonObject& json) const
 {
-    json[QStringLiteral("creationTime")] = d->creation_time.toString(Document::FilenameFormat);
+    json[QStringLiteral("creationTime")] = d->creation_time.toString(FilenameFormat);
     json[QStringLiteral("originalPath")] = d->original_path;
     json[QStringLiteral("resultPath")] = d->result_path;
     if (!d->thumbnail_path.isEmpty()) {
@@ -241,8 +240,7 @@ bool Page::read(const QJsonObject& json)
 {
     auto page_creation_time = json[QStringLiteral("creationTime")];
     if (!page_creation_time.isString()) return false;
-    auto page_ctime =
-        QDateTime::fromString(page_creation_time.toString(), Document::FilenameFormat);
+    auto page_ctime = QDateTime::fromString(page_creation_time.toString(), FilenameFormat);
     if (page_ctime.isNull()) return false;
 
     auto page_original_path = json[QStringLiteral("originalPath")];

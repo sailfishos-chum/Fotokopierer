@@ -49,8 +49,6 @@ public:
     };
     Q_ENUM(Status)
 
-    static const QString FilenameFormat;
-
     struct DocData;
 
 public:

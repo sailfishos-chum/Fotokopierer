@@ -17,6 +17,7 @@
 
 #include "Document.hxx"
 
+#include "Fotokopierer.hxx"
 #include "Page.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
@@ -38,8 +39,6 @@
 #include <QtCore/QVector>
 
 #include <memory>
-
-const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 namespace
 {
@@ -424,7 +423,7 @@ Document::DocData Document::DocData::fromFile(const QString &filename)
     if (!creation_time.isString()) {
         throw ReadError(tr("Could not read creation time from document file %1").arg(filename));
     }
-    auto ctime = QDateTime::fromString(creation_time.toString(), Document::FilenameFormat);
+    auto ctime = QDateTime::fromString(creation_time.toString(), FilenameFormat);
 
     auto pages = json[QStringLiteral("pages")];
     if (!pages.isArray()) {
