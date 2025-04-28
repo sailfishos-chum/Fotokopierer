@@ -359,6 +359,25 @@ void Document::cutSelectedPages()
     Clipboard::instance()->cut(this, pages);
 }
 
+void Document::deleteSelectedPages()
+{
+    int ndeleted = 0;
+    for (int i = 0; i < d->doc.pages.size(); i++) {
+        if (d->doc.pages[i].selected) {
+            beginRemoveRows({}, i - ndeleted, i - ndeleted);
+            d->doc.pages[i]->remove();
+            endRemoveRows();
+            ndeleted += 1;
+        } else if (ndeleted > 0) {
+            d->doc.pages[i - ndeleted] = d->doc.pages[i];
+        }
+    }
+    d->doc.pages.resize(d->doc.pages.size() - ndeleted);
+
+    emit pagesChanged();
+    save();
+}
+
 void Document::pastePages()
 {
     Clipboard::instance()->paste(this);

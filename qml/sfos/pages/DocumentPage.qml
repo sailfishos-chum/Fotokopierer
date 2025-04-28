@@ -324,7 +324,12 @@ Page {
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
                 enabled: document.hasSelectedPages
-                onClicked: console.log("Delete")
+                onClicked: {
+                    document.deleteSelectedPages()
+                    document.clearSelection()
+                    buttons.open = false
+                    docpage._nmarked = 0
+                }
 
             }
             IconButton {

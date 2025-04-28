@@ -153,6 +153,9 @@ public slots:
     /// Cut the currently selected pages to the clipboard.
     void cutSelectedPages();
 
+    /// Delete the currently selected pages.
+    void deleteSelectedPages();
+
     /// Paste pages from the clipboard.
     void pastePages();
 
