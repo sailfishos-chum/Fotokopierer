@@ -21,17 +21,23 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
+    property string title
     property string image
 
 
     Flickable {
         id: flick
+
         anchors.fill: parent
         contentWidth: imageView.width;
         contentHeight: imageView.height
         clip: true
 
         onHeightChanged: if (imageView.status === Image.Ready) imageView.fitToScreen();
+
+        PageHeader {
+            title: page.title
+        }
 
         Item {
             id: imageView
