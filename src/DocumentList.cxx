@@ -21,6 +21,7 @@
 #include "Page.hxx"
 
 #include <QtCore/QDateTime>
+#include <QtCore/QDir>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
@@ -31,10 +32,20 @@ struct DocumentList::Data {
 
 DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new Data)
 {
-    auto doc = QSharedPointer<Document>(new Document());
-    doc->load(QStandardPaths::locate(QStandardPaths::HomeLocation,
-                                     QStringLiteral("fotokopierer/doc1/doc.json")));
-    addDocument(doc);
+    auto dir = QStandardPaths::locate(QStandardPaths::HomeLocation,
+                                      QStringLiteral("fotokopierer"),
+                                      QStandardPaths::LocateDirectory);
+
+    for (auto path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
+        QDir docdir = dir;
+        docdir.cd(path);
+        if (docdir.exists(QStringLiteral("doc.json"))) {
+            auto doc = QSharedPointer<Document>(new Document());
+            if (doc->load(docdir.filePath(QStringLiteral("doc.json")))) {
+                addDocument(doc);
+            }
+        }
+    }
 }
 
 DocumentList::~DocumentList() = default;
