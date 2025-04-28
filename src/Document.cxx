@@ -179,25 +179,25 @@ QVariant Document::data(const QModelIndex &index, int role) const
     switch (role) {
         case ThumbnailRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return QUrl::fromLocalFile(d->doc.pages[index.row()]->thumbnail());
+                return QUrl::fromLocalFile(d->doc.pages.at(index.row())->thumbnail());
             }
             break;
         }
         case CreationTimeRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return d->doc.pages[index.row()]->creationTime();
+                return d->doc.pages.at(index.row())->creationTime();
             }
             break;
         }
         case ResultRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return QUrl::fromLocalFile(d->doc.pages[index.row()]->result());
+                return QUrl::fromLocalFile(d->doc.pages.at(index.row())->result());
             }
             break;
         }
         case PageRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return QVariant::fromValue(d->doc.pages[index.row()].data());
+                return QVariant::fromValue(d->doc.pages.at(index.row()).data());
             }
             break;
         }
@@ -218,7 +218,7 @@ QHash<int, QByteArray> Document::roleNames() const
 void Document::move(int from, int to)
 {
     if (beginMoveRows({}, from, from, {}, to > from ? to + 1 : to)) {
-        auto p = d->doc.pages[from];
+        auto p = d->doc.pages.at(from);
         d->doc.pages.removeAt(from);
         d->doc.pages.insert(to, p);
         endMoveRows();
