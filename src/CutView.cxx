@@ -359,6 +359,8 @@ void CutView::selectAuto()
 
 void CutView::paint(QPainter* painter)
 {
+    if (d->scanImage == nullptr) return;
+
     auto cv_image = d->scanImage->original();
     auto image = cvMatToQImage(cv_image);
 
@@ -461,7 +463,7 @@ void CutView::onNewImage()
 
 QImage CutView::image() const
 {
-    return cvMatToQImage(d->scanImage->original()).copy();
+    return d->scanImage != nullptr ? cvMatToQImage(d->scanImage->original()).copy() : QImage();
 }
 
 void CutView::onOrientationChanged()
