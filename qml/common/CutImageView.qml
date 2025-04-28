@@ -67,7 +67,7 @@ Item {
     }
 
     function selectAuto() {
-        var points = cutimage.autoDetectCutRect()
+        var points = scanImage.cutFilter.autoDetectCutRect()
         var offx = (pane.width - image.paintedWidth) / 2 - markerRadius
         var offy = (pane.height - image.paintedHeight) / 2 - markerRadius
         var w = image.paintedWidth
@@ -83,7 +83,7 @@ Item {
     }
 
     function cutImage() {
-        cutimage.setCutBox(
+        scanImage.cutFilter.setCutBox(
             mapPoint(topleft.center),
             mapPoint(topright.center),
             mapPoint(bottomright.center),
