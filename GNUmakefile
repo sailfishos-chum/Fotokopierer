@@ -5,14 +5,13 @@ sfdk := $(sdk_dir)/bin/sfdk
 
 arch := i486
 #arch := armv7hl
-arch := i486
 #arch := aarch64
 
 # Select the latest available target for the given architecture
-target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+target := $(shell $(sfdk) tools list | sed -n '/$(arch)/p' |  sed -n 's/^.*\(SailfishOS[[:alnum:].-]*\).*$$/\1/p' | tail -n1)
 
 # Select the emulator device '#0'
-emulator := $(shell $(sfdk) emulator list | awk -F'"' '/\#0/ { print $$2 }')
+emulator := $(shell $(sfdk) emulator list | cut -f1 -d' ')
 
 device := jolla
 
@@ -33,7 +32,7 @@ else
 endif
 endif
 
-TRANSLATIONS = de sv sk
+TRANSLATIONS = bg de fr sk sv
 
 .PHONY: all
 all: compile
