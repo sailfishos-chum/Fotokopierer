@@ -74,3 +74,7 @@ translations.qrc: $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm)
 	@printf "    <file>%s</file>\n" $(TRANSLATIONS:%="translations/harbour-fotokopierer-%.qm") >> $@
 	@echo "  </qresource>" >> $@
 	@echo "</RCC>" >> $@
+
+snapshot_version := $(shell fossil info | awk '/^checkout:/ {print "1%{?dist}.fossil+" substr($$2, 1, 8)}')
+snapshot:
+	sed -ie 's/^Release: 1%{?dist}.*$$/Release: ${snapshot_version}/' rpm/harbour-fotokopierer.yaml

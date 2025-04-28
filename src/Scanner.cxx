@@ -76,10 +76,11 @@ QImage Scanner::computeFilteredImage() const
 
 Filter* Scanner::filter(FilterType type)
 {
-    if (type == FilterType::None)
+    if (type == FilterType::None) {
         return nullptr;
-    else
+    } else {
         return d->filter.at(static_cast<int>(type));
+    }
 }
 
 RotateFilter* Scanner::rotateFilter() const
@@ -169,7 +170,7 @@ bool Scanner::loadFile(const QString& file_name, const QJsonObject& settings)
         }
 
         if (settings.isEmpty()) {
-            for (auto f : d->filter) {
+            for (auto& f : d->filter) {
                 f->reset();
             }
         } else {
@@ -202,7 +203,7 @@ QJsonObject Scanner::saveJson() const
 {
     QJsonObject settings;
 
-    for (auto f : d->filter) {
+    for (auto& f : d->filter) {
         settings[f->name()] = f->saveJson();
     }
 
@@ -211,7 +212,7 @@ QJsonObject Scanner::saveJson() const
 
 void Scanner::loadJson(const QJsonObject& settings)
 {
-    for (auto f : d->filter) {
+    for (auto& f : d->filter) {
         f->loadJson(settings[f->name()].toObject());
     }
 }

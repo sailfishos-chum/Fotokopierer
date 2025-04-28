@@ -101,8 +101,7 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
         default: break;
     }
     auto result_path = dir.filePath(QStringLiteral("%1-result.%2")
-                                        .arg(ctime.toString(FilenameFormat))
-                                        .arg(ext));
+                                        .arg(ctime.toString(FilenameFormat), ext));
 
     updateFromScanner(scanner, original_path, result_path, ctime);
 }
@@ -350,7 +349,7 @@ bool Page::read(const QJsonObject& json)
     }
 
     // Verify that the result file exist.
-    if (!QFileInfo(page_result_path.toString()).exists()) {
+    if (!QFileInfo::exists(page_result_path.toString())) {
         return false;
     }
 

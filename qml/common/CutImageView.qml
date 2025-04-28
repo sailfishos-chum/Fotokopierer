@@ -221,7 +221,7 @@ Item {
             mapPoint(bottomleft.center))
         zoomimg.center = mapPoint(zoompoint)
 
-        if (x < image.width / 2) {
+        if (zoompoint.x < image.width / 2) {
             zoomimg.anchors.left = undefined
             zoomimg.anchors.right = pane.right
         } else {
@@ -229,7 +229,7 @@ Item {
             zoomimg.anchors.left = pane.left
         }
 
-        if (y < image.height / 2) {
+        if (zoompoint.y < image.height / 2) {
             zoomimg.anchors.top = undefined
             zoomimg.anchors.bottom = pane.bottom
         } else {

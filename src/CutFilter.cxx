@@ -69,7 +69,7 @@ bool CutFilter::updateCut()
     return true;
 }
 
-void CutFilter::setTopLeft(const QPointF& topleft)
+void CutFilter::setTopLeft(QPointF topleft)
 {
     if (d->topleft != topleft) {
         d->topleft = topleft;
@@ -82,7 +82,7 @@ QPointF CutFilter::topLeft() const
     return d->topleft;
 }
 
-void CutFilter::setTopRight(const QPointF& topright)
+void CutFilter::setTopRight(QPointF topright)
 {
     if (d->topright != topright) {
         d->topright = topright;
@@ -95,7 +95,7 @@ QPointF CutFilter::topRight() const
     return d->topright;
 }
 
-void CutFilter::setBottomLeft(const QPointF& bottomleft)
+void CutFilter::setBottomLeft(QPointF bottomleft)
 {
     if (d->bottomleft != bottomleft) {
         d->bottomleft = bottomleft;
@@ -108,7 +108,7 @@ QPointF CutFilter::bottomLeft() const
     return d->bottomleft;
 }
 
-void CutFilter::setBottomRight(const QPointF& bottomright)
+void CutFilter::setBottomRight(QPointF bottomright)
 {
     if (d->bottomright != bottomright) {
         d->bottomright = bottomright;
@@ -223,7 +223,7 @@ QString CutFilter::name() const
     return QStringLiteral("cut");
 }
 
-static QJsonValue fromPoint(const QPointF& p)
+static QJsonValue fromPoint(QPointF p)
 {
     return QJsonObject{{QStringLiteral("x"), p.x()}, {QStringLiteral("y"), p.y()}};
 }
