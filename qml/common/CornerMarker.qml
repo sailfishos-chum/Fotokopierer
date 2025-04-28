@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,6 +26,11 @@ Item {
     property color color: "white"
     property real fillOpacity: 0.5
     property real linewidth: 1
+
+    property real minX: 0
+    property real maxX: width
+    property real minY: 0
+    property real maxY: height
 
     /// The position of the marker
     property point markerPos: Qt.point(dragArea.x + root.radius, dragArea.y + root.radius)
@@ -64,10 +69,10 @@ Item {
             anchors.fill: parent
             drag.target: parent
 
-            drag.minimumX: root.radius
-            drag.maximumX: root.width - root.radius
-            drag.minimumY: root.radius
-            drag.maximumY: root.height - root.radius
+            drag.minimumX: root.minX - root.radius
+            drag.maximumX: root.maxX - root.radius
+            drag.minimumY: root.minY - root.radius
+            drag.maximumY: root.maxY - root.radius
 
             onPressed: root.dragActive = true
             onReleased: root.dragActive = false

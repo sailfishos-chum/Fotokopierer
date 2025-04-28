@@ -161,6 +161,10 @@ Item {
         id: topleft
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.topLeft = mapPoint(markerPos)
             top.setCenter(unmapPoint(Scanner.cutFilter.top))
@@ -180,6 +184,10 @@ Item {
         id: topright
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.topRight = mapPoint(markerPos)
             top.setCenter(unmapPoint(Scanner.cutFilter.top))
@@ -199,6 +207,10 @@ Item {
         id: bottomleft
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.bottomLeft = mapPoint(markerPos)
             bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
@@ -218,6 +230,10 @@ Item {
         id: bottomright
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.bottomRight = mapPoint(markerPos)
             bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
@@ -237,6 +253,10 @@ Item {
         id: top
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.top = mapPoint(markerPos)
             topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
@@ -260,6 +280,10 @@ Item {
         id: bottom
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.bottom = mapPoint(markerPos)
             bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
@@ -283,6 +307,10 @@ Item {
         id: left
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.left = mapPoint(markerPos)
             topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
@@ -306,6 +334,10 @@ Item {
         id: right
         color: pane.markerColor
         radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.right = mapPoint(markerPos)
             topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
