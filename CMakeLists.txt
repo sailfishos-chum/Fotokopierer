@@ -27,12 +27,17 @@ else()
   set(TARGET fotokopierer)
 endif()
 
+# My own libs
+add_subdirectory(src/fifr/util)
+link_libraries(Fifr::Util)
+
 set(SOURCES
   src/ColorizeFilter.cxx
   src/Convert.cxx
   src/CutFilter.cxx
   src/Document.cxx
   src/DocumentList.cxx
+  src/EdgeDetection.cxx
   src/Filter.cxx
   src/FilterImage.cxx
   src/Fotokopierer.cxx
@@ -205,9 +210,16 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
 qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
+add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
+
+qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
+target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
+
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+
 # install(DIRECTORY qml DESTINATION share/${TARGET})
 # install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
+
 install(FILES ${TARGET}.desktop DESTINATION share/applications)
 install(FILES icons/86x86/${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
 install(FILES icons/108x108/${TARGET}.png DESTINATION share/icons/hicolor/108x108/apps)

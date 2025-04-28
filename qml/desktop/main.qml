@@ -40,6 +40,7 @@ ApplicationWindow {
     FilterImage {
         anchors.fill: parent
         image: Scanner
+        filterType: Scanner.Cut
     }
 
     Item {
