@@ -136,9 +136,9 @@ QImage ScannedImageProvider::requestImage(const QString& id,
             }
         }
 
-        auto contrast = toks.size() >= 4 ? toks[3].toFloat() : 0.5;
-        auto brightness = toks.size() >= 5 ? toks[4].toFloat() : 0.5;
-        auto details = toks.size() >= 6 ? toks[5].toFloat() : 0.5;
+        auto contrast = toks.size() >= 4 ? toks[3].toFloat() / 100 : 0.5;
+        auto brightness = toks.size() >= 5 ? toks[4].toFloat() / 100 : 0.5;
+        auto details = toks.size() >= 6 ? toks[5].toFloat() / 100 : 0.5;
 
         setColorMode(toks[0], colormode);
         setContrast(toks[0], contrast);

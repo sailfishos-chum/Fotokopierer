@@ -82,7 +82,10 @@ ApplicationWindow {
 					 }
 					 Slider {
 						  id: contrast
-						  value: 0.5
+						  minimumValue: 0
+						  maximumValue: 100
+						  stepSize: 1
+						  value: 50
 					 }
 				}
 
@@ -97,7 +100,10 @@ ApplicationWindow {
 					 }
 					 Slider {
 						  id: brightness
-						  value: 0.5
+						  minimumValue: 0
+						  maximumValue: 100
+						  stepSize: 1
+						  value: 50
 					 }
 				}
 
@@ -112,7 +118,10 @@ ApplicationWindow {
 					 }
 					 Slider {
 						  id: details
-						  value: 0.5
+						  minimumValue: 0
+						  maximumValue: 100
+						  stepSize: 1
+						  value: 50
 					 }
 				}
 
