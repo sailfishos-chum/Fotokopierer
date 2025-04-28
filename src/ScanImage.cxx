@@ -101,7 +101,8 @@ QJsonObject ScanImage::saveJson() const
     settings[QStringLiteral("colorize")] = QJsonObject{
         {QStringLiteral("contrast"), d->params.contrast},
         {QStringLiteral("brightness"), d->params.brightness},
-        {QStringLiteral("details"), d->params.threshold_c},
+        {QStringLiteral("threshold"), d->params.threshold_c},
+        {QStringLiteral("blocksize"), d->params.blocksize},
         {QStringLiteral("mode"), d->colorMode},
     };
 
