@@ -34,8 +34,8 @@ struct ColorizeChooser::Data {
     cv::Mat hist = {};
     int maxRadius = 0;  // the maximal radius in the histogram of a pixel to be drawn
 
-    std::vector<qreal> angles = {30, 90, 150, 210, 270, 330};
-    std::vector<qreal> anglesSorted = {};
+    std::array<qreal, 6> angles = {30, 90, 150, 210, 270, 330};
+    std::array<qreal, 6> anglesSorted = {};
     bool needSort = true;
     int blackLevel = 50;
 
