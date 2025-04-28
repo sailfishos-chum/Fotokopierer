@@ -148,13 +148,6 @@ Page {
         }
     }
 
-    Component.onCompleted: {
-        DocumentList.error.connect(function (errorMessage) {
-            console.log("ERROR " + errorMessage)
-        })
-        DocumentList.load()
-    }
-
     function addDocument() {
         pageStack.pop(docpage, PageStackAction.Immediate)
 

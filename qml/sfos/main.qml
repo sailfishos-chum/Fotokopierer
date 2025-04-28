@@ -17,6 +17,7 @@
 
 import QtQuick 2.2
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 import "pages"
 
 ApplicationWindow
@@ -36,5 +37,19 @@ ApplicationWindow
                 docs.addDocument()
             }
         }
+    }
+
+    ErrorOverlay {
+        id: error
+
+        anchors.centerIn: parent
+        width: parent.width * 0.9
+    }
+
+    Component.onCompleted: {
+        DocumentList.error.connect(function (errorMessage) {
+            error.show(errorMessage)
+        })
+        DocumentList.load()
     }
 }
