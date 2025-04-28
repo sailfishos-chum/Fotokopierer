@@ -38,6 +38,7 @@ Description: |
     Help: https://chiselapp.com/user/fifr/repository/fotokopierer/forum
     Bugtracker: https://chiselapp.com/user/fifr/repository/fotokopierer/ticket
 
+NoSetup: true
 Configure: none
 # Do not use automatic builder.
 Builder: none

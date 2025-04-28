@@ -1,4 +1,5 @@
 program = harbour-fotokopierer
+version = 0.4.7
 
 sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
@@ -40,6 +41,10 @@ all: compile
 .PHONY: reformat
 reformat:
 	clang-format -i --style=file src/*xx
+
+.PHONY: tarball
+tarball: 
+	fossil tarball release $(program)-$(version).tar.gz --name $(program)-$(version)
 
 .PHONY: build
 build: reformat lrelease
