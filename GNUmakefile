@@ -4,12 +4,12 @@ arch := i486
 #arch := armv7hl
 
 sdk_dir := $(HOME)/SailfishOS
-sfos_version := SailfishOS-2.2.1.18-$(arch)
+sfos_version := SailfishOS-3.0.2.8-$(arch)
 projects_root := $(HOME)/JollaProjekte
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
-mer_root_dir := $(subst $(projects_root),/home/src1,$(current_dir))
+mer_root_dir := $(subst $(HOME)/JollaProjekte,/home/src1,$(current_dir))
 
 
 .PHONY: all build buildall clean install rpm run
@@ -35,13 +35,13 @@ install:
 	#ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
 	#'cd $(mer_root_dir) && mb2 -t $(sfos_version) rpm'
 	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator" deploy --sdk'
+	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator 3.0.2.8" deploy --sdk'
 
 installdeps:
 	#ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
 	#'cd $(mer_root_dir) && mb2 -t $(sfos_version) rpm'
 	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator" installdeps'
+	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator 3.0.2.8" installdeps'
 
 install-jolla: rpm
 	scp RPMS/harbour-fotokopierer*.armv7hl.rpm jolla:
