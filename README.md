@@ -58,6 +58,10 @@ script will automatically compile OpenCV and Podofo.
 
 Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
 
+## Help with translations
+
+Translate to another language at [POEditor](https://poeditor.com/join/project/EOPT1z2FZK)
+
 ## Credits
 
 This project uses
