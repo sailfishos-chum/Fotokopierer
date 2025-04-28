@@ -22,9 +22,9 @@
 
 #include <QDebug>
 #include <QtCore/QMap>
+#include <QtGui/QImageReader>
 #include <QtGui/QPixmap>
 
-#include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 namespace
@@ -154,7 +154,9 @@ QImage ScannedImageProvider::requestImage(const QString& id,
 
 QString ScannedImageProvider::loadImage(const QString& fileName)
 {
-    auto pic = cv::imread(fileName.toStdString());
+    QImageReader reader(fileName);
+    reader.setAutoTransform(true);
+    auto pic = QImageToCvMat(reader.read());
 
     if (pic.data == nullptr) {
         return {};

@@ -19,7 +19,7 @@ if (POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-find_package(OpenCV COMPONENTS imgproc imgcodecs)
+find_package(OpenCV COMPONENTS imgproc)
 
 include(ExternalProject)
 
@@ -40,7 +40,6 @@ if (NOT OpenCV_FOUND)
 	 -DBUILD_FAT_JAVA_LIB=OFF
 	 -DBUILD_IPP_IW=OFF
 	 -DBUILD_ITT=OFF
-	 -DBUILD_JASPER=OFF
 	 -DBUILD_JAVA=OFF
 	 -DBUILD_PACKAGE=OFF
 	 -DBUILD_PERF_TESTS=OFF
@@ -52,7 +51,7 @@ if (NOT OpenCV_FOUND)
 	 -DBUILD_opencv_features2d=OFF
 	 -DBUILD_opencv_flann=OFF
 	 -DBUILD_opencv_highgui=OFF
-	 -DBUILD_opencv_imgcodecs=ON
+	 -DBUILD_opencv_imgcodecs=OFF
 	 -DBUILD_opencv_ml=OFF
 	 -DBUILD_opencv_objdetect=OFF
 	 -DBUILD_opencv_photo=OFF
@@ -71,11 +70,9 @@ if (NOT OpenCV_FOUND)
 	 ${OpenCV_PREFIX}/src/opencv-build
 	 ${OpenCV_SOURCE_DIR}/include
 	 ${OpenCV_SOURCE_DIR}/modules/core/include
-	 ${OpenCV_SOURCE_DIR}/modules/imgproc/include
-	 ${OpenCV_SOURCE_DIR}/modules/imgcodecs/include)
+	 ${OpenCV_SOURCE_DIR}/modules/imgproc/include)
   link_directories(${OpenCV_PREFIX}/src/opencv-build/lib)
   set(OpenCV_LIBS
-	 opencv_imgcodecs libwebp libjasper IlmImf
 	 opencv_imgproc
 	 opencv_core
 	 tegra_hal
