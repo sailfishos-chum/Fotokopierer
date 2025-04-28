@@ -45,12 +45,25 @@ void RotateFilter::setOrientation(int orientation)
     }
 }
 
-QJsonObject RotateFilter::saveJson() const
+void RotateFilter::reset()
 {
-    return {};
+    setOrientation(0);
 }
 
-void RotateFilter::loadJson(QJsonObject& object) {}
+QString RotateFilter::name() const
+{
+    return QStringLiteral("rotate");
+}
+
+QJsonObject RotateFilter::saveJson() const
+{
+    return {{QStringLiteral("orientation"), orientation_}};
+}
+
+void RotateFilter::loadJson(const QJsonObject& object)
+{
+    setOrientation(object[QStringLiteral("orientation")].toInt(0));
+}
 
 QImage RotateFilter::apply(QImage&& image)
 {

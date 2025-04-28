@@ -31,9 +31,11 @@ class Page : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
+    Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
+    Q_PROPERTY(QString original READ original NOTIFY originalChanged)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
+    Q_PROPERTY(QUrl resultUrl READ resultUrl NOTIFY resultChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
@@ -63,9 +65,11 @@ public:
 
     QString thumbnail();
 
-    QString originalImagePath() const;
+    QString original() const;
 
     QString result() const;
+
+    QUrl resultUrl() const;
 
     Status status() const;
 
@@ -74,30 +78,59 @@ public:
     /// The page files are stored in the document directory `dir`.
     void loadFromScanner(const QDir& dir, const Scanner* scanner);
 
+    /// Initialize this page from the results of a Scanner.
+    ///
+    /// The page files reuse (and overwrite) the current files.
+    void updateFromScanner(const Scanner* scanner);
+
     bool write(QJsonObject& json) const;
 
     bool read(const QJsonObject& json);
+
+    /// Return the filter settings of this page.
+    QJsonObject settings() const;
 
 public slots:
     /// Delete all files associated with this page.
     void remove();
 
 private:
-    QString updateThumbnail(const QString& filename) const;
+    void updateFromScanner(const Scanner* scanner,
+                           const QString& original_path,
+                           const QString& result_path,
+                           const QDateTime& creation_time);
+
+    QString updateThumbnail(const QString& filename);
 
 private slots:
-    void onGenerationFinished();
+    void onGenerationFinished(const QString& original_path, const QString& result_path);
 
-    void onThumbnailFinished();
+    void onThumbnailFinished(const QString& thumbnail_path);
 
     void setStatus(Page::Status status);
 
+    void setOriginal(const QString& original);
+
+    void setResult(const QString& result);
+
+    void setThumbnail(const QString& thumbnail);
+
+    void setCreationTime(const QDateTime& creation_time);
+
 signals:
-    void thumbnailChanged();
+    void originalChanged();
 
     void resultChanged();
 
+    void thumbnailChanged();
+
+    void creationTimeChanged();
+
     void statusChanged();
+
+    void generationFinished(const QString& original_path, const QString& result_path);
+
+    void thumbnailFinished(const QString& thumbnail_path);
 
     /// An error occurred.
     void error(const QString& errorMessage);

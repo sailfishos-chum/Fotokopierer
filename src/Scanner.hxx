@@ -23,6 +23,7 @@
 #include <memory>
 
 class Document;
+class Page;
 class Filter;
 class RotateFilter;
 class CutFilter;
@@ -65,7 +66,11 @@ public:
 
     Filter* filter(FilterType type);
 
+    Q_INVOKABLE bool loadPage(Page* page);
+
     Q_INVOKABLE bool loadFile(const QString& file_name);
+
+    bool loadFile(const QString& file_name, const QJsonObject& settings);
 
     Q_INVOKABLE void clear();
 
@@ -83,6 +88,15 @@ public:
 
     /// Add this scanned page to the given `Document`.
     Q_INVOKABLE void addPage(Document* doc);
+
+    /// Add this scanned page to the given `Document`.
+    Q_INVOKABLE void updatePage(Page* page);
+
+    /// Return all filter settings as a JSON object.
+    QJsonObject saveJson() const;
+
+    /// Load all filter settings from a JSON object.
+    void loadJson(const QJsonObject& settings);
 
 signals:
     void originalImageChanged();

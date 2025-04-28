@@ -44,9 +44,17 @@ public:
 
     QImage filteredImage();
 
+    /// Reset filter to default settings.
+    virtual void reset() = 0;
+
+    /// Return the name of this filter.
+    ///
+    /// The name should be unique among all filter types.
+    virtual QString name() const = 0;
+
     virtual QJsonObject saveJson() const = 0;
 
-    virtual void loadJson(QJsonObject& object) = 0;
+    virtual void loadJson(const QJsonObject& object) = 0;
 
     virtual QImage apply(QImage&& image) = 0;
 

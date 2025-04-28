@@ -16,13 +16,15 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 
 Page {
-    id: page
+    id: thepage
 
     property string title
-    property string image
+    property var page
 
 
     Flickable {
@@ -36,7 +38,8 @@ Page {
         onHeightChanged: if (imageView.status === Image.Ready) imageView.fitToScreen();
 
         PageHeader {
-            title: page.title
+            id: header
+            title: thepage.title
         }
 
         Item {
@@ -51,7 +54,7 @@ Page {
                 property real prevScale
 
                 width: flick.width
-                height: flick.height
+                height: flick.height - header.height - buttons.height
 
                 function fitToScreen() {
                     scale = Math.min(flick.width / width, flick.height / height, 1)
@@ -63,7 +66,7 @@ Page {
                 fillMode: Image.PreserveAspectFit
                 cache: false
                 asynchronous: true
-                source: image
+                source: page.resultUrl
                 smooth: !flick.moving
 
                 onStatusChanged: {
@@ -134,5 +137,48 @@ Page {
                 from: img.scale
             }
         }
+    }
+
+    DockedPanel {
+        id: buttons
+        open: true
+
+        width: parent.width
+        height: Theme.iconSizeLarge
+        dock: Dock.Bottom
+
+        RowLayout {
+            id: buttonRow
+            anchors { left: parent.left; right: parent.right }
+            IconButton {
+                icon.source: "image://theme/icon-m-edit"
+                Layout.fillWidth: true
+                onClicked: _editImage()
+            }
+        }
+    }
+
+    Component {
+        id: cutpage
+        CutPage {}
+    }
+
+    Component {
+        id: colpage
+        ColorizePage {
+            onAccepted: {
+                Scanner.updatePage(page)
+            }
+
+            acceptDestination: thepage
+            acceptDestinationAction: PageStackAction.Pop
+        }
+    }
+
+    function _editImage() {
+        Scanner.loadPage(page)
+        Scanner.deleteOriginalOnClear = false
+        pageStack.push(cutpage)
+        pageStack.pushAttached(colpage)
     }
 }

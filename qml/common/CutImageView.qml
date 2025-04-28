@@ -86,14 +86,7 @@ Item {
     }
 
     function selectAll() {
-        topleft.x = (pane.width - image.paintedWidth) / 2 - markerRadius;
-        topleft.y = (pane.height - image.paintedHeight) / 2 - markerRadius;
-        bottomright.x = (pane.width + image.paintedWidth) / 2 - markerRadius;
-        bottomright.y = (pane.height + image.paintedHeight) / 2 - markerRadius;
-        topright.x = bottomright.x
-        topright.y = topleft.y
-        bottomleft.x = topleft.x
-        bottomleft.y = bottomright.y
+        _selectPoints(Qt.point(0, 0), Qt.point(1, 0), Qt.point(1, 1), Qt.point(0, 1))
     }
 
     function selectAuto() {
@@ -104,16 +97,12 @@ Item {
     function _selectPoints(tl, tr, br, bl) {
         var w = image.paintedWidth
         var h = image.paintedHeight
-        var offx = (pane.width - w) / 2 - markerRadius
-        var offy = (pane.height - h) / 2 - markerRadius
-        topleft.x = tl.x * w + offx
-        topleft.y = tl.y * h + offy
-        topright.x = tr.x * w + offx
-        topright.y = tr.y * h + offy
-        bottomright.x = br.x * w + offx
-        bottomright.y = br.y * h + offy
-        bottomleft.x = bl.x * w + offx
-        bottomleft.y = bl.y * h + offy
+        var offx = (pane.width - w) / 2
+        var offy = (pane.height - h) / 2
+        topleft.setCenter(Qt.point(tl.x * w + offx, tl.y * h + offy))
+        topright.setCenter(Qt.point(tr.x * w + offx, tr.y * h + offy))
+        bottomright.setCenter(Qt.point(br.x * w + offx, br.y * h + offy))
+        bottomleft.setCenter(Qt.point(bl.x * w + offx, bl.y * h + offy))
     }
 
     function cutImage() {
@@ -157,8 +146,6 @@ Item {
     CornerMarker {
         id: topleft
         color: pane.markerColor
-        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
         minX: (pane.width - image.paintedWidth) / 2 - markerRadius
         maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -171,8 +158,6 @@ Item {
     CornerMarker {
         id: topright
         color: pane.markerColor
-        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
         minX: (pane.width - image.paintedWidth) / 2 - markerRadius
         maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -185,8 +170,6 @@ Item {
     CornerMarker {
         id: bottomleft
         color: pane.markerColor
-        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
         minX: (pane.width - image.paintedWidth) / 2 - markerRadius
         maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -199,8 +182,6 @@ Item {
     CornerMarker {
         id: bottomright
         color: pane.markerColor
-        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
         minX: (pane.width - image.paintedWidth) / 2 - markerRadius
         maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -262,5 +243,13 @@ Item {
         var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
         var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
         return Qt.point(x, y)
+    }
+
+    function selectionFromFilter() {
+        _selectPoints(Scanner.cutFilter.topLeft,
+                      Scanner.cutFilter.topRight,
+                      Scanner.cutFilter.bottomRight,
+                      Scanner.cutFilter.bottomLeft)
+
     }
 }

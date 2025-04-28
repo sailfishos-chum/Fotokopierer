@@ -37,6 +37,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
+#include <QtQml/QQmlEngine>
 
 #include <podofo/podofo.h>
 
@@ -287,6 +288,8 @@ Page* Document::newPage()
     endInsertRows();
 
     emit pagesChanged();
+
+    QQmlEngine::setObjectOwnership(page.data(), QQmlEngine::CppOwnership);
 
     return page.data();
 }

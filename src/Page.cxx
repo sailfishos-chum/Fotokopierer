@@ -29,6 +29,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QJsonObject>
+#include <QtCore/QUrl>
 #include <QtGui/QImage>
 
 namespace
@@ -62,6 +63,7 @@ struct Page::Data {
     QString original_path;
     QString result_path;
     QString thumbnail_path;
+    QJsonObject settings;  ///< The filter settings for this page.
 
     QFutureWatcher<QString> result_thumbnail;
     QFutureWatcher<bool> generating;
@@ -72,8 +74,14 @@ struct Page::Data {
 Page::Page(QObject* parent)
     : QObject(parent), d(new Data)
 {
-    connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
-    connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
+    // TODO: For some reason, that I do not understand, the 'finished' signal is not emitted.
+    // We send our own signals to replace them when the concurrent work task is
+    // finished. This seems to work.
+
+    //connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
+    //connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
+    connect(this, &Page::thumbnailFinished, this, &Page::onThumbnailFinished, Qt::QueuedConnection);
+    connect(this, &Page::generationFinished, this, &Page::onGenerationFinished, Qt::QueuedConnection);
 }
 
 Page::~Page() = default;
@@ -81,8 +89,6 @@ Page::~Page() = default;
 void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
 {
     setStatus(Generating);
-
-    remove();
 
     auto ctime = QDateTime::currentDateTime();
 
@@ -98,11 +104,39 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
                                         .arg(ctime.toString(FilenameFormat))
                                         .arg(ext));
 
-    d->creation_time = ctime;
-    d->original_path = original_path;
-    d->result_path = result_path;
+    updateFromScanner(scanner, original_path, result_path, ctime);
+}
 
-    d->generating.setFuture(QtConcurrent::run([scanner, original_path, result_path]() {
+void Page::updateFromScanner(const Scanner* scanner)
+{
+    auto original_path = d->original_path;
+    auto result_path = d->result_path;
+
+    // the thumbnail is outdated now
+    if (!d->thumbnail_path.isEmpty()) {
+        QFile(d->thumbnail_path).remove();
+    }
+
+    // Remove existing data (because it is regenerated).
+    setOriginal({});
+    setResult({});
+    setThumbnail({});
+
+    updateFromScanner(scanner, original_path, result_path, d->creation_time);
+}
+
+void Page::updateFromScanner(const Scanner* scanner,
+                             const QString& original_path,
+                             const QString& result_path,
+                             const QDateTime& creation_time)
+{
+    setStatus(Generating);
+
+    setCreationTime(creation_time);
+
+    d->settings = scanner->saveJson();
+
+    d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path]() {
         QImage original = scanner->original();
         QImage result = scanner->computeFilteredImage();
 
@@ -115,6 +149,8 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
             qWarning() << "Page could not be created: error saving result image";
             throw GeneratingError(tr("Page could not be created: error saving result image"));
         };
+
+        emit generationFinished(original_path, result_path);
 
         return true;
     }));
@@ -138,6 +174,14 @@ QDateTime Page::creationTime() const
     return d->creation_time;
 }
 
+void Page::setCreationTime(const QDateTime& creation_time)
+{
+    if (creation_time != d->creation_time) {
+        d->creation_time = creation_time;
+        emit creationTimeChanged();
+    }
+}
+
 QString Page::thumbnail()
 {
     // Check if thumbnail image exists.
@@ -156,31 +200,56 @@ QString Page::thumbnail()
             d->thumbnail_path.clear();
         }
 
-        d->result_thumbnail.setFuture(
-            QtConcurrent::run(this, &Page::updateThumbnail, d->result_path));
+        d->result_thumbnail.setFuture(QtConcurrent::run(this, &Page::updateThumbnail, d->result_path));
     }
 
     return {};
 }
 
-void Page::onThumbnailFinished()
+void Page::setThumbnail(const QString& thumbnail)
 {
-    auto path = d->result_thumbnail.result();
-    if (path != d->thumbnail_path) {
-        d->thumbnail_path = path;
+    if (thumbnail != d->thumbnail_path) {
+        d->thumbnail_path = thumbnail;
         emit thumbnailChanged();
     }
+}
+
+void Page::onThumbnailFinished(const QString& thumbnail)
+{
+    setThumbnail(thumbnail);
     setStatus(Ready);
 }
 
-QString Page::originalImagePath() const
+QString Page::original() const
 {
     return d->original_path;
+}
+
+// TODO: add setters for other path properties
+void Page::setOriginal(const QString& original)
+{
+    if (d->original_path != original) {
+        d->original_path = original;
+        emit originalChanged();
+    }
+}
+
+QUrl Page::resultUrl() const
+{
+    return QUrl::fromLocalFile(result());
 }
 
 QString Page::result() const
 {
     return d->result_path;
+}
+
+void Page::setResult(const QString& result)
+{
+    if (result != d->result_path) {
+        d->result_path = result;
+        emit resultChanged();
+    }
 }
 
 void Page::remove()
@@ -196,10 +265,12 @@ void Page::remove()
     }
 }
 
-void Page::onGenerationFinished()
+void Page::onGenerationFinished(const QString& original_path, const QString& result_path)
 {
     try {
         (void)d->generating.result();
+        setOriginal(original_path);
+        setResult(result_path);
         setStatus(Ready);
         // start generation of thumbnail
         (void)thumbnail();
@@ -209,7 +280,7 @@ void Page::onGenerationFinished()
     }
 }
 
-QString Page::updateThumbnail(const QString& filename) const
+QString Page::updateThumbnail(const QString& filename)
 {
     // compute the resulting filename by attaching "-thumb" to the file name
     QFileInfo f(filename);
@@ -234,6 +305,8 @@ QString Page::updateThumbnail(const QString& filename) const
     // write thumbnail to file
     scaled.save(scaled_filename);
 
+    emit thumbnailFinished(scaled_filename);
+
     return scaled_filename;
 }
 
@@ -245,6 +318,7 @@ bool Page::write(QJsonObject& json) const
     if (!d->thumbnail_path.isEmpty()) {
         json[QStringLiteral("thumbnailPath")] = d->thumbnail_path;
     }
+    json[QStringLiteral("filters")] = d->settings;
 
     return true;
 }
@@ -280,10 +354,16 @@ bool Page::read(const QJsonObject& json)
         return false;
     }
 
-    d->creation_time = page_ctime;
-    d->original_path = page_original_path.toString();
-    d->result_path = page_result_path.toString();
-    d->thumbnail_path = page_thumbnail_path.toString();
+    setCreationTime(page_ctime);
+    setOriginal(page_original_path.toString());
+    setResult(page_result_path.toString());
+    setThumbnail(page_thumbnail_path.toString());
+    d->settings = json[QStringLiteral("filters")].toObject();
 
     return true;
+}
+
+QJsonObject Page::settings() const
+{
+    return d->settings;
 }

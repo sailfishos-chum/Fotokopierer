@@ -48,6 +48,11 @@ CutFilter::CutFilter(Scanner* image, Filter* previous_filter)
 
 CutFilter::~CutFilter() = default;
 
+void CutFilter::reset()
+{
+    setCutBox({0, 0}, {1, 0}, {1, 1}, {0, 1});
+}
+
 bool CutFilter::setCutBox(QPointF topleft,
                           QPointF topright,
                           QPointF bottomright,
@@ -58,12 +63,78 @@ bool CutFilter::setCutBox(QPointF topleft,
     if (!util.isConvex(topleft, topright, bottomright, bottomleft)) {
         return false;
     }
-    d->topleft = topleft;
-    d->topright = topright;
-    d->bottomright = bottomright;
-    d->bottomleft = bottomleft;
+
+    if (d->topleft != topleft) {
+        d->topleft = topleft;
+        emit topLeftChanged();
+    }
+    if (d->topright != topright) {
+        d->topright = topright;
+        emit topRightChanged();
+    }
+    if (d->bottomleft != bottomleft) {
+        d->bottomleft = bottomleft;
+        emit bottomLeftChanged();
+    }
+    if (d->bottomright != bottomright) {
+        d->bottomright = bottomright;
+        emit bottomRightChanged();
+    }
+
     emit filterChanged();
     return true;
+}
+
+void CutFilter::setTopLeft(const QPointF& topleft)
+{
+    if (d->topleft != topleft) {
+        d->topleft = topleft;
+        emit topLeftChanged();
+    }
+}
+
+QPointF CutFilter::topLeft() const
+{
+    return d->topleft;
+}
+
+void CutFilter::setTopRight(const QPointF& topright)
+{
+    if (d->topright != topright) {
+        d->topright = topright;
+        emit topRightChanged();
+    }
+}
+
+QPointF CutFilter::topRight() const
+{
+    return d->topright;
+}
+
+void CutFilter::setBottomLeft(const QPointF& bottomleft)
+{
+    if (d->bottomleft != bottomleft) {
+        d->bottomleft = bottomleft;
+        emit bottomLeftChanged();
+    }
+}
+
+QPointF CutFilter::bottomLeft() const
+{
+    return d->bottomleft;
+}
+
+void CutFilter::setBottomRight(const QPointF& bottomright)
+{
+    if (d->bottomright != bottomright) {
+        d->bottomright = bottomright;
+        emit bottomRightChanged();
+    }
+}
+
+QPointF CutFilter::bottomRight() const
+{
+    return d->bottomright;
 }
 
 QVariantList CutFilter::autoDetectCutRect()
@@ -163,12 +234,42 @@ QVariantList CutFilter::autoDetectCutRect()
     return lst;
 }
 
-QJsonObject CutFilter::saveJson() const
+QString CutFilter::name() const
 {
-    return {};
+    return QStringLiteral("cut");
 }
 
-void CutFilter::loadJson(QJsonObject& object) {}
+static QJsonValue fromPoint(const QPointF& p)
+{
+    return QJsonObject{{QStringLiteral("x"), p.x()}, {QStringLiteral("y"), p.y()}};
+}
+
+QJsonObject CutFilter::saveJson() const
+{
+    return {
+        {QStringLiteral("topleft"), fromPoint(d->topleft)},
+        {QStringLiteral("topright"), fromPoint(d->topright)},
+        {QStringLiteral("bottomleft"), fromPoint(d->bottomleft)},
+        {QStringLiteral("bottomright"), fromPoint(d->bottomright)},
+    };
+}
+
+static QPointF toPoint(const QJsonValue& value)
+{
+    auto p = value.toObject();
+    return {
+        static_cast<qreal>(p[QStringLiteral("x")].toDouble(0)),
+        static_cast<qreal>(p[QStringLiteral("y")].toDouble(0)),
+    };
+}
+
+void CutFilter::loadJson(const QJsonObject& object)
+{
+    setCutBox(toPoint(object[QStringLiteral("topleft")]),
+              toPoint(object[QStringLiteral("topright")]),
+              toPoint(object[QStringLiteral("bottomright")]),
+              toPoint(object[QStringLiteral("bottomleft")]));
+}
 
 QImage CutFilter::apply(QImage&& image)
 {

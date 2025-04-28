@@ -27,6 +27,9 @@ Page {
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
+        if (status == PageStatus.Active) {
+            cutview.selectionFromFilter()
+        }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
         }

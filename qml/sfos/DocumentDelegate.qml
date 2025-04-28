@@ -92,6 +92,7 @@ MouseArea {
 
                     delegate: Image {
                         source: dragDelegate.thumbnails[thumbnails.length - index - 1]
+                        cache: false
 
                         anchors.fill: parent
                         anchors.leftMargin: (thumbnails.length - index - 1) * 0.05 * parent.width

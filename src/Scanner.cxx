@@ -124,7 +124,34 @@ void Scanner::addPage(Document* doc)
     page->loadFromScanner(doc->directory(), this);
 }
 
+void Scanner::updatePage(Page* page)
+{
+    if (page == nullptr) {
+        return;
+    }
+
+    page->updateFromScanner(this);
+}
+
+bool Scanner::loadPage(Page* page)
+{
+    if (page == nullptr) {
+        return false;
+    }
+
+    if (!loadFile(page->original(), page->settings())) {
+        return false;
+    }
+
+    return true;
+}
+
 bool Scanner::loadFile(const QString& file_name)
+{
+    return loadFile(file_name, {});
+}
+
+bool Scanner::loadFile(const QString& file_name, const QJsonObject& settings)
 {
     QImageReader imageReader(file_name);
     imageReader.setAutoTransform(true);
@@ -139,6 +166,14 @@ bool Scanner::loadFile(const QString& file_name)
             d->scaled = image.scaledToWidth(qMin(image.width(), 1000));
         } else {
             d->scaled = image.scaledToHeight(qMin(image.height(), 1000));
+        }
+
+        if (settings.isEmpty()) {
+            for (auto f : d->filter) {
+                f->reset();
+            }
+        } else {
+            loadJson(settings);
         }
         emit originalImageChanged();
         return true;
@@ -161,4 +196,22 @@ void Scanner::clear()
 QImage Scanner::originalImage() const
 {
     return d->scaled;
+}
+
+QJsonObject Scanner::saveJson() const
+{
+    QJsonObject settings;
+
+    for (auto f : d->filter) {
+        settings[f->name()] = f->saveJson();
+    }
+
+    return settings;
+}
+
+void Scanner::loadJson(const QJsonObject& settings)
+{
+    for (auto f : d->filter) {
+        f->loadJson(settings[f->name()].toObject());
+    }
 }
