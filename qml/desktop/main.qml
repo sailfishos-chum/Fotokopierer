@@ -117,6 +117,7 @@ ApplicationWindow {
             id: colview
 
             scanner: Scanner
+            colorizeChooser: colorizer
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -196,7 +197,7 @@ ApplicationWindow {
             id: blockSizeRow
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: colbuttons.top
+            anchors.bottom: blackLevelRow.top
             visible: !contrastRow.visible
 
             Label {
@@ -209,6 +210,26 @@ ApplicationWindow {
                 stepSize: 1
                 value: 50
                 onValueChanged: colview.blockSize = value / 100
+            }
+        }
+
+        Row {
+            id: blackLevelRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: colbuttons.top
+            visible: !contrastRow.visible
+
+            Label {
+                text: "BlackLevel"
+            }
+            Slider {
+                id: blackLevel
+                minimumValue: 0
+                maximumValue: 255
+                stepSize: 1
+                value: 50
+                onValueChanged: colorizer.blackLevel = value
             }
         }
 
