@@ -20,6 +20,8 @@
 
 #include <QtCore/QObject>
 
+class PlainImage;
+
 class Util : public QObject
 {
     Q_OBJECT
@@ -29,6 +31,8 @@ public:
                               const QPointF& x2,
                               const QPointF& x3,
                               const QPointF& x4);
+
+    Q_INVOKABLE PlainImage* loadPlainImage(const QString& filename);
 };
 
 #endif

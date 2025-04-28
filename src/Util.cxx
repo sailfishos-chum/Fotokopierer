@@ -17,13 +17,18 @@
 
 #include "Util.hxx"
 
+#include "PlainImage.hxx"
+
 #include <QtCore/QLineF>
 
-bool Util::isConvex(const QPointF &x1,
-                    const QPointF &x2,
-                    const QPointF &x3,
-                    const QPointF &x4)
+bool Util::isConvex(const QPointF &x1, const QPointF &x2, const QPointF &x3, const QPointF &x4)
 {
-    return QLineF(x1, x3).intersect(QLineF(x2, x4), nullptr) ==
-           QLineF::BoundedIntersection;
+    return QLineF(x1, x3).intersect(QLineF(x2, x4), nullptr) == QLineF::BoundedIntersection;
+}
+
+PlainImage *Util::loadPlainImage(const QString &filename)
+{
+    auto image = new PlainImage();
+    image->loadFile(filename);
+    return image;
 }
