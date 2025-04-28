@@ -29,6 +29,7 @@ MouseArea {
     default property alias data: content.data
 
     signal itemMoved(int from, int to)
+    signal draggingFinished()
 
     drag.target: held ? content : undefined
     drag.axis: Drag.XAndYAxis
@@ -37,9 +38,11 @@ MouseArea {
         held = true
         sourceIndex = DelegateModel.itemsIndex
     }
+
     onReleased: {
         held = false
         itemMoved(sourceIndex, DelegateModel.itemsIndex)
+        draggingFinished()
     }
 
     states: State {
