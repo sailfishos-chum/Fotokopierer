@@ -3,10 +3,20 @@
 #
 # Add new changelog entries following the format below.
 # Add newest entries to the top of the list.
-# Separate entries from eachother with a blank line.
+# Separate entries from each other with a blank line.
 
 # * date Author's Name <author's email> version-release
 # - Summary of changes
+
+* Thu Jun 3 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.0-1
+- improve paper detection
+- allow to move edges of the selection
+- improve magic colorization
+- update OpenCV to 3.4.14
+- update PoDoFo to 0.9.7
+- update FreeType to 2.10.4
+- new IRC channel now on libera.chat
+- several bug fixes and small improvements
 
 * Tue Jun 1 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.6-1
 - use relative paths in document files
