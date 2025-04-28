@@ -46,16 +46,38 @@ CoverBackground {
         text: qsTr("Take a new picture")
     }
 
-    Label {
-        id: pages
-
+    Column {
+        id: info
         visible: document
 
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: Theme.fontSizeMedium
+        width: parent.width
 
-        text: qsTr("Pages: %1").arg(_numPages)
+        Label {
+            id: doctitle
+
+            width: parent.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: Theme.fontSizeMedium
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+
+            text: document ? document.title : ""
+        }
+
+        Label {
+            id: pages
+
+            width: parent.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: Theme.fontSizeSmall
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            truncationMode: TruncationMode.Fade
+
+            text: qsTr("Pages: %2").arg(_numPages)
+        }
     }
 
     Item {
@@ -63,7 +85,7 @@ CoverBackground {
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: pages.bottom
+        anchors.top: info.bottom
         anchors.bottom: coverActionArea.top
 
         Item {
