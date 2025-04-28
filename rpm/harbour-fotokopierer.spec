@@ -62,6 +62,7 @@ Screenshots:
   - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot2.png
   - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot3.png
   - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot4.png
+PackageIcon: https://chiselapp.com/user/fifr/repository/fotokopierer/uv/harbour-fotokopierer.svg
 Url:
   Homepage: https://chiselapp.com/user/fifr/repository/fotokopierer
   Help: https://chiselapp.com/user/fifr/repository/fotokopierer/forum
