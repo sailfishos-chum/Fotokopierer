@@ -377,8 +377,6 @@ void ScanImage::onColorizedReady()
 
 cv::Mat ScanImage::Data::computeCutImage(const cv::Mat& image) const
 {
-    qDebug() << "Compute cut image";
-
     auto rotated = image;
 
     auto w = static_cast<float>(rotated.cols);
