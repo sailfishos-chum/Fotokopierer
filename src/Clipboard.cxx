@@ -42,7 +42,7 @@ Clipboard* Clipboard::instance()
 
 bool Clipboard::isEmpty() const
 {
-    return d->doc != nullptr;
+    return d->doc == nullptr || d->pages.isEmpty();
 }
 
 int Clipboard::numPages() const
