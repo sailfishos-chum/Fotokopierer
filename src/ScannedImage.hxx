@@ -27,13 +27,13 @@ class ScannedImage : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QPixmap original READ originalImage NOTIFY originalChanged)
+	Q_PROPERTY(QString original READ originalImage NOTIFY originalChanged)
 
 public:
 	ScannedImage(QObject* parent = nullptr);
 	~ScannedImage();
 
-	QPixmap originalImage() const;
+	QString originalImage() const;
 
 signals:
 	void originalChanged();

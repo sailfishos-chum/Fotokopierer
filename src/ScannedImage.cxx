@@ -20,14 +20,17 @@
 #include <QtGui/QPixmap>
 
 struct ScannedImage::Data {
-    QPixmap original;
+    QString image;
 };
 
-ScannedImage::ScannedImage(QObject* parent) : QObject(parent), d(new Data) {}
+ScannedImage::ScannedImage(QObject* parent) : QObject(parent), d(new Data)
+{
+    d->image = QLatin1String("0");
+}
 
 ScannedImage::~ScannedImage() {}
 
-QPixmap ScannedImage::originalImage() const
+QString ScannedImage::originalImage() const
 {
-    return d->original;
+    return d->image + QLatin1String("/original");
 }

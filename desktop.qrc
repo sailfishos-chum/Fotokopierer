@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
 	 <file>qml-desktop/main.qml</file>
+	 <file>qml-desktop/CutImage.qml</file>
   </qresource>
 </RCC>

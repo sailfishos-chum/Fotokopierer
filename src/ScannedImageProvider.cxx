@@ -33,6 +33,7 @@ ScannedImageProvider* ScannedImageProvider::instance = nullptr;
 
 struct ScannedImageProvider::Data {
     QMap<QString, ImageSet> images;
+    int64_t next_id = 0;
 };
 
 ScannedImageProvider::ScannedImageProvider() : QQuickImageProvider(ImageType::Pixmap), d(new Data)
@@ -67,4 +68,18 @@ QPixmap ScannedImageProvider::requestPixmap(const QString& id, QSize* size,
         // TODO: return ERROR picture
         return {};
     }
+}
+
+QString ScannedImageProvider::loadImage(const QString& fileName)
+{
+    auto pic = QPixmap(fileName);
+
+    if (pic.isNull()) {
+        return {};
+    }
+
+    auto id = QString::number(d->next_id);
+    d->images[id] = {.original = pic, .cut = {}, .colorized = {}};
+
+    return id;
 }

@@ -30,10 +30,10 @@ int main(int argc, char* argv[])
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
-    view->setSource(QUrl(QStringLiteral("qrc:///qml/fotokopierer.qml")));
 
     init_app(*app, *view->engine());
 
+    view->setSource(QUrl(QStringLiteral("qrc:///qml/fotokopierer.qml")));
     view->show();
 
     return app->exec();

@@ -30,6 +30,11 @@ public:
 
     QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize);
 
+    /// Load a (original) image from the given file and return the ID.
+    ///
+    /// Return an empty string if the image could not be loaded.
+    QString loadImage(const QString& fileName);
+
 public:
     /// A global instance used throughout the app.
     static ScannedImageProvider* instance;

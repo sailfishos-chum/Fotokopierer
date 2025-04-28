@@ -27,7 +27,7 @@
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
-    qmlRegisterType<ScannedImage>("de.shadow-soft.fotokopierer", 1, 0, "ScannedImage");
+    qmlRegisterType<ScannedImage>("Fotokopierer", 1, 0, "ScannedImage");
 
     auto imgprovider = new ScannedImageProvider();
     ScannedImageProvider::instance = imgprovider;
@@ -47,4 +47,8 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     parser.addVersionOption();
     parser.addPositionalArgument(QStringLiteral("file"), QStringLiteral("The image file to show"));
     parser.process(app);
+
+    for (auto img : parser.positionalArguments()) {
+        imgprovider->loadImage(img);
+    }
 }
