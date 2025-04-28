@@ -27,8 +27,9 @@ Page {
     id: docpage
 
     property var document: null // the document, may be null
-    property bool editing: false
-    property bool dragging: false
+
+    // Allowed states are "Normal", "Editing", "Dragging"
+    property string state: "Normal"
 
     Loader {
         id: newPage
@@ -54,13 +55,12 @@ Page {
             creationTime: role_creationTime || new Date()
 
             isAddButton: role_thumbnail ? false : true
-            visible: !isAddButton || (!docpage.editing && !docpage.dragging)
-            deleting: docpage.editing
+            visible: !isAddButton || (docpage.state == "Normal")
+            deleting: docpage.state == "Editing"
 
             onPressed: {
-                if (docpage.editing) {
-                    docpage.editing = false
-                    docpage.dragging = true
+                if (docpage.state == "Editing") {
+                    docpage.state = "Dragging"
                     startDragging()
                 }
             }
@@ -80,19 +80,19 @@ Page {
                 id: endDraggingTimer
                 interval: 0
                 repeat: false
-                onTriggered: docpage.dragging = false
+                onTriggered: docpage.state = "Normal"
             }
 
             onReleased: {
-                if (docpage.dragging) {
+                if (docpage.state == "Dragging") {
                     endDraggingTimer.start()
                     endDragging()
                 }
             }
 
             onClicked: {
-                if (docpage.editing || docpage.dragging) {
-                    docpage.editing = false
+                if (docpage.state == "Editing" || docpage.state == "Dragging") {
+                    docpage.state = "Normal"
                 } else if (isAddButton) {
                     addPage()
                 } else {
@@ -104,8 +104,7 @@ Page {
             onItemMoved: visualModel.model.move(from, to)
 
             onDeletePage: {
-                docpage.dragging = false
-                docpage.editing = false
+                docpage.state = "Normal"
                 remorse.execute(pageDelegate, qsTr("Delete page"), function () {
                     if (document) {
                         document.deletePage(pageDelegate.DelegateModel.itemsIndex)
@@ -166,10 +165,10 @@ Page {
             propagateComposedEvents: true
 
             onClicked: {
-                if (docpage.editing) {
+                if (docpage.state == "Editing") {
                     var index = grid.indexAt(grid.contentX + mouse.x, grid.contentY + mouse.y)
                     if (index == -1 || index == visualModel.count - 1) {
-                        docpage.editing = false
+                        docpage.state = "Normal"
                     } else {
                         mouse.accepted = false
                     }
@@ -179,10 +178,10 @@ Page {
             }
 
             onPressed: {
-                if (docpage.editing) {
+                if (docpage.state == "Editing") {
                     var index = grid.indexAt(grid.contentX + mouse.x, grid.contentY + mouse.y)
                     if (index == -1 || index == visualModel.count - 1) {
-                        docpage.editing = false
+                        docpage.state = "Normal"
                     } else {
                         mouse.accepted = false
                     }
@@ -191,7 +190,7 @@ Page {
 
             onPressAndHold: {
                 if (visualModel.count > 1) {
-                    docpage.editing = true
+                    docpage.state = "Editing"
                 }
             }
         }
