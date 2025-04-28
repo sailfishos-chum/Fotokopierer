@@ -209,8 +209,12 @@ QImage ColorizeFilter::apply(QImage&& image)
 
     // colorize by hue
     for (int i = 15; i < 180; i += 30) {
-        cv::inRange(img_hsv, cv::Scalar(i - 15, 50, 50), cv::Scalar(i + 15, 255, 255), img_this_color);
+        cv::inRange(img_hsv, cv::Scalar(std::max(i, 15) - 15, 50, 50), cv::Scalar(i + 15, 255, 255), img_this_color);
         img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
+        if (i < 15) {
+            cv::inRange(img_hsv, cv::Scalar(180 - (15 - i), 50, 50), cv::Scalar(180, 255, 255), img_this_color);
+            img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
+        }
     }
 
     // convert result back to BGR
