@@ -18,6 +18,7 @@
 #include "DocumentList.hxx"
 
 #include "Document.hxx"
+#include "Fotokopierer.hxx"
 #include "Page.hxx"
 
 #include <QtCore/QDateTime>
@@ -33,10 +34,7 @@ struct DocumentList::Data {
 
 DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new Data)
 {
-    auto dir = QStandardPaths::locate(QStandardPaths::HomeLocation,
-                                      QStringLiteral("fotokopierer"),
-                                      QStandardPaths::LocateDirectory);
-
+    auto dir = getDocumentDirectory();
     for (auto path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
         QDir docdir = dir;
         docdir.cd(path);
