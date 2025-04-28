@@ -32,7 +32,7 @@ using namespace fifr::util;
 struct ColorizeChooser::Data {
     int lattice = 100;
     cv::Mat hist = {};
-    int maxRadius = 0;  // the maximal radius in the histogram of a pixel to be drawn
+    int maxRadius = 100;  // the maximal radius in the histogram of a pixel to be drawn
 
     std::array<qreal, 6> angles = {30, 90, 150, 210, 270, 330};
     std::array<qreal, 6> anglesSorted = {};
@@ -75,7 +75,14 @@ void ColorizeChooser::setBlackLevel(int blackLevel)
 
 int ColorizeChooser::blackLevel() const
 {
-    return d->blackLevel;
+    return qMin(d->blackLevel, maxBlackLevel());
+}
+
+int ColorizeChooser::maxBlackLevel() const
+{
+    auto val = d->lattice == 0 ? 255 : d->maxRadius * 255 / d->lattice;
+    qDebug() << "MAX BLACK LEVEL " << val;
+    return val;
 }
 
 void ColorizeChooser::setColorAngles(const std::array<qreal, 6>& angles)
@@ -104,13 +111,20 @@ void ColorizeChooser::updateImage(const cv::Mat& image, const cv::Mat& mask)
     cv::calcHist(&image, 1, channels, mask, d->hist, 2, histSize, ranges, true, false);
     cv::normalize(d->hist, d->hist, 0, 255, cv::NORM_MINMAX);
 
-    d->maxRadius = 0;
+    auto maxRadius = 0;
     for (auto i : range(d->hist.rows)) {
         for (auto j : range(d->hist.cols)) {
             if (d->hist.at<float>(i, j) < 10) continue;
-            d->maxRadius = std::max(j, d->maxRadius);
+            maxRadius = std::max(j, maxRadius);
         }
     }
+
+    if (maxRadius != d->maxRadius) {
+        d->maxRadius = maxRadius;
+        emit maxBlackLevelChanged();
+    }
+
+    qDebug() << "Max radius: " << d->maxRadius << " " << maxBlackLevel();
 
     update();
 }
@@ -148,6 +162,7 @@ void ColorizeChooser::paint(QPainter* painter)
     auto cur_color = QColor::fromHsvF(cur_angle / 360.0, 1, 1);
 
     // the colored pixels
+    auto blackLevel = this->blackLevel();
     for (auto i : range(d->hist.rows)) {
         auto deg = static_cast<double>(i) / d->hist.rows * 360;
 
@@ -163,7 +178,7 @@ void ColorizeChooser::paint(QPainter* painter)
             cur_color = QColor::fromHsvF(cur_angle / 360.0, 1, 1);
         }
 
-        auto black = (d->blackLevel * d->lattice + 255) / 256;
+        auto black = (blackLevel * d->lattice + 255) / 256;
         painter->setBrush(Qt::black);
 
         for (auto j : range(d->maxRadius)) {
@@ -182,7 +197,7 @@ void ColorizeChooser::paint(QPainter* painter)
     // the angle lines
     painter->setPen(Qt::black);
     painter->setBrush({});
-    auto r = d->blackLevel * d->lattice * size / (d->maxRadius * 512);
+    auto r = blackLevel * d->lattice * size / (d->maxRadius * 512);
     painter->drawEllipse(QPointF{width() / 2, height() / 2}, r, r);
     for (auto angle : d->anglesSorted) {
         auto x = std::cos(angle / 180.0 * M_PI) * size / 2 + width() / 2;

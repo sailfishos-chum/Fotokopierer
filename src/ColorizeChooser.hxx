@@ -30,6 +30,7 @@ class ColorizeChooser : public QQuickPaintedItem
 
     Q_PROPERTY(int lattice READ lattice WRITE setLattice NOTIFY latticeChanged);
     Q_PROPERTY(int blackLevel READ blackLevel WRITE setBlackLevel NOTIFY blackLevelChanged);
+    Q_PROPERTY(int maxBlackLevel READ maxBlackLevel NOTIFY maxBlackLevelChanged);
 
 public:
     ColorizeChooser(QQuickItem* parent = nullptr);
@@ -43,6 +44,8 @@ public:
     int blackLevel() const;
 
     void setBlackLevel(int blackLevel);
+
+    int maxBlackLevel() const;
 
     std::array<qreal, 6> colorAngles() const;
 
@@ -61,6 +64,7 @@ signals:
     void colorizeViewChanged();
     void latticeChanged();
     void blackLevelChanged();
+    void maxBlackLevelChanged();
     void colorAnglesChanged();
 
 private:

@@ -57,7 +57,7 @@ Dialog {
             brightness_slider.value = colview.brightness * 100
             threshold_slider.value = colview.threshold * 100
             blocksize_slider.value = colview.blockSize * 100
-            blackLevel_slider.value = colorizer.blackLevel / 255 * 100
+            blackLevel_slider.value = colorizer.blackLevel / colorizer.maxBlackLevel * 100
         }
 
         BusyIndicator {
@@ -231,7 +231,7 @@ Dialog {
             ValueSlider {
                 id: blackLevel_slider
                 icon: Qt.resolvedUrl("/icons/icon-m-bw.svg")
-                onValueChanged: colorizer.blackLevel = value * 255 / 100
+                onValueChanged: colorizer.blackLevel = value * colorizer.maxBlackLevel / 100
             }
         }
     }

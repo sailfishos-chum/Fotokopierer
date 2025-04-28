@@ -22,6 +22,7 @@ Item {
     id: root
 
     property alias blackLevel: colorizer.blackLevel
+    property alias maxBlackLevel: colorizer.maxBlackLevel
     property real _radius: Math.min(width, height) / 2
     property real markerRadius: Math.min(width, height) / 25
 

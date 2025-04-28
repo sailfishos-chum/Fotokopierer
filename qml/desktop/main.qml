@@ -228,7 +228,7 @@ ApplicationWindow {
             Slider {
                 id: blackLevel
                 minimumValue: 0
-                maximumValue: 255
+                maximumValue: colorizer.maxBlackLevel
                 stepSize: 1
                 value: 50
                 onValueChanged: colorizer.blackLevel = value
