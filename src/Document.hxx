@@ -45,12 +45,6 @@ public:
 
     ~Document();
 
-    int rowCount(const QModelIndex &parent) const override;
-
-    QVariant data(const QModelIndex &index, int role) const override;
-
-    QHash<int, QByteArray> roleNames() const override;
-
     /// Return the document title.
     QString title() const;
 
@@ -78,6 +72,13 @@ signals:
     void titleChanged();
 
     void error(const QString &msg);
+
+private:
+    int rowCount(const QModelIndex &parent) const override;
+
+    QVariant data(const QModelIndex &index, int role) const override;
+
+    QHash<int, QByteArray> roleNames() const override;
 
 private:
     struct Data;
