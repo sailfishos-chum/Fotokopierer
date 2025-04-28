@@ -74,9 +74,12 @@ message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 
 if (SAILFISH_FOUND)
   find_package(PNG REQUIRED)
+  find_package(JPEG REQUIRED)
+  find_package(TIFF REQUIRED)
   find_package(OpenSSL REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
-  set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg PNG::PNG freetype)
+  #set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff PNG::PNG freetype)
+  set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto PNG::PNG ${JPEG_LIBRARIES} TIFF::TIFF freetype)
 endif()
 
 find_package(Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick)

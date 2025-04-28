@@ -62,8 +62,8 @@ tar -xzf %{SOURCE3}
 
 %build
 # >> build pre
-rm -rf rpmbuilddir-%{_arch}
-mkdir rpmbuilddir-%{_arch}
+#rm -rf rpmbuilddir-%{_arch}
+mkdir -p rpmbuilddir-%{_arch}
 
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/opencv
 pushd rpmbuilddir-%{_arch}/3rdparty/opencv
@@ -80,7 +80,10 @@ cmake %{_sourcedir}/../3rdparty/opencv-3.4.16 \
       -DBUILD_PERF_TESTS=OFF \
       -DBUILD_SHARED_LIBS=OFF \
       -DBUILD_TESTS=OFF \
+      -DBUILD_TIFF=ON \
+      -DBUILD_JPEG=ON \
       -DBUILD_JPEG_TURBO_DISABLE=ON \
+      -DBUILD_PROTOBUF=ON \
       -DBUILD_opencv_apps=OFF \
       -DBUILD_opencv_calib3d=OFF \
       -DBUILD_opencv_dnn=OFF \
@@ -141,8 +144,8 @@ popd
 
 pushd rpmbuilddir-%{_arch} &&  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
                                      -DCMAKE_PREFIX_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr" \
-                                     -DCMAKE_INCLUDE_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr/include" \
-                                     -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr/lib" \
+                                     -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libtiff;%{_builddir}/rpmbuilddir-%{_arch}/usr/include" \
+                                     -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib;%{_builddir}/rpmbuilddir-%{_arch}/usr/lib" \
                                      -DCMAKE_INSTALL_PREFIX=/usr %{_builddir}
 popd
 make -C rpmbuilddir-%{_arch} VERBOSE=1 %{?_smp_mflags}
