@@ -29,7 +29,7 @@ struct BaseImage::Data {
 
 BaseImage::BaseImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data)
 {
-    connect(this, &BaseImage::sourceChanged, [this]() { this->updateImage(); });
+    connect(this, &BaseImage::sourceChanged, this, &BaseImage::updateImage);
 }
 
 BaseImage::~BaseImage() {}
