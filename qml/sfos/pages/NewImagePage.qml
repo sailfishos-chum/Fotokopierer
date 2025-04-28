@@ -192,6 +192,12 @@ Page {
             }
         }
 
+        BusyIndicator {
+            size: BusyIndicatorSize.Large
+            anchors.centerIn: parent
+            running: camera.cameraStatus != Camera.ActiveStatus
+        }
+
         MouseArea {
             anchors.fill: parent
             onClicked: {
