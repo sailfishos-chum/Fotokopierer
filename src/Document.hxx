@@ -56,7 +56,13 @@ public:
 
     Document(Document &&doc) noexcept;
 
+    Document(const Document &) = delete;
+
     ~Document() override;
+
+    Document &operator=(Document &&) = delete;
+
+    Document &operator=(const Document &) = delete;
 
     /// Create a new document with the current time.
     static Document create(QObject *parent = nullptr);
