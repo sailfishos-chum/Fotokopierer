@@ -27,6 +27,7 @@ DragDelegate {
 
     property var page
     property bool isAddButton: false
+    property double factor: 0.9
 
     dragEnabled: !isAddButton
 
@@ -57,8 +58,8 @@ DragDelegate {
     Loader {
         id: loader
 
-        width: parent.width * 0.9
-        height: parent.height * 0.9
+        width: parent.width * dragDelegate.factor
+        height: parent.height * dragDelegate.factor
         anchors {
             horizontalCenter: parent.horizontalCenter
             verticalCenter: parent.verticalCenter
