@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.0)
 set(FOTOKOPIERER_VERSION 0.4.4)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.16)
-set(FREETYPE_VERSION 2.10.4)
+set(FREETYPE_VERSION 2.11.1)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
@@ -136,7 +136,7 @@ if (SAILFISH_FOUND)
   ExternalProject_Add(freetype-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
     URL "https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
-    URL_HASH SHA256=5eab795ebb23ac77001cfb68b7d4d50b5d6c7469247b0b01b2c953269f658dac
+    URL_HASH SHA256=f8db94d307e9c54961b39a1cc799a67d46681480696ed72ecf78d4473770f09b
     SOURCE_DIR ${FREETYPE_SOURCE_DIR}
     PREFIX ${FREETYPE_PREFIX}
     LIST_SEPARATOR ,
