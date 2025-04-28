@@ -27,6 +27,8 @@ Item {
 	 property color color: "white"
 	 property real linewidth: 1
 
+	 property bool dragActive: false
+
 	 x: centerx - radius
 	 y: centery - radius
 	 width: radius * 2
@@ -47,5 +49,8 @@ Item {
 		  id: mouseArea
 		  anchors.fill: parent
 		  drag.target: parent
+
+		  onPressed: dragActive = true
+		  onReleased: dragActive = false
 	 }
 }
