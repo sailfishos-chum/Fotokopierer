@@ -566,5 +566,5 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
 void Document::exportToPdf(bool overwrite)
 {
-    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"));
+    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"), overwrite);
 }
