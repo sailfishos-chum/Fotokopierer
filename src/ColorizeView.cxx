@@ -183,6 +183,10 @@ void ColorizeView::onNewImage()
             // initialize settings
 
             d->params = d->scanImage->parameters();
+            if (d->colorizeChooser != nullptr) {
+                d->colorizeChooser->setColorAngles(d->params.angles);
+                d->colorizeChooser->setBlackLevel(d->params.blackLevel);
+            }
             setColorMode(d->scanImage->colorMode());
         }
     }
