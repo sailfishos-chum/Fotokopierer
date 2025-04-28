@@ -120,6 +120,30 @@ public:
     /// Return the bottom right point of the detected rectangle.
     QPointF bottomRight() const;
 
+    /// Set the middle control point of the top edge.
+    void setTopPoint(const QPointF& p);
+
+    /// Return the middle control point of the top edge.
+    QPointF topPoint() const;
+
+    /// Set the middle control point of the bottom edge.
+    void setBottomPoint(const QPointF& p);
+
+    /// Return the middle control point of the bottom edge.
+    QPointF bottomPoint() const;
+
+    /// Set the middle control point of the left edge.
+    void setLeftPoint(const QPointF& p);
+
+    /// Return the middle control point of the left edge.
+    QPointF leftPoint() const;
+
+    /// Set the middle control point of the right edge.
+    void setRightPoint(const QPointF& p);
+
+    /// Return the middle control point of the right edge.
+    QPointF rightPoint() const;
+
     /// Return a new edge list for the given image.
     static EdgeDetection detect_in_image(const QImage& image);
 
