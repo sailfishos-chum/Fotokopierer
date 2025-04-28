@@ -53,6 +53,7 @@ A camera-scanning application for Sailfish OS.
 
 %prep
 %setup -n %{name}-%{version}
+# >> setup
 rm -rf %{_sourcedir}/../3rdparty
 mkdir %{_sourcedir}/../3rdparty
 pushd %{_sourcedir}/../3rdparty
@@ -60,12 +61,9 @@ unzip %{SOURCE1}
 tar -xzf %{SOURCE2}
 tar -xzf %{SOURCE3}
 
-# >> setup
-# << setup
-
 %build
-rm -rf rpmbuilddir-%{_arch}
 # >> build pre
+rm -rf rpmbuilddir-%{_arch}
 mkdir rpmbuilddir-%{_arch}
 
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/opencv
