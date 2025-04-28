@@ -74,6 +74,7 @@ DragDelegate {
 
                 Image {
                     source: dragDelegate.thumbnail
+                    cache: false
                     anchors.fill: parent
                     fillMode: Image.PreserveAspectFit
                 }
