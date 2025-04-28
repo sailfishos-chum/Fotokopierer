@@ -55,7 +55,19 @@ Page {
                 pageContainer.pushAttached(colpage)
                 colpage.accepted.connect(function() {
                     document.addPage(plain, colpage.image)
-                    plain.destroy()
+                })
+
+                // Ensure the pages are destroyed once the are dropped from the
+                // stack. This is necessary so that the memory allocated by the
+                // image classes is freed (the memory is allocated on the C++
+                // side and not possibly not visible for the QML garbage
+                // collector).
+                cutpage.pageContainerChanged.connect(function() {
+                    if (cutpage.pageContainer == null) {
+                        colpage.destroy()
+                        cutpage.destroy()
+                        plain.destroy()
+                    }
                 })
             }
         }
