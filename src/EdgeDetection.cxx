@@ -44,7 +44,7 @@ void transpose(QLineF& l)
 
 }  // namespace
 
-struct EdgeList::Data {
+struct EdgeDetection::Data {
     // The default lower threshold value for canny edge detection
     const int DefaultCannyMin = 10;
     // The default upper threshold value for canny edge detection
@@ -87,96 +87,116 @@ struct EdgeList::Data {
     std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const;
 };
 
-EdgeList::EdgeList(std::unique_ptr<Data>&& d)
+EdgeDetection::EdgeDetection(std::unique_ptr<Data>&& d)
     : d(std::move(d)) {}
 
-EdgeList::EdgeList(EdgeList&&) noexcept = default;
+EdgeDetection::EdgeDetection(EdgeDetection&&) noexcept = default;
 
-EdgeList& EdgeList::operator=(EdgeList&&) noexcept = default;
+EdgeDetection& EdgeDetection::operator=(EdgeDetection&&) noexcept = default;
 
-EdgeList::~EdgeList() = default;
+EdgeDetection::~EdgeDetection() = default;
 
-void EdgeList::setCannyMinValue(int minVal)
+void EdgeDetection::setCannyMinValue(int minVal)
 {
     d->cannyMinVal = qMax(minVal, 0);
 }
 
-int EdgeList::cannyMinValue() const
+int EdgeDetection::cannyMinValue() const
 {
     return d->cannyMinVal;
 }
 
-void EdgeList::setCannyMaxValue(int maxVal)
+void EdgeDetection::setCannyMaxValue(int maxVal)
 {
     d->cannyMaxVal = qMax(0, maxVal);
 }
 
-int EdgeList::cannyMaxValue() const
+int EdgeDetection::cannyMaxValue() const
 {
     return d->cannyMaxVal;
 }
 
-void EdgeList::setBlurRadius(int radius)
+void EdgeDetection::setBlurRadius(int radius)
 {
     d->blurRadius = qMax(0, radius);
 }
 
-int EdgeList::blurRadius() const
+int EdgeDetection::blurRadius() const
 {
     return d->blurRadius;
 }
 
-void EdgeList::setContrastFactor(qreal factor)
+void EdgeDetection::setContrastFactor(qreal factor)
 {
     d->contrastFactor = qMax(static_cast<qreal>(0), factor);
 }
 
-qreal EdgeList::contrastFactor() const
+qreal EdgeDetection::contrastFactor() const
 {
     return d->contrastFactor;
 }
 
-QImage EdgeList::image() const
+QImage EdgeDetection::image() const
 {
     return d->image;
 }
 
-QImage EdgeList::gray_image() const
+QImage EdgeDetection::gray_image() const
 {
     return d->gray_image;
 }
 
-QImage EdgeList::bw_image() const
+QImage EdgeDetection::bw_image() const
 {
     return d->bw_image;
 }
 
-std::vector<QPointF> EdgeList::points() const
+std::vector<QPointF> EdgeDetection::points() const
 {
     return {topLeft(), topRight(), bottomRight(), bottomLeft()};
 }
 
-QPointF EdgeList::topLeft() const
+void EdgeDetection::setTopLeft(const QPointF& tl)
+{
+    d->quad.tl = tl;
+}
+
+QPointF EdgeDetection::topLeft() const
 {
     return d->quad.tl;
 }
 
-QPointF EdgeList::topRight() const
+void EdgeDetection::setTopRight(const QPointF& tr)
+{
+    d->quad.tr = tr;
+}
+
+QPointF EdgeDetection::topRight() const
 {
     return d->quad.tr;
 }
 
-QPointF EdgeList::bottomLeft() const
+void EdgeDetection::setBottomLeft(const QPointF& bl)
+{
+    d->quad.bl = bl;
+}
+
+QPointF EdgeDetection::bottomLeft() const
 {
     return d->quad.bl;
 }
 
-QPointF EdgeList::bottomRight() const
+void EdgeDetection::setBottomRight(const QPointF& br)
+{
+    d->quad.br = br;
+}
+
+QPointF EdgeDetection::bottomRight() const
 {
     return d->quad.br;
 }
 
-std::vector<QLineF> EdgeList::vertical_lines() const
+std::vector<QLineF> EdgeDetection::vertical_lines() const
 {
     std::vector<QLineF> vlines;
     vlines.reserve(d->vlines.size());
@@ -186,7 +206,7 @@ std::vector<QLineF> EdgeList::vertical_lines() const
     return vlines;
 }
 
-std::vector<QLineF> EdgeList::horizontal_lines() const
+std::vector<QLineF> EdgeDetection::horizontal_lines() const
 {
     std::vector<QLineF> hlines;
     hlines.reserve(d->hlines.size());
@@ -196,7 +216,7 @@ std::vector<QLineF> EdgeList::horizontal_lines() const
     return hlines;
 }
 
-void EdgeList::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
+void EdgeDetection::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
 {
     // the original image
     auto img_cut = QImageToCvMat(image, false);
@@ -235,7 +255,7 @@ void EdgeList::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
     }
 }
 
-void EdgeList::Data::filter_by_angle(const std::vector<QLineF>& all_lines, std::vector<QLineF>& hlines, std::vector<QLineF>& vlines)
+void EdgeDetection::Data::filter_by_angle(const std::vector<QLineF>& all_lines, std::vector<QLineF>& hlines, std::vector<QLineF>& vlines)
 {
     for (auto l : all_lines) {
         auto dy = std::abs(l.y2() - l.y1());
@@ -261,7 +281,7 @@ void EdgeList::Data::filter_by_angle(const std::vector<QLineF>& all_lines, std::
     }
 }
 
-void EdgeList::update()
+void EdgeDetection::update()
 {
     // find candidate lines
     std::vector<QLineF> all_lines;
@@ -275,16 +295,16 @@ void EdgeList::update()
     d->find_best_match();
 }
 
-EdgeList EdgeList::detect_in_image(const QImage& image)
+EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
 {
     auto d = std::make_unique<Data>();
     d->image = image;
-    auto edges = EdgeList(std::move(d));
+    auto edges = EdgeDetection(std::move(d));
     edges.update();
     return edges;
 }
 
-bool EdgeList::Data::distances_to_intersection(const QLineF& l1, const QLineF& l2, qreal& alpha, qreal& beta)
+bool EdgeDetection::Data::distances_to_intersection(const QLineF& l1, const QLineF& l2, qreal& alpha, qreal& beta)
 {
     auto a = -l1.dx();
     auto b = l2.dx();
@@ -302,7 +322,7 @@ bool EdgeList::Data::distances_to_intersection(const QLineF& l1, const QLineF& l
     return true;
 }
 
-void EdgeList::Data::filter_by_length(std::vector<QLineF>& edges)
+void EdgeDetection::Data::filter_by_length(std::vector<QLineF>& edges)
 {
     if (edges.empty()) return;
 
@@ -322,7 +342,7 @@ void EdgeList::Data::filter_by_length(std::vector<QLineF>& edges)
     edges.resize(edges.size() - ndel, edges[0]);
 }
 
-void EdgeList::Data::cluster_edges()
+void EdgeDetection::Data::cluster_edges()
 {
     cluster_edges(hlines, width, height);
 
@@ -331,7 +351,7 @@ void EdgeList::Data::cluster_edges()
     for (auto& e : vlines) transpose(e);
 }
 
-void EdgeList::Data::cluster_edges(std::vector<QLineF>& hlines, qreal w, qreal h)
+void EdgeDetection::Data::cluster_edges(std::vector<QLineF>& hlines, qreal w, qreal h)
 {
     std::vector<QLineF> finaledges;
     std::vector<qreal> y_0, y_w;
@@ -402,7 +422,7 @@ void EdgeList::Data::cluster_edges(std::vector<QLineF>& hlines, qreal w, qreal h
     hlines = finaledges;
 }
 
-void EdgeList::Data::find_best_match()
+void EdgeDetection::Data::find_best_match()
 {
     // find possible matches for each line
     left_lines.assign(hlines.size(), {});
@@ -468,7 +488,7 @@ void EdgeList::Data::find_best_match()
     }
 }
 
-auto EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const -> std::pair<qreal, Quadrangle>
+auto EdgeDetection::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const -> std::pair<qreal, Quadrangle>
 {
     QPointF tl, tr, br, bl;
 

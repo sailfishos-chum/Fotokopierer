@@ -135,7 +135,7 @@ QVariantList CutFilter::autoDetectCutRect()
     QImage img =
         previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
 
-    auto edges = EdgeList::detect_in_image(img);
+    auto edges = EdgeDetection::detect_in_image(img);
 
     d->topleft = scale(edges.topLeft(), img);
     d->topright = scale(edges.topRight(), img);

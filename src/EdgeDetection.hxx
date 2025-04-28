@@ -27,18 +27,18 @@ class QImage;
 class QLineF;
 class QPointF;
 
-class EdgeList
+class EdgeDetection
 {
 public:
-    EdgeList(const EdgeList&) = delete;
+    EdgeDetection(const EdgeDetection&) = delete;
 
-    EdgeList(EdgeList&&) noexcept;
+    EdgeDetection(EdgeDetection&&) noexcept;
 
-    EdgeList& operator=(const EdgeList&) = delete;
+    EdgeDetection& operator=(const EdgeDetection&) = delete;
 
-    EdgeList& operator=(EdgeList&&) noexcept;
+    EdgeDetection& operator=(EdgeDetection&&) noexcept;
 
-    ~EdgeList();
+    ~EdgeDetection();
 
     /// Set the lower threshold value for canny edge detection.
     void setCannyMinValue(int minVal);
@@ -110,13 +110,13 @@ public:
     QPointF bottomRight() const;
 
     /// Return a new edge list for the given image.
-    static EdgeList detect_in_image(const QImage& image);
+    static EdgeDetection detect_in_image(const QImage& image);
 
 private:
     struct Data;
     std::unique_ptr<Data> d;
 
-    EdgeList(std::unique_ptr<Data>&& d);
+    EdgeDetection(std::unique_ptr<Data>&& d);
 };
 
 #endif
