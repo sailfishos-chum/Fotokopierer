@@ -44,6 +44,16 @@ Page {
         pageStack.pushAttached(colpage)
     }
 
+    function focusColor() {
+        if (camera.lockStatus == Camera.Unlocked) {
+            return Theme.highlightColor;
+        } else if (camera.lockStatus == Camera.Searching) {
+            return Theme.secondaryColor;
+        } else {
+            return Theme.primaryColor;
+        }
+    }
+
     ImagePickerPage {
         id: picker
 
@@ -88,13 +98,16 @@ Page {
             }
             onImageSaved: {
                 console.log("save image: " + path)
+
+                camera.unlock()
+                camera.focus.focusMode = Camera.FocusContinuous
+                camera.focus.focusPointMode = Camera.FocusPointAuto
+
+                focusCircle.x = viewArea.width / 2
+                focusCircle.y = viewArea.height / 2
+
                 processImage(path, true)
             }
-        }
-
-        focus {
-            focusMode: Camera.FocusContinuous
-            focusPointMode: Camera.FocusPointCenter
         }
 
         flash.mode: Camera.FlashOff
@@ -108,10 +121,17 @@ Page {
             exposureMode: Camera.ExposureAuto
         }
 
+        focus {
+            focusMode: Camera.FocusContinuous
+            focusPointMode: Camera.FocusPointAuto
+        }
+
         metaData.orientation: orientation
     }
 
     Rectangle {
+        id: viewArea
+
         anchors.top: header.bottom
         anchors.bottom: buttons.top
         anchors.left: parent.left
@@ -124,6 +144,34 @@ Page {
             orientation: camera.orientation
             focus: visible
             source: camera
+        }
+
+        Rectangle {
+            id: focusCircle
+            height: Theme.itemSizeHuge
+            width: height
+            radius: width / 2
+            border.width: 2
+            border.color: focusColor()
+            color: "transparent"
+            x: parent.width / 2
+            y: parent.height / 2
+            transform: Translate {
+                x: -focusCircle.width / 2
+                y: -focusCircle.height / 2
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                focusCircle.x = mouse.x
+                focusCircle.y = mouse.y
+                camera.focus.focusMode = Camera.FocusAuto
+                camera.focus.focusPointMode = Camera.FocusPointCustom;
+                camera.focus.setCustomFocusPoint(Qt.point((mouse.x / parent.width), (mouse.y / parent.height)));
+                camera.searchAndLock()
+            }
         }
     }
 
