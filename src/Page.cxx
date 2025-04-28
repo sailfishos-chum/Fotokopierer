@@ -155,6 +155,23 @@ void Page::updateFromScanner(const Scanner* scanner,
     }));
 }
 
+QString findUniqueFilename(const QString& original_path)
+{
+    static const int MAX_COPIES = 1000;  // Maximal number of copies of the same page.
+
+    auto path = original_path;
+    for (int i = 1; i < MAX_COPIES; i++) {
+        if (!QFileInfo::exists(path)) {
+            return path;
+        }
+
+        QFileInfo f(original_path);
+        path = QStringLiteral("%1/%2-%3.%4").arg(f.path()).arg(f.baseName()).arg(i).arg(f.completeSuffix());
+    }
+
+    return {};
+}
+
 void Page::initCopy(const QDir& dir, const Page* source)
 {
     setStatus(Generating);
@@ -167,11 +184,18 @@ void Page::initCopy(const QDir& dir, const Page* source)
     auto src_original_path = source->d->original_path;
     auto src_result_path = source->d->result_path;
 
-    auto original_path = dir.filePath(QFileInfo(src_original_path).fileName());
-    auto result_path = dir.filePath(QFileInfo(src_result_path).fileName());
+    auto original_pth = dir.filePath(QFileInfo(src_original_path).fileName());
+    auto result_pth = dir.filePath(QFileInfo(src_result_path).fileName());
 
     d->generating.setFuture(QtConcurrent::run(
-        [this, src_original_path, src_result_path, original_path, result_path]() {
+        [this, src_original_path, src_result_path, original_pth, result_pth]() {
+            auto original_path = findUniqueFilename(original_pth);
+            auto result_path = findUniqueFilename(result_pth);
+
+            if (original_path.isEmpty() || result_path.isEmpty()) {
+                return false;
+            }
+
             if (!QFile::copy(src_original_path, original_path)) {
                 return false;
             }
