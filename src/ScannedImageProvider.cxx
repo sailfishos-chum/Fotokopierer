@@ -314,10 +314,10 @@ double getAspectRatio(const QPointF& tl,
     double c_bl = b_bl - b_tl / a_tl * a_bl;
     double c_tr = b_tr - b_tl / a_tl * a_tr;
 
-    double d_tr = 1.0;
-    double d_bl = -c_tr / c_bl;
-    double d_tl = c_tr * a_bl / c_bl / a_tl - a_tr / a_tl;
-    // double d_br = -c_tr / c_bl + 1 + a_tr / a_tl - c_tr * a_bl / c_bl / a_tl;
+    double d_tr = a_tl * c_bl;
+    double d_bl = -c_tr * a_tl;
+    double d_tl = c_tr * a_bl - a_tr * c_bl;
+    // double d_br = -c_tr * a_tl + a_tl * c_bl - c_tr * a_bl + a_tr * c_bl;
 
     double norm_horiz =
         (std::pow(d_tr * tr.x() - d_tl * tl.x(), 2) +
