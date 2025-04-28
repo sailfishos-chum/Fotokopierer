@@ -260,6 +260,32 @@ void Document::move(int from, int to)
     }
 }
 
+Page* Document::newPage()
+{
+    if (d->status != Ready) {
+        emit error(tr("Cannot add page, document is not ready"));
+        return nullptr;
+    }
+
+    auto dir = QFileInfo(d->doc.filename).dir();
+    if (!dir.exists()) {
+        dir.mkpath(QStringLiteral("."));
+    }
+
+    QSharedPointer<Page> page(new Page(this));
+    connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+    connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
+    connect(page.data(), &Page::error, this, &Document::error);
+
+    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
+    d->doc.pages.push_back(page);
+    endInsertRows();
+
+    emit pagesChanged();
+
+    return page.data();
+}
+
 void Document::addScannedPage(Scanner* scanner)
 {
     if (d->status != Ready) {

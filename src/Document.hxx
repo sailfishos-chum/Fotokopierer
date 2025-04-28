@@ -98,6 +98,11 @@ public:
     /// accessibly as a property.
     QStringList thumbnails() const;
 
+    /// Create and return a new empty page.
+    ///
+    /// Return nullptr if the document is not Ready.
+    Page *newPage();
+
     /// Add a newly scanned page to the document.
     ///
     /// The new page will be created with the given original and result image
