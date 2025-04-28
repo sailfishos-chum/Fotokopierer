@@ -20,6 +20,8 @@
 
 #include "Filter.hxx"
 
+#include <QtCore/QPointF>
+
 #include <memory>
 
 class CutFilter : public Filter
