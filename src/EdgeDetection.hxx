@@ -96,6 +96,9 @@ public:
     /// Return whether auto-detection/edge-detection is available.
     bool hasAutoDetection() const;
 
+    /// Return whether auto-detection is currently running.
+    bool isAutoDetectionRunning() const;
+
     /// Select the auto-detected area.
     ///
     /// Returns `true` if successful.
@@ -184,6 +187,8 @@ signals:
     void edgeDetectionFinished();
 
     void hasAutoDetectionChanged();
+
+    void isAutoDetectionRunningChanged();
 
 private slots:
     void onAutoDetectFinished();

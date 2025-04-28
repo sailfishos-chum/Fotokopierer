@@ -103,6 +103,7 @@ struct EdgeDetection::Data {
     QImage bw_image;
 #endif
 
+    bool auto_detect_running = false;
     bool auto_select_finished = false;
     bool have_auto_select = false;
     QFutureWatcher<bool> auto_detection = QFutureWatcher<bool>();
@@ -441,6 +442,11 @@ void EdgeDetection::Data::filter_by_angle(const std::vector<QLineF>& all_lines, 
     }
 }
 
+bool EdgeDetection::isAutoDetectionRunning() const
+{
+    return d->auto_detect_running;
+}
+
 bool EdgeDetection::hasAutoDetection() const
 {
     return d->have_auto_select;
@@ -451,6 +457,8 @@ void EdgeDetection::startAutoDetect()
     if (d->auto_select_finished) {
         emit edgeDetectionFinished();
     } else {
+        d->auto_detect_running = true;
+        emit isAutoDetectionRunningChanged();
         d->auto_detection.setFuture(QtConcurrent::run([this]() {
             d->doAutoDetect();
             return true;
@@ -460,12 +468,16 @@ void EdgeDetection::startAutoDetect()
 
 void EdgeDetection::onAutoDetectFinished()
 {
+    d->auto_detect_running = false;
+    emit isAutoDetectionRunningChanged();
+
     d->auto_select_finished = true;
     auto have_auto_select = d->auto_detection.result();
     if (have_auto_select != d->have_auto_select) {
         d->have_auto_select = have_auto_select;
         emit hasAutoDetectionChanged();
     }
+
     emit edgeDetectionFinished();
 }
 
