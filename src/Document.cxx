@@ -132,7 +132,7 @@ void Document::addPage(BaseImage *original, BaseImage *result)
     auto dir = QFileInfo(d->filename).dir();
 
     auto original_path =
-        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.png"));
+        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
     auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
 
     if (!original_img.save(original_path)) {
