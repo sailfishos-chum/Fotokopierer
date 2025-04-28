@@ -73,7 +73,7 @@ struct Document::DocData {
     QDateTime creation_time;              ///< time when the document has been created
     QVector<QSharedPointer<Page>> pages;  ///< page of the document
 
-    static DocData fromFile(const QString& filename);
+    static DocData fromFile(Document* document, const QString& filename);
 };
 
 struct Document::Data {
@@ -299,6 +299,7 @@ void Document::addPage(const QImage& original, const QImage& result)
 
     connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
     connect(p.data(), &Page::statusChanged, this, &Document::updatePage);
+    connect(p.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
     d->doc.pages.push_back(p);
@@ -325,6 +326,7 @@ void Document::addScannedPage(ScanImage* image)
     QSharedPointer<Page> page(new Page(dir, image, this));
     connect(page.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
     connect(page.data(), &Page::statusChanged, this, &Document::updatePage);
+    connect(page.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
     d->doc.pages.push_back(page);
@@ -421,7 +423,7 @@ bool Document::load(const QString& filename)
     }
 
     try {
-        setDocData(DocData::fromFile(filename));
+        setDocData(DocData::fromFile(this, filename));
         setStatus(Ready);
     } catch (ReadError& e) {
         setStatus(Invalid);
@@ -442,11 +444,11 @@ void Document::loadAsync(const QString& filename)
     setStatus(Loading);
     d->pendingDoc.setFuture(
         QtConcurrent::run([this, filename]() {
-            return DocData::fromFile(filename);
+            return DocData::fromFile(this, filename);
         }));
 }
 
-Document::DocData Document::DocData::fromFile(const QString& filename)
+Document::DocData Document::DocData::fromFile(Document* document, const QString& filename)
 {
     auto tr = [](const char* source) { return QCoreApplication::translate("Document", source); };
 
@@ -481,6 +483,11 @@ Document::DocData Document::DocData::fromFile(const QString& filename)
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
         }
         QSharedPointer<Page> p(new Page);
+
+        connect(p.data(), &Page::thumbnailChanged, document, &Document::updateThumbnail);
+        connect(p.data(), &Page::statusChanged, document, &Document::updatePage);
+        connect(p.data(), &Page::error, document, &Document::error);
+
         if (!p->read(page.toObject())) {
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
@@ -490,12 +497,12 @@ Document::DocData Document::DocData::fromFile(const QString& filename)
 
     ensureNoMedia(QFileInfo(file).absolutePath());
 
-    DocData document;
-    document.title = title.isString() ? title.toString() : ctime.toString();
-    document.filename = filename;
-    document.creation_time = ctime;
-    document.pages = docpages;
-    return document;
+    DocData d;
+    d.title = title.isString() ? title.toString() : ctime.toString();
+    d.filename = filename;
+    d.creation_time = ctime;
+    d.pages = docpages;
+    return d;
 }
 
 void Document::updateThumbnail()
