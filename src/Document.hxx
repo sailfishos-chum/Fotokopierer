@@ -38,6 +38,7 @@ class Document : public QAbstractListModel
     Q_PROPERTY(QString defaultTitle READ defaultTitle NOTIFY defaultTitleChanged)
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
     Q_PROPERTY(QStringList thumbnails READ thumbnails NOTIFY pagesChanged)
+    Q_PROPERTY(int numPages READ numPages NOTIFY pagesChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
