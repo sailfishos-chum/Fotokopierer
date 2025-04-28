@@ -27,6 +27,8 @@
 class Page;
 class Scanner;
 
+class QDir;
+
 /// A scanned document
 ///
 /// This is an ordered collection of scanned pages.
@@ -128,6 +130,9 @@ public:
 
     /// Return the current status.
     Status status() const;
+
+    /// Return the document's directory.
+    QDir directory() const;
 
 public slots:
     /// Set the document title.

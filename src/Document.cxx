@@ -187,6 +187,11 @@ int Document::rowCount(const QModelIndex& parent) const
     return d->doc.pages.size();
 }
 
+QDir Document::directory() const
+{
+    return QFileInfo(d->doc.filename).dir();
+}
+
 void Document::onPendingDocFinished()
 {
     try {
@@ -267,7 +272,7 @@ Page* Document::newPage()
         return nullptr;
     }
 
-    auto dir = QFileInfo(d->doc.filename).dir();
+    auto dir = directory();
     if (!dir.exists()) {
         dir.mkpath(QStringLiteral("."));
     }
@@ -295,7 +300,7 @@ void Document::addScannedPage(Scanner* scanner)
 
     setStatus(Adding);
 
-    auto dir = QFileInfo(d->doc.filename).dir();
+    auto dir = directory();
     if (!dir.exists()) {
         dir.mkpath(QStringLiteral("."));
     }
