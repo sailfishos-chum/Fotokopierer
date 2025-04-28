@@ -65,14 +65,17 @@ Page {
         }
     }
 
-    ImagePickerPage {
+    Component {
         id: picker
+        ImagePickerPage {
+            id: picker
 
-        // Note that this property might become unsupported in future
-        popOnSelection: false
+            // Note that this property might become unsupported in future
+            popOnSelection: false
 
-        onSelectedContentPropertiesChanged: {
-            processImage(selectedContentProperties.filePath, false)
+            onSelectedContentPropertiesChanged: {
+                processImage(selectedContentProperties.filePath, false)
+            }
         }
     }
 
@@ -222,9 +225,7 @@ Page {
             IconButton {
                 width: parent.width / 3
                 icon.source: "image://theme/icon-m-image"
-                onClicked: {
-                    pageStack.push(picker)
-                }
+                onClicked: pageStack.push(picker)
             }
         }
     }
