@@ -19,13 +19,10 @@
 
 #include "Convert.hxx"
 
-#include <QDebug>
 #include <QtCore/QJsonObject>
 #include <QtGui/QImage>
 
 #include <opencv2/imgproc/imgproc.hpp>
-
-#include <iostream>
 
 struct ColorizeFilter::Data {
     double contrast = 0.5;
@@ -147,11 +144,9 @@ void ColorizeFilter::loadJson(const QJsonObject& object)
 
 QImage ColorizeFilter::apply(QImage&& image)
 {
-    qDebug() << "APPLY COLOR FILTER";
     if (image.isNull()) {
         return image;
     }
-    qDebug() << "APPLY COLOR FILTER #2";
 
     auto img_cut = QImageToCvMat(image, false);
 
