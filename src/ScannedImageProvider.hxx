@@ -58,6 +58,11 @@ public:
                      const QPointF& bottomright,
                      const QPointF& bottomleft);
 
+    /// Auto detect cut box.
+    ///
+    /// Sets and returns the corner points.
+    QList<QPointF> autoDetectCutRect(const QString& image);
+
     /// Set the contrast of the image.
     void setContrast(const QString& image, double contrast);
 

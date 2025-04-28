@@ -55,3 +55,13 @@ bool ScannedImage::set_cut_box(const QPointF& topleft,
     return ScannedImageProvider::instance->set_cut_box(
         d->image, topleft, topright, bottomright, bottomleft);
 }
+
+QVariantList ScannedImage::autoDetectCutRect()
+{
+    auto pts = ScannedImageProvider::instance->autoDetectCutRect(d->image);
+    QVariantList lst;
+    for (auto p : pts) {
+        lst << p;
+    }
+    return lst;
+}

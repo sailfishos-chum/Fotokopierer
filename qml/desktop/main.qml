@@ -90,6 +90,10 @@ ApplicationWindow {
             }
 
             Button {
+                text: "Auto"
+                onClicked: cutimage.selectAuto()            }
+
+            Button {
                 text: "Accept"
                 onClicked: {
                     cutbox.visible = false

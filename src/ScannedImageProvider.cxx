@@ -27,6 +27,8 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <cmath>
+
 namespace
 {
 /// The valid states of the image transformation.
@@ -379,6 +381,9 @@ const cv::Mat& getCutImage(ImageSet& img)
                                     QPointF{tr.x - w / 2, tr.y - h / 2} / 100,
                                     QPointF{br.x - w / 2, br.y - h / 2} / 100,
                                     QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
+
+        qDebug() << "Approximate aspect ratio: " << ratio;
+
         float height = cv::max(cv::norm(tr - br), cv::norm(tl - bl));
         float width = height * ratio;
 
@@ -492,4 +497,144 @@ const cv::Mat& getColorizedImage(ImageSet& img)
     } else {
         return img.colorized;
     }
+}
+
+QList<QPointF> ScannedImageProvider::autoDetectCutRect(const QString& image)
+{
+    auto img = d->images.find(image);
+    if (img == d->images.end()) {
+        qWarning() << "(autoDetectCutRect) Unknown image id: " << image;
+        return {};
+    }
+
+    auto img_cut = getRotatedImage(*img);
+    auto width = img_cut.cols;
+    auto height = img_cut.rows;
+
+    cv::Mat img_gray;
+    cv::cvtColor(img_cut, img_gray, cv::COLOR_BGR2GRAY);
+
+    cv::blur(img_gray, img_gray, {3, 3});
+    cv::Mat img_edges;
+    cv::Canny(img_gray, img_edges, 10, 40);
+
+    std::vector<cv::Vec4i> lines;
+    cv::HoughLinesP(
+        img_edges, lines, 1, CV_PI / 180, 80, 30, img_gray.cols / 10);
+
+    // partition the lines according to their angles into horizontal
+    // and vertical ones
+    auto mid = std::partition(lines.begin(), lines.end(), [](auto& line) {
+        return std::abs(line[0] - line[2]) > std::abs(line[1] - line[3]);
+    });
+
+    // horizontal scores
+    auto h_score = [height](auto& l) {
+        auto len =
+            std::sqrt(std::pow(l[0] - l[2], 2) + std::pow(l[1] - l[3], 2));
+        auto pos = (l[1] + l[3] - height) / 2.0;
+        return len * pos;
+    };
+
+    // vertical scores
+    auto v_score = [width](auto& l) {
+        auto len =
+            std::sqrt(std::pow(l[0] - l[2], 2) + std::pow(l[1] - l[3], 2));
+        auto pos = (l[0] + l[2] - width) / 2.0;
+        return len * pos;
+    };
+
+    std::sort(lines.begin(), mid, [&](auto& l1, auto& l2) {
+        return h_score(l1) < h_score(l2);
+    });
+
+    std::sort(mid, lines.end(), [&](auto& l1, auto& l2) {
+        return v_score(l1) < v_score(l2);
+    });
+
+    QLineF top_line, bottom_line, left_line, right_line;
+
+    if (mid != lines.begin()) {
+        top_line.setLine(lines[0][0], lines[0][1], lines[0][2], lines[0][3]);
+        bottom_line.setLine(mid[-1][0], mid[-1][1], mid[-1][2], mid[-1][3]);
+    } else {
+        top_line.setLine(0, 0, width, 0);
+        bottom_line.setLine(0, height, width, height);
+    }
+
+    if (mid != lines.end()) {
+        left_line.setLine((*mid)[0], (*mid)[1], (*mid)[2], (*mid)[3]);
+        right_line.setLine(lines.end()[-1][0],
+                           lines.end()[-1][1],
+                           lines.end()[-1][2],
+                           lines.end()[-1][3]);
+    } else {
+        left_line.setLine(0, 0, 0, height);
+        right_line.setLine(width, 0, width, height);
+    }
+
+    QPointF topleft, topright, bottomright, bottomleft;
+    if (!top_line.intersect(left_line, &topleft)) {
+        topleft = {0, 0};
+    }
+    if (!top_line.intersect(right_line, &topright)) {
+        topright = {(qreal)width, 0};
+    }
+    if (!bottom_line.intersect(left_line, &bottomleft)) {
+        bottomleft = {0, (qreal)height};
+    }
+    if (!bottom_line.intersect(right_line, &bottomright)) {
+        bottomright = {(qreal)width, (qreal)height};
+    }
+
+    auto project = [width, height](auto& p) {
+        p.setX(std::max(0.0, std::min(1.0, p.x() / width)));
+        p.setY(std::max(0.0, std::min(1.0, p.y() / height)));
+    };
+
+    project(topleft);
+    project(topright);
+    project(bottomleft);
+    project(bottomright);
+
+    // img->rotated = img_cut.clone();
+    // for (auto line : lines) {
+    //     std::cout << line << std::endl;
+    //     cv::line(img->rotated,
+    //              {line[0], line[1]},
+    //              {line[2], line[3]},
+    //              CV_RGB(255, 0, 0),
+    //              5,
+    //              cv::LINE_8);
+    // }
+
+    // cv::line(img->rotated,
+    //          {top_line[0], top_line[1]},
+    //          {top_line[2], top_line[3]},
+    //          CV_RGB(0, 255, 0),
+    //          10,
+    //          cv::LINE_8);
+
+    // cv::line(img->rotated,
+    //          {bottom_line[0], bottom_line[1]},
+    //          {bottom_line[2], bottom_line[3]},
+    //          CV_RGB(0, 255, 0),
+    //          10,
+    //          cv::LINE_8);
+
+    // cv::line(img->rotated,
+    //          {left_line[0], left_line[1]},
+    //          {left_line[2], left_line[3]},
+    //          CV_RGB(0, 255, 0),
+    //          10,
+    //          cv::LINE_8);
+
+    // cv::line(img->rotated,
+    //          {right_line[0], right_line[1]},
+    //          {right_line[2], right_line[3]},
+    //          CV_RGB(0, 255, 0),
+    //          10,
+    //          cv::LINE_8);
+
+    return {topleft, topright, bottomright, bottomleft};
 }

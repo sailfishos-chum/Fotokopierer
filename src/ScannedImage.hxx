@@ -20,6 +20,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QScopedPointer>
+#include <QtCore/QVariant>
 
 #include <QtGui/QPixmap>
 
@@ -35,7 +36,10 @@ public:
     ~ScannedImage();
 
     QString originalImage() const;
+
     QString cutImage() const;
+
+    Q_INVOKABLE QVariantList autoDetectCutRect();
 
     Q_INVOKABLE void set_angle(double angle);
 

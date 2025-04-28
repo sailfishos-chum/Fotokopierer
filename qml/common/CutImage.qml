@@ -57,6 +57,22 @@ Item {
         bottomleft.y = bottomright.y
     }
 
+    function selectAuto() {
+        var points = img.autoDetectCutRect()
+        var offx = (pane.width - image.paintedWidth) / 2 - markerRadius
+        var offy = (pane.height - image.paintedHeight) / 2 - markerRadius
+        var w = image.paintedWidth
+        var h = image.paintedHeight
+        topleft.x = points[0].x * w + offx
+        topleft.y = points[0].y * h + offy
+        topright.x = points[1].x * w + offx
+        topright.y = points[1].y * h + offy
+        bottomright.x = points[2].x * w + offx
+        bottomright.y = points[2].y * h + offy
+        bottomleft.x = points[3].x * w + offx
+        bottomleft.y = points[3].y * h + offy
+    }
+
     ScannedImage {
         id: img
     }
