@@ -141,6 +141,7 @@ void Document::setTitle(const QString& title)
 {
     if (title != d->doc.title) {
         d->doc.title = title;
+        save();
         emit titleChanged();
     }
 }
