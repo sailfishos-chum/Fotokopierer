@@ -125,6 +125,14 @@ Page {
 
         model: visualModel
 
+        PullDownMenu {
+            MenuItem {
+                text: qsTr("About %1").arg(Fotokopierer.ApplicationName)
+                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
+            }
+        }
+
+
         VerticalScrollDecorator {}
 
         MouseArea {
