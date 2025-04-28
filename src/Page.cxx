@@ -108,14 +108,12 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
 
         if (!original.save(original_path)) {
             qWarning() << "Page could not be created: error saving original image";
-            throw GeneratingError(
-                QStringLiteral("Page could not be created: error saving original image"));
+            throw GeneratingError(tr("Page could not be created: error saving original image"));
         };
 
         if (!result.save(result_path)) {
             qWarning() << "Page could not be created: error saving result image";
-            throw GeneratingError(
-                QStringLiteral("Page could not be created: error saving result image"));
+            throw GeneratingError(tr("Page could not be created: error saving result image"));
         };
 
         return true;
