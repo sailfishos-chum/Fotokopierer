@@ -17,6 +17,8 @@
 
 #include "ColorizeView.hxx"
 
+#include "ColorizeChooser.hxx"
+#include "Convert.hxx"
 #include "ScanImage.hxx"
 #include "Scanner.hxx"
 
@@ -25,20 +27,23 @@
 #include <QtCore/QFutureWatcher>
 #include <QtGui/QImage>
 
+#include <opencv2/imgproc.hpp>
+
 struct ColorizeView::Data {
-    qreal contrast = 0.5;
-    qreal brightness = 0.5;
-    qreal details = 0.5;
+    ScanImage::Parameters params;
     ColorMode colorMode = ColorMode::FullColor;
+    ColorizeChooser* colorizeChooser = nullptr;
 
     std::shared_ptr<ScanImage> scanImage = nullptr;
-    QImage scaled;
+    cv::Mat scaled;
+    cv::Mat hsv, mask;
 
-    QFutureWatcher<QImage> image = QFutureWatcher<QImage>();
+    QFutureWatcher<cv::Mat> image = QFutureWatcher<cv::Mat>();
     bool hasImage = false;
     bool need_restart = false;
 
     QMetaObject::Connection cutImageChangedConnection = {};
+    QMetaObject::Connection startCutImageUpdateConnection = {};
 };
 
 ColorizeView::ColorizeView(QQuickItem* parent)
@@ -51,14 +56,14 @@ ColorizeView::~ColorizeView() = default;
 
 qreal ColorizeView::contrast() const
 {
-    return d->contrast;
+    return d->params.contrast;
 }
 
 void ColorizeView::setContrast(qreal contrast)
 {
     contrast = qBound(static_cast<qreal>(0.0), contrast, static_cast<qreal>(1.0));
-    if (contrast != d->contrast) {
-        d->contrast = contrast;
+    if (contrast != d->params.contrast) {
+        d->params.contrast = contrast;
         emit contrastChanged();
         updateView();
     }
@@ -66,30 +71,45 @@ void ColorizeView::setContrast(qreal contrast)
 
 qreal ColorizeView::brightness() const
 {
-    return d->brightness;
+    return d->params.brightness;
 }
 
 void ColorizeView::setBrightness(qreal brightness)
 {
     brightness = qBound(static_cast<qreal>(0.0), brightness, static_cast<qreal>(1.0));
-    if (brightness != d->brightness) {
-        d->brightness = brightness;
+    if (brightness != d->params.brightness) {
+        d->params.brightness = brightness;
         emit brightnessChanged();
         updateView();
     }
 }
 
-qreal ColorizeView::details() const
+qreal ColorizeView::threshold() const
 {
-    return d->details;
+    return d->params.threshold_c;
 }
 
-void ColorizeView::setDetails(qreal details)
+void ColorizeView::setThreshold(qreal threshold)
 {
-    details = qBound(static_cast<qreal>(0.0), details, static_cast<qreal>(1.0));
-    if (details != d->details) {
-        d->details = details;
-        emit detailsChanged();
+    threshold = qBound(static_cast<qreal>(0.0), threshold, static_cast<qreal>(1.0));
+    if (threshold != d->params.threshold_c) {
+        d->params.threshold_c = threshold;
+        emit thresholdChanged();
+        updateView();
+    }
+}
+
+qreal ColorizeView::blockSize() const
+{
+    return d->params.blocksize;
+}
+
+void ColorizeView::setBlockSize(qreal blockSize)
+{
+    blockSize = qBound(static_cast<qreal>(0.0), blockSize, static_cast<qreal>(1.0));
+    if (blockSize != d->params.blocksize) {
+        d->params.blocksize = blockSize;
+        emit blockSizeChanged();
         updateView();
     }
 }
@@ -108,15 +128,45 @@ void ColorizeView::setColorMode(ColorMode colormode)
     }
 }
 
+ColorizeChooser* ColorizeView::colorizeChooser() const
+{
+    return d->colorizeChooser;
+}
+
+void ColorizeView::setColorizeChooser(ColorizeChooser* colorizeChooser)
+{
+    if (colorizeChooser != d->colorizeChooser) {
+        d->colorizeChooser = colorizeChooser;
+        emit colorizeChooserChanged();
+        d->hasImage = false;
+
+        if (d->colorizeChooser != nullptr) {
+            d->colorizeChooser->setColorAngles(d->params.angles);
+            d->colorizeChooser->setBlackLevel(d->params.blackLevel);
+        }
+
+        updateView();
+    }
+}
+
+void ColorizeView::refreshColorization()
+{
+    updateView();
+}
+
 void ColorizeView::updateView()
 {
-    if (!d->scaled.isNull()) {
+    if (!d->scaled.empty()) {
         d->hasImage = false;
         if (d->image.isRunning()) {
             d->need_restart = true;
         } else {
+            if (d->colorizeChooser != nullptr) {
+                d->params.angles = d->colorizeChooser->colorAngles();
+                d->params.blackLevel = d->colorizeChooser->blackLevel();
+            }
             d->image.setFuture(QtConcurrent::run([this]() {
-                return computeColorizedImage(d->scaled, d->contrast, d->brightness, d->details, d->colorMode);
+                return computeColorizedImage(d->scaled, d->params, d->colorMode, &d->hsv, &d->mask);
             }));
         }
     }
@@ -126,18 +176,22 @@ void ColorizeView::onNewImage()
 {
     disconnect(d->cutImageChangedConnection);
     d->cutImageChangedConnection = {};
+    d->startCutImageUpdateConnection = {};
 
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
             d->need_restart = false;
             d->cutImageChangedConnection = connect(d->scanImage.get(), &ScanImage::cutImageChanged, this, &ColorizeView::onCutImageChanged);
+            d->startCutImageUpdateConnection = connect(d->scanImage.get(), &ScanImage::startCutImageUpdate, [this]() { setBusy(true); });
 
             // initialize settings
 
-            setContrast(d->scanImage->contrast());
-            setBrightness(d->scanImage->brightness());
-            setDetails(d->scanImage->details());
+            d->params = d->scanImage->parameters();
+            if (d->colorizeChooser != nullptr) {
+                d->colorizeChooser->setColorAngles(d->params.angles);
+                d->colorizeChooser->setBlackLevel(d->params.blackLevel);
+            }
             setColorMode(d->scanImage->colorMode());
         }
     }
@@ -148,30 +202,43 @@ void ColorizeView::onNewImage()
 void ColorizeView::onImageUpdated()
 {
     d->hasImage = true;
-    update();
     if (d->need_restart) {
         d->need_restart = false;
         updateView();
+    } else {
+        setBusy(false);
+        if (!d->hsv.empty() && !d->mask.empty() && d->colorizeChooser != nullptr) {
+            d->colorizeChooser->updateImage(d->hsv, d->mask);
+        }
+        update();
     }
 }
 
 QImage ColorizeView::image() const
 {
     if (d->image.isFinished() && d->hasImage) {
-        return d->image.result();
+        return cvMatToQImage(d->image.result()).copy();
     } else {
         return {};
     };
 }
 
+cv::Mat ColorizeView::cutImage() const
+{
+    return d->scanImage != nullptr ? d->scanImage->cutImage() : cv::Mat();
+}
+
 void ColorizeView::onCutImageChanged()
 {
-    auto image = d->scanImage->cutImage();
+    if (d->scanImage != nullptr) {
+        auto image = d->scanImage->cutImage();
 
-    if (image.width() > image.height()) {
-        d->scaled = image.scaledToWidth(qMin(image.width(), 1000));
-    } else {
-        d->scaled = image.scaledToHeight(qMin(image.height(), 1000));
+        if (!image.empty()) {
+            auto factor = 1000.0 / std::max(image.cols, image.rows);
+            cv::resize(image, d->scaled, cv::Size(), factor, factor);
+        }
+
+        emit cutImageChanged();
     }
 
     updateView();
@@ -180,9 +247,7 @@ void ColorizeView::onCutImageChanged()
 void ColorizeView::apply()
 {
     if (d->scanImage != nullptr) {
-        d->scanImage->setContrast(d->contrast);
-        d->scanImage->setBrightness(d->brightness);
-        d->scanImage->setDetails(d->details);
+        d->scanImage->setParameters(d->params);
         d->scanImage->setColorMode(d->colorMode);
         d->scanImage->applyColorize();
     }

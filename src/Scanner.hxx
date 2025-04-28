@@ -35,7 +35,7 @@ class Scanner : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool deleteOriginalOnClear READ deleteOriginalOnClear WRITE setDeleteOriginalOnClear
-                   NOTIFY deleteOriginalOnClearChanged);
+                   NOTIFY deleteOriginalOnClearChanged)
 
 public:
     Scanner(QObject* parent = nullptr);

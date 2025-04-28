@@ -32,12 +32,14 @@ set(SOURCES
   src/DocumentList.cxx
   src/Document.cxx
   src/Page.cxx
+  src/Clipboard.cxx
 
   src/Scanner.cxx
   src/ScanImage.cxx
   src/ScanImageView.cxx
   src/CutView.cxx
   src/ColorizeView.cxx
+  src/ColorizeChooser.cxx
   src/ZoomImage.cxx
 
   src/Fotokopierer.cxx
@@ -123,6 +125,8 @@ if (SAILFISH_FOUND)
   else()
     add_custom_target(opencv-3rdparty)
   endif ()
+
+  link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
 
   # We must use our own freetype library
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})

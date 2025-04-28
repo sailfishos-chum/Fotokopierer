@@ -30,6 +30,7 @@ DragDelegate {
     property bool isAddButton: false
 
     property alias deleting: deletable.deleting
+    property bool marked: false
 
     signal deletePage()
 
@@ -78,6 +79,14 @@ DragDelegate {
                     anchors.fill: parent
                     fillMode: Image.PreserveAspectFit
                 }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: Theme.secondaryHighlightColor
+                opacity: 0.9
+                z: 1
+                visible: dragDelegate.marked
             }
 
             Column {
