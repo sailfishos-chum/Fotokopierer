@@ -131,10 +131,10 @@ void ScanImage::loadJson(const QJsonObject& settings)
     setBottomLeft(toPoint(cut[QStringLiteral("bottomleft")]));
 
     auto col = settings[QStringLiteral("colorize")].toObject();
-    setContrast(static_cast<qreal>(col[QStringLiteral("contrast")].toDouble(0.5)));
-    setBrightness(static_cast<qreal>(col[QStringLiteral("brightness")].toDouble(0.5)));
-    setThreshold(static_cast<qreal>(col[QStringLiteral("threshold")].toDouble(0.5)));
-    setBlockSize(static_cast<qreal>(col[QStringLiteral("blocksize")].toDouble(0.5)));
+    setContrast(static_cast<qreal>(col[QStringLiteral("contrast")].toDouble(Parameters::DefaultContrast)));
+    setBrightness(static_cast<qreal>(col[QStringLiteral("brightness")].toDouble(Parameters::DefaultBrightness)));
+    setThreshold(static_cast<qreal>(col[QStringLiteral("threshold")].toDouble(Parameters::DefaultThreshold)));
+    setBlockSize(static_cast<qreal>(col[QStringLiteral("blocksize")].toDouble(Parameters::DefaultBlockSize)));
     auto mode = col[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
     switch (mode) {
         case ColorMode::BlackAndWhite:
@@ -148,10 +148,12 @@ void ScanImage::loadJson(const QJsonObject& settings)
             break;
     }
 
-    d->params.blackLevel = col[QStringLiteral("blackLevel")].toInt();
+    d->params.blackLevel = col[QStringLiteral("blackLevel")].toInt(Parameters::DefaultBlackLevel);
 
     auto angles = col[QStringLiteral("angles")].toArray();
-    for (auto i : range(std::min(d->params.angles.size(), static_cast<std::size_t>(angles.size())))) {
+    auto nangles = static_cast<std::size_t>(angles.size());
+    d->params.angles = Parameters::DefaultAngles;
+    for (auto i : range(std::min(d->params.angles.size(), nangles))) {
         d->params.angles[i] = angles[i].toDouble();
     }
 }

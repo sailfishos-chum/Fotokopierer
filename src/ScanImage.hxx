@@ -55,14 +55,21 @@ public:
     using ColorMode = ColorizeView::ColorMode;
 
     struct Parameters {
-        double contrast = 0.5;    ///< Contrast in [0,1]
-        double brightness = 0.5;  ///< Brightness in [0,1]
+        static constexpr double DefaultContrast = 0.5;
+        static constexpr double DefaultBrightness = 0.5;
+        static constexpr double DefaultThreshold = 0.8;
+        static constexpr double DefaultBlockSize = 0.1;
+        static constexpr std::array<qreal, 6> DefaultAngles = {30, 90, 150, 210, 270, 330};
+        static const int DefaultBlackLevel = 50;
 
-        double threshold_c = 0.8;  ///< Value between [0,1] mapped to [-15,15]
-        double blocksize = 0.1;    ///< Relative block size
+        double contrast = DefaultContrast;      ///< Contrast in [0,1]
+        double brightness = DefaultBrightness;  ///< Brightness in [0,1]
 
-        std::array<qreal, 6> angles = {30, 90, 150, 210, 270, 330};
-        int blackLevel = 50;
+        double threshold_c = DefaultThreshold;  ///< Value between [0,1] mapped to [-15,15]
+        double blocksize = DefaultBlockSize;    ///< Relative block size
+
+        std::array<qreal, 6> angles = DefaultAngles;
+        int blackLevel = DefaultBlackLevel;
     };
 
 public:
