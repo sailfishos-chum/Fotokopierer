@@ -171,3 +171,21 @@ QImage Scanner::originalImage() const
 {
     return d->scaled;
 }
+
+QJsonObject Scanner::saveJson() const
+{
+    QJsonObject settings;
+
+    for (auto f : d->filter) {
+        settings[f->name()] = f->saveJson();
+    }
+
+    return settings;
+}
+
+void Scanner::loadJson(const QJsonObject& settings)
+{
+    for (auto f : d->filter) {
+        f->loadJson(settings[f->name()].toObject());
+    }
+}

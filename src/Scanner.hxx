@@ -88,6 +88,12 @@ public:
     /// Add this scanned page to the given `Document`.
     Q_INVOKABLE void updatePage(Page* page);
 
+    /// Return all filter settings as a JSON object.
+    QJsonObject saveJson() const;
+
+    /// Load all filter settings from a JSON object.
+    void loadJson(const QJsonObject& settings);
+
 signals:
     void originalImageChanged();
 
