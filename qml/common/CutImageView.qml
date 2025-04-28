@@ -40,50 +40,36 @@ Item {
 
     property bool dontchange: false
 
-    FilterImage {
-        id: image
+    CutView {
+        id: cutview
 
-        image: Scanner
-        filterType: Scanner.Rotate
+        scanner: Scanner
 
         anchors.fill: parent
-
-        onPaintedSizeChanged: {
-            // update the selection after a rotation has been completed
-        }
     }
 
     function rotateLeft() {
-        image.filter.orientation -= 1
-        Scanner.cutFilter.rotateLeft()
+        cutview.rotateLeft()
         frame.requestPaint()
     }
 
     function rotateRight() {
-        image.filter.orientation += 1
-        Scanner.cutFilter.rotateRight()
+        cutview.rotateRight()
         frame.requestPaint()
     }
 
     function selectAll() {
-        var points = Scanner.cutFilter.selectAll()
-        Scanner.cutFilter.fixSnappyEdges()
+        cutview.selectAll()
         frame.requestPaint()
     }
 
     function selectAuto() {
-        var points = Scanner.cutFilter.autoDetectCutRect()
-        Scanner.cutFilter.fixSnappyEdges()
+        cutview.selectAuto()
         frame.requestPaint()
     }
 
     function cutImage() {
-        var f = Scanner.cutFilter
-        f.topLeft = mapPoint(topleft.markerPos)
-        f.topRight = mapPoint(topright.markerPos)
-        f.bottomRight = mapPoint(bottomright.markerPos)
-        f.bottomLeft = mapPoint(bottomleft.markerPos)
-        Scanner.cutFilter.updateCut()
+        cutview.apply()
     }
 
     Canvas {
@@ -120,19 +106,19 @@ Item {
         id: topleft
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.topLeft = mapPoint(markerPos)
+            cutview.topLeft = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
             pane.update(markerPos)
             if (!dragActive) {
-                Scanner.cutFilter.fixSnappyEdges()
+                cutview.updateSnappyEdges()
             }
         }
     }
@@ -141,19 +127,19 @@ Item {
         id: topright
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.topRight = mapPoint(markerPos)
+            cutview.topRight = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
             pane.update(markerPos)
             if (!dragActive) {
-                Scanner.cutFilter.fixSnappyEdges()
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -162,19 +148,19 @@ Item {
         id: bottomleft
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.bottomLeft = mapPoint(markerPos)
+            cutview.bottomLeft = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
             pane.update(markerPos)
             if (!dragActive) {
-                Scanner.cutFilter.fixSnappyEdges()
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -183,19 +169,19 @@ Item {
         id: bottomright
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.bottomRight = mapPoint(markerPos)
+            cutview.bottomRight = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
             pane.update(markerPos)
             if (!dragActive) {
-                Scanner.cutFilter.fixSnappyEdges()
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -204,12 +190,12 @@ Item {
         id: top
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.top = mapPoint(markerPos)
+            cutview.top = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -217,8 +203,8 @@ Item {
             pane.update(markerPos)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                top.setCenter(unmapPoint(Scanner.cutFilter.top))
-                Scanner.cutFilter.fixSnappyEdges()
+                top.setCenter(unmapPoint(cutview.top))
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -227,12 +213,12 @@ Item {
         id: bottom
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.bottom = mapPoint(markerPos)
+            cutview.bottom = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -240,8 +226,8 @@ Item {
             pane.update(markerPos)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-                Scanner.cutFilter.fixSnappyEdges()
+                bottom.setCenter(unmapPoint(cutview.bottom))
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -250,12 +236,12 @@ Item {
         id: left
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.left = mapPoint(markerPos)
+            cutview.left = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -263,8 +249,8 @@ Item {
             pane.update(markerPos)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                left.setCenter(unmapPoint(Scanner.cutFilter.left))
-                Scanner.cutFilter.fixSnappyEdges()
+                left.setCenter(unmapPoint(cutview.left))
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -273,12 +259,12 @@ Item {
         id: right
         color: pane.markerColor
         radius: markerRadius
-        minX: (pane.width - image.paintedWidth) / 2
-        maxX: (pane.width + image.paintedWidth) / 2
-        minY: (pane.height - image.paintedHeight) / 2
-        maxY: (pane.height + image.paintedHeight) / 2
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            Scanner.cutFilter.right = mapPoint(markerPos)
+            cutview.right = mapPoint(markerPos)
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -286,8 +272,8 @@ Item {
             pane.update(markerPos)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                right.setCenter(unmapPoint(Scanner.cutFilter.right))
-                Scanner.cutFilter.fixSnappyEdges()
+                right.setCenter(unmapPoint(cutview.right))
+                cutview.updateSnappyEdges();
             }
         }
     }
@@ -295,8 +281,7 @@ Item {
     ZoomImage {
         id: zoomimg
 
-        image: image.image
-        filter: image.filterType
+        scanner: Scanner
 
         borderColor: pane.markerColor
         crossColor: pane.lineColor
@@ -304,7 +289,7 @@ Item {
         width: Math.min(parent.width, parent.height) / 4
         height: Math.min(parent.width, parent.height) / 4
 
-        viewSize: Qt.point(2.0 * markerRadius / image.paintedWidth, 2.0 * markerRadius / image.paintedHeight)
+        viewSize: Qt.point(2.0 * markerRadius / cutview.paintedWidth, 2.0 * markerRadius / cutview.paintedHeight)
 
         anchors.left: pane.left
         anchors.top: pane.top
@@ -321,7 +306,7 @@ Item {
             mapPoint(bottomleft.markerPos))
         zoomimg.center = mapPoint(zoompoint)
 
-        if (zoompoint.x < image.width / 2) {
+        if (zoompoint.x < cutview.width / 2) {
             zoomimg.anchors.left = undefined
             zoomimg.anchors.right = pane.right
         } else {
@@ -329,7 +314,7 @@ Item {
             zoomimg.anchors.left = pane.left
         }
 
-        if (zoompoint.y < image.height / 2) {
+        if (zoompoint.y < cutview.height / 2) {
             zoomimg.anchors.top = undefined
             zoomimg.anchors.bottom = pane.bottom
         } else {
@@ -341,14 +326,14 @@ Item {
     }
 
     function mapPoint(p) {
-        var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
-        var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
+        var x = (p.x - (pane.width - cutview.paintedWidth) / 2) / cutview.paintedWidth
+        var y = (p.y - (pane.height - cutview.paintedHeight) / 2) / cutview.paintedHeight
         return Qt.point(x, y)
     }
 
     function unmapPoint(p) {
-        var x = p.x * image.paintedWidth + (pane.width - image.paintedWidth) / 2
-        var y = p.y * image.paintedHeight + (pane.height - image.paintedHeight) / 2
+        var x = p.x * cutview.paintedWidth + (pane.width - cutview.paintedWidth) / 2
+        var y = p.y * cutview.paintedHeight + (pane.height - cutview.paintedHeight) / 2
         return Qt.point(x, y)
     }
 
@@ -360,40 +345,44 @@ Item {
     }
 
     Component.onCompleted: {
-        Scanner.cutFilter.topLeftChanged.connect(function() {
-            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+        cutview.topLeftChanged.connect(function() {
+            topleft.setCenter(unmapPoint(cutview.topLeft))
         })
 
-        Scanner.cutFilter.topRightChanged.connect(function() {
-            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+        cutview.topRightChanged.connect(function() {
+            topright.setCenter(unmapPoint(cutview.topRight))
         })
 
-        Scanner.cutFilter.bottomRightChanged.connect(function() {
-            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+        cutview.bottomRightChanged.connect(function() {
+            bottomright.setCenter(unmapPoint(cutview.bottomRight))
         })
 
-        Scanner.cutFilter.bottomLeftChanged.connect(function() {
-            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+        cutview.bottomLeftChanged.connect(function() {
+            bottomleft.setCenter(unmapPoint(cutview.bottomLeft))
         })
 
-        Scanner.cutFilter.topChanged.connect(function() {
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+        cutview.topChanged.connect(function() {
+            top.setCenter(unmapPoint(cutview.top))
         })
 
-        Scanner.cutFilter.bottomChanged.connect(function() {
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+        cutview.bottomChanged.connect(function() {
+            bottom.setCenter(unmapPoint(cutview.bottom))
         })
 
-        Scanner.cutFilter.leftChanged.connect(function() {
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+        cutview.leftChanged.connect(function() {
+            left.setCenter(unmapPoint(cutview.left))
         })
 
-        Scanner.cutFilter.rightChanged.connect(function() {
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+        cutview.rightChanged.connect(function() {
+            right.setCenter(unmapPoint(cutview.right))
         })
 
-        Scanner.originalImageChanged.connect(function() {
-            initTimer.start()
+        cutview.rotationChanged.connect(function() {
+            frame.requestPaint()
         })
+
+        /* Scanner.originalImageChanged.connect(function() { */
+        /*     initTimer.start() */
+        /* }) */
     }
 }

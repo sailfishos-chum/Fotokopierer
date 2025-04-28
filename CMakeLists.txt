@@ -29,19 +29,21 @@ else()
 endif()
 
 set(SOURCES
-  src/ColorizeFilter.cxx
-  src/Convert.cxx
-  src/CutFilter.cxx
-  src/Document.cxx
   src/DocumentList.cxx
-  src/EdgeDetection.cxx
-  src/Filter.cxx
-  src/FilterImage.cxx
-  src/Fotokopierer.cxx
+  src/Document.cxx
   src/Page.cxx
-  src/RotateFilter.cxx
+
   src/Scanner.cxx
+  src/ScanImage.cxx
+  src/ScanImageView.cxx
+  src/CutView.cxx
+  src/ColorizeView.cxx
   src/ZoomImage.cxx
+
+  src/Fotokopierer.cxx
+  src/Convert.cxx
+  src/EdgeDetection.cxx
+
   src/init.cxx)
 
 set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS

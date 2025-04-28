@@ -113,11 +113,10 @@ ApplicationWindow {
         anchors.fill: parent
         visible: false
 
-        FilterImage {
-            id: colimage
+        ColorizeView {
+            id: colview
 
-            image: Scanner
-            filterType: Scanner.Colorize
+            scanner: Scanner
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -140,7 +139,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
-                onValueChanged: colimage.filter.contrast = value / 100
+                onValueChanged: colview.contrast = value / 100
             }
         }
 
@@ -159,7 +158,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
-                onValueChanged: colimage.filter.brightness = value / 100
+                onValueChanged: colview.brightness = value / 100
             }
         }
 
@@ -178,7 +177,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
-                onValueChanged: colimage.filter.details = value / 100
+                onValueChanged: colview.details = value / 100
             }
         }
 
@@ -192,7 +191,7 @@ ApplicationWindow {
                 text: "B&W"
                 onClicked: {
                     colormode = "bw"
-                    colimage.filter.colorMode = ColorizeFilter.BlackAndWhite
+                    colview.colorMode = ColorizeView.BlackAndWhite
                 }
             }
 
@@ -200,7 +199,7 @@ ApplicationWindow {
                 text: "Gray"
                 onClicked: {
                     colormode = "gray"
-                    colimage.filter.colorMode = ColorizeFilter.Gray
+                    colview.colorMode = ColorizeView.Gray
                 }
             }
 
@@ -208,7 +207,7 @@ ApplicationWindow {
                 text: "Colored"
                 onClicked: {
                     colormode = "colored"
-                    colimage.filter.colorMode = ColorizeFilter.FullColor
+                    colview.colorMode = ColorizeView.FullColor
                 }
             }
 
@@ -216,7 +215,7 @@ ApplicationWindow {
                 text: "Magic"
                 onClicked: {
                     colormode = "magic"
-                    colimage.filter.colorMode = ColorizeFilter.Colored
+                    colview.colorMode = ColorizeView.Colored
                 }
             }
 
