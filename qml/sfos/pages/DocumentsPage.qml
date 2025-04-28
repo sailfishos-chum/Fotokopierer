@@ -70,25 +70,8 @@ Page {
                 } else if (isAddButton) {
                     addDocument()
                 } else {
-                    openDocument()
+                    openDocument(role_document)
                 }
-            }
-
-            function addDocument() {
-                newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-                newPage.item.scanImage = scanImage
-                newPage.item.destination = docpage
-                newPage.item.addPage.connect(function() {
-                    var doc = DocumentList.newDocument()
-                    if (doc != null) {
-                        doc.addScannedPage(scanImage)
-                    }
-                })
-                pageStack.push(newPage.item)
-            }
-
-            function openDocument() {
-                pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
 
             onDeleteDocument: {
@@ -163,5 +146,22 @@ Page {
                 }
             }
         }
+    }
+
+    function addDocument() {
+        newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+        newPage.item.scanImage = scanImage
+        newPage.item.destination = docpage
+        newPage.item.addPage.connect(function() {
+            var doc = DocumentList.newDocument()
+            if (doc != null) {
+                doc.addScannedPage(scanImage)
+            }
+        })
+        pageStack.push(newPage.item)
+    }
+
+    function openDocument(document) {
+        pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": document})
     }
 }
