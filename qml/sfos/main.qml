@@ -34,8 +34,8 @@ ApplicationWindow
         CoverPage {
             document: docs.lastDocument
             onNewPicture: {
+                app.activate()
                 if (document) {
-                    app.activate()
                     if (pageStack.currentPage != docs) {
                         pageStack.pop(docs, PageStackAction.Immediate)
                     }
