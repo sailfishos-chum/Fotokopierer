@@ -102,6 +102,16 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
     d->original_path = original_path;
     d->result_path = result_path;
 
+    updateFromScanner(scanner);
+}
+
+void Page::updateFromScanner(const Scanner* scanner)
+{
+    setStatus(Generating);
+
+    auto original_path = d->original_path;
+    auto result_path = d->result_path;
+
     d->generating.setFuture(QtConcurrent::run([scanner, original_path, result_path]() {
         QImage original = scanner->original();
         QImage result = scanner->computeFilteredImage();
