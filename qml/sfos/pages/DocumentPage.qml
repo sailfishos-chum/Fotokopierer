@@ -79,14 +79,13 @@ Page {
             width: grid.cellWidth
             height: grid.cellHeight
 
-
             thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
             pagenumber: DelegateModel.itemsIndex + 1
             creationTime: role_creationTime || new Date()
 
             isAddButton: role_thumbnail == null
             visible: !isAddButton || (!docpage.editing && !docpage.dragging)
-            zoom: docpage.editing
+            deleting: docpage.editing
 
             onPressed: {
                 if (docpage.editing) {
@@ -123,17 +122,12 @@ Page {
                 console.log("open page")
             }
 
-            IconButton {
-                visible: docpage.editing && !isAddButton
-                anchors { top: parent.top; right: parent.right }
-                icon.source: "image://theme/icon-l-clear"
-                onClicked: {
-                    docpage.dragging = false
-                    docpage.editing = false
-                    remorse.execute(pageDelegate, qsTr("Delete page"), function () {
-                        document.deletePage(pageDelegate.DelegateModel.itemsIndex)
-                    })
-                }
+            onDeletePage: {
+                docpage.dragging = false
+                docpage.editing = false
+                remorse.execute(pageDelegate, qsTr("Delete page"), function () {
+                    document.deletePage(pageDelegate.DelegateModel.itemsIndex)
+                })
             }
 
             RemorseItem {

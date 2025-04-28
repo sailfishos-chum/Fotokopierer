@@ -26,8 +26,12 @@ DragDelegate {
     property string thumbnail
     property int pagenumber
     property date creationTime
+
     property bool isAddButton: false
-    property bool zoom: false
+
+    property alias deleting: deletable.deleting
+
+    signal deletePage()
 
     canBeDragged: !isAddButton
 
@@ -90,30 +94,30 @@ DragDelegate {
         }
     }
 
-    Loader {
-        id: loader
+    DeletableItem {
+        id: deletable
 
-        width: parent.width * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
-        height: parent.height * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
+        anchors.fill: parent
 
-        Behavior on width {
-            NumberAnimation { duration: 100 }
-        }
+        onDeleteItem: deletePage()
 
-        Behavior on height {
-            NumberAnimation { duration: 100 }
-        }
+        Loader {
+            id: loader
 
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
-        }
+            anchors {
+                fill: parent
+                leftMargin: 0.05 * parent.width
+                rightMargin: 0.05 * parent.width
+                topMargin: 0.05 * parent.height
+                bottomMargin: 0.05 * parent.height
+            }
 
-        Component.onCompleted: {
-            if (!isAddButton) {
-                loader.sourceComponent = pageView;
-            } else {
-                loader.sourceComponent = addButtonView;
+            Component.onCompleted: {
+                if (!isAddButton) {
+                    loader.sourceComponent = pageView;
+                } else {
+                    loader.sourceComponent = addButtonView;
+                }
             }
         }
     }
