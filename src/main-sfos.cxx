@@ -15,6 +15,7 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
+#include <QtCore/QTranslator>
 #include <QtGui/QGuiApplication>
 
 #include <QtQuick/QQuickView>
@@ -30,6 +31,14 @@ int main(int argc, char* argv[])
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
+
+    QTranslator translator;
+    if (translator.load(QLocale(),
+                        QLatin1String("harbour-fotokopierer"),
+                        QLatin1String("-"),
+                        QLatin1String(":/translations"))) {
+        app->installTranslator(&translator);
+    }
 
     init_app(*app, *view->engine());
 

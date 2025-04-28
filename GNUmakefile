@@ -17,6 +17,7 @@ mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk m
 mersdk_mb2 := cd $(mer_root_dir) && mb2 -t $(mersdk_target)
 mersdk_sb2 := cd $(mer_root_dir)/rpmbuilddir-arm && sb2 -t $(mersdk_target)
 
+TRANSLATIONS = de
 
 .PHONY: all build buildall clean install rpm run
 all: compile
@@ -54,3 +55,21 @@ install-jolla:
 
 run-jolla:
 	ssh -tt jolla './harbour-fotokopierer'
+
+# Translations
+$(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po
+	lrelease $<
+
+.PHONY: lupdate lrelease
+lupdate:
+	lupdate src qml -ts translations/harbour-fotokopierer.pot
+	lupdate src qml -ts $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
+
+lrelease: translations.qrc
+
+translations.qrc: $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm)
+	@echo "<RCC>" > $@
+	@echo "  <qresource>" >> $@
+	@printf "    <file>%s</file>\n" $(TRANSLATIONS:%="translations/harbour-fotokopierer-%.qm") >> $@
+	@echo "  </qresource>" >> $@
+	@echo "</RCC>" >> $@
