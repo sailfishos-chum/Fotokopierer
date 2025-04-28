@@ -52,8 +52,9 @@ Dialog {
         width: parent.width - 2 * Theme.iconSizeSmall
 
         BusyIndicator {
-            size: BusyIndicatorSize.Large
-            anchors.centerIn: parent
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
             running: colview.busy
         }
     }

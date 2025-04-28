@@ -59,8 +59,9 @@ Page {
         onBusyChanged: console.log("set busy indicator to " + cutview.busy)
 
         BusyIndicator {
-            size: BusyIndicatorSize.Large
-            anchors.centerIn: parent
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
             running: cutview.busy
         }
     }
