@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -155,10 +155,10 @@ Page {
 
         onCameraStatusChanged: {
             if (cameraStatus == Camera.ActiveStatus && !_haveResolution) {
-                var res = Fotokopierer.defaultResolution(imageCapture)
+                var res = Fotokopierer.defaultResolution(imageCapture, viewArea.width, viewArea.height)
                 if (res.width > 0) {
-                    imageCapture.resolution = res
                     console.log("set resolution: " + res)
+                    imageCapture.setResolution(res)
                 }
                 _haveResolution = true
             }
