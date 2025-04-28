@@ -260,55 +260,6 @@ void Document::move(int from, int to)
     }
 }
 
-void Document::addPage(const QImage& original, const QImage& result)
-{
-    if (original.isNull()) {
-        qWarning() << "Page could not be created: no original image";
-        emit error(tr("Page could not be created: no original image"));
-        return;
-    }
-
-    if (result.isNull()) {
-        qWarning() << "Page could not be created: no result image";
-        emit error(tr("Page could not be created: no result image"));
-        return;
-    }
-
-    auto ctime = QDateTime::currentDateTime();
-    auto dir = QFileInfo(d->doc.filename).dir();
-    if (!dir.exists()) {
-        dir.mkpath(QStringLiteral("."));
-    }
-
-    auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
-    auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
-
-    if (!original.save(original_path)) {
-        qWarning() << "Page could not be created: error saving original image";
-        emit error(tr("Page could not be created: error saving original image"));
-        return;
-    };
-
-    if (!result.save(result_path)) {
-        qWarning() << "Page could not be created: error saving result image";
-        emit error(tr("Page could not be created: error saving result image"));
-        return;
-    };
-
-    QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
-
-    connect(p.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
-    connect(p.data(), &Page::statusChanged, this, &Document::onPageUpdated);
-    connect(p.data(), &Page::error, this, &Document::error);
-
-    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(p);
-    endInsertRows();
-
-    save();
-    emit pagesChanged();
-}
-
 void Document::addScannedPage(Scanner* scanner)
 {
     if (d->status != Ready) {
