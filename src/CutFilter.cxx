@@ -33,9 +33,19 @@
 
 #include <cmath>
 
+static QPointF scale(const QPointF& p, int width, int height)
+{
+    return {p.x() / width, p.y() / height};
+}
+
 static QPointF scale(const QPointF& p, const QImage& img)
 {
-    return {p.x() / img.width(), p.y() / img.height()};
+    return scale(p, img.width(), img.height());
+}
+
+static QPointF unscale(const QPointF& p, int width, int height)
+{
+    return {p.x() * width, p.y() * height};
 }
 
 struct CutFilter::Data {
@@ -43,6 +53,8 @@ struct CutFilter::Data {
     QPointF topright;
     QPointF bottomleft;
     QPointF bottomright;
+
+    std::unique_ptr<EdgeDetection> edges = nullptr;
 
     double getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl);
 };
@@ -83,6 +95,11 @@ void CutFilter::setTopLeft(QPointF topleft)
     if (d->topleft != topleft) {
         d->topleft = topleft;
         emit topLeftChanged();
+        if (d->edges != nullptr) {
+            d->edges->setTopLeft(unscale(topleft, d->edges->width(), d->edges->height()));
+            emit topChanged();
+            emit leftChanged();
+        }
     }
 }
 
@@ -130,22 +147,148 @@ QPointF CutFilter::bottomRight() const
     return d->bottomright;
 }
 
+void CutFilter::setTop(QPointF top)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(top, d->edges->width(), d->edges->height());
+    if (p != d->edges->topPoint()) {
+        d->edges->setTopPoint(p);
+        emit topChanged();
+
+        auto tl = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+        if (tl != d->topleft) {
+            d->topleft = tl;
+            emit topLeftChanged();
+        }
+
+        auto tr = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+        if (tr != d->topright) {
+            d->topright = tr;
+            emit topRightChanged();
+        }
+    }
+}
+
+QPointF CutFilter::top() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->topPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::setBottom(QPointF bottom)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(bottom, d->edges->width(), d->edges->height());
+    if (p != d->edges->bottomPoint()) {
+        d->edges->setBottomPoint(p);
+        emit bottomChanged();
+
+        auto bl = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+        if (bl != d->bottomleft) {
+            d->bottomleft = bl;
+            emit bottomLeftChanged();
+        }
+
+        auto br = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
+        if (br != d->bottomright) {
+            d->bottomright = br;
+            emit bottomRightChanged();
+        }
+    }
+}
+
+QPointF CutFilter::bottom() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->bottomPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::setLeft(QPointF left)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(left, d->edges->width(), d->edges->height());
+    if (p != d->edges->leftPoint()) {
+        d->edges->setLeftPoint(p);
+        emit leftChanged();
+
+        auto tl = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+        if (tl != d->topleft) {
+            d->topleft = tl;
+            emit topLeftChanged();
+        }
+
+        auto bl = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+        if (bl != d->bottomleft) {
+            d->bottomleft = bl;
+            emit bottomLeftChanged();
+        }
+    }
+}
+
+QPointF CutFilter::left() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->leftPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::setRight(QPointF right)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(right, d->edges->width(), d->edges->height());
+    if (p != d->edges->rightPoint()) {
+        d->edges->setRightPoint(p);
+        emit rightChanged();
+
+        auto tr = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+        if (tr != d->topright) {
+            d->topright = tr;
+            emit topRightChanged();
+        }
+
+        auto br = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
+        if (br != d->bottomright) {
+            d->bottomright = br;
+            emit bottomRightChanged();
+        }
+    }
+}
+
+QPointF CutFilter::right() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->rightPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
 QVariantList CutFilter::autoDetectCutRect()
 {
     QImage img =
         previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
 
-    auto edges = EdgeDetection::detect_in_image(img);
+    d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
 
-    d->topleft = scale(edges.topLeft(), img);
-    d->topright = scale(edges.topRight(), img);
-    d->bottomright = scale(edges.bottomRight(), img);
-    d->bottomleft = scale(edges.bottomLeft(), img);
+    d->topleft = scale(d->edges->topLeft(), img);
+    d->topright = scale(d->edges->topRight(), img);
+    d->bottomright = scale(d->edges->bottomRight(), img);
+    d->bottomleft = scale(d->edges->bottomLeft(), img);
 
     QVariantList lst;
     lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
-
-    qDebug() << "DETECT " << lst;
 
     return lst;
 }
