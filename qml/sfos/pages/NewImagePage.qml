@@ -105,7 +105,7 @@ Page {
 
         exposure {
             exposureCompensation: -1.0
-            exposureMode: Camera.ExposurePortrait
+            exposureMode: Camera.ExposureAuto
         }
 
         metaData.orientation: orientation
