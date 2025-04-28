@@ -63,6 +63,7 @@ struct Page::Data {
     QString original_path;
     QString result_path;
     QString thumbnail_path;
+    QJsonObject settings;  ///< The filter settings for this page.
 
     QFutureWatcher<QString> result_thumbnail;
     QFutureWatcher<bool> generating;
@@ -132,6 +133,8 @@ void Page::updateFromScanner(const Scanner* scanner,
     setStatus(Generating);
 
     setCreationTime(creation_time);
+
+    d->settings = scanner->saveJson();
 
     d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path]() {
         QImage original = scanner->original();
@@ -317,6 +320,7 @@ bool Page::write(QJsonObject& json) const
     if (!d->thumbnail_path.isEmpty()) {
         json[QStringLiteral("thumbnailPath")] = d->thumbnail_path;
     }
+    json[QStringLiteral("filters")] = d->settings;
 
     return true;
 }
@@ -356,6 +360,12 @@ bool Page::read(const QJsonObject& json)
     setOriginal(page_original_path.toString());
     setResult(page_result_path.toString());
     setThumbnail(page_thumbnail_path.toString());
+    d->settings = json[QStringLiteral("settings")].toObject();
 
     return true;
+}
+
+QJsonObject Page::settings() const
+{
+    return d->settings;
 }

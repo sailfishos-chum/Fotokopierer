@@ -87,6 +87,9 @@ public:
 
     bool read(const QJsonObject& json);
 
+    /// Return the filter settings of this page.
+    QJsonObject settings() const;
+
 public slots:
     /// Delete all files associated with this page.
     void remove();
