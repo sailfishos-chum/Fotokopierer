@@ -17,6 +17,8 @@
 
 #include "Page.hxx"
 
+#include "Document.hxx"
+
 #include "Convert.hxx"
 #include "Fotokopierer.hxx"
 #include "ScanImage.hxx"
@@ -171,6 +173,66 @@ void Page::updateImage(const std::shared_ptr<ScanImage>& scanImage,
 
         return true;
     }));
+}
+
+QString findUniqueFilename(const QString& original_path)
+{
+    static const int MAX_COPIES = 1000;  // Maximal number of copies of the same page.
+
+    auto path = original_path;
+    for (int i = 1; i < MAX_COPIES; i++) {
+        if (!QFileInfo::exists(path)) {
+            return path;
+        }
+
+        QFileInfo f(original_path);
+        path = QStringLiteral("%1/%2-%3.%4").arg(f.path()).arg(f.baseName()).arg(i).arg(f.completeSuffix());
+    }
+
+    return {};
+}
+
+void Page::initCopy(const QDir& dir, Document* sourceDoc, Page* source, bool move)
+{
+    setStatus(Generating);
+
+    setCreationTime(source->d->creation_time);
+
+    d->settings = source->d->settings;
+    d->creation_time = source->d->creation_time;
+
+    auto src_original_path = source->d->original_path;
+    auto src_result_path = source->d->result_path;
+
+    auto original_pth = dir.filePath(QFileInfo(src_original_path).fileName());
+    auto result_pth = dir.filePath(QFileInfo(src_result_path).fileName());
+
+    d->generating.setFuture(QtConcurrent::run(
+        [this, src_original_path, src_result_path, original_pth, result_pth, sourceDoc, source, move]() {
+            auto original_path = findUniqueFilename(original_pth);
+            auto result_path = findUniqueFilename(result_pth);
+
+            if (original_path.isEmpty() || result_path.isEmpty()) {
+                return false;
+            }
+
+            if (!QFile::copy(src_original_path, original_path)) {
+                return false;
+            }
+
+            if (!QFile::copy(src_result_path, result_path)) {
+                QFile::remove(original_path);
+                return false;
+            }
+
+            if (move && sourceDoc != nullptr) {
+                emit deleteSourcePage(sourceDoc, source);
+            }
+
+            emit generationFinished(original_path, result_path);
+
+            return true;
+        }));
 }
 
 Page::Status Page::status() const

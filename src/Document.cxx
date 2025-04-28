@@ -17,6 +17,7 @@
 
 #include "Document.hxx"
 
+#include "Clipboard.hxx"
 #include "Fotokopierer.hxx"
 #include "Page.hxx"
 
@@ -66,13 +67,34 @@ public:
 private:
     QString message_;
 };
+
+struct PageData {
+    QSharedPointer<Page> page;
+    bool selected = false;
+
+    PageData() = default;
+    PageData(const QSharedPointer<Page>& page)
+        : page(page) {}
+    PageData(const PageData&) = default;
+    PageData(PageData&&) = default;
+    PageData& operator=(const PageData&) = default;
+    PageData& operator=(PageData&&) = default;
+    ~PageData() = default;
+
+    Page& operator*() { return *page.data(); }
+    Page& operator*() const { return *page.data(); }
+
+    Page* operator->() { return page.data(); }
+    Page* operator->() const { return page.data(); }
+};
+
 }  // namespace
 
 struct Document::DocData {
-    QString title;                        ///< document title
-    QString filename;                     ///< filename of the document data
-    QDateTime creation_time;              ///< time when the document has been created
-    QVector<QSharedPointer<Page>> pages;  ///< page of the document
+    QString title;            ///< document title
+    QString filename;         ///< filename of the document data
+    QDateTime creation_time;  ///< time when the document has been created
+    QVector<PageData> pages;  ///< page of the document
 
     static DocData fromFile(Document* document, const QString& filename);
 };
@@ -82,6 +104,7 @@ struct Document::Data {
     QFutureWatcher<DocData> pendingDoc;  ///< the document data to be read
     QFutureWatcher<QUrl> pendingPdf;     ///< the document es being exported to pdf
     Status status = Ready;               ///< the current status
+    int nselected = 0;                   ///< the number of selected pages
 };
 
 Document::Document(QObject* parent)
@@ -208,7 +231,10 @@ void Document::setDocData(DocData&& docdata)
 {
     d->doc = std::move(docdata);
     for (auto& p : d->doc.pages) {
-        connect(p.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+        connect(p.page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+        connect(p.page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
+        connect(p.page.data(), &Page::error, this, &Document::error);
+        connect(p.page.data(), &Page::deleteSourcePage, this, &Document::onDeleteSourcePage);
     }
     emit titleChanged();
 }
@@ -236,7 +262,13 @@ QVariant Document::data(const QModelIndex& index, int role) const
         }
         case PageRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return QVariant::fromValue(d->doc.pages.at(index.row()).data());
+                return QVariant::fromValue(d->doc.pages.at(index.row()).page.data());
+            }
+            break;
+        }
+        case SelectionRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QVariant::fromValue(d->doc.pages.at(index.row()).selected);
             }
             break;
         }
@@ -245,12 +277,33 @@ QVariant Document::data(const QModelIndex& index, int role) const
     return {};
 }
 
+bool Document::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    switch (role) {
+        case SelectionRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                auto selected = value.toBool();
+                auto& page = d->doc.pages[index.row()];
+                if (selected != page.selected) {
+                    d->nselected += selected ? 1 : -1;
+                    page.selected = selected;
+                    emit dataChanged(index, index, {SelectionRole});
+                    emit selectedPagesChanged();
+                }
+            }
+            break;
+        }
+    }
+    return false;
+}
+
 QHash<int, QByteArray> Document::roleNames() const
 {
     static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
                                                  {ResultRole, "role_result"},
                                                  {CreationTimeRole, "role_creationTime"},
-                                                 {PageRole, "role_page"}};
+                                                 {PageRole, "role_page"},
+                                                 {SelectionRole, "role_selected"}};
     return roles;
 }
 
@@ -266,9 +319,86 @@ void Document::move(int from, int to)
     }
 }
 
+bool Document::hasSelectedPages() const
+{
+    return d->nselected != 0;
+}
+
+int Document::numSelectedPages() const
+{
+    return d->nselected;
+}
+
+void Document::clearSelection()
+{
+    for (int i = 0; i < d->doc.pages.count(); i++) {
+        auto& p = d->doc.pages[i];
+        if (p.selected) {
+            p.selected = false;
+            auto idx = index(i, 0);
+            emit dataChanged(idx, idx, {SelectionRole});
+        }
+    }
+    if (d->nselected != 0) {
+        d->nselected = 0;
+        emit selectedPagesChanged();
+    }
+}
+
+void Document::copySelectedPages()
+{
+    QVector<Page*> pages;
+    for (auto& p : d->doc.pages) {
+        if (p.selected) {
+            pages.push_back(p.page.data());
+        }
+    }
+    Clipboard::instance()->copy(this, pages);
+}
+
+void Document::cutSelectedPages()
+{
+    QVector<Page*> pages;
+    for (auto& p : d->doc.pages) {
+        if (p.selected) {
+            pages.push_back(p.page.data());
+        }
+    }
+    Clipboard::instance()->cut(this, pages);
+}
+
+void Document::onDeleteSourcePage(Document* sourceDocument, Page* source)
+{
+    sourceDocument->deletePage(source);
+}
+
+void Document::deleteSelectedPages()
+{
+    int ndeleted = 0;
+    for (int i = 0; i < d->doc.pages.size(); i++) {
+        if (d->doc.pages[i].selected) {
+            beginRemoveRows({}, i - ndeleted, i - ndeleted);
+            d->doc.pages[i]->remove();
+            endRemoveRows();
+            ndeleted += 1;
+        } else if (ndeleted > 0) {
+            d->doc.pages[i - ndeleted] = d->doc.pages[i];
+        }
+    }
+    d->doc.pages.resize(d->doc.pages.size() - ndeleted);
+
+    emit pagesChanged();
+    save();
+}
+
+void Document::pastePages()
+{
+    Clipboard::instance()->paste(this);
+}
+
 Page* Document::newPage()
 {
-    if (d->status != Ready) {
+    if (d->status != Ready && d->status != Adding) {
         emit error(tr("Cannot add page, document is not ready"));
         return nullptr;
     }
@@ -278,13 +408,14 @@ Page* Document::newPage()
         dir.mkpath(QStringLiteral("."));
     }
 
-    QSharedPointer<Page> page(new Page());
+    QSharedPointer<Page> page(new Page(), &QObject::deleteLater);
     connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
+    connect(page.data(), &Page::deleteSourcePage, this, &Document::onDeleteSourcePage);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(page);
+    d->doc.pages.push_back({page});
     endInsertRows();
 
     emit pagesChanged();
@@ -294,23 +425,47 @@ Page* Document::newPage()
     return page.data();
 }
 
+Page* Document::newCopiedPage(Document* sourceDoc, Page* source, bool move)
+{
+    if (source == nullptr) {
+        return nullptr;
+    }
+
+    auto page = newPage();
+    if (page != nullptr) {
+        page->initCopy(directory(), sourceDoc, source, move);
+    }
+
+    return page;
+}
+
 void Document::onPageUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
-    // TODO: this only works reliably if at most one page is modified at the same time
+
+    // If there has been an error, remove the page.
     if (page->status() == Page::Invalid) {
-        setStatus(Ready);
         for (int i = 0; i < d->doc.pages.size(); i++) {
-            if (page == d->doc.pages[i]) {
+            if (page == d->doc.pages[i].page) {
                 deletePage(i);
                 break;
             }
         }
-    } else if (page->status() != Page::Ready) {
-        setStatus(Adding);
-    } else {
-        setStatus(Ready);
     }
+
+    // Now check if there is at least one non-ready page.
+
+    // TODO: this may be a little inefficient, because we iterate over all pages.
+    // Hopefully there aren't too many of them in a single document.
+    for (auto& p : d->doc.pages) {
+        if (p->status() != Page::Ready) {
+            setStatus(Adding);
+            return;
+        }
+    }
+
+    // All pages are ready, so the document is ready, too.
+    setStatus(Ready);
 }
 
 void Document::deletePage(int pageIndex)
@@ -321,6 +476,16 @@ void Document::deletePage(int pageIndex)
     endRemoveRows();
     emit pagesChanged();
     save();
+}
+
+void Document::deletePage(Page* page)
+{
+    for (int pageIndex = 0; pageIndex < d->doc.pages.count(); pageIndex++) {
+        if (d->doc.pages[pageIndex].page == page) {
+            deletePage(pageIndex);
+            break;
+        }
+    }
 }
 
 void Document::remove()
@@ -449,24 +614,25 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
         throw ReadError(tr("Could not read pages from document file %1").arg(filename));
     }
 
-    QVector<QSharedPointer<Page>> docpages;
+    QVector<PageData> docpages;
     for (auto&& page : pages.toArray()) {
         if (!page.isObject()) {
             qDebug() << QStringLiteral("Could not read page from document file %1").arg(filename);
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
         }
-        QSharedPointer<Page> p(new Page);
+        QSharedPointer<Page> p(new Page, &QObject::deleteLater);
 
         connect(p.data(), &Page::thumbnailChanged, document, &Document::onThumbnailUpdated);
         connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
         connect(p.data(), &Page::error, document, &Document::error);
+        connect(p.data(), &Page::deleteSourcePage, document, &Document::onDeleteSourcePage);
 
         if (!p->read(page.toObject(), docpath)) {
             qDebug() << QStringLiteral("Error reading page from document file %1").arg(filename);
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
         p->moveToThread(QCoreApplication::instance()->thread());
-        docpages.push_back(p);
+        docpages.push_back({std::move(p)});
     }
 
     ensureNoMedia(docpath);
@@ -484,7 +650,7 @@ void Document::onThumbnailUpdated()
     Page* page = qobject_cast<Page*>(sender());
 
     for (int i = 0; i < d->doc.pages.size(); i++) {
-        if (page == d->doc.pages[i]) {
+        if (page == d->doc.pages[i].page) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailRole});
             save();

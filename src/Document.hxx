@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -40,13 +40,16 @@ class Document : public QAbstractListModel
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
     Q_PROPERTY(QStringList thumbnails READ thumbnails NOTIFY pagesChanged)
     Q_PROPERTY(int numPages READ numPages NOTIFY pagesChanged)
+    Q_PROPERTY(int numSelectedPages READ numSelectedPages NOTIFY selectedPagesChanged)
+    Q_PROPERTY(bool hasSelectedPages READ hasSelectedPages NOTIFY selectedPagesChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1,
                      ResultRole,
                      CreationTimeRole,
-                     PageRole };
+                     PageRole,
+                     SelectionRole };
 
     enum Status {
         Ready,      ///< Document is ready
@@ -107,6 +110,12 @@ public:
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
 
+    /// Delete a page from the document.
+    void deletePage(Page *page);
+
+    /// Create and return a new page which is a copy of the given page.
+    Page *newCopiedPage(Document *sourceDoc, Page *source, bool move = false);
+
     /// Delete this document.
     ///
     /// Calling this function removes all files associated with this document.
@@ -133,6 +142,27 @@ public slots:
 
     /// Move a page `from` to position `to`.
     void move(int from, int to);
+
+    /// Return true if there is at least one selected page
+    bool hasSelectedPages() const;
+
+    /// Return the number of selected pages.
+    int numSelectedPages() const;
+
+    /// Cancel the selection of all pages.
+    void clearSelection();
+
+    /// Copy the currently selected pages to the clipboard.
+    void copySelectedPages();
+
+    /// Cut the currently selected pages to the clipboard.
+    void cutSelectedPages();
+
+    /// Delete the currently selected pages.
+    void deleteSelectedPages();
+
+    /// Paste pages from the clipboard.
+    void pastePages();
 
     /// Export document as PDF to a file with the given name.
     ///
@@ -175,6 +205,8 @@ signals:
     /// This could be a new thumbnail, creation time or the order of the pages.
     void pagesChanged();
 
+    void selectedPagesChanged();
+
     /// Status changed.
     void statusChanged();
 
@@ -192,12 +224,15 @@ private:
 
     QVariant data(const QModelIndex &index, int role) const override;
 
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+
     QHash<int, QByteArray> roleNames() const override;
 
     /// Ensures the ".nomedia" file exists in the given directory.
     static void ensureNoMedia(const QString &path);
 
 private slots:
+    void onDeleteSourcePage(Document *sourceDoc, Page *source);
     void onThumbnailUpdated();
 
 private:

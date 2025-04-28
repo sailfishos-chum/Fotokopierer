@@ -32,6 +32,7 @@ set(SOURCES
   src/DocumentList.cxx
   src/Document.cxx
   src/Page.cxx
+  src/Clipboard.cxx
 
   src/Scanner.cxx
   src/ScanImage.cxx
