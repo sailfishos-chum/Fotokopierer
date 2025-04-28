@@ -249,6 +249,8 @@ bool Document::save() const
 
     if (file.write(QJsonDocument(doc).toJson()) < 0) return false;
 
+    qWarning() << "Error writing document file";
+
     return true;
 }
 
