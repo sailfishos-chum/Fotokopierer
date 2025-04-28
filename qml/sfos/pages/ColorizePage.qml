@@ -66,6 +66,7 @@ Dialog {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-bw.svg")
                 icon.width: Theme.iconSizeMedium
                 icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.BlackAndWhite }
             }
@@ -81,6 +82,7 @@ Dialog {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
                 icon.width: Theme.iconSizeMedium
                 icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.FullColor }
             }
@@ -96,6 +98,7 @@ Dialog {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-ctrl.svg")
                 icon.width: Theme.iconSizeMedium
                 icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { sliders.open = !sliders.open; buttons.open = !buttons.open }
             }
