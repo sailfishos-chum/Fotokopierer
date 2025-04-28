@@ -20,8 +20,6 @@
 
 #include <QtCore/QObject>
 
-class PlainImage;
-
 /// General utilities exported to QML.
 class Fotokopierer : public QObject
 {
@@ -31,8 +29,6 @@ public:
     explicit Fotokopierer(QObject* parent = nullptr) : QObject(parent) {}
 
     Q_INVOKABLE bool isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4);
-
-    Q_INVOKABLE PlainImage* loadPlainImage(const QString& filename);
 };
 
 #endif
