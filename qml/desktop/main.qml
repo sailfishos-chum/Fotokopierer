@@ -16,154 +16,194 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.2
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import Fotokopierer 1.0
 import "../common"
 
 ApplicationWindow {
-	 visible: true
-	 title: "Fotokopierer"
+    visible: true
+    title: "Fotokopierer"
 
-	 width: 400
-	 height: 600
+    width: 400
+    height: 600
 
-	 property string colormode : "colored"
+    property string colormode : "colored"
 
-	 ScannedImage {
-		  id: img
-	 }
+    ScannedImage {
+        id: img
+    }
 
-	 Item {
-		  id: imagebox
-		  anchors.top: parent.top
-		  anchors.left: parent.left
-		  anchors.right: parent.right
-		  anchors.bottom: button.top
+    Item {
+        id: cutbox;
+        anchors.fill: parent
 
-		  CutImage {
-				id: image
-				anchors.fill: parent
+        CutImage {
+            id: cutimage
 
-				visible: true
-		  }
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: cutbuttons.top
+        }
 
-		  Item {
-				id: cutbox
-				anchors.fill: parent
-	 	  		visible: false
+        Row {
+            id: cutbuttons
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
 
-				Image {
-	 	  			 id: cutimage
+            Button {
+                text: "Left"
+                style: ButtonStyle {
+                    background: Rectangle {
+                        implicitWidth: 100
+                        implicitHeight: 25
+                        border.width: control.activeFocus ? 2 : 1
+                        border.color: "#888"
+                        radius: 4
+                        gradient: Gradient {
+                            GradientStop { position: 0 ; color: control.pressed ? "#ccc" : "#eee" }
+                            GradientStop { position: 1 ; color: control.pressed ? "#aaa" : "#ccc" }
+                        }
+                    }
 
-					 anchors.top: parent.top
-	 	  			 anchors.left: parent.left
-	 	  			 anchors.right: parent.right
-	 	  			 anchors.bottom: contrastRow.top
+                    label: Text {
+                        color: "black"
+                        horizontalAlignment: Text.AlignHCenter
+                        text: control.text
+                    }
+                }
 
-	 	  			 fillMode: Image.PreserveAspectFit
+                onClicked: cutimage.rotateLeft()
+            }
 
-	 	  			 source: "image://Scanned/" + img.cut +
-						  "/" + colormode +
-						  "/" + contrast.value +
-						  "/" + brightness.value +
-						  "/" + details.value
-					 cache: false
-				}
+            Button {
+                text: "Right"
+                onClicked: cutimage.rotateRight()
+            }
 
-				Row {
-					 id: contrastRow
-	 	  			 anchors.left: parent.left
-	 	  			 anchors.right: parent.right
-					 anchors.bottom: brightnessRow.top
+            Button {
+                text: "All"
+                onClicked: cutimage.selectAll()
+            }
 
-					 Label {
-						  text: "Contrast: "
-					 }
-					 Slider {
-						  id: contrast
-						  minimumValue: 0
-						  maximumValue: 100
-						  stepSize: 1
-						  value: 50
-					 }
-				}
+            Button {
+                text: "Accept"
+                onClicked: {
+                    cutbox.visible = false
+                    colbox.visible = true
+                }
+            }
+        }
+    }
 
-				Row {
-					 id: brightnessRow
-	 	  			 anchors.left: parent.left
-	 	  			 anchors.right: parent.right
-					 anchors.bottom: detailsRow.top
+    Item {
+        id: colbox
+        anchors.fill: parent
+        visible: false
 
-					 Label {
-						  text: "Brightness"
-					 }
-					 Slider {
-						  id: brightness
-						  minimumValue: 0
-						  maximumValue: 100
-						  stepSize: 1
-						  value: 50
-					 }
-				}
+        Image {
+            id: colimage
 
-				Row {
-					 id: detailsRow
-	 	  			 anchors.left: parent.left
-	 	  			 anchors.right: parent.right
-					 anchors.bottom: buttonRow.top
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: contrastRow.top
 
-					 Label {
-						  text: "Details"
-					 }
-					 Slider {
-						  id: details
-						  minimumValue: 0
-						  maximumValue: 100
-						  stepSize: 1
-						  value: 50
-					 }
-				}
+            fillMode: Image.PreserveAspectFit
 
-				Row {
-					 id: buttonRow
-					 anchors.left: parent.left
-					 anchors.right: parent.right
-					 anchors.bottom: parent.bottom
+            source: "image://Scanned/" + img.cut +
+                "/" + colormode +
+                "/" + contrast.value +
+                "/" + brightness.value +
+                "/" + details.value
+            cache: false
+        }
 
-					 Button {
-						  text: "B&W"
-						  onClicked: colormode = "bw"
-					 }
+        Row {
+            id: contrastRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: brightnessRow.top
 
-					 Button {
-						  text: "Gray"
-						  onClicked: colormode = "gray"
-					 }
+            Label {
+                text: "Contrast: "
+            }
+            Slider {
+                id: contrast
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: 1
+                value: 50
+            }
+        }
 
-					 Button {
-						  text: "Colored"
-						  onClicked: colormode = "colored"
-					 }
-				}
-		  }
-	 }
+        Row {
+            id: brightnessRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: detailsRow.top
 
-	 Button {
-		  id: button
-		  anchors.left: parent.left
-		  anchors.right: parent.right
-		  anchors.bottom: parent.bottom
-		  text: "Ok"
-		  onClicked: {
-				/* if (image.visible) { */
-				/* 	 cutimage.source = "" */
-				/* 	 cutimage.source = "image://Scanned/" + img.cut */
-				/* } */
-				image.visible = !image.visible
-				cutbox.visible = !cutbox.visible
-		  }
-	 }
+            Label {
+                text: "Brightness"
+            }
+            Slider {
+                id: brightness
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: 1
+                value: 50
+            }
+        }
 
+        Row {
+            id: detailsRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: colbuttons.top
 
+            Label {
+                text: "Details"
+            }
+            Slider {
+                id: details
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: 1
+                value: 50
+            }
+        }
+
+        Row {
+            id: colbuttons
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+
+            Button {
+                text: "B&W"
+                onClicked: colormode = "bw"
+            }
+
+            Button {
+                text: "Gray"
+                onClicked: colormode = "gray"
+            }
+
+            Button {
+                text: "Colored"
+                onClicked: colormode = "colored"
+            }
+
+            Button {
+                text: "Accept"
+                onClicked: {
+                    cutbox.visible = true
+                    colbox.visible = false
+                }
+            }
+        }
+    }
 }
