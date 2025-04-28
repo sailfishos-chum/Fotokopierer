@@ -31,7 +31,7 @@ PlainImage::PlainImage(QQuickItem* parent) : BaseImage(parent), d(new Data) {}
 
 PlainImage::~PlainImage() = default;
 
-bool PlainImage::scale() const
+bool PlainImage::scaling() const
 {
     return d->scale;
 }
@@ -46,11 +46,11 @@ QImage PlainImage::sourceImage() const
     return d->image.isNull() ? BaseImage::sourceImage() : d->image;
 }
 
-void PlainImage::setScale(bool enabled)
+void PlainImage::setScaling(bool enabled)
 {
     if (enabled != d->scale) {
         d->scale = enabled;
-        emit scaleChanged();
+        emit scalingChanged();
         updateImage();
     }
 }

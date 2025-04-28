@@ -39,7 +39,7 @@ ApplicationWindow {
 
     PlainImage {
         id: plainimage
-        scale: true
+        scaling: true
         visible: false
     }
 
