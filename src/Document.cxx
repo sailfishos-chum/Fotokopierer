@@ -49,6 +49,16 @@ Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
 
 Document::~Document() = default;
 
+QString Document::title() const
+{
+    return d->title;
+}
+
+void Document::setTitle(const QString &title)
+{
+    d->title = title;
+}
+
 int Document::rowCount(const QModelIndex &parent) const
 {
     return d->pages.size();

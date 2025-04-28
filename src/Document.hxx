@@ -32,6 +32,8 @@ class Document : public QAbstractListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+
 public:
     enum PageRoles { PageRole = Qt::UserRole + 1 };
 
@@ -48,6 +50,9 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
+    /// Return the document title.
+    QString title() const;
+
     /// Add a newly scanned page to the image.
     ///
     /// The new page will be created with the given original and result image
@@ -59,10 +64,15 @@ public:
     Q_INVOKABLE bool load(const QString &filename, QObject *parent = nullptr);
 
 public slots:
+    /// Set the document title.
+    void setTitle(const QString &title);
+
     /// Move a page `from` to position `to`.
     void move(int from, int to);
 
 signals:
+    void titleChanged();
+
     void error(const QString &msg);
 
 private:
