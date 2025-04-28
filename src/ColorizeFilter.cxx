@@ -122,6 +122,10 @@ QImage ColorizeFilter::apply(QImage&& image)
     img_cut.convertTo(img_bright, -1, contrast, brightness);
     img_cut.release();
 
+    if (d->colormode == FullColor) {
+        return cvMatToQImage(img_bright).copy();
+    }
+
     // Compute a gray-scale image.
     cv::Mat img_gray;
     cv::cvtColor(img_bright, img_gray, cv::COLOR_BGR2GRAY);

@@ -35,6 +35,7 @@ public:
         Gray,
         BlackAndWhite,
         Colored,
+        FullColor,
     };
     Q_ENUM(ColorMode)
 
