@@ -10,194 +10,164 @@ msgstr ""
 
 #~ msgctxt "CameraPage|"
 #~ msgid "New Picture"
-#~ msgstr ""
+#~ msgstr "Ny bild"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/ColorizePage.qml:39
 msgctxt "ColorizePage|"
 msgid "Colorize"
-msgstr ""
+msgstr "Färglägg"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/CutPage.qml:40
 msgctxt "CutPage|"
 msgid "Cut & Rotate"
-msgstr ""
-
-#~ msgctxt "Document|"
-#~ msgid "Page could not be created: no original image"
-#~ msgstr ""
-
-#~ msgctxt "Document|"
-#~ msgid "Page could not be created: no result image"
-#~ msgstr ""
-
-#~ msgctxt "Document|"
-#~ msgid "Page could not be created: error saving original image"
-#~ msgstr ""
-
-#~ msgctxt "Document|"
-#~ msgid "Page could not be created: error saving result image"
-#~ msgstr ""
+msgstr "Klipp ut & rotera"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:272
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
-msgstr ""
+msgstr "Kan inte lägga till sida, dokumentet är inte klart"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:341
 #, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
-msgstr ""
+msgstr "Kan inte skapa sökvägen %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:348
 #, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
-msgstr ""
+msgstr "Kan inte skriva dokumentfil %1: %2"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:369
 #, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
-msgstr ""
+msgstr "Kunde inte skriva dokumentfil: %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:381
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:400
 #, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
-msgstr ""
+msgstr "Kan inte läsa in dokument från \"%1\", en annan process hindrar."
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:416
 #, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
-msgstr ""
+msgstr "Kan inte öppna dokumentfil %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:425
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
-msgstr ""
+msgstr "Kunde inte läsa titel från dokumentfil %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:430
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
-msgstr ""
+msgstr "Kunde inte läsa tidsstämpel från dokumentfil %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:436
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
-msgstr ""
+msgstr "Kunde inte läsa sidor från dokumentfil %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:442
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
-msgstr ""
+msgstr "Kunde inte läsa sida från dokumentfil %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:451
 #, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
-msgstr ""
+msgstr "Kunde inte läsa sida från dokumentfil %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:502
 msgctxt "Document|"
 msgid "Cannot export to pdf, document is not ready"
-msgstr ""
+msgstr "Kan inte exportera till PDF, dokumentet är inte klart"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:558
 msgctxt "Document|"
 msgid "Error creating pdf-file"
-msgstr ""
-
-#, qt-format
-#~ msgctxt "DocumentDelegate|"
-#~ msgid ""
-#~ "Pages: %1\n"
-#~ "%2"
-#~ msgstr ""
+msgstr "Kunde inte skapa PDF-fil"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:99
 #, qt-format
 msgctxt "DocumentPage|"
 msgid "Page %1 of %2 (%3)"
-msgstr ""
+msgstr "Sida %1 av %2 (%3)"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:109
 msgctxt "DocumentPage|"
 msgid "Delete page"
-msgstr ""
+msgstr "Ta bort sidan"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:151
 msgctxt "DocumentPage|"
 msgid "Export to pdf"
-msgstr ""
+msgstr "Exportera till PDF"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:157
 msgctxt "DocumentPage|"
 msgid "Rename"
-msgstr ""
+msgstr "Byt namn"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:253
 #, qt-format
 msgctxt "DocumentPage|"
 msgid "Overwrite existing file <%1>?"
-msgstr ""
+msgstr "Vill du skriva över befintlig fil <%1>?"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:77
 msgctxt "DocumentsPage|"
 msgid "Delete document"
-msgstr ""
+msgstr "Ta bort dokumentet"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:119
 msgctxt "DocumentsPage|"
 msgid "Documents"
-msgstr ""
+msgstr "Dokument"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:126
 #, qt-format
 msgctxt "DocumentsPage|"
 msgid "About %1"
-msgstr ""
+msgstr "Om %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/NewImagePage.qml:109
 msgctxt "NewImagePage|"
 msgid "New Picture"
-msgstr ""
-
-#, qt-format
-#~ msgctxt "PageDelegate|"
-#~ msgid ""
-#~ "Page %1\n"
-#~ "%2"
-#~ msgstr ""
+msgstr "Ny bild"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:45
 msgctxt "CoverPage|"
 msgid "Take a new picture"
-msgstr ""
+msgstr "Ta en ny bild"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:78
 #, qt-format
 msgctxt "CoverPage|"
 msgid "Pages: %2"
-msgstr ""
+msgstr "Sidor: %2"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:35
 #, qt-format
 msgctxt "AboutPage|"
 msgid "About %1"
-msgstr ""
+msgstr "Om %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:64
 #, qt-format
 msgctxt "AboutPage|"
 msgid "A camera scanning application for SailfishOS by %1"
-msgstr ""
+msgstr "En kameraskanner för SailfishOS av %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:75
 #, qt-format
@@ -213,52 +183,86 @@ msgstr ""
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:115
 msgctxt "AboutPage|"
 msgid "Homepage"
-msgstr ""
+msgstr "Hemsida"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:126
 msgctxt "AboutPage|"
 msgid "Find me on Freenode: "
-msgstr ""
+msgstr "Hitta mig på Freenode: "
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:145
 msgctxt "AboutPage|"
 msgid "This application uses"
-msgstr ""
+msgstr "Denna app använder"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:165
 #, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
-msgstr ""
+msgstr "Licensierad under %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/RenamePage.qml:32
 msgctxt "RenamePage|"
 msgid "Enter new document title"
-msgstr ""
+msgstr "Ange ny dokumenttitel"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/RenamePage.qml:38
 msgctxt "RenamePage|"
 msgid "Document title"
-msgstr ""
+msgstr "Dokumenttitel"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/DocumentDelegate.qml:128
 #, qt-format
 msgctxt "DocumentDelegate|"
 msgid "Pages: %1"
-msgstr ""
+msgstr "Sidor: %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/PageDelegate.qml:96
 #, qt-format
 msgctxt "PageDelegate|"
 msgid "Page %1"
-msgstr ""
+msgstr "Sida %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Page.cxx:144
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
-msgstr ""
+msgstr "Sidan kunde inte skapas: Fel när originalbild sparades"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Page.cxx:149
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"
-msgstr ""
+msgstr "Sidan kunde inte skapas: Fel när resultatbild sparades"
+
+#~ msgctxt "Document|"
+#~ msgid "Page could not be created: no original image"
+#~ msgstr "Sidan kunde inte skapas: Ingen originalbild"
+
+#~ msgctxt "Document|"
+#~ msgid "Page could not be created: no result image"
+#~ msgstr "Sidan kunde inte skapas: Ingen resultatbild"
+
+#~ msgctxt "Document|"
+#~ msgid "Page could not be created: error saving original image"
+#~ msgstr "Sidan kunde inte skapas: Fel när originalbild sparades"
+
+#~ msgctxt "Document|"
+#~ msgid "Page could not be created: error saving result image"
+#~ msgstr "Sidan kunde inte skapas: Fel när resultatbild sparades"
+
+#, qt-format
+#~ msgctxt "DocumentDelegate|"
+#~ msgid ""
+#~ "Pages: %1\n"
+#~ "%2"
+#~ msgstr ""
+#~ "Sidor: %1\n"
+#~ "%2"
+
+#, qt-format
+#~ msgctxt "PageDelegate|"
+#~ msgid ""
+#~ "Page %1\n"
+#~ "%2"
+#~ msgstr ""
+#~ "Sida %1\n"
+#~ "%2"

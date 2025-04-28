@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -54,6 +54,7 @@ class Fotokopierer : public QObject
     Q_PROPERTY(QString LicenseTitle READ licenseTitle CONSTANT)
     Q_PROPERTY(QString PoDoFoVersion READ podofoVersion CONSTANT)
     Q_PROPERTY(QString OpenCVVersion READ opencvVersion CONSTANT)
+    Q_PROPERTY(QString FreeTypeVersion READ freetypeVersion CONSTANT)
 
 public:
     explicit Fotokopierer(QObject* parent = nullptr)
@@ -75,7 +76,15 @@ public:
 
     QString opencvVersion() const;
 
-    Q_INVOKABLE QSize defaultResolution(QObject* capture) const;
+    QString freetypeVersion() const;
+
+    /// Return the resolution to be used.
+    ///
+    /// The resolution is the maximum resolution whose aspect ratio is a close
+    /// as possible to the aspect ratio of the given width and height. In other
+    /// words, `desiredWidth` and `desiredHeight` should be the dimensions of
+    /// the target image.
+    Q_INVOKABLE QSize defaultResolution(QObject* capture, int desiredWidth, int desiredHeight) const;
 };
 
 #endif

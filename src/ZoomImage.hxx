@@ -110,7 +110,7 @@ signals:
 
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

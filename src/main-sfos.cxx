@@ -17,10 +17,11 @@
 
 #include <QtCore/QTranslator>
 #include <QtGui/QGuiApplication>
-
 #include <QtQuick/QQuickView>
 
 #include <sailfishapp.h>
+
+#include <memory>
 
 #include "init.hxx"
 
@@ -28,9 +29,9 @@
 
 int main(int argc, char* argv[])
 {
-    QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
+    std::unique_ptr<QGuiApplication> app(SailfishApp::application(argc, argv));
 
-    QScopedPointer<QQuickView> view(SailfishApp::createView());
+    std::unique_ptr<QQuickView> view(SailfishApp::createView());
 
     QTranslator translator;
     if (translator.load(QLocale(),

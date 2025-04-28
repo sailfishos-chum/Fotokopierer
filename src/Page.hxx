@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,8 +21,9 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QObject>
-#include <QtCore/QScopedPointer>
 #include <QtGui/QImage>
+
+#include <memory>
 
 class Scanner;
 
@@ -52,7 +53,7 @@ public:
     Q_ENUM(Status)
 
 public:
-    explicit Page(QObject* parent = nullptr);
+    explicit Page();
 
     Page(const Page&) = delete;
     Page(Page&&) = delete;
@@ -88,9 +89,9 @@ public:
     /// The page is copied to directory `dir`.
     void initCopy(const QDir& dir, const Page* source);
 
-    bool write(QJsonObject& json) const;
+    bool write(QJsonObject& json, const QDir& docpath) const;
 
-    bool read(const QJsonObject& json);
+    bool read(const QJsonObject& json, const QDir& docpath);
 
     /// Return the filter settings of this page.
     QJsonObject settings() const;
@@ -142,7 +143,7 @@ signals:
 
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

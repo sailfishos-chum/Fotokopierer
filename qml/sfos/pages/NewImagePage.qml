@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,6 +15,7 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
+import Nemo.Configuration 1.0
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtMultimedia 5.6
@@ -24,6 +25,8 @@ import Fotokopierer 1.0
 
 Page {
     id: page
+
+    allowedOrientations: Orientation.Portrait
 
     property var acceptDestination
     property var acceptDestinationAction
@@ -68,6 +71,13 @@ Page {
         }
     }
 
+    // from harbour-advanced-camera
+    function strToSize(siz) {
+        var w = parseInt(siz.substring(0, siz.indexOf("x")))
+        var h = parseInt(siz.substring(siz.indexOf("x") + 1))
+        return Qt.size(w, h)
+    }
+
     Component {
         id: picker
         ImagePickerPage {
@@ -107,16 +117,31 @@ Page {
         title: qsTr("New Picture")
     }
 
+    ConfigurationGroup {
+        id: jollaCameraSettings
+        path: "/apps/jolla-camera/primary/image"
+
+        property string viewfinderResolution
+        property string viewfinderResolution_16_9
+        property string viewfinderResolution_4_3
+    }
+
     Camera {
         id: camera
 
         cameraState: Camera.UnloadedState
 
         viewfinder {
-            resolution: Qt.size(640, 480)
+            //resolution: Qt.size(640, 480)
+            onResolutionChanged: {
+                console.log("vfres: ", viewfinder.resolution)
+                console.log("vfressup: ", camera.supportedViewfinderResolutions())
+            }
         }
 
         imageCapture {
+            resolution: Qt.size(640, 480)
+
             onImageCaptured: {
                 //photoPreview.source = preview
                 console.log("image captured: " + preview)
@@ -155,10 +180,18 @@ Page {
 
         onCameraStatusChanged: {
             if (cameraStatus == Camera.ActiveStatus && !_haveResolution) {
-                var res = Fotokopierer.defaultResolution(imageCapture)
+                var res = Fotokopierer.defaultResolution(imageCapture, 16, 9)
                 if (res.width > 0) {
-                    imageCapture.resolution = res
-                    console.log("set resolution: " + res)
+                    imageCapture.setResolution(res)
+                    if (jollaCameraSettings.viewfinderResolution_16_9) {
+                        viewfinder.resolution = strToSize(jollaCameraSettings.viewfinderResolution_16_9)
+                    } else if (jollaCameraSettings.viewfinderResolution) {
+                        viewfinder.resolution = strToSize(jollaCameraSettings.viewfinderResolution)
+                    } else {
+                        viewfinder.resolution = Qt.size(Screen.height, Screen.width)
+                    }
+                } else {
+                    console.log("Found no resolution: " + res)
                 }
                 _haveResolution = true
             }
@@ -177,8 +210,8 @@ Page {
             anchors.fill: parent
 
             visible: camera.cameraStatus == Camera.ActiveStatus && _haveResolution
-            fillMode: VideoOutput.Stretch
-            orientation: camera.orientation
+            fillMode: VideoOutput.PreserveAspectCrop
+            orientation: 0
             focus: visible
             source: camera
         }

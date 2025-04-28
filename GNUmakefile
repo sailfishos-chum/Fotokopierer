@@ -1,51 +1,69 @@
 target = harbour-fotokopierer
 
+sdk_dir := $(HOME)/SailfishOS
+sfdk := $(sdk_dir)/bin/sfdk
+
 arch := i486
 #arch := armv7hl
-sfos_version := 3.0.3.9
+#arch := aarch64
+
+# Select the latest available target for the given architecture
+target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+
 device := jolla
 
-sdk_dir := $(HOME)/SailfishOS
 projects_root := $(HOME)/JollaProjekte
+emu_dir := $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
-mer_root_dir := $(subst $(HOME)/JollaProjekte,/home/src1,$(current_dir))
+mer_root_dir := $(current_dir)
 
-mersdk_target := SailfishOS-$(sfos_version)-$(arch)
-mersdk_device := Sailfish OS Emulator $(sfos_version)
 mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost
-mersdk_mb2 := cd $(mer_root_dir) && mb2 -t $(mersdk_target)
-mersdk_sb2 := cd $(mer_root_dir)/rpmbuilddir-arm && sb2 -t $(mersdk_target)
 
-TRANSLATIONS = de
+ifeq ($(arch),i486)
+  build_dir := rpmbuilddir-i386
+else
+ifeq ($(arch),armv7hl)
+  build_dir := rpmbuilddir-arm
+else
+  build_dir := rpmbuilddir-$(arch)
+endif
+endif
 
-.PHONY: all build buildall clean install rpm run
+emu_ssh := ssh -p 2223 -i $(emu_dir)/nemo nemo@localhost
+emu_ssh_root := ssh -p 2223 -i $(emu_dir)/root root@localhost
+
+TRANSLATIONS = de sv
+
+.PHONY: all build buildall clean install rpm run deploy-emu
 all: compile
 
 reformat:
 	clang-format -i --style=file src/*xx
 
 installdeps:
-	$(mersdk_ssh) '$(mersdk_mb2) installdeps'
+	sf
 
 build: reformat lrelease
-	$(mersdk_ssh) '$(mersdk_mb2) build'
+	$(sfdk) -c "target=$(target)" build
 
 compile: reformat lrelease
-	$(mersdk_ssh) '$(mersdk_sb2) make'
+	$(sfdk) -c "target=$(target)" build-shell make -C $(build_dir) -j4
 
-make:
-	$(mersdk_ssh) '$(mersdk_mb2) make'
+.PHONY: make
+make: compile
 
 install:
-	$(mersdk_ssh) '$(mersdk_mb2) install'
+	$(sfdk) -c "target=$(target)" make-install
 
 rpm: lrelease
-	$(mersdk_ssh) '$(mersdk_mb2) rpm'
+	touch rpm/*.yaml
+	$(sfdk) -c "target=$(target)" package
 
-deploy:
-	$(mersdk_ssh) '$(mersdk_mb2) --device "$(mersdk_device)" deploy --pkcon'
+deploy-emu: all rpm
+	scp -P 2223 -i $(emu_dir)/nemo RPMS/* nemo@localhost:
+	$(emu_ssh_root) 'rpm --reinstall /home/nemo/$(target)-*.i486.rpm'
 
 .PHONY: install-jolla copy-jolla run-jolla
 rpm-jolla: rpm
@@ -78,3 +96,7 @@ translations.qrc: $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm)
 snapshot_version := $(shell fossil info | awk '/^checkout:/ {print "1%{?dist}.fossil+" substr($$2, 1, 8)}')
 snapshot:
 	sed -ie 's/^Release: 1%{?dist}.*$$/Release: ${snapshot_version}/' rpm/harbour-fotokopierer.yaml
+
+clean:
+	$(sfdk) build-shell make -C $(build_dir) clean
+	rm -rf 3rdparty/*-$(arch)

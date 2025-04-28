@@ -8,8 +8,36 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
+* Tue Jun 1 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.6-1
+- use relative paths in document files
+- add workaround for absolute paths in old document files
+- add tribute to freetype
+
+* Mon May 31 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.5-1
+- fix some camera issues on Xperia 10 II
+- first build for aarch64
+
+* Tue Apr 21 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.4-1
+- New icons
+
+* Sun Apr 19 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.3-2
+- Fix German translation file
+
+* Sun Apr 19 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.3-1
+- Add Swedish translation
+
+* Sat Apr 18 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.2-1
+- Fix wrong resolution and orientation in camera preview
+- Add new icons by Tobias Planitzer
+
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-2
+- Fix version number
+
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-1
 - Fix position of zoom
+
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-3
+- Build against SailfishOS 3.0.2.8
 
 * Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
 - Update translation
