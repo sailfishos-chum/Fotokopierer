@@ -115,11 +115,13 @@ public:
     /// Return the original image.
     QImage image() const;
 
+#ifndef NDEBUG
     /// Return the gray image.
     QImage gray_image() const;
 
     /// Return the result image of canny edge detection.
     QImage bw_image() const;
+#endif
 
     /// Return the list of detected vertical lines.
     std::vector<QLineF> vertical_lines() const;

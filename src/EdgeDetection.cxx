@@ -98,8 +98,10 @@ struct EdgeDetection::Data {
     Quadrangle quad;      ///< The currently selected quadrangle.
 
     QImage image;
+#ifndef NDEBUG
     QImage gray_image;
     QImage bw_image;
+#endif
 
     bool auto_select_finished = false;
     bool have_auto_select = false;
@@ -218,6 +220,7 @@ QImage EdgeDetection::image() const
     return d->image;
 }
 
+#ifndef NDEBUG
 QImage EdgeDetection::gray_image() const
 {
     return d->gray_image;
@@ -227,6 +230,7 @@ QImage EdgeDetection::bw_image() const
 {
     return d->bw_image;
 }
+#endif
 
 std::vector<QPointF> EdgeDetection::points() const
 {
@@ -386,13 +390,18 @@ void EdgeDetection::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
 
     img_gray *= contrastFactor;
 
-    gray_image = cvMatToQImage(img_gray).copy();
+    QImage gray_image = cvMatToQImage(img_gray).copy();
 
     // canny edge detection
     cv::Mat img_edges;
     cv::Canny(img_gray, img_edges, cannyMinVal, cannyMaxVal, 3);
-    bw_image = cvMatToQImage(img_edges).copy();
+    QImage bw_image = cvMatToQImage(img_edges).copy();
     img_gray.release();
+
+#ifndef NDEBUG
+    this->gray_image = gray_image;
+    this->bw_image = bw_image;
+#endif
 
     // find raw lines
     std::vector<cv::Vec4i> lines;

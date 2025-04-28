@@ -120,8 +120,10 @@ public:
         p.drawLine(edges->bottomRight(), edges->topRight());
         p.drawLine(edges->bottomLeft(), edges->bottomRight());
 
+#ifndef NDEBUG
         img_gray_ = edges->gray_image();
         img_bw_ = edges->bw_image();
+#endif
         img_result_ = image;
 
         update();
