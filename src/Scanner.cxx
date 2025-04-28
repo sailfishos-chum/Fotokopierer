@@ -15,11 +15,13 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 #include "ColorizeFilter.hxx"
 #include "CutFilter.hxx"
+#include "Document.hxx"
 #include "Filter.hxx"
+#include "Page.hxx"
 #include "RotateFilter.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
@@ -31,7 +33,7 @@
 
 #include <cassert>
 
-struct ScanImage::Data {
+struct Scanner::Data {
     QVector<Filter*> filter;
     QImage original;
     QString originalPath;
@@ -40,7 +42,7 @@ struct ScanImage::Data {
     bool deleteOriginalOnClear = false;
 };
 
-ScanImage::ScanImage(QObject* parent)
+Scanner::Scanner(QObject* parent)
     : QObject(parent), d(new Data)
 {
     d->filter.reserve(3);
@@ -48,22 +50,22 @@ ScanImage::ScanImage(QObject* parent)
     d->filter.push_back(new CutFilter(this, d->filter.constLast()));
     d->filter.push_back(new ColorizeFilter(this, d->filter.constLast()));
 
-    connect(&d->saveFuture, &QFutureWatcher<void>::finished, this, &ScanImage::imageSaved);
+    connect(&d->saveFuture, &QFutureWatcher<void>::finished, this, &Scanner::imageSaved);
 }
 
-ScanImage::~ScanImage()
+Scanner::~Scanner()
 {
     if (d->deleteOriginalOnClear && !d->originalPath.isEmpty()) {
         QFile::remove(d->originalPath);
     }
 }
 
-QImage ScanImage::original() const
+QImage Scanner::original() const
 {
     return d->original;
 }
 
-QImage ScanImage::computeFilteredImage() const
+QImage Scanner::computeFilteredImage() const
 {
     QImage image = d->original;
     for (auto& filter : d->filter) {
@@ -72,7 +74,7 @@ QImage ScanImage::computeFilteredImage() const
     return image;
 }
 
-Filter* ScanImage::filter(FilterType type)
+Filter* Scanner::filter(FilterType type)
 {
     if (type == FilterType::None)
         return nullptr;
@@ -80,22 +82,22 @@ Filter* ScanImage::filter(FilterType type)
         return d->filter.at(static_cast<int>(type));
 }
 
-RotateFilter* ScanImage::rotateFilter() const
+RotateFilter* Scanner::rotateFilter() const
 {
     return qobject_cast<RotateFilter*>(d->filter.at(static_cast<int>(FilterType::Rotate)));
 }
 
-CutFilter* ScanImage::cutFilter() const
+CutFilter* Scanner::cutFilter() const
 {
     return qobject_cast<CutFilter*>(d->filter.at(static_cast<int>(FilterType::Cut)));
 }
 
-ColorizeFilter* ScanImage::colorizeFilter() const
+ColorizeFilter* Scanner::colorizeFilter() const
 {
     return qobject_cast<ColorizeFilter*>(d->filter.at(static_cast<int>(FilterType::Colorize)));
 }
 
-void ScanImage::setDeleteOriginalOnClear(bool enabled)
+void Scanner::setDeleteOriginalOnClear(bool enabled)
 {
     if (enabled != d->deleteOriginalOnClear) {
         d->deleteOriginalOnClear = enabled;
@@ -103,12 +105,53 @@ void ScanImage::setDeleteOriginalOnClear(bool enabled)
     }
 }
 
-bool ScanImage::deleteOriginalOnClear() const
+bool Scanner::deleteOriginalOnClear() const
 {
     return d->deleteOriginalOnClear;
 }
 
-bool ScanImage::loadFile(const QString& file_name)
+void Scanner::addPage(Document* doc)
+{
+    if (doc == nullptr) {
+        return;
+    }
+
+    auto page = doc->newPage();
+    if (page == nullptr) {
+        return;
+    }
+
+    page->loadFromScanner(doc->directory(), this);
+}
+
+void Scanner::updatePage(Page* page)
+{
+    if (page == nullptr) {
+        return;
+    }
+
+    page->updateFromScanner(this);
+}
+
+bool Scanner::loadPage(Page* page)
+{
+    if (page == nullptr) {
+        return false;
+    }
+
+    if (!loadFile(page->original(), page->settings())) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Scanner::loadFile(const QString& file_name)
+{
+    return loadFile(file_name, {});
+}
+
+bool Scanner::loadFile(const QString& file_name, const QJsonObject& settings)
 {
     QImageReader imageReader(file_name);
     imageReader.setAutoTransform(true);
@@ -124,12 +167,20 @@ bool ScanImage::loadFile(const QString& file_name)
         } else {
             d->scaled = image.scaledToHeight(qMin(image.height(), 1000));
         }
+
+        if (settings.isEmpty()) {
+            for (auto f : d->filter) {
+                f->reset();
+            }
+        } else {
+            loadJson(settings);
+        }
         emit originalImageChanged();
         return true;
     }
 }
 
-void ScanImage::clear()
+void Scanner::clear()
 {
     if (!d->saveFuture.isRunning()) {
         if (d->deleteOriginalOnClear && !d->originalPath.isEmpty()) {
@@ -142,7 +193,25 @@ void ScanImage::clear()
     }
 }
 
-QImage ScanImage::originalImage() const
+QImage Scanner::originalImage() const
 {
     return d->scaled;
+}
+
+QJsonObject Scanner::saveJson() const
+{
+    QJsonObject settings;
+
+    for (auto f : d->filter) {
+        settings[f->name()] = f->saveJson();
+    }
+
+    return settings;
+}
+
+void Scanner::loadJson(const QJsonObject& settings)
+{
+    for (auto f : d->filter) {
+        f->loadJson(settings[f->name()].toObject());
+    }
 }

@@ -19,7 +19,9 @@
 
 #include <QtCore/QDateTime>
 #include <QtCore/QLineF>
+#include <QtCore/QSize>
 #include <QtCore/QStandardPaths>
+#include <QtMultimedia/QCameraImageCapture>
 
 const QString ApplicationName = QStringLiteral("Fotokopierer");
 
@@ -29,6 +31,9 @@ const QString FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 const QString DocumentRoot = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
                              QStringLiteral("/Fotokopierer");
+
+static const int MaxResolutionWidth = 4000;
+static const int MaxResolutionHeight = 3000;
 
 QDir getDocumentDirectory()
 {
@@ -110,4 +115,27 @@ QString Fotokopierer::podofoVersion() const
 QString Fotokopierer::opencvVersion() const
 {
     return QStringLiteral(OPENCV_VERSION);
+}
+
+QSize Fotokopierer::defaultResolution(QObject* capture) const
+{
+    if (capture == nullptr) {
+        return {};
+    }
+
+    auto captures = capture->findChildren<QCameraImageCapture*>();
+
+    if (captures.count() > 0) {
+        QSize resolution;
+        for (auto&& r : captures[0]->supportedResolutions()) {
+            if (r.width() * 3 == r.height() * 4 && r.width() > resolution.width() &&
+                r.width() <= MaxResolutionWidth && r.height() <= MaxResolutionHeight) {
+                resolution = r;
+            }
+        }
+
+        return resolution;
+    } else {
+        return {};
+    }
 }

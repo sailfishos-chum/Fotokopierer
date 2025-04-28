@@ -26,13 +26,9 @@ import "../../common"
 Page {
     id: docpage
 
-    property var document
+    property var document: null // the document, may be null
     property bool editing: false
     property bool dragging: false
-
-    ScanImage {
-        id: scanImage
-    }
 
     Loader {
         id: newPage
@@ -40,9 +36,9 @@ Page {
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            // ensure that the C++ memory of ScanImage is freed
+            // ensure that the C++ memory of Scanner is freed
             newPage.source = ""
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
@@ -53,11 +49,11 @@ Page {
             width: grid.cellWidth
             height: grid.cellHeight
 
-            thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
+            thumbnail: (role_thumbnail && role_thumbnail != "") ? role_thumbnail : "image://theme/icon-l-image"
             pagenumber: DelegateModel.itemsIndex + 1
             creationTime: role_creationTime || new Date()
 
-            isAddButton: role_thumbnail == null
+            isAddButton: role_thumbnail ? false : true
             visible: !isAddButton || (!docpage.editing && !docpage.dragging)
             deleting: docpage.editing
 
@@ -101,7 +97,7 @@ Page {
                     addPage()
                 } else {
                     var title = qsTr("Page %1 of %2 (%3)").arg(pagenumber).arg(visualModel.count - 1).arg(creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
-                    openPage(role_result, title)
+                    openPage(role_page, title)
                 }
             }
 
@@ -111,7 +107,9 @@ Page {
                 docpage.dragging = false
                 docpage.editing = false
                 remorse.execute(pageDelegate, qsTr("Delete page"), function () {
-                    document.deletePage(pageDelegate.DelegateModel.itemsIndex)
+                    if (document) {
+                        document.deletePage(pageDelegate.DelegateModel.itemsIndex)
+                    }
                 })
             }
 
@@ -122,13 +120,8 @@ Page {
             BusyIndicator {
                 size: BusyIndicatorSize.Large
                 anchors.centerIn: parent
-                running: role_page != null && role_page.status != DocPage.Ready
+                running: (role_page ? true : false) && role_page.status != DocPage.Ready
             }
-        }
-
-        Component.onCompleted: {
-            visualModel.model = document
-            visualModel.items.insert({"role_thumbnail": null})
         }
     }
 
@@ -146,7 +139,7 @@ Page {
 
         header: PageHeader {
             id: head
-            title: document.title
+            title: document ? document.title : ""
         }
 
         model: visualModel
@@ -157,11 +150,13 @@ Page {
             MenuItem {
                 text: qsTr("Export to pdf")
                 onClicked: document.exportToPdf()
+                enabled: document ? true : false
             }
 
             MenuItem {
                 text: qsTr("Rename")
                 onClicked: pageStack.push(Qt.resolvedUrl("RenamePage.qml"), { document: document })
+                enabled: document ? true : false
             }
         }
 
@@ -262,20 +257,59 @@ Page {
         }
     }
 
+    // This is a dummy model only showing the "AddPage". It is used if document
+    // == null, i.e. if no document is associated with this page.
+    //
+    // The only purpose is a nice peek right before accepting a new image (this
+    // is the only situation where the page is shown without an associated
+    // model).
+    ListModel {
+        id: emptymodel
+
+        ListElement {
+            role_thumbnail: false
+            role_creationTime: false
+            role_page: false
+        }
+    }
+
+    // This timer is only used as a workaround for an unexpected crash.
+    //
+    // If the "AddPage" is added immediately when the document has been changed,
+    // the program crashed. We use the timer to delay the addition of the
+    // "AddPage", probably so that the DelegateModel is properly initialized.
+    Timer {
+        id: addpagetimer
+        interval: 1
+        running: false
+        repeat: false
+        onTriggered: visualModel.items.insert({"role_thumbnail": false})
+    }
+
     onDocumentChanged: {
-        document.errorPdfExists.connect(function (filename) {
-            pageStack.push(overwritedlg, { filename: filename })
-        })
-        document.exportToPdfFinished.connect(function (path) {
-            Qt.openUrlExternally(path)
-        })
+        // remove the "AddPage" (if exists)
+        if (visualModel.items.count > 0) {
+            visualModel.items.remove(0, visualModel.items.count)
+        }
+        if (document) {
+            // a document has been specified, use as model and connect signals
+            visualModel.model = document
+            document.errorPdfExists.connect(_onPdfExists)
+            document.exportToPdfFinished.connect(_onExportToPdfFinished)
+            // add the "AddPage" (we use the timer as adding the page
+            // immediately crashes the program)
+            addpagetimer.running = true
+        } else {
+            // no document has been specified, use the dummy model
+            visualModel.model = emptymodel
+        }
     }
 
     Rectangle {
         anchors.fill: parent
         color: Theme.secondaryHighlightColor
         opacity: 0.5
-        visible: document.status == Document.Exporting
+        visible: (document && document.status == Document.Exporting) ? true : false
 
         BusyIndicator {
             size: BusyIndicatorSize.Large
@@ -285,19 +319,30 @@ Page {
     }
 
     function addPage() {
+        if (!document) {
+            return
+        }
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-        newPage.item.scanImage = scanImage
-        newPage.item.destination = docpage
+        newPage.item.acceptDestination = docpage
+        newPage.item.acceptDestinationAction = PageStackAction.Pop
         newPage.item.addPage.connect(function() {
-            document.addScannedPage(scanImage)
+            Scanner.addPage(document)
         })
         pageStack.push(newPage.item)
     }
 
     function openPage(page, title) {
         pageStack.push(Qt.resolvedUrl("PagePage.qml"), {
-            "image": page,
+            "page": page,
             "title": title,
         })
+    }
+
+    function _onPdfExists(filename) {
+        pageStack.push(overwritedlg, { filename: filename })
+    }
+
+    function _onExportToPdfFinished(path) {
+        Qt.openUrlExternally(path)
     }
 }

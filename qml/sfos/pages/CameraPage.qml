@@ -25,16 +25,13 @@ Page {
     id: page
 
     property Page destination
-    property ScanImage scanImage
 
     signal addPage()
 
-    CutPage { id: cutpage; image: scanImage }
+    CutPage { id: cutpage }
 
     ColorizePage {
         id: colpage
-
-        scanImage: page.scanImage
 
         acceptDestination: destination
         acceptDestinationAction: PageStackAction.Pop
@@ -62,7 +59,7 @@ Page {
             }
             onImageSaved: {
                 console.log("save image: " + path)
-                scanImage.loadFile(path)
+                Scanner.loadFile(path)
                 pageStack.push(cutpage)
                 pageStack.pushAttached(colpage)
             }

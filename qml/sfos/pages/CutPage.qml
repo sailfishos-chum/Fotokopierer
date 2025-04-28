@@ -24,11 +24,12 @@ import "../../common"
 Page {
     id: page
 
-    property alias image: cutview.scanImage
-
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
+        if (status == PageStatus.Active) {
+            cutview.selectionFromFilter()
+        }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
         }
@@ -46,7 +47,7 @@ Page {
         anchors.bottom: buttons.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
-        markerColor: Theme.primaryColor
+        markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
     }
 
@@ -106,16 +107,16 @@ Page {
                 height: grid.cellHeight
 
                 Button {
-                    visible: model.text
+                    visible: model.text ? true : false
                     anchors.fill: parent
-                    text: model.text
+                    text: model.text || ""
                     onClicked: listModel.actions[name]()
                 }
 
                 IconButton {
-                    visible: model.icon
+                    visible: model.icon ? true : false
                     anchors.fill: parent
-                    icon.source: model.icon
+                    icon.source: model.icon || ""
                     onClicked: listModel.actions[name]()
                 }
             }

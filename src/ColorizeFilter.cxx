@@ -31,10 +31,10 @@ struct ColorizeFilter::Data {
     ColorMode colormode = ColorMode::BlackAndWhite;
 };
 
-ColorizeFilter::ColorizeFilter(ScanImage* image)
+ColorizeFilter::ColorizeFilter(Scanner* image)
     : ColorizeFilter(image, nullptr) {}
 
-ColorizeFilter::ColorizeFilter(ScanImage* image, Filter* previous_filter)
+ColorizeFilter::ColorizeFilter(Scanner* image, Filter* previous_filter)
     : Filter(image, previous_filter), d(new Data)
 {
     connect(this, &ColorizeFilter::contrastChanged, this, &Filter::filterChanged);
@@ -100,12 +100,47 @@ ColorizeFilter::ColorMode ColorizeFilter::colorMode() const
     return d->colormode;
 }
 
-QJsonObject ColorizeFilter::saveJson() const
+void ColorizeFilter::reset()
 {
-    return {};
+    setContrast(0.5);
+    setBrightness(0.5);
+    setDetails(0.5);
+    setColorMode(ColorMode::BlackAndWhite);
 }
 
-void ColorizeFilter::loadJson(QJsonObject& object) {}
+QString ColorizeFilter::name() const
+{
+    return QStringLiteral("colorize");
+}
+
+QJsonObject ColorizeFilter::saveJson() const
+{
+    return {
+        {QStringLiteral("contrast"), d->contrast},
+        {QStringLiteral("brightness"), d->brightness},
+        {QStringLiteral("details"), d->details},
+        {QStringLiteral("mode"), d->colormode},
+    };
+}
+
+void ColorizeFilter::loadJson(const QJsonObject& object)
+{
+    setContrast(static_cast<qreal>(object[QStringLiteral("contrast")].toDouble(0.5)));
+    setBrightness(static_cast<qreal>(object[QStringLiteral("brightness")].toDouble(0.5)));
+    setDetails(static_cast<qreal>(object[QStringLiteral("details")].toDouble(0.5)));
+
+    auto mode = object[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
+    switch (mode) {
+        case ColorMode::BlackAndWhite:
+        case ColorMode::Gray:
+        case ColorMode::Colored:
+        case ColorMode::FullColor:
+            setColorMode(static_cast<ColorMode>(mode));
+            return;
+    }
+
+    setColorMode(ColorMode::BlackAndWhite);
+}
 
 QImage ColorizeFilter::apply(QImage&& image)
 {
@@ -121,6 +156,10 @@ QImage ColorizeFilter::apply(QImage&& image)
     cv::Mat img_bright;
     img_cut.convertTo(img_bright, -1, contrast, brightness);
     img_cut.release();
+
+    if (d->colormode == FullColor) {
+        return cvMatToQImage(img_bright).copy();
+    }
 
     // Compute a gray-scale image.
     cv::Mat img_gray;

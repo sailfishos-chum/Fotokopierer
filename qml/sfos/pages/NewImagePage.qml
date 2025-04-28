@@ -25,28 +25,35 @@ import Fotokopierer 1.0
 Page {
     id: page
 
-    property Page destination
-    property ScanImage scanImage
+    property var acceptDestination
+    property var acceptDestinationAction
+    property Page acceptDestinationInstance
+    property Page acceptDestinationReplaceTarget
+
+    property bool _haveResolution: false
 
     signal addPage()
 
     onStatusChanged: {
         if (status == PageStatus.Activating) {
             // Remove possibly old image
-            scanImage.clear()
+            Scanner.clear()
+        }
+        if (status == PageStatus.Active) {
+            camera.cameraState = Camera.ActiveState
         }
     }
 
     onPageContainerChanged: {
         if (pageContainer == null) {
             console.log("NewImagePage closed")
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
     function processImage(imagePath, deleteOnCancel) {
-        scanImage.loadFile(imagePath)
-        scanImage.deleteOriginalOnClear = deleteOnCancel
+        Scanner.loadFile(imagePath)
+        Scanner.deleteOriginalOnClear = deleteOnCancel
         pageStack.push(cutpage)
         pageStack.pushAttached(colpage)
     }
@@ -61,28 +68,38 @@ Page {
         }
     }
 
-    ImagePickerPage {
+    Component {
         id: picker
+        ImagePickerPage {
+            id: picker
 
-        // Note that this property might become unsupported in future
-        popOnSelection: false
+            // Note that this property might become unsupported in future
+            popOnSelection: false
 
-        onSelectedContentPropertiesChanged: {
-            processImage(selectedContentProperties.filePath, false)
+            onSelectedContentPropertiesChanged: {
+                processImage(selectedContentProperties.filePath, false)
+            }
         }
     }
 
-    CutPage { id: cutpage; image: scanImage }
+    Component {
+        id: cutpage
+        CutPage {}
+    }
 
-    ColorizePage {
+    Component {
         id: colpage
+        ColorizePage {
+            onAccepted: addPage()
 
-        scanImage: page.scanImage
+            acceptDestination: page.acceptDestination
+            acceptDestinationAction: page.acceptDestinationAction
+            acceptDestinationReplaceTarget: page.acceptDestinationReplaceTarget
 
-        acceptDestination: destination
-        acceptDestinationAction: PageStackAction.Pop
-
-        onAccepted: addPage()
+            onAcceptDestinationInstanceChanged: {
+                page.acceptDestinationInstance = acceptDestinationInstance
+            }
+        }
     }
 
     PageHeader {
@@ -93,12 +110,13 @@ Page {
     Camera {
         id: camera
 
+        cameraState: Camera.UnloadedState
+
         viewfinder {
             resolution: Qt.size(640, 480)
         }
 
         imageCapture {
-            resolution: Qt.size(4000, 3000)
             onImageCaptured: {
                 //photoPreview.source = preview
                 console.log("image captured: " + preview)
@@ -134,9 +152,20 @@ Page {
         }
 
         metaData.orientation: orientation
+
+        onCameraStatusChanged: {
+            if (cameraStatus == Camera.ActiveStatus && !_haveResolution) {
+                var res = Fotokopierer.defaultResolution(imageCapture)
+                if (res.width > 0) {
+                    imageCapture.resolution = res
+                    console.log("set resolution: " + res)
+                }
+                _haveResolution = true
+            }
+        }
     }
 
-    Rectangle {
+    Item {
         id: viewArea
 
         anchors.top: header.bottom
@@ -147,6 +176,7 @@ Page {
         VideoOutput {
             anchors.fill: parent
 
+            visible: camera.cameraStatus == Camera.ActiveStatus && _haveResolution
             fillMode: VideoOutput.Stretch
             orientation: camera.orientation
             focus: visible
@@ -155,6 +185,7 @@ Page {
 
         Rectangle {
             id: focusCircle
+            visible: camera.cameraStatus == Camera.ActiveStatus
             height: Theme.itemSizeHuge
             width: height
             radius: width / 2
@@ -167,6 +198,12 @@ Page {
                 x: -focusCircle.width / 2
                 y: -focusCircle.height / 2
             }
+        }
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Large
+            anchors.centerIn: parent
+            running: camera.cameraStatus != Camera.ActiveStatus
         }
 
         MouseArea {
@@ -223,9 +260,7 @@ Page {
             IconButton {
                 width: parent.width / 3
                 icon.source: "image://theme/icon-m-image"
-                onClicked: {
-                    pageStack.push(picker)
-                }
+                onClicked: pageStack.push(picker)
             }
         }
     }

@@ -38,7 +38,6 @@ CoverBackground {
         width: parent.width * 0.9
         height: parent.height * 0.9
 
-        font.pixelSize: Theme.fontSizeHuge
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
@@ -99,6 +98,7 @@ CoverBackground {
 
                 delegate: Image {
                     source: _thumbnails[_thumbnails.length - index - 1]
+                    cache: false
 
                     anchors.fill: parent
                     anchors.leftMargin: (_thumbnails.length - index - 1) * 0.05 * parent.width

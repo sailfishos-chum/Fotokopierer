@@ -2,11 +2,11 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.1.0)
+set(FOTOKOPIERER_VERSION 0.2)
 set(PODOFO_VERSION 0.9.6)
 set(OPENCV_VERSION 3.4.0)
 
-project(fotokopierer VERSION 0.1.0 LANGUAGES CXX)
+project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -38,7 +38,7 @@ set(SOURCES
   src/Fotokopierer.cxx
   src/Page.cxx
   src/RotateFilter.cxx
-  src/ScanImage.cxx
+  src/Scanner.cxx
   src/ZoomImage.cxx
   src/init.cxx)
 
@@ -172,7 +172,7 @@ else()
   message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 endif()
 
-find_package(Qt5 COMPONENTS Core Concurrent Gui Quick)
+find_package(Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick)
 
 # We need to set these directories here ... luckily we know exactly where it goes.
 
@@ -202,7 +202,7 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
   QT_USE_FAST_OPERATOR_PLUS
   )
 
-qt5_use_modules(${TARGET} Core Gui Quick)
+qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)

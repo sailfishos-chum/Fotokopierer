@@ -27,9 +27,9 @@ class RotateFilter : public Filter
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 public:
-    explicit RotateFilter(ScanImage* image);
+    explicit RotateFilter(Scanner* image);
 
-    explicit RotateFilter(ScanImage* image, Filter* previous_filter);
+    explicit RotateFilter(Scanner* image, Filter* previous_filter);
 
     RotateFilter(const RotateFilter&) = delete;
     RotateFilter(RotateFilter&&) = delete;
@@ -38,9 +38,13 @@ public:
 
     ~RotateFilter() override;
 
+    void reset() override;
+
+    QString name() const override;
+
     QJsonObject saveJson() const override;
 
-    void loadJson(QJsonObject& object) override;
+    void loadJson(const QJsonObject& object) override;
 
     QImage apply(QImage&& image) override;
 

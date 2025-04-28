@@ -65,10 +65,10 @@ Document* DocumentList::latestDocument() const
 
 void DocumentList::addDocument(const QSharedPointer<Document>& doc)
 {
-    connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
-    connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
-    connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
-    connect(doc.data(), &Document::statusChanged, this, &DocumentList::documentStatusChanged);
+    connect(doc.data(), &Document::pagesChanged, this, &DocumentList::onDocumentChanged);
+    connect(doc.data(), &Document::titleChanged, this, &DocumentList::onDocumentChanged);
+    connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::onDocumentChanged);
+    connect(doc.data(), &Document::statusChanged, this, &DocumentList::onDocumentStatusChanged);
     connect(doc.data(), &Document::error, this, &DocumentList::error);
 
     beginInsertRows({}, d->docs.size(), d->docs.size());
@@ -97,7 +97,7 @@ void DocumentList::deleteDocument(int docIndex)
     emit latestDocumentChanged();
 }
 
-void DocumentList::documentChanged()
+void DocumentList::onDocumentChanged()
 {
     auto sender = QObject::sender();
     for (int i = 0; i < d->docs.size(); i++) {
@@ -109,7 +109,7 @@ void DocumentList::documentChanged()
     }
 }
 
-void DocumentList::documentStatusChanged()
+void DocumentList::onDocumentStatusChanged()
 {
     auto* doc = qobject_cast<Document*>(sender());
 

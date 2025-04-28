@@ -78,9 +78,9 @@ private:
     QHash<int, QByteArray> roleNames() const override;
 
 private slots:
-    void documentChanged();
+    void onDocumentChanged();
 
-    void documentStatusChanged();
+    void onDocumentStatusChanged();
 
 private:
     struct Data;

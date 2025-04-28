@@ -1,0 +1,24 @@
+# Rename this file as sample.changes to include changelog
+# entries in your RPM file.
+#
+# Add new changelog entries following the format below.
+# Add newest entries to the top of the list.
+# Separate entries from eachother with a blank line.
+
+# * date Author's Name <author's email> version-release
+# - Summary of changes
+
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-1
+- Selection is rotated when the image is rotated
+- Add mode for using full colors
+- Full color and gray pictures are stored as jpg to save memory
+- Open document page after capturing the first new picture
+- Allow to re-edit scanned images later
+- Fix camera problem on Jolla 1
+- UI improvements
+- General code improvements
+
+* Sat May 18 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.1.0-1
+- First alpha release
+
+

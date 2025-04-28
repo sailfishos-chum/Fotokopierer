@@ -37,6 +37,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
+#include <QtQml/QQmlEngine>
 
 #include <podofo/podofo.h>
 
@@ -86,7 +87,7 @@ struct Document::Data {
 Document::Document(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::onPendingDocFinished);
     connect(&d->pendingPdf, &QFutureWatcher<QUrl>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
@@ -94,7 +95,7 @@ Document::Document(QObject* parent)
 Document::Document(Document&& doc) noexcept
     : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::onPendingDocFinished);
     connect(&d->pendingPdf, &QFutureWatcher<QString>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
@@ -187,7 +188,12 @@ int Document::rowCount(const QModelIndex& parent) const
     return d->doc.pages.size();
 }
 
-void Document::setPendingDoc()
+QDir Document::directory() const
+{
+    return QFileInfo(d->doc.filename).dir();
+}
+
+void Document::onPendingDocFinished()
 {
     try {
         setDocData(d->pendingDoc.result());
@@ -202,7 +208,7 @@ void Document::setDocData(DocData&& docdata)
 {
     d->doc = std::move(docdata);
     for (auto& p : d->doc.pages) {
-        connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+        connect(p.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     }
     emit titleChanged();
 }
@@ -260,72 +266,21 @@ void Document::move(int from, int to)
     }
 }
 
-void Document::addPage(const QImage& original, const QImage& result)
-{
-    if (original.isNull()) {
-        qWarning() << "Page could not be created: no original image";
-        emit error(tr("Page could not be created: no original image"));
-        return;
-    }
-
-    if (result.isNull()) {
-        qWarning() << "Page could not be created: no result image";
-        emit error(tr("Page could not be created: no result image"));
-        return;
-    }
-
-    auto ctime = QDateTime::currentDateTime();
-    auto dir = QFileInfo(d->doc.filename).dir();
-    if (!dir.exists()) {
-        dir.mkpath(QStringLiteral("."));
-    }
-
-    auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
-    auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
-
-    if (!original.save(original_path)) {
-        qWarning() << "Page could not be created: error saving original image";
-        emit error(tr("Page could not be created: error saving original image"));
-        return;
-    };
-
-    if (!result.save(result_path)) {
-        qWarning() << "Page could not be created: error saving result image";
-        emit error(tr("Page could not be created: error saving result image"));
-        return;
-    };
-
-    QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
-
-    connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
-    connect(p.data(), &Page::statusChanged, this, &Document::updatePage);
-    connect(p.data(), &Page::error, this, &Document::error);
-
-    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(p);
-    endInsertRows();
-
-    save();
-    emit pagesChanged();
-}
-
-void Document::addScannedPage(ScanImage* image)
+Page* Document::newPage()
 {
     if (d->status != Ready) {
         emit error(tr("Cannot add page, document is not ready"));
-        return;
+        return nullptr;
     }
 
-    setStatus(Adding);
-
-    auto dir = QFileInfo(d->doc.filename).dir();
+    auto dir = directory();
     if (!dir.exists()) {
         dir.mkpath(QStringLiteral("."));
     }
 
-    QSharedPointer<Page> page(new Page(dir, image, this));
-    connect(page.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
-    connect(page.data(), &Page::statusChanged, this, &Document::updatePage);
+    QSharedPointer<Page> page(new Page(this));
+    connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+    connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
@@ -333,9 +288,13 @@ void Document::addScannedPage(ScanImage* image)
     endInsertRows();
 
     emit pagesChanged();
+
+    QQmlEngine::setObjectOwnership(page.data(), QQmlEngine::CppOwnership);
+
+    return page.data();
 }
 
-void Document::updatePage()
+void Document::onPageUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
     // TODO: this only works reliably if at most one page is modified at the same time
@@ -484,8 +443,8 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
         }
         QSharedPointer<Page> p(new Page);
 
-        connect(p.data(), &Page::thumbnailChanged, document, &Document::updateThumbnail);
-        connect(p.data(), &Page::statusChanged, document, &Document::updatePage);
+        connect(p.data(), &Page::thumbnailChanged, document, &Document::onThumbnailUpdated);
+        connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
         connect(p.data(), &Page::error, document, &Document::error);
 
         if (!p->read(page.toObject())) {
@@ -505,7 +464,7 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
     return d;
 }
 
-void Document::updateThumbnail()
+void Document::onThumbnailUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
 

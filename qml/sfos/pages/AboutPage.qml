@@ -28,7 +28,7 @@ Page {
             id: column
 
             anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width - Theme.paddingLarge * 2
+            width: parent.width - Theme.horizontalPageMargin * 2
             spacing: Theme.paddingLarge
 
             PageHeader {

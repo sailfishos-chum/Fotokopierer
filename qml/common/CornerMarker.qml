@@ -37,8 +37,6 @@ Item {
 
     property bool dragActive: false
 
-    x: centerx - radius
-    y: centery - radius
     width: radius * 2
     height: radius * 2
 
@@ -65,5 +63,10 @@ Item {
 
         onPressed: dragActive = true
         onReleased: dragActive = false
+    }
+
+    function setCenter(point) {
+        root.x = point.x - radius
+        root.y = point.y - radius
     }
 }

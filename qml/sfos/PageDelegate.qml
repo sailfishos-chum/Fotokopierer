@@ -74,22 +74,36 @@ DragDelegate {
 
                 Image {
                     source: dragDelegate.thumbnail
+                    cache: false
                     anchors.fill: parent
                     fillMode: Image.PreserveAspectFit
                 }
             }
 
-            Text {
+            Column {
                 id: info
+
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                color: Theme.highlightColor
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                Text {
+                    width: parent.width
+                    color: Theme.highlightColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    text: qsTr("Page %1").arg(dragDelegate.pagenumber)
+                }
 
-                text: qsTr("Page %1\n%2").arg(dragDelegate.pagenumber).arg(dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
+                Text {
+                    width: parent.width
+                    color: Theme.highlightColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    text: dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat)
+                }
             }
         }
     }
