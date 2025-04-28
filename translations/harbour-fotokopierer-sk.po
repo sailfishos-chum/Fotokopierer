@@ -233,16 +233,16 @@ msgstr ""
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Paste pages"
-#~ msgstr ""
+#~ msgstr "Prilepiť strany"
 
 #, qt-format
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Paste pages (%1)"
-#~ msgstr ""
+#~ msgstr "Prilepiť strany (%1)"
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Select pages"
-#~ msgstr ""
+#~ msgstr "Vybrať strany"
 
 #, qt-format
 #~ msgctxt "AboutPage~|"
@@ -251,6 +251,13 @@ msgstr ""
 #~ "Copy icon by %2 of www.flaticon.com\n"
 #~ "Cut icon by %3 of www.flaticon.com"
 #~ msgstr ""
+#~ "Ikony od %1\n"
+#~ "Kopírovať ikony od %2 na www.flaticon.com\n"
+#~ "Vystrihnúť ikony od %3 na www.flaticon.com"
+
+#~ msgctxt "AboutPage~|"
+#~ msgid "Slovak"
+#~ msgstr "Slovenčina"
 
 #: qml/sfos/CoverPage.qml:45
 #, fuzzy
@@ -289,13 +296,16 @@ msgid "A camera scanning application for SailfishOS by %1"
 msgstr "Aplikácia na skenovanie fotoaparátom pre SailfishOS od %1"
 
 #: qml/sfos/pages/AboutPage.qml:75
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid ""
 "Icons by %1\n"
 "Copy icon by %2 of www.flaticon.com\n"
 "Cut icon by %3 of www.flaticon.com"
 msgstr ""
+"Ikony od %1\n"
+"Kopírovať ikony od %2 na www.flaticon.com\n"
+"Vystrihnúť ikony od %3 na www.flaticon.com"
 
 #: qml/sfos/pages/AboutPage.qml:93
 #, fuzzy
@@ -310,9 +320,10 @@ msgid "Swedish"
 msgstr "Švédčina"
 
 #: qml/sfos/pages/AboutPage.qml:113
+#, fuzzy
 msgctxt "AboutPage|"
 msgid "Slovak"
-msgstr ""
+msgstr "Slovenčina"
 
 #: qml/sfos/pages/AboutPage.qml:128
 #, fuzzy
@@ -363,20 +374,22 @@ msgid "Delete page"
 msgstr "Odstrániť stranu"
 
 #: qml/sfos/pages/DocumentPage.qml:207
+#, fuzzy
 msgctxt "DocumentPage|"
 msgid "Paste pages"
-msgstr ""
+msgstr "Prilepiť strany"
 
 #: qml/sfos/pages/DocumentPage.qml:207
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DocumentPage|"
 msgid "Paste pages (%1)"
-msgstr ""
+msgstr "Prilepiť strany (%1)"
 
 #: qml/sfos/pages/DocumentPage.qml:213
+#, fuzzy
 msgctxt "DocumentPage|"
 msgid "Select pages"
-msgstr ""
+msgstr "Vybrať strany"
 
 #: qml/sfos/pages/DocumentPage.qml:219
 #, fuzzy
