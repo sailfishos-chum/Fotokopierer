@@ -40,6 +40,8 @@ class CutView : public ScanImageView
     Q_PROPERTY(QPointF left READ left WRITE setLeft NOTIFY leftChanged)
     Q_PROPERTY(QPointF right READ right WRITE setRight NOTIFY rightChanged)
 
+    Q_PROPERTY(bool hasAutoSelection READ hasAutoSelection NOTIFY hasAutoSelectionChanged)
+
 public:
     CutView(QQuickItem* parent = nullptr);
 
@@ -81,6 +83,8 @@ public:
 
     QPointF right() const;
 
+    bool hasAutoSelection() const;
+
     void paint(QPainter* painter) override;
 
 public:
@@ -114,6 +118,8 @@ signals:
     void rightChanged();
 
     void rotationChanged();
+
+    void hasAutoSelectionChanged();
 
 protected:
     QImage image() const override;

@@ -89,8 +89,19 @@ public:
 
     /// Run the edge detection.
     ///
-    /// Must be called after changing a parameter.
-    void autoDetect();
+    /// Once finished, the signal `edgeDetectionFinished` will be
+    /// emitted whether successful or not.
+    void startAutoDetect();
+
+    /// Return whether auto-detection/edge-detection is available.
+    bool hasAutoDetection() const;
+
+    /// Select the auto-detected area.
+    ///
+    /// Returns `true` if successful.
+    ///
+    /// This function does nothing if `hasAutoDetection` is false and returns `false`.
+    bool selectAuto();
 
     /// Select everything.
     void selectAll();
@@ -167,14 +178,17 @@ public:
     /// Return the middle control point of the right edge.
     QPointF rightPoint() const;
 
-    /// Return a new edge list for the given image.
-    static EdgeDetection* detect_in_image(const QImage& image, QObject* parent = nullptr);
+signals:
+    void edgeDetectionFinished();
+
+    void hasAutoDetectionChanged();
+
+private slots:
+    void onAutoDetectFinished();
 
 private:
     struct Data;
     std::unique_ptr<Data> d;
-
-    EdgeDetection(std::unique_ptr<Data>&& d);
 };
 
 #endif

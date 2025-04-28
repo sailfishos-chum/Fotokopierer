@@ -20,6 +20,8 @@
 #include "Convert.hxx"
 
 #include <QDebug>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QFutureWatcher>
 #include <QtCore/QLineF>
 #include <QtGui/QImage>
 
@@ -99,6 +101,10 @@ struct EdgeDetection::Data {
     QImage gray_image;
     QImage bw_image;
 
+    bool auto_select_finished = false;
+    bool have_auto_select = false;
+    QFutureWatcher<bool> auto_detection = QFutureWatcher<bool>();
+
     void doAutoDetect();
 
     void find_edge_candidates(std::vector<QLineF>& all_lines);
@@ -128,16 +134,14 @@ EdgeDetection::EdgeDetection(QObject* parent)
     : QObject(parent),
       d(std::make_unique<Data>())
 {
+    connect(&d->auto_detection, &QFutureWatcher<bool>::finished, this, &EdgeDetection::onAutoDetectFinished);
 }
 
 EdgeDetection::EdgeDetection(const QImage& image, QObject* parent)
-    : QObject(parent), d(std::make_unique<Data>())
+    : EdgeDetection(parent)
 {
     d->image = image;
 }
-
-EdgeDetection::EdgeDetection(std::unique_ptr<Data>&& d)
-    : d(std::move(d)) {}
 
 EdgeDetection::~EdgeDetection() = default;
 
@@ -428,10 +432,43 @@ void EdgeDetection::Data::filter_by_angle(const std::vector<QLineF>& all_lines, 
     }
 }
 
-void EdgeDetection::autoDetect()
+bool EdgeDetection::hasAutoDetection() const
 {
-    d->quad = d->autoquad;
-    fixNonSnappyEdges();
+    return d->have_auto_select;
+}
+
+void EdgeDetection::startAutoDetect()
+{
+    if (d->auto_select_finished) {
+        emit edgeDetectionFinished();
+    } else {
+        d->auto_detection.setFuture(QtConcurrent::run([this]() {
+            d->doAutoDetect();
+            return true;
+        }));
+    }
+}
+
+void EdgeDetection::onAutoDetectFinished()
+{
+    d->auto_select_finished = true;
+    auto have_auto_select = d->auto_detection.result();
+    if (have_auto_select != d->have_auto_select) {
+        d->have_auto_select = have_auto_select;
+        emit hasAutoDetectionChanged();
+    }
+    emit edgeDetectionFinished();
+}
+
+bool EdgeDetection::selectAuto()
+{
+    if (d->have_auto_select) {
+        d->quad = d->autoquad;
+        fixNonSnappyEdges();
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void EdgeDetection::Data::doAutoDetect()
@@ -463,13 +500,6 @@ void EdgeDetection::selectAll()
 
     fixNonSnappyEdges();
     d->project_quadrangle();
-}
-
-EdgeDetection* EdgeDetection::detect_in_image(const QImage& image, QObject* parent)
-{
-    auto edges = new EdgeDetection(image, parent);
-    edges->d->doAutoDetect();
-    return edges;
 }
 
 bool EdgeDetection::Data::distances_to_intersection(const QLineF& l1, const QLineF& l2, qreal& alpha, qreal& beta)
