@@ -27,3 +27,29 @@ const QString FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 const QString DocumentRoot = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
                              QStringLiteral("/Fotokopierer");
+
+QDir getDocumentDirectory(bool check_nomedia)
+{
+    auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+
+    if (!dir.exists()) {
+        if (!dir.mkdir(QStringLiteral("."))) {
+            return {};
+        }
+        check_nomedia = true;
+    }
+
+    if (!dir.cd(ApplicationName)) {
+        if (!dir.mkdir(ApplicationName) || !dir.cd(ApplicationName)) {
+            return {};
+        }
+        check_nomedia = true;
+    }
+
+    if (check_nomedia && !dir.exists(QStringLiteral(".nomedia"))) {
+        QFile nomedia(dir.filePath(QStringLiteral(".nomedia")));
+        nomedia.open(QIODevice::WriteOnly);
+    }
+
+    return dir;
+}

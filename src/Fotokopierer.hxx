@@ -18,7 +18,8 @@
 #ifndef __FOTOKOPIERER_HXX__
 #define __FOTOKOPIERER_HXX__
 
-#include <QString>
+#include <QtCore/QDir>
+#include <QtCore/QString>
 
 /// Name of the application.
 extern const QString ApplicationName;
@@ -31,5 +32,14 @@ extern const QString FilenameFormat;
 
 /// The root path for all documents.
 extern const QString DocumentRoot;
+
+/// Return the document directory.
+///
+/// If the document root directory does not exist it is created.
+///
+/// If `check_nomedia` is `true` the existence of
+/// the `.nomedia` file to prevent the tracker from locating
+/// the document files is checked.
+QDir getDocumentDirectory(bool check_nomedia = false);
 
 #endif
