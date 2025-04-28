@@ -7,96 +7,93 @@ msgstr ""
 
 #~ msgctxt "CameraPage~|"
 #~ msgid "New Picture"
-#~ msgstr "Neues Bild"
+#~ msgstr "Nový obrázok"
 
 #~ msgctxt "ColorizePage~|"
 #~ msgid "Colorize"
-#~ msgstr "Einfärben"
+#~ msgstr "Zafarbiť"
 
 #~ msgctxt "CutPage~|"
 #~ msgid "Cut & Rotate"
-#~ msgstr "Zuschneiden & Drehen"
+#~ msgstr "Vystrihnúť a otočiť"
 
 #~ msgctxt "Document~|"
 #~ msgid "Page could not be created: no original image"
-#~ msgstr "Seite kann nicht erstellt werden: Originalbild nicht gefunden"
+#~ msgstr "Strana nebola vytvorená: žiadny pôvodný obrázok"
 
 #~ msgctxt "Document~|"
 #~ msgid "Page could not be created: no result image"
-#~ msgstr "Seite kann nicht erstellt werden: Bild nicht gefunden"
+#~ msgstr "Strana nebola vytvorená: žiadny výsledný obrázok"
 
 #~ msgctxt "Document~|"
 #~ msgid "Page could not be created: error saving original image"
-#~ msgstr ""
-#~ "Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
+#~ msgstr "Strana nebola vytvorená: chyba ukladania pôvodného obrázka"
 
 #~ msgctxt "Document~|"
 #~ msgid "Page could not be created: error saving result image"
-#~ msgstr "Seite kann nicht erstellt werden: Fehler beim Speichern des Bildes"
+#~ msgstr "Strana nebola vytvorená: chyba ukladania výsledného obrázka"
 
 #~ msgctxt "Document~|"
 #~ msgid "Cannot add page, document is not ready"
-#~ msgstr "Seite kann nicht hinzugefügt werden, Dokument ist nicht bereit"
+#~ msgstr "Nemožno pridať stranu, dokument nie je pripravený"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Cannot create path %1"
-#~ msgstr "Pfad %1 kann nicht erstellt werden"
+#~ msgstr "Nemožno vytvoriť cestu %1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Can't write document file %1:%2"
-#~ msgstr "Dokumentdatei %1 kann nicht geschrieben werden: %2"
+#~ msgstr "Nemožno zapísať súbor dokumentu %1:%2"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Error writing document file:%1"
-#~ msgstr "Fehler beim Schreiben der Datei %1"
+#~ msgstr "Chyba zapisovania súboru dokumentu:%1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Cannot load document from '%1', another process is running"
-#~ msgstr ""
-#~ "Dokument kann nicht von %1 gelesen werden während ein anderer Prozess "
-#~ "läuft"
+#~ msgstr "Nemožno načítať dokument z '%1', prebieha iný proces"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Can't open document file %1"
-#~ msgstr "Dokumentdatei %1 kann nicht geöffnet werden"
+#~ msgstr "Nemožno otvoriť súbor dokumentu %1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Could not read document title from document file %1"
-#~ msgstr "Dokumenttitel kann nicht von Datei %1 gelesen werden"
+#~ msgstr "Nemožno prečítať názov dokumentu zo súboru %1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Could not read creation time from document file %1"
-#~ msgstr "Erstellungszeit kann nicht von Datei %1 gelesen werden"
+#~ msgstr "Nemožno prečítať čas vytvorenia dokumentu zo súboru %1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Could not read pages from document file %1"
-#~ msgstr "Seiten des Dokuments konnten nicht von %1 gelesen werden"
+#~ msgstr "Nemožno prečítať strany dokumentu zo súboru %1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Could not read page from document file %1"
-#~ msgstr "Eine Seite konnte nicht von Dokument %1 gelesen werden"
+#~ msgstr "Nemožno prečítať stranu dokumentu zo súboru %1"
 
 #, qt-format
 #~ msgctxt "Document~|"
 #~ msgid "Error reading page from document file %1"
-#~ msgstr "Fehler beim lesen der Dokumentdatei %1"
+#~ msgstr "Chyba načítania strany dokumentu zo súboru %1"
 
 #~ msgctxt "Document~|"
 #~ msgid "Cannot export to pdf, document is not ready"
-#~ msgstr "Pdf kann nicht exportiert werden, Dokument ist nicht bereit"
+#~ msgstr "Nemožno exportovať do PDF, dokument nie je pripravený"
 
 #~ msgctxt "Document~|"
 #~ msgid "Error creating pdf-file"
-#~ msgstr "Fehler beim Erstellen der pdf-Datei"
+#~ msgstr "Chyba pri vytváraní PDF súboru"
 
 #, qt-format
 #~ msgctxt "DocumentDelegate~|"
@@ -104,47 +101,47 @@ msgstr ""
 #~ "Pages: %1\n"
 #~ "%2"
 #~ msgstr ""
-#~ "Seiten: %1\n"
+#~ "Strany: %1\n"
 #~ "%2"
 
 #, qt-format
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Page %1 of %2 (%3)"
-#~ msgstr "Seite %1 von %2 (%3)"
+#~ msgstr "Strana %1 z %2 (%3)"
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Delete page"
-#~ msgstr "Seite löschen"
+#~ msgstr "Odstrániť stranu"
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Export to pdf"
-#~ msgstr "Pdf exportieren"
+#~ msgstr "Exportovať do PDF"
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Rename"
-#~ msgstr "Umbenennen"
+#~ msgstr "Premenovať"
 
 #, qt-format
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Overwrite existing file <%1>?"
-#~ msgstr "Existierende Datei <%1> überschreiben?"
+#~ msgstr "Prepísať existujúci súbor <%1>?"
 
 #~ msgctxt "DocumentsPage~|"
 #~ msgid "Delete document"
-#~ msgstr "Dokument löschen"
+#~ msgstr "Odstrániť dokument"
 
 #~ msgctxt "DocumentsPage~|"
 #~ msgid "Documents"
-#~ msgstr "Dokumente"
+#~ msgstr "Dokumenty"
 
 #, qt-format
 #~ msgctxt "DocumentsPage~|"
 #~ msgid "About %1"
-#~ msgstr "Über %1"
+#~ msgstr "O aplikácii %1"
 
 #~ msgctxt "NewImagePage~|"
 #~ msgid "New Picture"
-#~ msgstr "Neues Bild"
+#~ msgstr "Nový obrázok"
 
 #, qt-format
 #~ msgctxt "PageDelegate~|"
@@ -152,101 +149,100 @@ msgstr ""
 #~ "Page %1\n"
 #~ "%2"
 #~ msgstr ""
-#~ "Seite %1\n"
+#~ "Strana %1\n"
 #~ "%2"
 
 #~ msgctxt "CoverPage~|"
 #~ msgid "Take a new picture"
-#~ msgstr "Neues Bild aufnehmen"
+#~ msgstr "Zosnímať nový obrázok"
 
 #, qt-format
 #~ msgctxt "CoverPage~|"
 #~ msgid "Pages: %2"
-#~ msgstr "Seiten: %2"
+#~ msgstr "Strany: %2"
 
 #, qt-format
 #~ msgctxt "AboutPage~|"
 #~ msgid "About %1"
-#~ msgstr "Über %1"
+#~ msgstr "O aplikácii %1"
 
 #, qt-format
 #~ msgctxt "AboutPage~|"
 #~ msgid "A camera scanning application for SailfishOS by %1"
-#~ msgstr "Eine Kamera-Scan Anwendung für SailfishOS von %1"
+#~ msgstr "Aplikácia na skenovanie fotoaparátom pre SailfishOS od %1"
 
 #~ msgctxt "AboutPage~|"
 #~ msgid "Homepage"
-#~ msgstr "Homepage"
+#~ msgstr "Domovská stránka"
 
 #~ msgctxt "AboutPage~|"
 #~ msgid "Find me on Freenode: "
-#~ msgstr "Kontaktiere mich auf Freenode: "
+#~ msgstr "Nájdete ma na Freenode: "
 
 #~ msgctxt "AboutPage~|"
 #~ msgid "This application uses"
-#~ msgstr "Dieses Programm verwendet"
+#~ msgstr "Táto aplikácia používa"
 
 #, qt-format
 #~ msgctxt "AboutPage~|"
 #~ msgid "Licensed under the %1"
-#~ msgstr "Lizensiert unter %1"
+#~ msgstr "Pod licenciou %1"
 
 #~ msgctxt "RenamePage~|"
 #~ msgid "Enter new document title"
-#~ msgstr "Neuen Dokumenttitel eingeben"
+#~ msgstr "Vložiť nový názov dokumentu"
 
 #~ msgctxt "RenamePage~|"
 #~ msgid "Document title"
-#~ msgstr "Dokumenttitel"
+#~ msgstr "Názov dokumentu"
 
 #, qt-format
 #~ msgctxt "DocumentDelegate~|"
 #~ msgid "Pages: %1"
-#~ msgstr "Seiten: %1"
+#~ msgstr "Strany: %1"
 
 #, qt-format
 #~ msgctxt "PageDelegate~|"
 #~ msgid "Page %1"
-#~ msgstr "Seite %1"
+#~ msgstr "Strana %1"
 
 #~ msgctxt "Page~|"
 #~ msgid "Page could not be created: error saving original image"
-#~ msgstr ""
-#~ "Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
+#~ msgstr "Stranu nebolo možné vytvoriť: chyba ukladania pôvodného obrázka"
 
 #~ msgctxt "Page~|"
 #~ msgid "Page could not be created: error saving result image"
-#~ msgstr "Seite kann nicht erstellt werden: Fehler beim Speichern des Bildes"
+#~ msgstr "Stranu nebolo možné vytvoriť: chyba ukladania výsledného obrázka"
 
 #, qt-format
 #~ msgctxt "AboutPage~|"
 #~ msgid "Icons by %1"
-#~ msgstr "Icons von %1"
+#~ msgstr "Ikony od %1"
 
 #~ msgctxt "AboutPage~|"
 #~ msgid "Swedish"
-#~ msgstr "Schwedisch"
+#~ msgstr "Švédčina"
 
 #~ msgctxt "AboutPage~|"
 #~ msgid "Translations"
-#~ msgstr "Übersetzungen"
+#~ msgstr "Preklady"
 
 #~ msgctxt "AboutPage~|"
 #~ msgid "Find me on libera.chat: "
-#~ msgstr "Kontaktiere mich auf libera.chat: "
+#~ msgstr "Nájdete ma na libera.chat: "
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Paste pages"
-#~ msgstr "Seiten einfügen"
+#~ msgstr ""
 
 #, qt-format
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Paste pages (%1)"
-#~ msgstr "Seiten einfügen (%1)"
+#~ msgstr ""
 
 #~ msgctxt "DocumentPage~|"
 #~ msgid "Select pages"
-#~ msgstr "Seiten auswählen"
+#~ msgstr ""
 
 #, qt-format
 #~ msgctxt "AboutPage~|"
@@ -255,289 +251,272 @@ msgstr ""
 #~ "Copy icon by %2 of www.flaticon.com\n"
 #~ "Cut icon by %3 of www.flaticon.com"
 #~ msgstr ""
-#~ "Icons von %1\n"
-#~ "Copy-Icon von %2 (www.flaticon.com)\n"
-#~ "Cut-Icon von %3 (www.flaticon.com)"
-
-#~ msgctxt "AboutPage~|"
-#~ msgid "Slovak"
-#~ msgstr "Slowakisch"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:45
 #, fuzzy
 msgctxt "CoverPage|"
 msgid "Take a new picture"
-msgstr "Neues Bild aufnehmen"
+msgstr "Zosnímať nový obrázok"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:78
 #, fuzzy, qt-format
 msgctxt "CoverPage|"
 msgid "Pages: %2"
-msgstr "Seiten: %2"
+msgstr "Strany: %2"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/DocumentDelegate.qml:130
 #, fuzzy, qt-format
 msgctxt "DocumentDelegate|"
 msgid "Pages: %1"
-msgstr "Seiten: %1"
+msgstr "Strany: %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/PageDelegate.qml:105
 #, fuzzy, qt-format
 msgctxt "PageDelegate|"
 msgid "Page %1"
-msgstr "Seite %1"
+msgstr "Strana %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:35
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "About %1"
-msgstr "Über %1"
+msgstr "O aplikácii %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:64
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "A camera scanning application for SailfishOS by %1"
-msgstr "Eine Kamera-Scan Anwendung für SailfishOS von %1"
+msgstr "Aplikácia na skenovanie fotoaparátom pre SailfishOS od %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:75
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AboutPage|"
 msgid ""
 "Icons by %1\n"
 "Copy icon by %2 of www.flaticon.com\n"
 "Cut icon by %3 of www.flaticon.com"
 msgstr ""
-"Icons von %1\n"
-"Copy-Icon von %2 (www.flaticon.com)\n"
-"Cut-Icon von %3 (www.flaticon.com)"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:93
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Translations"
-msgstr "Übersetzungen"
+msgstr "Preklady"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:103
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Swedish"
-msgstr "Schwedisch"
+msgstr "Švédčina"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:113
-#, fuzzy
 msgctxt "AboutPage|"
 msgid "Slovak"
-msgstr "Slowakisch"
+msgstr ""
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:128
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Homepage"
-msgstr "Homepage"
+msgstr "Domovská stránka"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:139
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Find me on libera.chat: "
-msgstr "Kontaktiere mich auf libera.chat: "
+msgstr "Nájdete ma na libera.chat: "
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:158
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "This application uses"
-msgstr "Dieses Programm verwendet"
+msgstr "Táto aplikácia používa"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:180
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
-msgstr "Lizensiert unter %1"
+msgstr "Pod licenciou %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/ColorizePage.qml:39
 #, fuzzy
 msgctxt "ColorizePage|"
 msgid "Colorize"
-msgstr "Einfärben"
+msgstr "Zafarbiť"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/CutPage.qml:46
 #, fuzzy
 msgctxt "CutPage|"
 msgid "Cut & Rotate"
-msgstr "Zuschneiden & Drehen"
+msgstr "Vystrihnúť a otočiť"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:137
 #, fuzzy, qt-format
 msgctxt "DocumentPage|"
 msgid "Page %1 of %2 (%3)"
-msgstr "Seite %1 von %2 (%3)"
+msgstr "Strana %1 z %2 (%3)"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:146
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Delete page"
-msgstr "Seite löschen"
+msgstr "Odstrániť stranu"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:207
-#, fuzzy
 msgctxt "DocumentPage|"
 msgid "Paste pages"
-msgstr "Seiten einfügen"
+msgstr ""
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:207
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DocumentPage|"
 msgid "Paste pages (%1)"
-msgstr "Seiten einfügen (%1)"
+msgstr ""
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:213
-#, fuzzy
 msgctxt "DocumentPage|"
 msgid "Select pages"
-msgstr "Seiten auswählen"
+msgstr ""
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:219
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Export to pdf"
-msgstr "Pdf exportieren"
+msgstr "Exportovať do PDF"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:225
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Rename"
-msgstr "Umbenennen"
+msgstr "Premenovať"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:397
 #, fuzzy, qt-format
 msgctxt "DocumentPage|"
 msgid "Overwrite existing file <%1>?"
-msgstr "Existierende Datei <%1> überschreiben?"
+msgstr "Prepísať existujúci súbor <%1>?"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:77
 #, fuzzy
 msgctxt "DocumentsPage|"
 msgid "Delete document"
-msgstr "Dokument löschen"
+msgstr "Odstrániť dokument"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:119
 #, fuzzy
 msgctxt "DocumentsPage|"
 msgid "Documents"
-msgstr "Dokumente"
+msgstr "Dokumenty"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:126
 #, fuzzy, qt-format
 msgctxt "DocumentsPage|"
 msgid "About %1"
-msgstr "Über %1"
+msgstr "O aplikácii %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/NewImagePage.qml:118
 #, fuzzy
 msgctxt "NewImagePage|"
 msgid "New Picture"
-msgstr "Neues Bild"
+msgstr "Nový obrázok"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/RenamePage.qml:32
 #, fuzzy
 msgctxt "RenamePage|"
 msgid "Enter new document title"
-msgstr "Neuen Dokumenttitel eingeben"
+msgstr "Vložiť nový názov dokumentu"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/RenamePage.qml:38
 #, fuzzy
 msgctxt "RenamePage|"
 msgid "Document title"
-msgstr "Dokumenttitel"
+msgstr "Názov dokumentu"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:402
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
-msgstr "Seite kann nicht hinzugefügt werden, Dokument ist nicht bereit"
+msgstr "Nemožno pridať stranu, dokument nie je pripravený"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:507
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
-msgstr "Pfad %1 kann nicht erstellt werden"
+msgstr "Nemožno vytvoriť cestu %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:514
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
-msgstr "Dokumentdatei %1 kann nicht geschrieben werden: %2"
+msgstr "Nemožno zapísať súbor dokumentu %1:%2"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:535
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
-msgstr "Fehler beim Schreiben der Datei %1"
+msgstr "Chyba zapisovania súboru dokumentu:%1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:547
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:566
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
-msgstr ""
-"Dokument kann nicht von %1 gelesen werden während ein anderer Prozess läuft"
+msgstr "Nemožno načítať dokument z '%1', prebieha iný proces"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:584
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
-msgstr "Dokumentdatei %1 kann nicht geöffnet werden"
+msgstr "Nemožno otvoriť súbor dokumentu %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:601
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
-msgstr "Dokumenttitel kann nicht von Datei %1 gelesen werden"
+msgstr "Nemožno prečítať názov dokumentu zo súboru %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:607
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
-msgstr "Erstellungszeit kann nicht von Datei %1 gelesen werden"
+msgstr "Nemožno prečítať čas vytvorenia dokumentu zo súboru %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:614
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
-msgstr "Seiten des Dokuments konnten nicht von %1 gelesen werden"
+msgstr "Nemožno prečítať strany dokumentu zo súboru %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:621
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
-msgstr "Eine Seite konnte nicht von Dokument %1 gelesen werden"
+msgstr "Nemožno prečítať stranu dokumentu zo súboru %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:632
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
-msgstr "Fehler beim lesen der Dokumentdatei %1"
+msgstr "Chyba načítania strany dokumentu zo súboru %1"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:683
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot export to pdf, document is not ready"
-msgstr "Pdf kann nicht exportiert werden, Dokument ist nicht bereit"
+msgstr "Nemožno exportovať do PDF, dokument nie je pripravený"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:758
 #, fuzzy
 msgctxt "Document|"
 msgid "Error creating pdf-file"
-msgstr "Fehler beim Erstellen der pdf-Datei"
+msgstr "Chyba pri vytváraní PDF súboru"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Page.cxx:164
-#, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
-"Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/src/Page.cxx:169
-#, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"
-msgstr "Seite kann nicht erstellt werden: Fehler beim Speichern des Bildes"
+msgstr ""

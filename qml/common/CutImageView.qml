@@ -29,6 +29,10 @@ Item {
 
     property bool valid: true
 
+    property alias busy: cutview.busy
+    property alias isAutoDetectionRunning: cutview.isAutoDetectionRunning
+    property alias hasAutoSelection: cutview.hasAutoSelection
+
     // The next properties are used to rotate the selection when the image has
     // been rotated. Because the computation of the rotated image is done
     // asynchronously, we must wait with the update until the rotation has been
@@ -83,10 +87,10 @@ Item {
             ctx.globalCompositeOperation = "copy"
             ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
             ctx.beginPath()
-            ctx.moveTo(topleft.markerPos.x, topleft.markerPos.y)
-            ctx.lineTo(topright.markerPos.x, topright.markerPos.y)
-            ctx.lineTo(bottomright.markerPos.x, bottomright.markerPos.y)
-            ctx.lineTo(bottomleft.markerPos.x, bottomleft.markerPos.y)
+            ctx.moveTo(topleft.center.x, topleft.center.y)
+            ctx.lineTo(topright.center.x, topright.center.y)
+            ctx.lineTo(bottomright.center.x, bottomright.center.y)
+            ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
             ctx.closePath()
             ctx.fill()
             ctx.stroke()
@@ -111,12 +115,12 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.topLeft = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.topLeft = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 cutview.updateSnappyEdges()
             }
@@ -132,12 +136,12 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.topRight = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.topRight = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 cutview.updateSnappyEdges();
             }
@@ -153,12 +157,12 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.bottomLeft = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.bottomLeft = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 cutview.updateSnappyEdges();
             }
@@ -174,12 +178,12 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.bottomRight = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.bottomRight = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 cutview.updateSnappyEdges();
             }
@@ -195,15 +199,15 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.top = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.top = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                top.setCenter(unmapPoint(cutview.top))
+                top.center = unmapPoint(cutview.top)
                 cutview.updateSnappyEdges();
             }
         }
@@ -218,15 +222,15 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.bottom = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.bottom = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                bottom.setCenter(unmapPoint(cutview.bottom))
+                bottom.center = unmapPoint(cutview.bottom)
                 cutview.updateSnappyEdges();
             }
         }
@@ -241,15 +245,15 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.left = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.left = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                left.setCenter(unmapPoint(cutview.left))
+                left.center = unmapPoint(cutview.left)
                 cutview.updateSnappyEdges();
             }
         }
@@ -264,15 +268,15 @@ Item {
         minY: (pane.height - cutview.paintedHeight) / 2
         maxY: (pane.height + cutview.paintedHeight) / 2
         onDragged: {
-            cutview.right = mapPoint(markerPos)
-            pane.update(markerPos)
+            cutview.right = mapPoint(position)
+            pane.update(center)
         }
         onDragActiveChanged: {
             zoomimg.visible = dragActive
-            pane.update(markerPos)
+            pane.update(center)
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
-                right.setCenter(unmapPoint(cutview.right))
+                right.center = unmapPoint(cutview.right)
                 cutview.updateSnappyEdges();
             }
         }
@@ -300,10 +304,10 @@ Item {
 
     function update(zoompoint) {
         pane.valid = Fotokopierer.isConvex(
-            mapPoint(topleft.markerPos),
-            mapPoint(topright.markerPos),
-            mapPoint(bottomright.markerPos),
-            mapPoint(bottomleft.markerPos))
+            mapPoint(topleft.center),
+            mapPoint(topright.center),
+            mapPoint(bottomright.center),
+            mapPoint(bottomleft.center))
         zoomimg.center = mapPoint(zoompoint)
 
         if (zoompoint.x < cutview.width / 2) {
@@ -326,14 +330,22 @@ Item {
     }
 
     function initSelection() {
-        topleft.setCenter(unmapPoint(cutview.topLeft))
-        topright.setCenter(unmapPoint(cutview.topRight))
-        bottomright.setCenter(unmapPoint(cutview.bottomRight))
-        bottomleft.setCenter(unmapPoint(cutview.bottomLeft))
-        top.setCenter(unmapPoint(cutview.top))
-        bottom.setCenter(unmapPoint(cutview.bottom))
-        left.setCenter(unmapPoint(cutview.left))
-        right.setCenter(unmapPoint(cutview.right))
+        cutview.topLeft = Qt.point(0.1, 0.1)
+        cutview.topRight = Qt.point(0.9, 0.1)
+        cutview.bottomRight = Qt.point(0.9, 0.9)
+        cutview.bottomLeft = Qt.point(0.1, 0.9)
+        restoreSelection()
+    }
+
+    function restoreSelection() {
+        topleft.center = unmapPoint(cutview.topLeft)
+        topright.center = unmapPoint(cutview.topRight)
+        bottomright.center = unmapPoint(cutview.bottomRight)
+        bottomleft.center = unmapPoint(cutview.bottomLeft)
+        top.center = unmapPoint(cutview.top)
+        bottom.center = unmapPoint(cutview.bottom)
+        left.center = unmapPoint(cutview.left)
+        right.center = unmapPoint(cutview.right)
         cutview.updateSnappyEdges()
         frame.requestPaint()
     }
@@ -359,35 +371,35 @@ Item {
 
     Component.onCompleted: {
         cutview.topLeftChanged.connect(function() {
-            topleft.setCenter(unmapPoint(cutview.topLeft))
+            topleft.center = unmapPoint(cutview.topLeft)
         })
 
         cutview.topRightChanged.connect(function() {
-            topright.setCenter(unmapPoint(cutview.topRight))
+            topright.center = unmapPoint(cutview.topRight)
         })
 
         cutview.bottomRightChanged.connect(function() {
-            bottomright.setCenter(unmapPoint(cutview.bottomRight))
+            bottomright.center = unmapPoint(cutview.bottomRight)
         })
 
         cutview.bottomLeftChanged.connect(function() {
-            bottomleft.setCenter(unmapPoint(cutview.bottomLeft))
+            bottomleft.center = unmapPoint(cutview.bottomLeft)
         })
 
         cutview.topChanged.connect(function() {
-            top.setCenter(unmapPoint(cutview.top))
+            top.center = unmapPoint(cutview.top)
         })
 
         cutview.bottomChanged.connect(function() {
-            bottom.setCenter(unmapPoint(cutview.bottom))
+            bottom.center = unmapPoint(cutview.bottom)
         })
 
         cutview.leftChanged.connect(function() {
-            left.setCenter(unmapPoint(cutview.left))
+            left.center = unmapPoint(cutview.left)
         })
 
         cutview.rightChanged.connect(function() {
-            right.setCenter(unmapPoint(cutview.right))
+            right.center = unmapPoint(cutview.right)
         })
 
         cutview.rotationChanged.connect(function() {

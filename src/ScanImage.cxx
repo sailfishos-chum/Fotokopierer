@@ -21,16 +21,22 @@
 #include "Document.hxx"
 #include "Page.hxx"
 
+#include "fifr/util/Range.hxx"
+
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFile>
 #include <QtCore/QFutureWatcher>
+#include <QtCore/QJsonArray>
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
 
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <algorithm>
 #include <cassert>
+
+using namespace fifr::util;
 
 static QPointF toPoint(const QJsonValue& value)
 {
@@ -47,13 +53,11 @@ static QJsonValue fromPoint(QPointF p)
 }
 
 struct ScanImage::Data {
-    QImage original;
+    cv::Mat original;
 
-    QFutureWatcher<QImage> rotated = QFutureWatcher<QImage>();
-    QFutureWatcher<QImage> cut = QFutureWatcher<QImage>();
-    QFutureWatcher<QImage> colorized = QFutureWatcher<QImage>();
+    QFutureWatcher<cv::Mat> cut = QFutureWatcher<cv::Mat>();
+    QFutureWatcher<cv::Mat> colorized = QFutureWatcher<cv::Mat>();
 
-    bool rotatedReady = false;
     bool cutReady = false;
     bool colorizedReady = false;
 
@@ -64,28 +68,25 @@ struct ScanImage::Data {
     QPointF bottomRight = {};
     QPointF bottomLeft = {};
 
-    double contrast = 0.5;
-    double brightness = 0.5;
-    double details = 0.5;
+    Parameters params = {};
     ColorMode colorMode = ColorMode::FullColor;
 
-    QImage computeCutImage(const QImage& image) const;
+    cv::Mat computeCutImage(const cv::Mat& image) const;
     double getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl) const;
 
-    QImage computeColorizedImage(const QImage& image) const;
+    cv::Mat computeColorizedImage(const cv::Mat& image) const;
 };
 
 ScanImage::ScanImage(const QImage& original, QObject* parent)
-    : QObject(parent), d(new Data{original})
+    : QObject(parent), d(new Data{QImageToCvMat(original)})
 {
-    connect(&d->rotated, &QFutureWatcher<QImage>::finished, this, &ScanImage::onRotatedReady);
-    connect(&d->cut, &QFutureWatcher<QImage>::finished, this, &ScanImage::onCutReady);
-    connect(&d->colorized, &QFutureWatcher<QImage>::finished, this, &ScanImage::onColorizedReady);
+    connect(&d->cut, &QFutureWatcher<cv::Mat>::finished, this, &ScanImage::onCutReady);
+    connect(&d->colorized, &QFutureWatcher<cv::Mat>::finished, this, &ScanImage::onColorizedReady);
 }
 
 ScanImage::~ScanImage() = default;
 
-QImage ScanImage::original() const
+cv::Mat ScanImage::original() const
 {
     return d->original;
 }
@@ -103,10 +104,15 @@ QJsonObject ScanImage::saveJson() const
         {QStringLiteral("bottomright"), fromPoint(d->bottomRight)},
     };
 
+    QJsonArray angles;
+    for (auto a : d->params.angles) angles << a;
     settings[QStringLiteral("colorize")] = QJsonObject{
-        {QStringLiteral("contrast"), d->contrast},
-        {QStringLiteral("brightness"), d->brightness},
-        {QStringLiteral("details"), d->details},
+        {QStringLiteral("contrast"), d->params.contrast},
+        {QStringLiteral("brightness"), d->params.brightness},
+        {QStringLiteral("threshold"), d->params.threshold_c},
+        {QStringLiteral("blocksize"), d->params.blocksize},
+        {QStringLiteral("angles"), angles},
+        {QStringLiteral("blackLevel"), d->params.blackLevel},
         {QStringLiteral("mode"), d->colorMode},
     };
 
@@ -125,9 +131,10 @@ void ScanImage::loadJson(const QJsonObject& settings)
     setBottomLeft(toPoint(cut[QStringLiteral("bottomleft")]));
 
     auto col = settings[QStringLiteral("colorize")].toObject();
-    setContrast(static_cast<qreal>(col[QStringLiteral("contrast")].toDouble(0.5)));
-    setBrightness(static_cast<qreal>(col[QStringLiteral("brightness")].toDouble(0.5)));
-    setDetails(static_cast<qreal>(col[QStringLiteral("details")].toDouble(0.5)));
+    setContrast(static_cast<qreal>(col[QStringLiteral("contrast")].toDouble(Parameters::DefaultContrast)));
+    setBrightness(static_cast<qreal>(col[QStringLiteral("brightness")].toDouble(Parameters::DefaultBrightness)));
+    setThreshold(static_cast<qreal>(col[QStringLiteral("threshold")].toDouble(Parameters::DefaultThreshold)));
+    setBlockSize(static_cast<qreal>(col[QStringLiteral("blocksize")].toDouble(Parameters::DefaultBlockSize)));
     auto mode = col[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
     switch (mode) {
         case ColorMode::BlackAndWhite:
@@ -140,6 +147,15 @@ void ScanImage::loadJson(const QJsonObject& settings)
             setColorMode(ColorMode::BlackAndWhite);
             break;
     }
+
+    d->params.blackLevel = col[QStringLiteral("blackLevel")].toInt(Parameters::DefaultBlackLevel);
+
+    auto angles = col[QStringLiteral("angles")].toArray();
+    auto nangles = static_cast<std::size_t>(angles.size());
+    d->params.angles = Parameters::DefaultAngles;
+    for (auto i : range(std::min(d->params.angles.size(), nangles))) {
+        d->params.angles[i] = angles[i].toDouble();
+    }
 }
 
 int ScanImage::orientation() const
@@ -149,10 +165,9 @@ int ScanImage::orientation() const
 
 void ScanImage::setOrientation(int orientation)
 {
-    orientation %= 4;
+    orientation = (orientation + 4) % 4;
     if (orientation != d->orientation) {
         d->orientation = orientation;
-        d->rotatedReady = false;
         d->cutReady = false;
         d->colorizedReady = false;
         emit orientationChanged();
@@ -221,13 +236,13 @@ void ScanImage::setBottomLeft(QPointF bottomLeft)
 
 double ScanImage::contrast() const
 {
-    return d->contrast;
+    return d->params.contrast;
 }
 
 void ScanImage::setContrast(double contrast)
 {
-    if (contrast != d->contrast) {
-        d->contrast = contrast;
+    if (contrast != d->params.contrast) {
+        d->params.contrast = contrast;
         d->colorizedReady = false;
         emit contrastChanged();
     }
@@ -235,30 +250,59 @@ void ScanImage::setContrast(double contrast)
 
 double ScanImage::brightness() const
 {
-    return d->brightness;
+    return d->params.brightness;
 }
 
 void ScanImage::setBrightness(double brightness)
 {
-    if (brightness != d->brightness) {
-        d->brightness = brightness;
+    if (brightness != d->params.brightness) {
+        d->params.brightness = brightness;
         d->colorizedReady = false;
         emit brightnessChanged();
     }
 }
 
-double ScanImage::details() const
+double ScanImage::threshold() const
 {
-    return d->details;
+    return d->params.threshold_c;
 }
 
-void ScanImage::setDetails(double details)
+void ScanImage::setThreshold(double threshold)
 {
-    if (details != d->details) {
-        d->details = details;
+    if (threshold != d->params.threshold_c) {
+        d->params.threshold_c = threshold;
         d->colorizedReady = false;
-        emit detailsChanged();
+        emit thresholdChanged();
     }
+}
+
+double ScanImage::blockSize() const
+{
+    return d->params.blocksize;
+}
+
+void ScanImage::setBlockSize(double blockSize)
+{
+    if (blockSize != d->params.blocksize) {
+        d->params.blocksize = blockSize;
+        d->colorizedReady = false;
+        emit blockSizeChanged();
+    }
+}
+
+ScanImage::Parameters ScanImage::parameters() const
+{
+    return d->params;
+}
+
+void ScanImage::setParameters(Parameters params)
+{
+    setContrast(params.contrast);
+    setBrightness(params.brightness);
+    setThreshold(params.threshold_c);
+    setBlockSize(params.blocksize);
+
+    d->params = params;
 }
 
 ScanImage::ColorMode ScanImage::colorMode() const
@@ -285,45 +329,17 @@ void ScanImage::applyColorize()
     emit colorizedImageChanged();
 }
 
-QImage ScanImage::rotatedImage(bool wait) const
+cv::Mat ScanImage::cutImage(bool wait) const
 {
-    if (!d->original.isNull() && !d->rotatedReady) {
-        if (!d->rotated.isRunning()) {
-            auto orientation = d->orientation;
-            auto original = d->original;
-            d->rotated.setFuture(QtConcurrent::run([orientation, original]() {
-                QTransform transform;
-                transform.rotate(orientation * 90.0);
-                return original.transformed(transform);
-            }));
-        }
-
-        if (wait) return d->rotated.result();
-    }
-
-    if (d->rotatedReady) {
-        return d->rotated.result();
-    } else {
-        return {};
-    }
-}
-
-void ScanImage::onRotatedReady()
-{
-    d->rotatedReady = true;
-    emit rotatedImageChanged();
-}
-
-QImage ScanImage::cutImage(bool wait) const
-{
-    if (!d->original.isNull() && !d->cutReady) {
+    if (!d->original.empty() && !d->cutReady) {
         if (!d->cut.isRunning()) {
+            emit startCutImageUpdate();
             d->cut.setFuture(QtConcurrent::run([this]() {
-                return d->computeCutImage(rotatedImage(true));
+                return d->computeCutImage(d->original);
             }));
         }
 
-        if (wait) d->cut.result();
+        if (wait) return d->cut.result();
     }
 
     if (d->cutReady) {
@@ -337,12 +353,14 @@ void ScanImage::onCutReady()
 {
     d->cutReady = true;
     emit cutImageChanged();
+    emit finishCutImageUpdate();
 }
 
-QImage ScanImage::colorizedImage(bool wait) const
+cv::Mat ScanImage::colorizedImage(bool wait) const
 {
-    if (!d->original.isNull() && !d->colorizedReady) {
+    if (!d->original.empty() && !d->colorizedReady) {
         if (!d->colorized.isRunning()) {
+            emit startColorizedImageUpdate();
             d->colorized.setFuture(QtConcurrent::run([this]() {
                 return d->computeColorizedImage(cutImage(true));
             }));
@@ -362,13 +380,18 @@ void ScanImage::onColorizedReady()
 {
     d->colorizedReady = true;
     emit colorizedImageChanged();
+    emit finishColorizedImageUpdate();
 }
 
-QImage ScanImage::Data::computeCutImage(const QImage& image) const
+cv::Mat ScanImage::Data::computeCutImage(const cv::Mat& image) const
 {
-    qDebug() << "Compute cut image";
-
-    auto rotated = QImageToCvMat(image);
+    cv::Mat rotated;
+    switch (orientation % 4) {
+        case 0: rotated = image; break;
+        case 1: cv::rotate(image, rotated, cv::ROTATE_90_CLOCKWISE); break;
+        case 2: cv::rotate(image, rotated, cv::ROTATE_180); break;
+        case 3: cv::rotate(image, rotated, cv::ROTATE_90_COUNTERCLOCKWISE); break;
+    };
 
     auto w = static_cast<float>(rotated.cols);
     auto h = static_cast<float>(rotated.rows);
@@ -397,7 +420,7 @@ QImage ScanImage::Data::computeCutImage(const QImage& image) const
     cv::Mat cut;
     cv::warpPerspective(rotated, cut, M, {(int)width, (int)height});
 
-    return cvMatToQImage(cut).copy();
+    return cut;
 }
 
 /// Return the aspect ratio of the original image.
@@ -449,51 +472,68 @@ double ScanImage::Data::getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPoin
     return std::sqrt(norm_horiz / norm_vert);
 }
 
-QImage ScanImage::Data::computeColorizedImage(const QImage& image) const
+cv::Mat ScanImage::Data::computeColorizedImage(const cv::Mat& image) const
 {
-    return ::computeColorizedImage(image, contrast, brightness, details, colorMode);
+    return ::computeColorizedImage(image, params, colorMode);
 }
 
-QImage computeColorizedImage(const QImage& image, qreal contrast_, qreal brightness_, qreal details_, ScanImage::ColorMode colorMode)
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode, cv::Mat* hsv, cv::Mat* mask)
 {
-    auto img_cut = QImageToCvMat(image, false);
+    auto img_cut = image;
 
-    // Apply contrast and brightness transform.
-    auto contrast = std::pow(4.0, contrast_ * 2 - 1);
-    auto brightness = 128 - contrast * 128 + (2 * brightness_ - 1) * 128;
     cv::Mat img_bright;
-    img_cut.convertTo(img_bright, -1, contrast, brightness);
-    img_cut.release();
 
-    if (colorMode == ColorizeView::FullColor) {
-        return cvMatToQImage(img_bright).copy();
+    if (colorMode == ColorizeView::FullColor || colorMode == ColorizeView::Gray) {
+        // Apply contrast and brightness transform.
+        auto contrast = std::pow(4.0, params.contrast * 2 - 1);
+        auto brightness = 128 - params.contrast * 128 + (2 * params.brightness - 1) * 128;
+        img_cut.convertTo(img_bright, -1, contrast, brightness);
+        img_cut.release();
+
+        if (colorMode == ColorizeView::FullColor) {
+            return img_bright;
+        }
+    } else {
+        img_bright = img_cut;
     }
 
     // Compute a gray-scale image.
     cv::Mat img_gray;
     cv::cvtColor(img_bright, img_gray, cv::COLOR_BGR2GRAY);
-
     if (colorMode == ColorizeView::Gray) {
-        return cvMatToQImage(img_gray).copy();
+        return img_gray;
     }
+
+    // adjust brightness and contrast automatically
+    double min, max;
+    cv::minMaxLoc(img_gray, &min, &max);
+    auto alpha = 255 / (max - min);
+    auto beta = -min * alpha;
+    img_gray.convertTo(img_gray, -1, alpha, beta);
 
     // Threshold filter for background mask.
     cv::Mat bg_mask;
     {
-        int details = std::max(details_ * 50, static_cast<qreal>(3));
-        if (details % 2 == 0) {
-            details += 1;
-        }
+        cv::GaussianBlur(img_gray, bg_mask, {3, 3}, 0);
+        auto blocksize = std::max(qRound(std::max(img_gray.rows, img_gray.cols) * params.blocksize), 3);
+        if (blocksize % 2 == 0) blocksize += 1;
 
-        cv::blur(img_gray, bg_mask, {3, 3});
+        auto threshold_c = qBound(-255.0, params.threshold_c * 32 - 16, 255.0);
+
+        qDebug() << "Blocksize: " << blocksize << " (" << params.blocksize << ")"
+                 << " threshold-c: " << threshold_c;
 
         cv::adaptiveThreshold(
-            bg_mask, bg_mask, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, details, 5);
+            bg_mask, bg_mask, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, blocksize, threshold_c);
     }
     img_gray.release();
 
+    if (mask != nullptr) {
+        *mask = ~bg_mask;
+    }
+
     if (colorMode == ColorizeView::BlackAndWhite) {
-        return cvMatToQImage(bg_mask).copy();
+        return bg_mask;
     }
 
     // Set background to white
@@ -505,29 +545,62 @@ QImage computeColorizedImage(const QImage& image, qreal contrast_, qreal brightn
     img_col.setTo(cv::Scalar(255, 255, 255), bg_mask);
 
     // Convert to HSV for color filtering
-    cv::Mat img_hsv, img_result, img_this_color;
+    cv::Mat img_hsv;
     cv::cvtColor(img_col, img_hsv, cv::COLOR_BGR2HSV);
-    cv::cvtColor(img_col, img_result, cv::COLOR_BGR2HSV);
+    img_col.release();
 
+    if (hsv != nullptr) {
+        *hsv = img_hsv;
+    }
+
+    cv::Mat img_result = img_hsv.clone();
     // Colorize everything non-white to black
     img_result.setTo(cv::Scalar(0, 0, 0), ~bg_mask);
 
     // colorize by hue
-    for (int i = 15; i < 180; i += 30) {
-        cv::inRange(img_hsv, cv::Scalar(std::max(i, 15) - 15, 50, 50), cv::Scalar(i + 15, 255, 255), img_this_color);
-        img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
-        if (i < 15) {
-            cv::inRange(img_hsv, cv::Scalar(180 - (15 - i), 50, 50), cv::Scalar(180, 255, 255), img_this_color);
-            img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
+    cv::Mat img_this_color;
+
+    auto angles = params.angles;
+    std::sort(angles.begin(), angles.end());
+
+    for (auto i : indices(angles)) {
+        if (i > 0) {
+            auto h = (angles[i - 1] + angles[i]) / 4;
+            cv::inRange(img_hsv,
+                        cv::Scalar(angles[i - 1] / 2, params.blackLevel, params.blackLevel),
+                        cv::Scalar(angles[i] / 2, 255, 255),
+                        img_this_color);
+
+            img_result.setTo(cv::Scalar(h, 255, 255), img_this_color);
+        } else {
+            auto h = (angles[0] + 360 + angles.back()) / 2;
+            if (h >= 360) h -= 360;
+            h /= 2;
+
+            cv::inRange(img_hsv,
+                        cv::Scalar(angles.back() / 2, params.blackLevel, params.blackLevel),
+                        cv::Scalar(180, 255, 255),
+                        img_this_color);
+            img_result.setTo(cv::Scalar(h, 255, 255), img_this_color);
+
+            cv::inRange(img_hsv,
+                        cv::Scalar(0, params.blackLevel, params.blackLevel),
+                        cv::Scalar(angles[0] / 2, 255, 255),
+                        img_this_color);
+            img_result.setTo(cv::Scalar(h, 255, 255), img_this_color);
         }
     }
 
+    img_hsv.release();
+    img_this_color.release();
+
     // convert result back to BGR
     cv::cvtColor(img_result, img_col, cv::COLOR_HSV2BGR);
+    img_result.release();
 
     // and to QImage
     cv::Mat colorized;
     img_col.convertTo(colorized, CV_8U);
-    img_col.release();
-    return cvMatToQImage(colorized).copy();
+
+    return colorized;
 }

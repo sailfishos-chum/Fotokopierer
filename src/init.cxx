@@ -22,6 +22,8 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QtQml>
 
+#include "Clipboard.hxx"
+#include "ColorizeChooser.hxx"
 #include "ColorizeView.hxx"
 #include "CutView.hxx"
 #include "Scanner.hxx"
@@ -44,6 +46,13 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
             return new Fotokopierer();
         });
 
+    qmlRegisterSingletonType<Clipboard>(
+        "Fotokopierer", 1, 0, "PageClipboard", [](QQmlEngine* engine, QJSEngine*) -> QObject* {
+            auto cb = Clipboard::instance();
+            engine->setObjectOwnership(cb, QQmlEngine::CppOwnership);
+            return cb;
+        });
+
     qmlRegisterSingletonType<DocumentList>(
         "Fotokopierer", 1, 0, "DocumentList", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new DocumentList;
@@ -55,6 +64,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         });
 
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
+    qmlRegisterType<ColorizeChooser>("Fotokopierer", 1, 0, "ColorizeChooser");
     qmlRegisterType<ColorizeView>("Fotokopierer", 1, 0, "ColorizeView");
     qmlRegisterType<CutView>("Fotokopierer", 1, 0, "CutView");
     qmlRegisterUncreatableType<Document>(

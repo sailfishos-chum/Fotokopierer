@@ -24,14 +24,14 @@ import "../../common"
 Page {
     id: page
 
-    property bool autoDetectOnInit: false
+    property bool restoreSelection: false
 
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            if (autoDetectOnInit) {
-                cutview.selectAuto()
+            if (restoreSelection) {
+                cutview.restoreSelection()
             } else {
                 cutview.initSelection()
             }
@@ -55,6 +55,15 @@ Page {
         width: parent.width - 2 * Theme.iconSizeSmall
         markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
+
+        onBusyChanged: console.log("set busy indicator to " + cutview.busy)
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
+            running: cutview.busy
+        }
     }
 
     DockedPanel {
@@ -124,6 +133,13 @@ Page {
                     icon.width: Theme.iconSizeMedium
                     icon.height: Theme.iconSizeMedium
                     onClicked: listModel.actions[name]()
+                    enabled: name != "auto" || cutview.hasAutoSelection
+
+                    BusyIndicator {
+                        size: BusyIndicatorSize.Medium
+                        anchors.centerIn: parent
+                        running: name == "auto" && cutview.isAutoDetectionRunning
+                    }
                 }
             }
         }

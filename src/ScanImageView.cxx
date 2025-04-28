@@ -24,6 +24,7 @@
 
 struct ScanImageView::Data {
     Scanner* scanner = nullptr;
+    bool busy = false;
     qreal painted_width = 0;
     qreal painted_height = 0;
 };
@@ -56,6 +57,19 @@ void ScanImageView::setScanner(Scanner* scanner)
     }
 }
 
+void ScanImageView::setBusy(bool busy)
+{
+    if (busy != d->busy) {
+        d->busy = busy;
+        emit busyChanged();
+    }
+}
+
+bool ScanImageView::busy() const
+{
+    return d->busy;
+}
+
 qreal ScanImageView::paintedWidth() const
 {
     return d->painted_width;
@@ -64,6 +78,15 @@ qreal ScanImageView::paintedWidth() const
 qreal ScanImageView::paintedHeight() const
 {
     return d->painted_height;
+}
+
+void ScanImageView::setPaintedSize(qreal pwidth, qreal pheight)
+{
+    if (pwidth != d->painted_width || pheight != d->painted_height) {
+        d->painted_width = pwidth;
+        d->painted_height = pheight;
+        emit paintedSizeChanged();
+    }
 }
 
 void ScanImageView::paint(QPainter* painter)

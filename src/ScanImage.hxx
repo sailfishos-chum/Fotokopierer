@@ -21,6 +21,7 @@
 #include <QtCore/QObject>
 
 #include <memory>
+#include <opencv2/core.hpp>
 
 #include "ColorizeView.hxx"
 
@@ -45,12 +46,31 @@ class ScanImage : public QObject
 
     Q_PROPERTY(double contrast READ contrast WRITE setContrast NOTIFY contrastChanged)
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged)
-    Q_PROPERTY(double details READ details WRITE setDetails NOTIFY detailsChanged)
+    Q_PROPERTY(double threshold READ threshold WRITE setThreshold NOTIFY thresholdChanged)
+    Q_PROPERTY(double blockSize READ blockSize WRITE setBlockSize NOTIFY blockSizeChanged)
     Q_PROPERTY(ColorMode colorMode READ colorMode WRITE setColorMode NOTIFY colorModeChanged)
 
 public:
     /// The color mode to be used.
     using ColorMode = ColorizeView::ColorMode;
+
+    struct Parameters {
+        static constexpr double DefaultContrast = 0.5;
+        static constexpr double DefaultBrightness = 0.5;
+        static constexpr double DefaultThreshold = 0.8;
+        static constexpr double DefaultBlockSize = 0.1;
+        static constexpr std::array<qreal, 6> DefaultAngles = {30, 90, 150, 210, 270, 330};
+        static const int DefaultBlackLevel = 50;
+
+        double contrast = DefaultContrast;      ///< Contrast in [0,1]
+        double brightness = DefaultBrightness;  ///< Brightness in [0,1]
+
+        double threshold_c = DefaultThreshold;  ///< Value between [0,1] mapped to [-15,15]
+        double blocksize = DefaultBlockSize;    ///< Relative block size
+
+        std::array<qreal, 6> angles = DefaultAngles;
+        int blackLevel = DefaultBlackLevel;
+    };
 
 public:
     ScanImage(const QImage& original, QObject* parent = nullptr);
@@ -63,16 +83,7 @@ public:
     ~ScanImage() override;
 
     /// Return the original image.
-    QImage original() const;
-
-    /// Return the rotated image.
-    ///
-    /// If the image has changed in the meantime it could be recomputed
-    /// and a `rotatedImageChanged` signal will be emitted later.
-    ///
-    /// If `wait` is `true` the function will not return before the
-    /// image is ready.
-    QImage rotatedImage(bool wait = false) const;
+    cv::Mat original() const;
 
     /// Return the cut image.
     ///
@@ -81,7 +92,7 @@ public:
     ///
     /// If `wait` is `true` the function will not return before the
     /// image is ready.
-    QImage cutImage(bool wait = false) const;
+    cv::Mat cutImage(bool wait = false) const;
 
     /// Return the colorized image.
     ///
@@ -90,7 +101,7 @@ public:
     ///
     /// If `wait` is `true` the function will not return before the
     /// image is ready.
-    QImage colorizedImage(bool wait = false) const;
+    cv::Mat colorizedImage(bool wait = false) const;
 
     /// Return the orientation/rotation of the image.
     int orientation() const;
@@ -126,11 +137,23 @@ public:
     /// Set the brightness level in [0,1].
     void setBrightness(double brightness);
 
-    /// Return the details level.
-    double details() const;
+    /// Return the black/white threshold level.
+    double threshold() const;
 
-    /// Set the details level in [0,1].
-    void setDetails(double details);
+    /// Set the threshold level in [0,1].
+    void setThreshold(double threshold);
+
+    /// Return the blocksize for b/w thresholding.
+    double blockSize() const;
+
+    /// Set the blocksize for b/w thresholding in [0,1] (relative size).
+    void setBlockSize(double blockSize);
+
+    /// Return all parameters.
+    Parameters parameters() const;
+
+    /// Set all parameters at once.
+    void setParameters(Parameters params);
 
     /// Return the colormode.
     ColorMode colorMode() const;
@@ -160,15 +183,21 @@ signals:
 
     void contrastChanged();
     void brightnessChanged();
-    void detailsChanged();
+
+    void thresholdChanged();
+    void blockSizeChanged();
+
     void colorModeChanged();
 
-    void rotatedImageChanged();
+    void startCutImageUpdate() const;
+    void finishCutImageUpdate();
     void cutImageChanged();
+
+    void startColorizedImageUpdate() const;
+    void finishColorizedImageUpdate();
     void colorizedImageChanged();
 
 private slots:
-    void onRotatedReady();
     void onCutReady();
     void onColorizedReady();
 
@@ -177,6 +206,6 @@ private:
     std::unique_ptr<Data> d;
 };
 
-QImage computeColorizedImage(const QImage& image, qreal contrast_, qreal brightness_, qreal details_, ScanImage::ColorMode colorMode);
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode, cv::Mat* hsv = nullptr, cv::Mat* mask = nullptr);
 
 #endif

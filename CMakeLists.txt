@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.3.2)
+set(FOTOKOPIERER_VERSION 0.4.0)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.14)
 set(FREETYPE_VERSION 2.10.4)
@@ -32,12 +32,14 @@ set(SOURCES
   src/DocumentList.cxx
   src/Document.cxx
   src/Page.cxx
+  src/Clipboard.cxx
 
   src/Scanner.cxx
   src/ScanImage.cxx
   src/ScanImageView.cxx
   src/CutView.cxx
   src/ColorizeView.cxx
+  src/ColorizeChooser.cxx
   src/ZoomImage.cxx
 
   src/Fotokopierer.cxx
@@ -123,6 +125,8 @@ if (SAILFISH_FOUND)
   else()
     add_custom_target(opencv-3rdparty)
   endif ()
+
+  link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
 
   # We must use our own freetype library
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})

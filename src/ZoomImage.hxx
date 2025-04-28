@@ -35,10 +35,10 @@ class ZoomImage : public QQuickPaintedItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(QPointF viewSize READ viewSize WRITE setViewSize NOTIFY viewSizeChanged);
-    Q_PROPERTY(QPointF center READ center WRITE setCenter NOTIFY centerChanged);
-    Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged);
-    Q_PROPERTY(QColor crossColor READ crossColor WRITE setCrossColor NOTIFY crossColorChanged);
+    Q_PROPERTY(QPointF viewSize READ viewSize WRITE setViewSize NOTIFY viewSizeChanged)
+    Q_PROPERTY(QPointF center READ center WRITE setCenter NOTIFY centerChanged)
+    Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged)
+    Q_PROPERTY(QColor crossColor READ crossColor WRITE setCrossColor NOTIFY crossColorChanged)
 
     Q_PROPERTY(Scanner* scanner READ scanner WRITE setScanner NOTIFY scannerChanged)
 
