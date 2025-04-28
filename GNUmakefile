@@ -3,9 +3,12 @@ target = harbour-fotokopierer
 sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
 
-arch := $(shell $(sfdk) config | sed -ne 's/^target.*-\([^-]*\)$$/\1/p')
 #arch := armv7hl
 #arch := aarch64
+arch := aarch64
+
+# Select the latest available target for the given architecture
+target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
 
 device := jolla
 
@@ -43,20 +46,20 @@ installdeps:
 	sf
 
 build: reformat lrelease
-	$(sfdk) build
+	$(sfdk) -c "target=$(target)" build
 
 compile: reformat lrelease
-	$(sfdk) build-shell make -C $(build_dir) -j4
+	$(sfdk) -c "target=$(target)" build-shell make -C $(build_dir) -j4
 
 .PHONY: make
 make: compile
 
 install:
-	$(sfdk) make-install
+	$(sfdk) -c "target=$(target)" make-install
 
 rpm: lrelease
 	touch rpm/*.yaml
-	$(sfdk) package
+	$(sfdk) -c "target=$(target)" package
 
 deploy-emu: all rpm
 	scp -P 2223 -i $(emu_dir)/nemo RPMS/* nemo@localhost:
