@@ -181,6 +181,9 @@ signals:
     /// Status changed.
     void statusChanged();
 
+    /// The document has been exported to a pdf.
+    void exportToPdfFinished(const QUrl &path);
+
     /// Error raised when the exported file already exists.
     void errorPdfExists(const QString &filename);
 
