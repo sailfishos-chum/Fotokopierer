@@ -33,6 +33,11 @@ public:
 
     CutFilter(ScanImage* image, Filter* previous_filter);
 
+    CutFilter(const CutFilter&) = delete;
+    CutFilter(CutFilter&&) = delete;
+    CutFilter& operator=(const CutFilter&) = delete;
+    CutFilter& operator=(CutFilter&&) = delete;
+
     ~CutFilter() override;
 
     QJsonObject saveJson() const override;
