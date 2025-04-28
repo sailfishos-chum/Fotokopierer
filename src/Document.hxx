@@ -23,6 +23,8 @@
 
 #include <memory>
 
+class BaseImage;
+
 /// A scanned document
 ///
 /// This is an ordered collection of scanned pages.
@@ -32,6 +34,8 @@ class Document : public QAbstractListModel
 
 public:
     enum PageRoles { PageRole = Qt::UserRole + 1 };
+
+    static const QString FilenameFormat;
 
 public:
     Document(QObject *parent = nullptr);
@@ -44,6 +48,12 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
+    /// Add a newly scanned page to the image.
+    ///
+    /// The new page will be created with the given original and result image
+    /// and the current time. It will be the last page of the current document.
+    Q_INVOKABLE void addPage(BaseImage *original, BaseImage *result);
+
     Q_INVOKABLE bool save() const;
 
     Q_INVOKABLE bool load(const QString &filename, QObject *parent = nullptr);
@@ -51,6 +61,9 @@ public:
 public slots:
     /// Move a page `from` to position `to`.
     void move(int from, int to);
+
+signals:
+    void error(const QString &msg);
 
 private:
     struct Data;

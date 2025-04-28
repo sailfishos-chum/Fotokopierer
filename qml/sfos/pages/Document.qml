@@ -48,7 +48,10 @@ Page {
                                                             "acceptDestinationAction": PageStackAction.Pop,
                                                         })
                 pageContainer.pushAttached(colpage)
-                colpage.accepted.connect(function() { plain.destroy() })
+                colpage.accepted.connect(function() {
+                    TestDocument.addPage(plain, colpage.image)
+                    plain.destroy()
+                })
             }
         }
     }

@@ -17,8 +17,10 @@
 
 #include "Document.hxx"
 
+#include "BaseImage.hxx"
 #include "Page.hxx"
 
+#include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -33,6 +35,8 @@
 #include <memory>
 
 #include <QDebug>
+
+const QString Document::FilenameFormat = QStringLiteral("yyyyMMddTHHmmss");
 
 struct Document::Data {
     QString title;                      ///< document title
@@ -110,6 +114,46 @@ void Document::move(int from, int to)
     }
 }
 
+void Document::addPage(BaseImage *original, BaseImage *result)
+{
+    QImage original_img = original->image();
+    if (original_img.isNull()) {
+        emit error(QStringLiteral("Page could not be created: no original image"));
+        return;
+    }
+
+    QImage result_img = result->image();
+    if (result_img.isNull()) {
+        emit error(QStringLiteral("Page could not be created: no result image"));
+        return;
+    }
+
+    auto ctime = QDateTime::currentDateTime();
+    auto dir = QFileInfo(d->filename).dir();
+
+    auto original_path =
+        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.png"));
+    auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
+
+    if (!original_img.save(original_path)) {
+        emit error(QStringLiteral("Page could not be created: error saving original image"));
+        return;
+    };
+
+    if (!result_img.save(result_path)) {
+        emit error(QStringLiteral("Page could not be created: error saving result image"));
+        return;
+    };
+
+    QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
+
+    beginInsertRows({}, d->pages.size(), d->pages.size());
+    d->pages.push_back(p);
+    endInsertRows();
+
+    save();
+}
+
 bool Document::save() const
 {
     QFileInfo finfo(d->filename);
@@ -127,8 +171,7 @@ bool Document::save() const
 
     doc[QStringLiteral("title")] = d->title;
     doc[QStringLiteral("filename")] = d->filename;
-    doc[QStringLiteral("creationTime")] =
-        d->creation_time.toString(QStringLiteral("yyyyMMddTHHmmss"));
+    doc[QStringLiteral("creationTime")] = d->creation_time.toString(FilenameFormat);
 
     QJsonArray pages;
     for (auto page : d->pages) {
@@ -161,7 +204,7 @@ bool Document::load(const QString &filename, QObject *parent)
 
     auto creation_time = json[QStringLiteral("creationTime")];
     if (!creation_time.isString()) return false;
-    auto ctime = QDateTime::fromString(creation_time.toString(), QStringLiteral("yyyyMMddTHHmmss"));
+    auto ctime = QDateTime::fromString(creation_time.toString(), FilenameFormat);
 
     auto pages = json[QStringLiteral("pages")];
     if (!pages.isArray()) return false;
