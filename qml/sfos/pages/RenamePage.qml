@@ -39,6 +39,7 @@ Dialog {
             placeholderText: document.defaultTitle
             text: document.title
             focus: true
+            validator: RegExpValidator { regExp: /(\w|\d|[- ():,.])*/ }
             EnterKey.onClicked: page.accept()
         }
     }
