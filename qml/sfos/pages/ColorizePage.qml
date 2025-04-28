@@ -17,9 +17,11 @@
 
 import QtQuick 2.2
 import QtQuick.Layouts 1.0
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
+import ".."
 import "../../common"
 
 Dialog {
@@ -97,38 +99,33 @@ Dialog {
         id: sliders
 
         width: parent.width
-        height: Theme.itemSizeLarge * 3 + Theme.paddingLarge
+        height: closeButton.height + contrast_slider.height * 3
         dock: Dock.Bottom
 
         Column {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Slider {
+            IconButton {
+                id: closeButton
+                icon.source: "image://theme/icon-m-dismiss"
+                anchors.right: parent.right
+                onClicked: { sliders.open = false; buttons.open = true }
+            }
+
+            ValueSlider {
                 id: contrast_slider
-                anchors.left: parent.left
-                anchors.right: parent.right
-                value: 50
-                minimumValue: 0
-                maximumValue: 100
+                icon: Qt.resolvedUrl("/icons/contrast.svg")
             }
 
-            Slider {
+            ValueSlider {
                 id: brightness_slider
-                anchors.left: parent.left
-                anchors.right: parent.right
-                value: 50
-                minimumValue: 0
-                maximumValue: 100
+                icon: Qt.resolvedUrl("/icons/brightness.svg")
             }
 
-            Slider {
+            ValueSlider {
                 id: details_slider
-                anchors.left: parent.left
-                anchors.right: parent.right
-                value: 50
-                minimumValue: 0
-                maximumValue: 100
+                icon: Qt.resolvedUrl("image://theme/icon-m-search")
             }
         }
     }

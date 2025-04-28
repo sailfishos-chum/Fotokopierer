@@ -3,6 +3,7 @@
 	 <file>qml/sfos/main.qml</file>
 	 <file>qml/sfos/PageDelegate.qml</file>
 	 <file>qml/sfos/PageView.qml</file>
+	 <file>qml/sfos/ValueSlider.qml</file>
 	 <file>qml/sfos/pages/CutPage.qml</file>
 	 <file>qml/sfos/pages/ColorizePage.qml</file>
 	 <file>qml/sfos/pages/Document.qml</file>
