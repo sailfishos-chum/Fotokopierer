@@ -18,15 +18,36 @@
 #include "Page.hxx"
 
 #include "Document.hxx"
+#include "ScanImage.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
+#include <QtCore/QException>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QJsonObject>
 #include <QtGui/QImage>
+
+namespace
+{
+/// Error when creating a new page.
+class GeneratingError : public QException
+{
+public:
+    GeneratingError(const QString& message) : message_(message) {}
+    GeneratingError(const GeneratingError&) = default;
+
+    void raise() const { throw *this; }
+    GeneratingError* clone() const { return new GeneratingError(*this); }
+
+    QString message() const { return message_; }
+
+private:
+    QString message_;
+};
+}  // namespace
 
 struct Page::Data {
     QDateTime creation_time;
@@ -35,14 +56,17 @@ struct Page::Data {
     QString thumbnail_path;
 
     QFutureWatcher<QString> result_thumbnail;
+    QFutureWatcher<bool> generating;
 
-    bool loading = false;
+    Status status = Ready;
 };
 
 Page::Page(QObject* parent) : QObject(parent), d(new Data)
 {
     connect(
         &d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::thumbnailFinished);
+
+    connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::generationFinished);
 }
 
 Page::Page(const QDateTime& creation_time,
@@ -58,7 +82,55 @@ Page::Page(const QDateTime& creation_time,
     d->thumbnail_path = thumbnail_path;
 }
 
+Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent) : Page(parent)
+{
+    setStatus(Generating);
+
+    auto ctime = QDateTime::currentDateTime();
+
+    auto original_path =
+        dir.filePath(ctime.toString(Document::FilenameFormat) + QStringLiteral("-original.jpg"));
+    auto result_path =
+        dir.filePath(ctime.toString(Document::FilenameFormat) + QStringLiteral("-result.png"));
+
+    d->creation_time = ctime;
+    d->original_path = original_path;
+    d->result_path = result_path;
+
+    d->generating.setFuture(QtConcurrent::run([scanImage, original_path, result_path]() {
+        QImage original = scanImage->original();
+        QImage result = scanImage->computeFilteredImage();
+
+        if (!original.save(original_path)) {
+            qWarning() << "Page could not be created: error saving original image";
+            throw GeneratingError(
+                QStringLiteral("Page could not be created: error saving original image"));
+        };
+
+        if (!result.save(result_path)) {
+            qWarning() << "Page could not be created: error saving result image";
+            throw GeneratingError(
+                QStringLiteral("Page could not be created: error saving result image"));
+        };
+
+        return true;
+    }));
+}
+
 Page::~Page() = default;
+
+Page::Status Page::status() const
+{
+    return d->status;
+}
+
+void Page::setStatus(Status status)
+{
+    if (d->status != status) {
+        d->status = status;
+        emit statusChanged();
+    }
+}
 
 QDateTime Page::creationTime() const
 {
@@ -76,8 +148,8 @@ QString Page::thumbnail()
         }
     }
 
-    if (!d->loading) {
-        d->loading = true;
+    if (d->status == Ready) {
+        setStatus(Thumbnail);
         // thumbnail does not exist, try to create it from the result image
         if (!d->thumbnail_path.isEmpty()) d->thumbnail_path.clear();
 
@@ -95,7 +167,7 @@ void Page::thumbnailFinished()
         d->thumbnail_path = path;
         emit thumbnailChanged();
     }
-    d->loading = false;
+    setStatus(Ready);
 }
 
 QString Page::getOriginalImagePath() const
@@ -113,6 +185,18 @@ void Page::remove()
     QFile(d->original_path).remove();
     QFile(d->result_path).remove();
     QFile(d->thumbnail_path).remove();
+}
+
+void Page::generationFinished()
+{
+    try {
+        (void)d->generating.result();
+        setStatus(Ready);
+        // start generation of thumbnail
+        (void)thumbnail();
+    } catch (GeneratingError& e) {
+        setStatus(Invalid);
+    }
 }
 
 QString Page::updateThumbnail(const QString& filename) const
