@@ -26,7 +26,7 @@ Item {
     property alias source : rotimage.source
     property alias image : cutimage
 
-    property real markerRadius: 10
+    property real markerRadius: Math.min(width, height) / 25
     property color markerColor: "white"
 
     property color lineColor: "green"
@@ -191,10 +191,12 @@ Item {
 
         anchors.left: pane.left
         anchors.top: pane.top
-        anchors.margins: 5
+        anchors.margins: Math.min(parent.width, parent.height) / 20
 
         imagex: bottomright.x
         imagey: bottomright.y
+
+        size: Math.min(parent.width, parent.height) / 4
 
         visible: false
     }

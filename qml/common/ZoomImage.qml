@@ -25,20 +25,21 @@ Item {
     property real scaleFactor : 5
     property real imagex
     property real imagey
+    property real size : 100
     property color color: "white"
     property color crossColor: "green"
 
     property RotImage image
 
-    width: 100
-    height: 100
+    width: size
+    height: size
 
     Rectangle {
         id: frame
-        radius: width / 2
+        radius: size / 2
         anchors.fill: parent
         color: "black"
-        border.width: 5
+        border.width: size / 20
         border.color: zoom.color
     }
 
@@ -77,7 +78,7 @@ Item {
         }
 
         anchors.fill: parent
-        anchors.margins: 5
+        anchors.margins: frame.border.width
     }
 
     Canvas {
