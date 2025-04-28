@@ -135,16 +135,16 @@ QVariantList CutFilter::autoDetectCutRect()
     }
 
     QPointF topleft, topright, bottomright, bottomleft;
-    if (top_line.intersect(left_line, &topleft) != QLineF::NoIntersection) {
+    if (top_line.intersect(left_line, &topleft) == QLineF::NoIntersection) {
         topleft = {0, 0};
     }
-    if (top_line.intersect(right_line, &topright) != QLineF::NoIntersection) {
+    if (top_line.intersect(right_line, &topright) == QLineF::NoIntersection) {
         topright = {(qreal)width, 0};
     }
-    if (bottom_line.intersect(left_line, &bottomleft) != QLineF::NoIntersection) {
+    if (bottom_line.intersect(left_line, &bottomleft) == QLineF::NoIntersection) {
         bottomleft = {0, (qreal)height};
     }
-    if (bottom_line.intersect(right_line, &bottomright) != QLineF::NoIntersection) {
+    if (bottom_line.intersect(right_line, &bottomright) == QLineF::NoIntersection) {
         bottomright = {(qreal)width, (qreal)height};
     }
 
