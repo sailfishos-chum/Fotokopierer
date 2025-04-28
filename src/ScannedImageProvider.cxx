@@ -362,15 +362,6 @@ const cv::Mat& getColorizedImage(ImageSet& img)
                                   d,
                                   5);
         } else if (img.colormode == ScannedImageProvider::Colored) {
-            auto numcols = 64;
-            auto nrows = img.colorized.rows;
-            auto ncols = img.colorized.cols * img.colorized.channels();
-            for (int j = 0; j < nrows; j++) {
-                uchar* data = img.colorized.ptr<uchar>(j);
-                for (int i = 0; i < ncols; i++) {
-                    data[i] = data[i] / numcols * numcols + numcols / 2;
-                }
-            }
         }
     }
 
