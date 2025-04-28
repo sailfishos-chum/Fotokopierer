@@ -12,11 +12,13 @@ planetos (Icons)
 
 G. Yavorov, Standjata (Bulgarian translation)
 
+Godfried Cobben (Dutch translation)
+
 pherjung (French translation)
 
-Åke Engelbrektson (Swedish translation)
-
 holask (Slovak translation)
+
+Åke Engelbrektson (Swedish translation)
 
 ## Contact
 
