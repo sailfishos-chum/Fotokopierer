@@ -46,7 +46,7 @@ deploy:
 rpm-jolla: rpm
 	scp RPMS/harbour-fotokopierer*.armv7hl.rpm jolla:
 
-install-jolla: make
+install-jolla:
 	scp rpmbuilddir-arm/harbour-fotokopierer jolla:
 
 run-jolla:
