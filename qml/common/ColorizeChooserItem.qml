@@ -39,6 +39,10 @@ Item {
         maxX: root.width
         minY: 0
         maxY: root.height
+
+        onDragged: {
+            colorizer.setColorAngle(0, pos2angle(markerPos))
+        }
     }
 
     Component.onCompleted: updateTouchPoints()
@@ -52,5 +56,27 @@ Item {
     function updateTouchPoints() {
         marker0.setCenter(Qt.point(Math.cos(colorizer.colorAngle(0) / 180 * Math.PI) * _radius + root.width / 2,
                                    -Math.sin(colorizer.colorAngle(0) / 180 * Math.PI) * _radius + root.height / 2))
+    }
+
+    function pos2angle(pos) {
+        var dx = pos.x - root.width / 2
+        var dy = -(pos.y - root.height / 2)
+        var angle = 0;
+        if (dx == 0) {
+            if (dy > 0) {
+                angle = 90
+            } else {
+                angle = 270
+            }
+        } else {
+            angle = Math.atan(dy / dx) / Math.PI * 180
+            if (dx < 0) {
+                angle = angle + 180;
+            }
+            if (angle < 0) {
+                angle += 360;
+            }
+        }
+        return angle
     }
 }
