@@ -23,6 +23,7 @@
 #include <memory>
 
 class Document;
+class Page;
 class Filter;
 class RotateFilter;
 class CutFilter;
@@ -83,6 +84,9 @@ public:
 
     /// Add this scanned page to the given `Document`.
     Q_INVOKABLE void addPage(Document* doc);
+
+    /// Add this scanned page to the given `Document`.
+    Q_INVOKABLE void updatePage(Page* page);
 
 signals:
     void originalImageChanged();

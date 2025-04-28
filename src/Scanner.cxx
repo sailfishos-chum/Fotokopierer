@@ -124,6 +124,15 @@ void Scanner::addPage(Document* doc)
     page->loadFromScanner(doc->directory(), this);
 }
 
+void Scanner::updatePage(Page* page)
+{
+    if (page == nullptr) {
+        return;
+    }
+
+    page->updateFromScanner(this);
+}
+
 bool Scanner::loadFile(const QString& file_name)
 {
     QImageReader imageReader(file_name);
