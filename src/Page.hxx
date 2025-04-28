@@ -91,7 +91,7 @@ private slots:
 
     void thumbnailFinished();
 
-    void setStatus(Status status);
+    void setStatus(Page::Status status);
 
 signals:
     void thumbnailChanged();
