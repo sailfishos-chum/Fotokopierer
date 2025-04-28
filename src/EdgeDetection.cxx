@@ -497,7 +497,7 @@ void EdgeList::Data::find_best_match()
         for (auto l : left_lines[i]) {
             for (auto r : right_lines[i]) {
                 std::cout << i << " " << l << "   " << r << std::endl;
-                auto a = 0, b = 0;
+                std::size_t a = 0, b = 0;
                 while (a < bottom_lines[l].size() && b < bottom_lines[r].size()) {
                     if (bottom_lines[l][a] == bottom_lines[r][b]) {
                         auto [area, q] = compute_area(l, r, i, bottom_lines[l][a]);
