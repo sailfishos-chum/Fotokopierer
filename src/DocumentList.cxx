@@ -98,7 +98,7 @@ QVariant DocumentList::data(const QModelIndex &index, int role) const
     switch (role) {
         case TitleRole: return d->docs[index.row()]->title();
         case CreationTimeRole: return d->docs[index.row()]->creationTime();
-        case NumPagesRole: return d->docs.size();
+        case NumPagesRole: return d->docs[index.row()]->numPages();
         case DocumentRole: return QVariant::fromValue(d->docs[index.row()].data());
         case ThumbnailsRole: {
             QStringList thumbs;
