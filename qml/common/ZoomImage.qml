@@ -55,8 +55,8 @@ Rectangle {
 				width: image.paintedWidth * zoom.scaleFactor
 				height: image.paintedHeight * zoom.scaleFactor
 				source: image.source
-				x: (-zoom.imagex + (pane.width - image.paintedWidth) / 2) * zoom.scaleFactor
-				y: (-zoom.imagey + (pane.height - image.paintedHeight) / 2) * zoom.scaleFactor
+				x: (-zoom.imagex + (pane.width - image.paintedWidth) / 2) * zoom.scaleFactor - zoombox.anchors.leftMargin
+				y: (-zoom.imagey + (pane.height - image.paintedHeight) / 2) * zoom.scaleFactor - zoombox.anchors.rightMargin
 		  }
 
 		  anchors.fill: parent
