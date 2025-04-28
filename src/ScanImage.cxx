@@ -301,6 +301,8 @@ void ScanImage::setParameters(Parameters params)
     setBrightness(params.brightness);
     setThreshold(params.threshold_c);
     setBlockSize(params.blocksize);
+
+    d->params = params;
 }
 
 ScanImage::ColorMode ScanImage::colorMode() const
