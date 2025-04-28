@@ -83,6 +83,26 @@ static const cv::Mat& getRotatedImage(ImageSet& img);
 static const cv::Mat& getCutImage(ImageSet& img);
 static const cv::Mat& getColorizedImage(ImageSet& img);
 
+/// Return the aspect ratio of the original image.
+///
+/// The aspect ratio is guessed from the four projection points
+/// \f$(x_{i}, y_{i})\f$ for $i \in \{tl,tr,br,bl\}\f$ as follows.
+///
+/// Given the four points on the z=1 plane and the camera at (0,0,0),
+/// the original points are at \f$ \alpha_{i} p_{i} = \alpha_i (x_i,
+/// y_i, 1) \f$ and so on. As the four points form a parallelogram the
+/// satisfy the three equations \f$ \alpha_{br} p_{br} = \alpha_{tl}
+/// p_{bl} + \alpha_{tr} p_{tr} - \alpha_{tl} p_{tl} \f$. Solving
+/// these equations give a linear representation of the four points
+/// \f$ p_i = \beta q_i \f$ for some fixed points \f$ q_i \f$. The
+/// aspect ratio can then be computed as \f$ \frac{\|q_{tr} -
+/// q_{tl}\|}{\|q_{bl} - q_{tl}\|} \f$, which is the value returned by
+/// this function.
+static double getAspectRatio(const QPointF& tl,
+                             const QPointF& tr,
+                             const QPointF& br,
+                             const QPointF& bl);
+
 ScannedImageProvider* ScannedImageProvider::instance = nullptr;
 
 struct ScannedImageProvider::Data {
@@ -271,6 +291,45 @@ void ScannedImageProvider::setDetails(const QString& image, double details)
     }
 }
 
+double getAspectRatio(const QPointF& tl,
+                      const QPointF& tr,
+                      const QPointF& br,
+                      const QPointF& bl)
+{
+    double a_tl = (br.x() - tl.x());
+    double a_tr = (tr.x() - br.x());
+    double a_bl = (bl.x() - br.x());
+
+    double b_tl = (br.y() - tl.y());
+    double b_tr = (tr.y() - br.y());
+    double b_bl = (bl.y() - br.y());
+
+    // pivot, maybe swap equations
+    if (std::abs(a_tl) < std::abs(b_tl)) {
+        std::swap(a_tl, b_tl);
+        std::swap(a_tr, b_tr);
+        std::swap(a_bl, b_bl);
+    }
+
+    double c_bl = b_bl - b_tl / a_tl * a_bl;
+    double c_tr = b_tr - b_tl / a_tl * a_tr;
+
+    double d_tr = 1.0;
+    double d_bl = -c_tr / c_bl;
+    double d_tl = c_tr * a_bl / c_bl / a_tl - a_tr / a_tl;
+    // double d_br = -c_tr / c_bl + 1 + a_tr / a_tl - c_tr * a_bl / c_bl / a_tl;
+
+    double norm_horiz =
+        (std::pow(d_tr * tr.x() - d_tl * tl.x(), 2) +
+         std::pow(d_tr * tr.y() - d_tl * tl.y(), 2) + std::pow(d_tr - d_tl, 2));
+
+    double norm_vert =
+        (std::pow(d_bl * bl.x() - d_tl * tl.x(), 2) +
+         std::pow(d_bl * bl.y() - d_tl * tl.y(), 2) + std::pow(d_bl - d_tl, 2));
+
+    return std::sqrt(norm_horiz / norm_vert);
+}
+
 const cv::Mat& getRotatedImage(ImageSet& img)
 {
     if (img.state < Rotated) {
@@ -314,8 +373,14 @@ const cv::Mat& getCutImage(ImageSet& img)
         cv::Point2f br(img.bottomright.x() * w, img.bottomright.y() * h);
         cv::Point2f bl(img.bottomleft.x() * w, img.bottomleft.y() * h);
 
-        float width = cv::max(cv::norm(tr - tl), cv::norm(br - bl));
+        // float width = cv::max(cv::norm(tr - tl), cv::norm(br - bl));
+        // float height = cv::max(cv::norm(tr - br), cv::norm(tl - bl));
+        auto ratio = getAspectRatio(QPointF{tl.x - w / 2, tl.y - h / 2} / 100,
+                                    QPointF{tr.x - w / 2, tr.y - h / 2} / 100,
+                                    QPointF{br.x - w / 2, br.y - h / 2} / 100,
+                                    QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
         float height = cv::max(cv::norm(tr - br), cv::norm(tl - bl));
+        float width = height * ratio;
 
         cv::Point2f src[4] = {tl, tr, br, bl};
         cv::Point2f dst[4] = {
