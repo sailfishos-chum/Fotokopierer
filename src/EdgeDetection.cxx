@@ -281,7 +281,7 @@ void EdgeDetection::Data::filter_by_angle(const std::vector<QLineF>& all_lines, 
     }
 }
 
-void EdgeDetection::update()
+void EdgeDetection::autoDetect()
 {
     // find candidate lines
     std::vector<QLineF> all_lines;
@@ -300,7 +300,7 @@ EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
     auto d = std::make_unique<Data>();
     d->image = image;
     auto edges = EdgeDetection(std::move(d));
-    edges.update();
+    edges.autoDetect();
     return edges;
 }
 

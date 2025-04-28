@@ -83,7 +83,7 @@ public:
         auto edges = EdgeDetection::detect_in_image(image);
         edges.setCannyMinValue(minValue_);
         edges.setCannyMaxValue(maxValue_);
-        edges.update();
+        edges.autoDetect();
 
         QPointF tl, tr, br, bl;
 

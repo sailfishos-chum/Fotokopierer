@@ -64,8 +64,10 @@ public:
     /// Return the contrast scaling factor before running canny edge detection.
     qreal contrastFactor() const;
 
-    /// Rerun the edge detection after changing some parameter.
-    void update();
+    /// Run the edge detection.
+    ///
+    /// Must be called after changing a parameter.
+    void autoDetect();
 
     /// Return the original image.
     QImage image() const;
