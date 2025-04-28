@@ -36,10 +36,6 @@ set(SOURCES
   src/ZoomImage.cxx
   src/init.cxx)
 
-# We need to set this directory here ... luckily we know exactly where it goes.
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/podofo/lib)
-add_executable(${TARGET} ${SOURCES})
-
 if (SAILFISH_FOUND)
   set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-3.4.0)
   set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.6)
@@ -92,9 +88,9 @@ if (SAILFISH_FOUND)
   find_package(OpenCV QUIET COMPONENTS core imgproc)
 
   if (NOT OpenCV_FOUND)
-    add_custom_target(Rescan ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR} DEPENDS opencv)
+    add_custom_target(opencv-3rdparty ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR} DEPENDS opencv)
   else()
-    add_custom_target(Rescan)
+    add_custom_target(opencv-3rdparty)
   endif ()
 
   # We must use our own freetype library
@@ -109,11 +105,14 @@ if (SAILFISH_FOUND)
     -DBUILD_SHARED_LIBS:BOOL=false
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
 
+  link_directories(${FREETYPE_PREFIX}/lib)
+
   # configure PoDoFo
+  find_package(PNG REQUIRED)
   find_package(OpenSSL REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
 
-  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include)
+  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include/freetype2)
   set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
 
   set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
@@ -128,12 +127,12 @@ if (SAILFISH_FOUND)
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
     -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
     -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
-    -DCMAKE_LIBRARY_PATH=${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+
+  link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} libjpeg OpenSSL::Crypto freetype)
-
-  add_dependencies(${TARGET} Rescan podofo-3rdparty)
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libjpeg PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 
@@ -152,16 +151,17 @@ endif()
 
 find_package(Qt5 COMPONENTS Core Gui Quick)
 
-qt5_add_resources(RESOURCES common.qrc translations.qrc)
+# We need to set these directories here ... luckily we know exactly where it goes.
 
+qt5_add_resources(RESOURCES common.qrc translations.qrc)
 if (SAILFISH_FOUND)
   qt5_add_resources(RESOURCES sfos.qrc)
-  set_property(TARGET ${TARGET} APPEND PROPERTY SOURCES src/main-sfos.cxx ${RESOURCES})
+  add_executable(${TARGET} src/main-sfos.cxx ${SOURCES} ${RESOURCES})
+  add_dependencies(${TARGET} opencv-3rdparty podofo-3rdparty)
 else()
   qt5_add_resources(RESOURCES desktop.qrc)
-  set_property(TARGET ${TARGET} APPEND PROPERTY SOURCES src/main-desktop.cxx ${RESOURCES})
+  add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
 endif()
-
 
 set_property(TARGET ${TARGET} PROPERTY
   INCLUDE_DIRECTORIES
