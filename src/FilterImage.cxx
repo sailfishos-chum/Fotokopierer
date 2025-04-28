@@ -79,7 +79,8 @@ void FilterImage::updateFilter()
         disconnect(d->filter.get(), &Filter::filterChanged, this, &FilterImage::update);
     }
 
-    if (d->image != nullptr || d->filter_type == ScanImage::FilterType::None) {
+    if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
+        qDebug() << "FilterImage: set filter type = " << d->filter_type;
         d->filter = d->image->filter(d->filter_type);
         connect(d->filter.get(), &Filter::filterChanged, this, &FilterImage::update);
     } else {
