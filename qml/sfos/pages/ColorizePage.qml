@@ -45,6 +45,7 @@ Dialog {
         id: colview
 
         scanner: Scanner
+        colorizeChooser: colorizer.chooser()
 
         anchors.top: header.bottom
         anchors.bottom: buttons.top
@@ -56,6 +57,7 @@ Dialog {
             brightness_slider.value = colview.brightness * 100
             threshold_slider.value = colview.threshold * 100
             blocksize_slider.value = colview.blockSize * 100
+            blackLevel_slider.value = colorizer.blackLevel / 255 * 100
         }
 
         BusyIndicator {
@@ -189,6 +191,47 @@ Dialog {
                 icon: Qt.resolvedUrl("/icons/blocksize.svg")
                 visible: !contrast_slider.visible
                 onValueChanged: colview.blockSize = value / 100
+            }
+
+            IconButton {
+                id: colorizer_button
+                visible: colview.colorMode == ColorizeView.Colored
+                icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
+                onClicked: { colorize.open = true; sliders.open = false }
+            }
+        }
+    }
+
+    DockedPanel {
+        id: colorize
+
+        width: parent.width
+        height: closeButton.height + colorizer.height + blackLevel_slider.height
+        dock: Dock.Bottom
+
+        Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            IconButton {
+                icon.source: "image://theme/icon-m-dismiss"
+                anchors.right: parent.right
+                onClicked: { sliders.open = true; colorize.open = false }
+            }
+
+            ColorizeChooserItem {
+                id: colorizer
+                anchors.left: parent.left
+                anchors.right: parent.right
+                markerRadius: Math.min(page.width, page.height) / 25
+                height: width
+                onChanged: colview.refreshColorization()
+            }
+
+            ValueSlider {
+                id: blackLevel_slider
+                icon: Qt.resolvedUrl("/icons/icon-m-bw.svg")
+                onValueChanged: colorizer.blackLevel = value * 255 / 100
             }
         }
     }
