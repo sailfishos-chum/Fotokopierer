@@ -24,6 +24,7 @@ BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(libpng16)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils

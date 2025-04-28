@@ -29,6 +29,7 @@ PkgConfigBR:
   - Qt5Quick
   - freetype2
   - openssl
+  - libpng16
   - zlib
 
 # Runtime dependencies which are not automatically detected

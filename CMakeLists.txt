@@ -77,10 +77,10 @@ if (NOT OpenCV_FOUND)
     opencv_core
     #tegra_hal
     dl)
+  find_package(PNG REQUIRED)
   set(JPEG_LIBRARY libjpeg)
-  set(PNG_LIBRARY libpng)
   set(TIFF_LIBRARY libtiff)
-  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libpng,${OpenCV_SOURCE_DIR}/3rdparty/libtiff)
+  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff)
   set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
   link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
 else()
