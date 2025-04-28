@@ -41,12 +41,13 @@ struct ScanImage::Data {
     bool deleteOriginalOnClear = false;
 };
 
-ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
+ScanImage::ScanImage(QObject* parent)
+    : QObject(parent), d(new Data)
 {
     d->filter.reserve(3);
     d->filter.push_back(new RotateFilter(this));
-    d->filter.push_back(new CutFilter(this, d->filter.back()));
-    d->filter.push_back(new ColorizeFilter(this, d->filter.back()));
+    d->filter.push_back(new CutFilter(this, d->filter.constLast()));
+    d->filter.push_back(new ColorizeFilter(this, d->filter.constLast()));
 
     connect(&d->saveFuture, &QFutureWatcher<void>::finished, this, &ScanImage::imageSaved);
 }
@@ -66,7 +67,7 @@ QImage ScanImage::original() const
 QImage ScanImage::computeFilteredImage() const
 {
     QImage image = d->original;
-    for (auto filter : d->filter) {
+    for (auto& filter : d->filter) {
         image = filter->apply(std::move(image));
     }
     return image;
@@ -77,22 +78,22 @@ Filter* ScanImage::filter(FilterType type)
     if (type == FilterType::None)
         return nullptr;
     else
-        return d->filter[static_cast<int>(type)];
+        return d->filter.at(static_cast<int>(type));
 }
 
 RotateFilter* ScanImage::rotateFilter() const
 {
-    return qobject_cast<RotateFilter*>(d->filter[static_cast<int>(FilterType::Rotate)]);
+    return qobject_cast<RotateFilter*>(d->filter.at(static_cast<int>(FilterType::Rotate)));
 }
 
 CutFilter* ScanImage::cutFilter() const
 {
-    return qobject_cast<CutFilter*>(d->filter[static_cast<int>(FilterType::Cut)]);
+    return qobject_cast<CutFilter*>(d->filter.at(static_cast<int>(FilterType::Cut)));
 }
 
 ColorizeFilter* ScanImage::colorizeFilter() const
 {
-    return qobject_cast<ColorizeFilter*>(d->filter[static_cast<int>(FilterType::Colorize)]);
+    return qobject_cast<ColorizeFilter*>(d->filter.at(static_cast<int>(FilterType::Colorize)));
 }
 
 void ScanImage::setDeleteOriginalOnClear(bool enabled)
@@ -141,7 +142,7 @@ void ScanImage::saveAndClear(Document* doc)
 
     d->saveFuture.setFuture(QtConcurrent::run([this, original] {
         QImage image = original;
-        for (auto filter : d->filter) {
+        for (auto& filter : d->filter) {
             image = filter->apply(std::move(image));
         }
 

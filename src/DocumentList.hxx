@@ -38,29 +38,36 @@ public:
     };
 
 public:
-    explicit DocumentList(QObject *parent = nullptr);
+    explicit DocumentList(QObject* parent = nullptr);
+
+    DocumentList(const DocumentList&) = delete;
+    DocumentList(DocumentList&&) = delete;
+    DocumentList& operator=(const DocumentList&) = delete;
+    DocumentList& operator=(DocumentList&&) = delete;
 
     ~DocumentList() override;
 
     /// Create and return a new document.
     ///
     /// On error return NULL.
-    Q_INVOKABLE Document *newDocument();
+    Q_INVOKABLE Document* newDocument();
 
     /// Delete a document from the document list.
     Q_INVOKABLE void deleteDocument(int docIndex);
 
 private:
-    void addDocument(const QSharedPointer<Document> &document);
+    void addDocument(const QSharedPointer<Document>& document);
 
-    int rowCount(const QModelIndex &parent) const override;
+    int rowCount(const QModelIndex& parent) const override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
 
     QHash<int, QByteArray> roleNames() const override;
 
 private slots:
     void documentChanged();
+
+    void documentStatusChanged();
 
 private:
     struct Data;

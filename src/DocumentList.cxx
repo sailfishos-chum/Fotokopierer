@@ -32,10 +32,11 @@ struct DocumentList::Data {
     QVector<QSharedPointer<Document>> docs;
 };
 
-DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new Data)
+DocumentList::DocumentList(QObject* parent)
+    : QAbstractListModel(parent), d(new Data)
 {
     auto dir = getDocumentDirectory();
-    for (auto path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
+    for (auto& path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
         QDir docdir = dir;
         docdir.cd(path);
         if (docdir.exists(QStringLiteral("doc.json"))) {
@@ -48,23 +49,19 @@ DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new 
 
 DocumentList::~DocumentList() = default;
 
-void DocumentList::addDocument(const QSharedPointer<Document> &doc)
+void DocumentList::addDocument(const QSharedPointer<Document>& doc)
 {
     connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
-    connect(doc.data(), &Document::statusChanged, [this, doc]() {
-        if (doc->status() == Document::Invalid) {
-            deleteDocument(d->docs.indexOf(doc));
-        }
-    });
+    connect(doc.data(), &Document::statusChanged, this, &DocumentList::documentStatusChanged);
 
     beginInsertRows({}, d->docs.size(), d->docs.size());
     d->docs.push_back(doc);
     endInsertRows();
 }
 
-Document *DocumentList::newDocument()
+Document* DocumentList::newDocument()
 {
     auto doc = QSharedPointer<Document>(new Document(Document::create()));
     addDocument(doc);
@@ -85,7 +82,7 @@ void DocumentList::documentChanged()
 {
     auto sender = QObject::sender();
     for (int i = 0; i < d->docs.size(); i++) {
-        auto &doc = d->docs[i];
+        auto& doc = d->docs.at(i);
         if (doc.data() == sender) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailsRole, TitleRole, CreationTimeRole, NumPagesRole});
@@ -93,23 +90,37 @@ void DocumentList::documentChanged()
     }
 }
 
-int DocumentList::rowCount(const QModelIndex &parent) const
+void DocumentList::documentStatusChanged()
+{
+    auto* doc = qobject_cast<Document*>(sender());
+
+    if (doc->status() == Document::Invalid) {
+        for (int i = 0; i < d->docs.size(); i++) {
+            if (d->docs.at(i) == doc) {
+                deleteDocument(i);
+                break;
+            }
+        }
+    }
+}
+
+int DocumentList::rowCount(const QModelIndex& parent) const
 {
     (void)parent;
     return d->docs.size();
 }
 
-QVariant DocumentList::data(const QModelIndex &index, int role) const
+QVariant DocumentList::data(const QModelIndex& index, int role) const
 {
     switch (role) {
         case TitleRole: return d->docs[index.row()]->title();
         case CreationTimeRole: return d->docs[index.row()]->creationTime();
         case NumPagesRole: return d->docs[index.row()]->numPages();
-        case DocumentRole: return QVariant::fromValue(d->docs[index.row()].data());
+        case DocumentRole: return QVariant::fromValue(d->docs.at(index.row()).data());
         case ThumbnailsRole: {
             QStringList thumbs;
             thumbs.reserve(3);
-            auto &doc = d->docs[index.row()];
+            auto& doc = d->docs.at(index.row());
             for (int i = 0, n = std::min(doc->numPages(), 3); i < n; i++) {
                 thumbs.push_back(QUrl::fromLocalFile(doc->page(i).thumbnail()).toString());
             }

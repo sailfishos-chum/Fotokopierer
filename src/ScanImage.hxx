@@ -50,6 +50,11 @@ public:
 public:
     ScanImage(QObject* parent = nullptr);
 
+    ScanImage(const ScanImage&) = delete;
+    ScanImage(ScanImage&&) = delete;
+    ScanImage& operator=(const ScanImage&) = delete;
+    ScanImage& operator=(ScanImage&&) = delete;
+
     ~ScanImage() override;
 
     /// Return the original image.

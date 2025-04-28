@@ -21,7 +21,8 @@
 
 #include <QtGui/QImage>
 
-Filter::Filter(ScanImage* image) : Filter(image, nullptr) {}
+Filter::Filter(ScanImage* image)
+    : Filter(image, nullptr) {}
 
 Filter::Filter(ScanImage* image, Filter* previous_filter)
     : QObject(image), previous_filter_(previous_filter)

@@ -31,6 +31,11 @@ public:
 
     explicit RotateFilter(ScanImage* image, Filter* previous_filter);
 
+    RotateFilter(const RotateFilter&) = delete;
+    RotateFilter(RotateFilter&&) = delete;
+    RotateFilter& operator=(const RotateFilter&) = delete;
+    RotateFilter& operator=(RotateFilter&&) = delete;
+
     ~RotateFilter() override;
 
     QJsonObject saveJson() const override;

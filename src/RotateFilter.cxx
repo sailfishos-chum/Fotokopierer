@@ -20,7 +20,8 @@
 #include <QtCore/QJsonObject>
 #include <QtGui/QImage>
 
-RotateFilter::RotateFilter(ScanImage* image) : RotateFilter(image, nullptr) {}
+RotateFilter::RotateFilter(ScanImage* image)
+    : RotateFilter(image, nullptr) {}
 
 RotateFilter::RotateFilter(ScanImage* image, Filter* previous_filter)
     : Filter(image, previous_filter), orientation_(0)

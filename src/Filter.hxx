@@ -33,7 +33,12 @@ public:
 
     Filter(ScanImage* image, Filter* previous_filter);
 
-    virtual ~Filter();
+    Filter(const Filter&) = delete;
+    Filter(Filter&&) = delete;
+    Filter& operator=(const Filter&) = delete;
+    Filter& operator=(Filter&&) = delete;
+
+    ~Filter() override;
 
     ScanImage* image();
 

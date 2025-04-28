@@ -43,6 +43,11 @@ public:
 
     ColorizeFilter(ScanImage* image, Filter* previous_filter);
 
+    ColorizeFilter(const ColorizeFilter&) = delete;
+    ColorizeFilter(ColorizeFilter&&) = delete;
+    ColorizeFilter& operator=(const ColorizeFilter&) = delete;
+    ColorizeFilter& operator=(ColorizeFilter&&) = delete;
+
     ~ColorizeFilter() override;
 
     QJsonObject saveJson() const override;

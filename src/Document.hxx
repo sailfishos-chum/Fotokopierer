@@ -39,7 +39,10 @@ class Document : public QAbstractListModel
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
-    enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole, PageRole };
+    enum PageRoles { ThumbnailRole = Qt::UserRole + 1,
+                     ResultRole,
+                     CreationTimeRole,
+                     PageRole };
 
     enum Status {
         Ready,    ///< Document is ready
@@ -56,7 +59,13 @@ public:
 
     Document(Document &&doc) noexcept;
 
+    Document(const Document &) = delete;
+
     ~Document() override;
+
+    Document &operator=(Document &&) = delete;
+
+    Document &operator=(const Document &) = delete;
 
     /// Create a new document with the current time.
     static Document create(QObject *parent = nullptr);
@@ -113,7 +122,7 @@ public slots:
     ///
     /// The new page will be created with the given original and result image
     /// and the current time. It will be the last page of the current document.
-    void addPage(QImage original, QImage result);
+    void addPage(const QImage &original, const QImage &result);
 
 private:
     /// Set the document data.
@@ -121,10 +130,13 @@ private:
 
 private slots:
     /// Change the current status.
-    void setStatus(Status status);
+    void setStatus(Document::Status status);
 
     /// The status of a page has changed.
     void updatePage();
+
+    /// The asynchronously loaded document data is ready.
+    void setPendingDoc();
 
 signals:
     void titleChanged();

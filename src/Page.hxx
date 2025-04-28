@@ -63,6 +63,11 @@ public:
     /// The document is placed in the given directory.
     Page(const QDir& dir, const ScanImage* scanImage, QObject* parent);
 
+    Page(const Page&) = delete;
+    Page(Page&&) = delete;
+    Page& operator=(const Page&) = delete;
+    Page& operator=(Page&&) = delete;
+
     ~Page() override;
 
     QDateTime creationTime() const;
@@ -91,7 +96,7 @@ private slots:
 
     void thumbnailFinished();
 
-    void setStatus(Status status);
+    void setStatus(Page::Status status);
 
 signals:
     void thumbnailChanged();
