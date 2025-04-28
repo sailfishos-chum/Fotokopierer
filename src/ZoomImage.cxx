@@ -57,8 +57,9 @@ QPointF ZoomImage::center() const
 
 void ZoomImage::setCenter(const QPointF& center)
 {
-    if (center != d->center) {
-        d->center = center;
+    QPointF c = QPointF{qBound<qreal>(0, center.x(), 1), qBound<qreal>(0, center.y(), 1)};
+    if (c != d->center) {
+        d->center = c;
         emit centerChanged();
         update();
     }
