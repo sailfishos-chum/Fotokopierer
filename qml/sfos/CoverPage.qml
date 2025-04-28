@@ -23,34 +23,52 @@ import Fotokopierer 1.0
 CoverBackground {
     property var _document: DocumentList.latestDocument
     property var _thumbnails: _document ? _document.thumbnails : []
+    property var _numPages: _document ? _document.numPages : 0
+
+    Label {
+        id: pages
+
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.pixelSize: Theme.fontSizeMedium
+
+        text: qsTr("Pages: %1").arg(_numPages)
+    }
 
     Item {
-        width: parent.width * 0.9
-        height: parent.height * 0.9
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: pages.bottom
+        anchors.bottom: coverActionArea.top
 
-        //color: Theme.secondaryHighlightColor
+        Item {
+            width: parent.width * 0.9
+            height: parent.height * 0.9
+            anchors.centerIn: parent
 
-        Repeater {
-            id: repeater
-            model: _thumbnails
+            //color: Theme.secondaryHighlightColor
 
-            delegate: Image {
-                source: _thumbnails[_thumbnails.length - index - 1]
+            Repeater {
+                id: repeater
+                model: _thumbnails
 
-                anchors.fill: parent
-                anchors.leftMargin: (_thumbnails.length - index - 1) * 0.05 * parent.width
-                anchors.rightMargin: index * 0.05 * parent.width
-                anchors.topMargin: (_thumbnails.length - index - 1) * 0.05 * parent.height
-                anchors.bottomMargin: index * 0.05 * parent.height
+                delegate: Image {
+                    source: _thumbnails[_thumbnails.length - index - 1]
 
-                fillMode: Image.PreserveAspectFit
-
-                ColorOverlay {
                     anchors.fill: parent
-                    source: parent
-                    color: "black"
-                    opacity: (_thumbnails.length - index - 1) * 0.1
+                    anchors.leftMargin: (_thumbnails.length - index - 1) * 0.05 * parent.width
+                    anchors.rightMargin: index * 0.05 * parent.width
+                    anchors.topMargin: (_thumbnails.length - index - 1) * 0.05 * parent.height
+                    anchors.bottomMargin: index * 0.05 * parent.height
+
+                    fillMode: Image.PreserveAspectFit
+
+                    ColorOverlay {
+                        anchors.fill: parent
+                        source: parent
+                        color: "black"
+                        opacity: (_thumbnails.length - index - 1) * 0.1
+                    }
                 }
             }
         }
