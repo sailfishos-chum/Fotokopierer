@@ -5,8 +5,6 @@ import Fotokopierer 1.0
 Item {
 	 id: pane
 
-	 property rect cutrect: Qt.rect(10, 10, 50, 100)
-
 	 property real markerRadius: 10
 
 	 ScannedImage {
