@@ -123,9 +123,6 @@ void ZoomImage::paint(QPainter* p)
     auto w = width();
     auto h = height();
 
-    // will background with black
-    p->fillRect(0, 0, w, h, Qt::black);
-
     // get the source image
     QImage image = d->source->image();
     auto iw = image.width();
@@ -139,6 +136,10 @@ void ZoomImage::paint(QPainter* p)
 
     // draw the part of image with clipping, note that we use ration coordinates
     p->setClipPath(clip);
+
+    // fill background with black
+    p->fillRect(0, 0, w, h, Qt::black);
+
     p->drawImage(QRectF{0, 0, w, h},
                  image,
                  QRectF(iw * (d->center.x() - d->viewSize.x() / 2),
