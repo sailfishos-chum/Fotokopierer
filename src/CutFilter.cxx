@@ -22,7 +22,9 @@
 #include "Fotokopierer.hxx"
 #include "Scanner.hxx"
 
+#include <QDebug>
 #include <QtCore/QJsonObject>
+#include <QtCore/QPointF>
 #include <QtCore/QVariant>
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
@@ -30,6 +32,11 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <cmath>
+
+static QPointF scale(const QPointF& p, const QImage& img)
+{
+    return {p.x() / img.width(), p.y() / img.height()};
+}
 
 struct CutFilter::Data {
     QPointF topleft;
@@ -130,11 +137,15 @@ QVariantList CutFilter::autoDetectCutRect()
 
     auto edges = EdgeList::detect_in_image(img);
 
+    d->topleft = scale(edges.best_topLeft(), img);
+    d->topright = scale(edges.best_topRight(), img);
+    d->bottomright = scale(edges.best_bottomRight(), img);
+    d->bottomleft = scale(edges.best_bottomLeft(), img);
+
     QVariantList lst;
-    lst << edges.best_topLeft()
-        << edges.best_topRight()
-        << edges.best_bottomRight()
-        << edges.best_bottomLeft();
+    lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
+
+    qDebug() << "DETECT " << lst;
 
     return lst;
 }
