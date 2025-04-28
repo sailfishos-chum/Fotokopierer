@@ -32,9 +32,19 @@ ApplicationWindow
 
     cover: Component {
         CoverPage {
+            document: docs.lastDocument
             onNewPicture: {
-                app.activate()
-                docs.addDocument()
+                if (document) {
+                    app.activate()
+                    if (pageStack.currentPage != docs) {
+                        pageStack.pop(docs, PageStackAction.Immediate)
+                    }
+                    docs.openDocument(document)
+                    pageStack.completeAnimation()
+                    pageStack.currentPage.addPage()
+                } else {
+                    docs.addDocument()
+                }
             }
         }
     }

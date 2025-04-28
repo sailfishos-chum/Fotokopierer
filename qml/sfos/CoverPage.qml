@@ -21,16 +21,16 @@ import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
 CoverBackground {
-    property var _document: DocumentList.latestDocument
-    property var _thumbnails: _document ? _document.thumbnails : []
-    property var _numPages: _document ? _document.numPages : 0
+    property var document // document to show, usually the document opened last
+    property var _thumbnails: document ? document.thumbnails : []
+    property var _numPages: document ? document.numPages : 0
 
     signal newPicture()
 
     Label {
         id: nodoc
 
-        visible: !_document
+        visible: !document
 
         anchors.top: parent.top
         anchors.bottom: coverActionArea.top
@@ -49,7 +49,7 @@ CoverBackground {
     Label {
         id: pages
 
-        visible: _document
+        visible: document
 
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
@@ -59,7 +59,7 @@ CoverBackground {
     }
 
     Item {
-        visible: _document
+        visible: document
 
         anchors.left: parent.left
         anchors.right: parent.right
