@@ -362,6 +362,11 @@ void Document::cutSelectedPages()
     Clipboard::instance()->cut(this, pages);
 }
 
+void Document::onDeleteSourcePage(Document* sourceDocument, Page* source)
+{
+    sourceDocument->deletePage(source);
+}
+
 void Document::deleteSelectedPages()
 {
     int ndeleted = 0;
