@@ -93,7 +93,7 @@ find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Freetype REQUIRED)
 
-set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.5)
+set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.6)
 set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
 ExternalProject_Add(podofo-3rdparty
   SOURCE_DIR ${PODOFO_SOURCE_DIR}
