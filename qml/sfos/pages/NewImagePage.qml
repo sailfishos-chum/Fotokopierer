@@ -51,7 +51,7 @@ Page {
     function processImage(imagePath, deleteOnCancel) {
         scanImage.loadFile(imagePath)
         scanImage.deleteOriginalOnClear = deleteOnCancel
-        pageStack.push(cutpage)
+        pageStack.push(Qt.resolvedUrl("CutPage.qml"), {"image": scanImage})
         pageStack.pushAttached(colpage)
     }
 
@@ -75,8 +75,6 @@ Page {
             processImage(selectedContentProperties.filePath, false)
         }
     }
-
-    CutPage { id: cutpage; image: scanImage }
 
     ColorizePage {
         id: colpage
