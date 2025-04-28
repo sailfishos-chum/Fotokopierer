@@ -117,7 +117,10 @@ Page {
             }
 
             function openPage() {
-                pageStack.push(Qt.resolvedUrl("PagePage.qml"), { "image": role_result })
+                pageStack.push(Qt.resolvedUrl("PagePage.qml"), {
+                    "image": role_result,
+                    "title": qsTr("Page %1 of %2 (%3)").arg(pagenumber).arg(visualModel.count - 1).arg(creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat)),
+                })
             }
 
             onDeletePage: {
