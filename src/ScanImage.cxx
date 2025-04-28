@@ -26,8 +26,6 @@
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 
-#include <QtDebug>
-
 #include <cassert>
 
 struct ScanImage::Data {
@@ -44,10 +42,7 @@ ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
     d->filter.push_back(new ColorizeFilter(this, d->filter.back()));
 }
 
-ScanImage::~ScanImage()
-{
-    qDebug() << "Delete ScanImage";
-}
+ScanImage::~ScanImage() = default;
 
 Filter* ScanImage::filter(FilterType type)
 {
@@ -93,13 +88,11 @@ void ScanImage::saveAndClear(Document* doc)
 {
     assert(doc != nullptr);
 
-    // Compute the result image.
-    auto f = filter(static_cast<FilterType>(d->filter.size() - 1));
+    QImage image = d->original;
+    for (auto filter : d->filter) {
+        image = filter->apply(std::move(image));
+    }
 
-    assert(f != nullptr);
-    QImage image = f->apply(QImage(d->original));
-
-    qDebug() << "AddPage";
     // Add a new page.
     doc->addPage(d->original, image);
 
