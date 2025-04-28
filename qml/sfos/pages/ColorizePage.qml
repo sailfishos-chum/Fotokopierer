@@ -50,6 +50,12 @@ Dialog {
         anchors.bottom: buttons.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Large
+            anchors.centerIn: parent
+            running: colview.busy
+        }
     }
 
     DockedPanel {
