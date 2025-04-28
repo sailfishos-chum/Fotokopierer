@@ -44,7 +44,7 @@ public:
         updateEdges();
     }
 
-    void paintEvent(QPaintEvent* ev)
+    void paintEvent(QPaintEvent* ev) override
     {
         QPainter p(this);
 
