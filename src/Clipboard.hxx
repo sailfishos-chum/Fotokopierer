@@ -50,6 +50,9 @@ public:
     /// Cut the given pages from the given document to the clipboard.
     void cut(Document* doc, const QVector<Page*>& pages);
 
+    /// Paste the clipboard to the specified document.
+    void paste(Document* target);
+
     static Clipboard* instance();
 
 public slots:

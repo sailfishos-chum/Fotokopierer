@@ -70,6 +70,22 @@ void Clipboard::cut(Document* doc, const QVector<Page*>& pages)
     d->cut = true;
 }
 
+void Clipboard::paste(Document* target)
+{
+    if (target == nullptr) return;
+
+    for (auto& p : d->pages) {
+        target->newCopiedPage(p);
+    }
+
+    if (d->cut) {
+        for (auto& p : d->pages) {
+            d->doc->deletePage(p);
+        }
+        clear();
+    }
+}
+
 void Clipboard::clear()
 {
     if (d->doc != nullptr) {
