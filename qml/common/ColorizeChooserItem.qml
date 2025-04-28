@@ -61,22 +61,21 @@ Item {
     function pos2angle(pos) {
         var dx = pos.x - root.width / 2
         var dy = -(pos.y - root.height / 2)
-        var angle = 0;
         if (dx == 0) {
             if (dy > 0) {
-                angle = 90
+                return 90;
             } else {
-                angle = 270
+                return 270;
             }
         } else {
-            angle = Math.atan(dy / dx) / Math.PI * 180
+            var angle = Math.atan(dy / dx) / Math.PI * 180
             if (dx < 0) {
-                angle = angle + 180;
-            }
-            if (angle < 0) {
-                angle += 360;
+                return angle + 180;
+            } else if (angle < 0) {
+                return angle + 360;
+            } else {
+                return angle;
             }
         }
-        return angle
     }
 }
