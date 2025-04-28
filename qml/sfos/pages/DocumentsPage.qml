@@ -38,13 +38,25 @@ Page {
             creationTime: role_creationTime
             thumbnails: role_thumbnails
 
+            isAddButton: role_thumbnails == null
+
             enabled: true
 
             onOpenDocument: {
                 pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
         }
+
+        Component.onCompleted: {
+            visualModel.items.insert({
+                "role_thumbnails": null,
+                "role_numPages": 0,
+                "role_title": "",
+                "role_creationTime": "",
+            })
+        }
     }
+
 
     SilicaGridView {
         id: grid
