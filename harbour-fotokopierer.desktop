@@ -12,6 +12,6 @@ Name=Fotokopierer
 #Name[de]=fotokopierer
 
 [X-Sailjail]
-Permissions=Camera;Documents;Pictures
+Permissions=Camera;Documents;MediaIndexing;Pictures
 OrganizationName=harbour-fotokopierer
 ApplicationName=harbour-fotokopierer
