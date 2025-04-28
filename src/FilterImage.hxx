@@ -52,6 +52,8 @@ public:
 
     void paint(QPainter* painter) override;
 
+    QVariant filter() const;
+
 public slots:
     void setFilterType(ScanImage::FilterType type);
 

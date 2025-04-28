@@ -73,6 +73,11 @@ void FilterImage::setImage(ScanImage* image)
     }
 }
 
+QVariant FilterImage::filter() const
+{
+    return QVariant::fromValue(d->filter.get());
+}
+
 void FilterImage::updateFilter()
 {
     if (d->filter != nullptr) {
