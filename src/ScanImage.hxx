@@ -22,6 +22,7 @@
 
 #include <memory>
 
+class Document;
 class Filter;
 
 class ScanImage : public QObject
@@ -44,7 +45,7 @@ public:
 
     std::shared_ptr<Filter> filter(FilterType type);
 
-    Q_INVOKABLE void saveAndClear();
+    Q_INVOKABLE void saveAndClear(Document* doc);
 
     QImage originalImage() const;
 

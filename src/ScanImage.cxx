@@ -19,6 +19,7 @@
 
 #include "ColorizeFilter.hxx"
 #include "CutFilter.hxx"
+#include "Document.hxx"
 #include "Filter.hxx"
 #include "RotateFilter.hxx"
 
@@ -48,12 +49,18 @@ std::shared_ptr<Filter> ScanImage::filter(FilterType type)
         return d->filter[static_cast<int>(type)];
 }
 
-void ScanImage::saveAndClear()
+void ScanImage::saveAndClear(Document* doc)
 {
-    QImage result = d->original;
-    for (int i = 0; i < d->filter.size(); i++) {
-        d->filter[i]->apply(QImage(result));
-    }
+    // Compute the result image.
+    QImage image = d->original;
+    auto f = filter(static_cast<FilterType>(d->filter.size()));
+    f->apply(QImage(image));
+
+    // Clear all filters.
+    for (int i = 0; i < d->filter.size(); i++) d->filter[i] = nullptr;
+
+    // Add a new page.
+    // doc->addPage(d->original, image);
 }
 
 QImage ScanImage::originalImage() const
