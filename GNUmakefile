@@ -3,6 +3,7 @@ target = harbour-fotokopierer
 arch := i486
 #arch := armv7hl
 sfos_version := 3.0.3.9
+device := jolla
 
 sdk_dir := $(HOME)/SailfishOS
 projects_root := $(HOME)/JollaProjekte
@@ -48,13 +49,13 @@ deploy:
 
 .PHONY: install-jolla copy-jolla run-jolla
 rpm-jolla: rpm
-	scp RPMS/harbour-fotokopierer*.armv7hl.rpm jolla:
+	scp RPMS/harbour-fotokopierer*.armv7hl.rpm $(device):
 
 install-jolla:
-	scp rpmbuilddir-arm/harbour-fotokopierer jolla:
+	scp rpmbuilddir-arm/harbour-fotokopierer $(device):
 
 run-jolla:
-	ssh -tt jolla './harbour-fotokopierer'
+	ssh -tt $(device) './harbour-fotokopierer'
 
 # Translations
 $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po

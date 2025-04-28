@@ -122,6 +122,8 @@ MouseArea {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
 
+                elide: Text.ElideRight
+
                 text: qsTr("Pages: %1\n%2").arg(dragDelegate.pagecount).arg(dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
             }
         }
