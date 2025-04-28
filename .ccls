@@ -1,6 +1,6 @@
 clang
 %cpp =std=gnu++14
--isystem $HOME/SailfishOS/mersdk/targets/SailfishOS-3.0.2.8-i486/usr/include/qt5
+-I/home/fifr/SailfishOS/mersdk/targets/SailfishOS-3.0.2.8-i486/usr/include/qt5
 -DQT_CORE_LIB
 -DQT_DEPRECATED_WARNINGS
 -DQT_GUI_LIB
