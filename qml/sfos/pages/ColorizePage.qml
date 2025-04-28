@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,11 +39,10 @@ Dialog {
         title: qsTr("Colorize")
     }
 
-    FilterImage {
-        id: image
+    ColorizeView {
+        id: colview
 
-        image: Scanner
-        filterType: Scanner.Colorize
+        scanner: Scanner
 
         anchors.top: header.bottom
         anchors.bottom: buttons.top
@@ -68,7 +67,7 @@ Dialog {
                 icon.height: Theme.iconSizeMedium
                 icon.color: undefined
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeFilter.BlackAndWhite }
+                onClicked: { colview.colorMode = ColorizeView.BlackAndWhite }
             }
             IconButton {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-gray.svg")
@@ -76,7 +75,7 @@ Dialog {
                 icon.height: Theme.iconSizeMedium
                 icon.color: undefined
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeFilter.Gray }
+                onClicked: { colview.colorMode = ColorizeView.Gray }
             }
             IconButton {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
@@ -84,7 +83,7 @@ Dialog {
                 icon.height: Theme.iconSizeMedium
                 icon.color: undefined
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeFilter.FullColor }
+                onClicked: { colview.colorMode = ColorizeView.FullColor }
             }
             IconButton {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-special.svg")
@@ -92,7 +91,7 @@ Dialog {
                 icon.height: Theme.iconSizeMedium
                 icon.color: undefined
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeFilter.Colored }
+                onClicked: { colview.colorMode = ColorizeView.Colored }
             }
             IconButton {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-ctrl.svg")
@@ -125,19 +124,19 @@ Dialog {
             ValueSlider {
                 id: contrast_slider
                 icon: Qt.resolvedUrl("/icons/contrast.svg")
-                onValueChanged: image.filter.contrast = value / 100
+                onValueChanged: colview.contrast = value / 100
             }
 
             ValueSlider {
                 id: brightness_slider
                 icon: Qt.resolvedUrl("/icons/brightness.svg")
-                onValueChanged: image.filter.brightness = value / 100
+                onValueChanged: colview.brightness = value / 100
             }
 
             ValueSlider {
                 id: details_slider
                 icon: Qt.resolvedUrl("image://theme/icon-m-search")
-                onValueChanged: image.filter.details = value / 100
+                onValueChanged: colview.details = value / 100
             }
         }
     }
