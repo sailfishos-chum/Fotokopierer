@@ -138,6 +138,24 @@ void Document::addPage(BaseImage *original, BaseImage *result)
     save();
 }
 
+void Document::deletePage(Page *page)
+{
+    qDebug() << "Delete Page";
+    if (page == nullptr) {
+        qWarning() << "Cannot delete NULL page";
+        return;
+    }
+    for (int i = 0; i < d->pages.size(); i++) {
+        if (d->pages[i] == page) {
+            beginRemoveRows({}, i, i);
+            d->pages.removeAt(i);
+            endRemoveRows();
+            save();
+            return;
+        }
+    }
+}
+
 bool Document::save() const
 {
     QFileInfo finfo(d->filename);

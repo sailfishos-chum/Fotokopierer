@@ -24,6 +24,7 @@
 #include <memory>
 
 class BaseImage;
+class Page;
 
 /// A scanned document
 ///
@@ -53,11 +54,14 @@ public:
     /// Return the document title.
     QString title() const;
 
-    /// Add a newly scanned page to the image.
+    /// Add a newly scanned page to the document.
     ///
     /// The new page will be created with the given original and result image
     /// and the current time. It will be the last page of the current document.
     Q_INVOKABLE void addPage(BaseImage *original, BaseImage *result);
+
+    /// Delete a page from the document.
+    Q_INVOKABLE void deletePage(Page *page);
 
     Q_INVOKABLE bool save() const;
 
