@@ -16,11 +16,13 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
+import QtMultimedia 5.6
 import Sailfish.Silica 1.0
 import Sailfish.Pickers 1.0
 import Fotokopierer 1.0
 
-ImagePickerPage {
+Page {
     id: page
 
     property Page destination
@@ -28,8 +30,22 @@ ImagePickerPage {
 
     signal addPage()
 
-    // Note that this property might become unsupported in future
-    popOnSelection: false
+    function processImage(imagePath, deleteOnCancel) {
+        scanImage.loadFile(imagePath)
+        pageStack.push(cutpage)
+        pageStack.pushAttached(colpage)
+    }
+
+    ImagePickerPage {
+        id: picker
+
+        // Note that this property might become unsupported in future
+        popOnSelection: false
+
+        onSelectedContentPropertiesChanged: {
+            processImage(selectedContentProperties.filePath, false)
+        }
+    }
 
     CutPage { id: cutpage; image: scanImage }
 
@@ -44,9 +60,108 @@ ImagePickerPage {
         onAccepted: addPage()
     }
 
-    onSelectedContentPropertiesChanged: {
-        scanImage.loadFile(selectedContentProperties.filePath)
-        pageStack.push(cutpage)
-        pageStack.pushAttached(colpage)
+    PageHeader {
+        id: header
+        title: qsTr("New Picture")
+    }
+
+    Camera {
+        id: camera
+
+        viewfinder {
+            resolution: Qt.size(640, 480)
+        }
+
+        imageCapture {
+            resolution: Qt.size(4000, 3000)
+            onImageCaptured: {
+                //photoPreview.source = preview
+                console.log("image captured: " + preview)
+            }
+            onImageSaved: {
+                console.log("save image: " + path)
+                processImage(path, true)
+            }
+        }
+
+        focus {
+            focusMode: Camera.FocusContinuous
+            focusPointMode: Camera.FocusPointCenter
+        }
+
+        flash.mode: Camera.FlashOff
+
+        imageProcessing {
+            sharpeningLevel: 1
+        }
+
+        exposure {
+            exposureCompensation: -1.0
+            exposureMode: Camera.ExposurePortrait
+        }
+    }
+
+    Rectangle {
+        anchors.top: header.bottom
+        anchors.bottom: buttons.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        VideoOutput {
+            anchors.fill: parent
+
+            fillMode: VideoOutput.Stretch
+
+            focus: visible
+            source: camera
+        }
+    }
+
+    DockedPanel {
+        id: buttons
+        open: true
+
+        width: parent.width
+        height: Theme.iconSizeLarge
+        dock: Dock.Bottom
+
+        Row {
+            anchors.fill: parent
+
+            IconButton {
+                width: parent.width / 3
+                icon.source:
+                camera.flash.mode == Camera.FlashOff ?
+                    "image://theme/icon-camera-flash-off" :
+                    camera.flash.mode == Camera.FlashAuto ?
+                    "image://theme/icon-camera-flash-automatic" :
+                    "image://theme/icon-camera-flash-on"
+                onClicked: {
+                    if (camera.flash.mode == Camera.FlashOff) {
+                        camera.flash.mode = Camera.FlashOn
+                    } else if (camera.flash.mode == Camera.FlashOn) {
+                        camera.flash.mode = Camera.FlashAuto
+                    } else {
+                        camera.flash.mode = Camera.FlashOff
+                    }
+                }
+            }
+
+            IconButton {
+                width: parent.width / 3
+                icon.source: "image://theme/icon-camera-shutter-release"
+                onClicked: {
+                    camera.imageCapture.capture()
+                }
+            }
+
+            IconButton {
+                width: parent.width / 3
+                icon.source: "image://theme/icon-m-image"
+                onClicked: {
+                    pageStack.push(picker)
+                }
+            }
+        }
     }
 }
