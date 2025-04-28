@@ -33,6 +33,11 @@ public:
 
     Filter(ScanImage* image, Filter* previous_filter);
 
+    Filter(const Filter&) = delete;
+    Filter(Filter&&) = delete;
+    Filter& operator=(const Filter&) = delete;
+    Filter& operator=(Filter&&) = delete;
+
     virtual ~Filter();
 
     ScanImage* image();
