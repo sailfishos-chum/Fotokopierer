@@ -37,13 +37,14 @@ Item {
     Repeater {
         model: 6
         CornerMarker {
+            id: marker
             radius: markerRadius
             minX: 0
             maxX: root.width
             minY: 0
             maxY: root.height
 
-            onDragged: colorizer.setColorAngle(index, pos2angle(markerPos))
+            onDragged: colorizer.setColorAngle(index, pos2angle(position))
 
             onDragActiveChanged: {
                 if (!dragActive) {
@@ -64,8 +65,8 @@ Item {
 
             function updateAngle() {
                 var angle = colorizer.colorAngle(index) / 180 * Math.PI
-                setCenter(Qt.point(Math.cos(angle) * _radius + root.width / 2,
-                                   -Math.sin(angle) * _radius + root.height / 2))
+                marker.center = Qt.point(Math.cos(angle) * _radius + root.width / 2,
+                                         -Math.sin(angle) * _radius + root.height / 2)
             }
         }
     }

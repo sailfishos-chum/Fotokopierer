@@ -32,8 +32,7 @@ Item {
     property real minY: 0
     property real maxY: height
 
-    /// The position of the marker
-    property point markerPos: Qt.point(dragArea.x + root.radius, dragArea.y + root.radius)
+    property point center: Qt.point(0, 0)
 
     /// Whether the point is currently dragged
     property bool dragActive: false
@@ -66,18 +65,21 @@ Item {
             drag.maximumY: root.maxY - root.radius
 
             onPressed: root.dragActive = true
-            onReleased: root.dragActive = false
+            onReleased: {
+                root.dragActive = false
+                fixDragArea()
+            }
         }
 
         onXChanged: {
             if (root.dragActive) {
-                root.dragged(mouseArea.x + root.radius, mouseArea.y + root.radius)
+                root.dragged(Qt.point(dragArea.x + root.radius, dragArea.y + root.radius))
             }
         }
 
         onYChanged: {
             if (root.dragActive) {
-                root.dragged(mouseArea.x + root.radius, mouseArea.y + root.radius)
+                root.dragged(Qt.point(dragArea.x + root.radius, dragArea.y + root.radius))
             }
         }
     }
@@ -87,8 +89,8 @@ Item {
 
         width: root.radius * 2
         height: root.radius * 2
-        x: dragArea.x
-        y: dragArea.y
+        x: center.x - root.radius
+        y: center.y - root.radius
 
         antialiasing: true
         radius: width / 2
@@ -97,13 +99,18 @@ Item {
         border.width: root.linewidth
     }
 
-    /// Set the visible position of the marker unless a drag is active.
-    function setCenter(point) {
-        marker.x = point.x - root.radius
-        marker.y = point.y - root.radius
+    onCenterChanged: {
         if (!dragActive) {
-            dragArea.x = point.x - root.radius
-            dragArea.y = point.y - root.radius
+            fixDragArea()
         }
+    }
+
+    onRadiusChanged: fixDragArea()
+
+    Component.onCompleted: fixDragArea()
+
+    function fixDragArea() {
+        dragArea.x = center.x - root.radius
+        dragArea.y = center.y - root.radius
     }
 }
