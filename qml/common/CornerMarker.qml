@@ -32,8 +32,7 @@ Item {
     property real minY: 0
     property real maxY: height
 
-    /// The position of the marker
-    property point markerPos: Qt.point(dragArea.x + root.radius, dragArea.y + root.radius)
+    property point center: Qt.point(0, 0)
 
     /// Whether the point is currently dragged
     property bool dragActive: false
@@ -55,15 +54,6 @@ Item {
         Drag.hotSpot.x: width / 2
         Drag.hotSpot.y: height / 2
 
-        Rectangle {
-            anchors.fill: parent
-            antialiasing: true
-            radius: width / 2
-            color: Qt.rgba(root.color.r, root.color.g, root.color.b, root.fillOpacity)
-            border.color: root.color
-            border.width: root.linewidth
-        }
-
         MouseArea {
             id: mouseArea
             anchors.fill: parent
@@ -75,27 +65,52 @@ Item {
             drag.maximumY: root.maxY - root.radius
 
             onPressed: root.dragActive = true
-            onReleased: root.dragActive = false
+            onReleased: {
+                root.dragActive = false
+                fixDragArea()
+            }
         }
 
         onXChanged: {
             if (root.dragActive) {
-                root.dragged(mouseArea.x + root.radius, mouseArea.y + root.radius)
+                root.dragged(Qt.point(dragArea.x + root.radius, dragArea.y + root.radius))
             }
         }
 
         onYChanged: {
             if (root.dragActive) {
-                root.dragged(mouseArea.x + root.radius, mouseArea.y + root.radius)
+                root.dragged(Qt.point(dragArea.x + root.radius, dragArea.y + root.radius))
             }
         }
     }
 
-    /// Set the visible position of the marker unless a drag is active.
-    function setCenter(point) {
+    Rectangle {
+        id: marker
+
+        width: root.radius * 2
+        height: root.radius * 2
+        x: center.x - root.radius
+        y: center.y - root.radius
+
+        antialiasing: true
+        radius: width / 2
+        color: Qt.rgba(root.color.r, root.color.g, root.color.b, root.fillOpacity)
+        border.color: root.color
+        border.width: root.linewidth
+    }
+
+    onCenterChanged: {
         if (!dragActive) {
-            dragArea.x = point.x - root.radius
-            dragArea.y = point.y - root.radius
+            fixDragArea()
         }
+    }
+
+    onRadiusChanged: fixDragArea()
+
+    Component.onCompleted: fixDragArea()
+
+    function fixDragArea() {
+        dragArea.x = center.x - root.radius
+        dragArea.y = center.y - root.radius
     }
 }

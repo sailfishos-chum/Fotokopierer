@@ -45,11 +45,20 @@ Dialog {
         id: colview
 
         scanner: Scanner
+        colorizeChooser: colorizer.chooser()
 
         anchors.top: header.bottom
         anchors.bottom: buttons.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
+
+        onScannerChanged: {
+            contrast_slider.value = colview.contrast * 100
+            brightness_slider.value = colview.brightness * 100
+            threshold_slider.value = colview.threshold * 100
+            blocksize_slider.value = colview.blockSize * 100
+            blackLevel_slider.value = colorizer.blackLevel / colorizer.maxBlackLevel * 100
+        }
 
         BusyIndicator {
             size: BusyIndicatorSize.Small
@@ -159,19 +168,74 @@ Dialog {
             ValueSlider {
                 id: contrast_slider
                 icon: Qt.resolvedUrl("/icons/contrast.svg")
+                visible: colview.colorMode == ColorizeView.Gray || colview.colorMode == ColorizeView.FullColor
                 onValueChanged: colview.contrast = value / 100
             }
 
             ValueSlider {
                 id: brightness_slider
                 icon: Qt.resolvedUrl("/icons/brightness.svg")
+                visible: contrast_slider.visible
                 onValueChanged: colview.brightness = value / 100
             }
 
             ValueSlider {
-                id: details_slider
-                icon: Qt.resolvedUrl("image://theme/icon-m-search")
-                onValueChanged: colview.details = value / 100
+                id: threshold_slider
+                icon: Qt.resolvedUrl("/icons/threshold.svg")
+                visible: !contrast_slider.visible
+                onValueChanged: colview.threshold = value / 100
+            }
+
+            ValueSlider {
+                id: blocksize_slider
+                icon: Qt.resolvedUrl("/icons/blocksize.svg")
+                visible: !contrast_slider.visible
+                onValueChanged: colview.blockSize = value / 100
+            }
+
+            IconButton {
+                id: colorizer_button
+                visible: colview.colorMode == ColorizeView.Colored
+                icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
+                onClicked: {
+                    colorize.open = true
+                    sliders.open = false
+                    blackLevel_slider.value = colorizer.blackLevel / colorizer.maxBlackLevel * 100
+                }
+            }
+        }
+    }
+
+    DockedPanel {
+        id: colorize
+
+        width: parent.width
+        height: closeButton.height + colorizer.height + blackLevel_slider.height
+        dock: Dock.Bottom
+
+        Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            IconButton {
+                icon.source: "image://theme/icon-m-dismiss"
+                anchors.right: parent.right
+                onClicked: { sliders.open = true; colorize.open = false }
+            }
+
+            ColorizeChooserItem {
+                id: colorizer
+                anchors.left: parent.left
+                anchors.right: parent.right
+                markerRadius: Math.min(page.width, page.height) / 25
+                height: width
+                onChanged: colview.refreshColorization()
+            }
+
+            ValueSlider {
+                id: blackLevel_slider
+                icon: Qt.resolvedUrl("/icons/icon-m-bw.svg")
+                onValueChanged: colorizer.blackLevel = value * colorizer.maxBlackLevel / 100
             }
         }
     }

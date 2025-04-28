@@ -38,6 +38,7 @@ set(SOURCES
   src/ScanImageView.cxx
   src/CutView.cxx
   src/ColorizeView.cxx
+  src/ColorizeChooser.cxx
   src/ZoomImage.cxx
 
   src/Fotokopierer.cxx

@@ -46,12 +46,31 @@ class ScanImage : public QObject
 
     Q_PROPERTY(double contrast READ contrast WRITE setContrast NOTIFY contrastChanged)
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged)
-    Q_PROPERTY(double details READ details WRITE setDetails NOTIFY detailsChanged)
+    Q_PROPERTY(double threshold READ threshold WRITE setThreshold NOTIFY thresholdChanged)
+    Q_PROPERTY(double blockSize READ blockSize WRITE setBlockSize NOTIFY blockSizeChanged)
     Q_PROPERTY(ColorMode colorMode READ colorMode WRITE setColorMode NOTIFY colorModeChanged)
 
 public:
     /// The color mode to be used.
     using ColorMode = ColorizeView::ColorMode;
+
+    struct Parameters {
+        static constexpr double DefaultContrast = 0.5;
+        static constexpr double DefaultBrightness = 0.5;
+        static constexpr double DefaultThreshold = 0.8;
+        static constexpr double DefaultBlockSize = 0.1;
+        static constexpr std::array<qreal, 6> DefaultAngles = {30, 90, 150, 210, 270, 330};
+        static const int DefaultBlackLevel = 50;
+
+        double contrast = DefaultContrast;      ///< Contrast in [0,1]
+        double brightness = DefaultBrightness;  ///< Brightness in [0,1]
+
+        double threshold_c = DefaultThreshold;  ///< Value between [0,1] mapped to [-15,15]
+        double blocksize = DefaultBlockSize;    ///< Relative block size
+
+        std::array<qreal, 6> angles = DefaultAngles;
+        int blackLevel = DefaultBlackLevel;
+    };
 
 public:
     ScanImage(const QImage& original, QObject* parent = nullptr);
@@ -118,11 +137,23 @@ public:
     /// Set the brightness level in [0,1].
     void setBrightness(double brightness);
 
-    /// Return the details level.
-    double details() const;
+    /// Return the black/white threshold level.
+    double threshold() const;
 
-    /// Set the details level in [0,1].
-    void setDetails(double details);
+    /// Set the threshold level in [0,1].
+    void setThreshold(double threshold);
+
+    /// Return the blocksize for b/w thresholding.
+    double blockSize() const;
+
+    /// Set the blocksize for b/w thresholding in [0,1] (relative size).
+    void setBlockSize(double blockSize);
+
+    /// Return all parameters.
+    Parameters parameters() const;
+
+    /// Set all parameters at once.
+    void setParameters(Parameters params);
 
     /// Return the colormode.
     ColorMode colorMode() const;
@@ -152,7 +183,10 @@ signals:
 
     void contrastChanged();
     void brightnessChanged();
-    void detailsChanged();
+
+    void thresholdChanged();
+    void blockSizeChanged();
+
     void colorModeChanged();
 
     void startCutImageUpdate() const;
@@ -172,6 +206,6 @@ private:
     std::unique_ptr<Data> d;
 };
 
-cv::Mat computeColorizedImage(const cv::Mat& image, qreal contrast_, qreal brightness_, qreal details_, ScanImage::ColorMode colorMode);
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode, cv::Mat* hsv = nullptr, cv::Mat* mask = nullptr);
 
 #endif
