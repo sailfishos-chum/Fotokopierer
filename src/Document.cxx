@@ -37,7 +37,7 @@
 
 #include <QDebug>
 
-const QString Document::FilenameFormat = QStringLiteral("yyyyMMddTHHmmss");
+const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 struct Document::Data {
     QString title;                      ///< document title
