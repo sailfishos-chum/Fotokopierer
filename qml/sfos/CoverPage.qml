@@ -25,6 +25,8 @@ CoverBackground {
     property var _thumbnails: _document ? _document.thumbnails : []
     property var _numPages: _document ? _document.numPages : 0
 
+    signal newPicture()
+
     Label {
         id: nodoc
 
@@ -98,7 +100,7 @@ CoverBackground {
     CoverActionList {
         CoverAction {
             iconSource: "image://theme/icon-m-camera"
-            onTriggered: console.log("PRESS")
+            onTriggered: newPicture()
         }
     }
 }
