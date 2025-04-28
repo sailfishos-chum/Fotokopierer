@@ -7,6 +7,7 @@
 	 <file>qml/sfos/ErrorOverlay.qml</file>
 	 <file>qml/sfos/PageDelegate.qml</file>
 	 <file>qml/sfos/ValueSlider.qml</file>
+	 <file>qml/sfos/pages/AboutPage.qml</file>
 	 <file>qml/sfos/pages/CutPage.qml</file>
 	 <file>qml/sfos/pages/ColorizePage.qml</file>
 	 <file>qml/sfos/pages/DocumentPage.qml</file>

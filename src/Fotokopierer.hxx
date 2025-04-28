@@ -48,6 +48,13 @@ class Fotokopierer : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString ApplicationName READ applicationName CONSTANT)
+    Q_PROPERTY(QString ApplicationVersion READ applicationVersion CONSTANT)
+    Q_PROPERTY(QString Author READ author CONSTANT)
+    Q_PROPERTY(QString LicenseTitle READ licenseTitle CONSTANT)
+    Q_PROPERTY(QString PoDoFoVersion READ podofoVersion CONSTANT)
+    Q_PROPERTY(QString OpenCVVersion READ opencvVersion CONSTANT)
+
 public:
     explicit Fotokopierer(QObject* parent = nullptr)
         : QObject(parent) {}
@@ -55,6 +62,18 @@ public:
     Q_INVOKABLE bool isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4);
 
     Q_INVOKABLE QString newImagePath();
+
+    QString applicationName() const;
+
+    QString applicationVersion() const;
+
+    QString author() const;
+
+    QString licenseTitle() const;
+
+    QString podofoVersion() const;
+
+    QString opencvVersion() const;
 };
 
 #endif

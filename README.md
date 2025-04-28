@@ -8,6 +8,10 @@ Fotokopierer is a document scanning application for [Sailfish OS](https://sailfi
 
 Frank Fischer <frank-fischer@shadow-soft.de>
 
+## Contact
+
+Talk with the developers in [#fotokopierer][IRC] on [Freenode](http://freenode.net)
+
 ## License
 
 Licensed under GNU GPLv3
@@ -22,14 +26,6 @@ Fotokopierer for the official [Sailfish OS app store][harbour], you
 
 In all cases you need [CMake][cmake] to build Fotokopierer.
 
-### Build with shared libraries on a desktop
-
-	cd path/to/fotokopierer
-	mkdir build
-	cd build
-	cmake ..
-	make
-
 ### Build with shared libraries in the Sailfish OS build engine
 
 	cd path/to/fotokopierer
@@ -39,7 +35,7 @@ Note that the OS version and target might differ for you.
 
 ### Build with static libraries in the Sailfish OS build engine
 
-You need to download the sources of OpenCV and Podofo:
+You need to download the sources of OpenCV and Podofo (the CMake file will automatically download them):
 
 - [https://github.com/opencv/opencv/archive/3.4.0.zip](https://github.com/opencv/opencv/archive/3.4.0.zip)
 - [http://sourceforge.net/projects/podofo/files/podofo/0.9.6/podofo-0.9.6.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.9.6/podofo-0.9.6.tar.gz/download)
@@ -72,3 +68,4 @@ This project uses
 [Podofo]: http://podofo.sourceforge.net
 [SFOS]: https://sailfishos.org
 [harbour]: https://harbour.jolla.com/
+[IRC]: https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer
