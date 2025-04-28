@@ -31,6 +31,15 @@ Item {
 
     property bool valid: true
 
+    // The next properties are used to rotate the selection when the image has
+    // been rotated. Because the computation of the rotated image is done
+    // asynchronously, we must wait with the update until the rotation has been
+    // completed.
+    property var _next_tl
+    property var _next_tr
+    property var _next_br
+    property var _next_bl
+
     FilterImage {
         id: image
 
@@ -38,15 +47,43 @@ Item {
         filterType: ScanImage.Rotate
 
         anchors.fill: parent
+
+        onPaintedSizeChanged: {
+            // update the selection after a rotation has been completed
+            if (_next_tl) {
+                _selectPoints(_next_tl, _next_tr, _next_br, _next_bl)
+                _next_tl = null
+            }
+        }
     }
 
     function rotateLeft() {
-        console.log("rotateLeft")
+        var tl = mapPoint(topleft.center)
+        var tr = mapPoint(topright.center)
+        var br = mapPoint(bottomright.center)
+        var bl = mapPoint(bottomleft.center)
+
+        // compute and store the points of the rotated selection
+        _next_tr = Qt.point(tl.y, 1-tl.x)
+        _next_br = Qt.point(tr.y, 1-tr.x)
+        _next_bl = Qt.point(br.y, 1-br.x)
+        _next_tl = Qt.point(bl.y, 1-bl.x)
+
         image.filter.orientation -= 1
     }
 
     function rotateRight() {
-        console.log("rotateRight")
+        var tl = mapPoint(topleft.center)
+        var tr = mapPoint(topright.center)
+        var br = mapPoint(bottomright.center)
+        var bl = mapPoint(bottomleft.center)
+
+        // compute and store the points of the rotated selection
+        _next_bl = Qt.point(1-tl.y, tl.x)
+        _next_tl = Qt.point(1-tr.y, tr.x)
+        _next_tr = Qt.point(1-br.y, br.x)
+        _next_br = Qt.point(1-bl.y, bl.x)
+
         image.filter.orientation += 1
     }
 
