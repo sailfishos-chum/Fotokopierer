@@ -113,6 +113,11 @@ void CutFilter::setTopRight(QPointF topright)
     if (d->topright != topright) {
         d->topright = topright;
         emit topRightChanged();
+        if (d->edges != nullptr) {
+            d->edges->setTopRight(unscale(topright, d->edges->width(), d->edges->height()));
+            emit topChanged();
+            emit rightChanged();
+        }
     }
 }
 
@@ -126,6 +131,11 @@ void CutFilter::setBottomLeft(QPointF bottomleft)
     if (d->bottomleft != bottomleft) {
         d->bottomleft = bottomleft;
         emit bottomLeftChanged();
+        if (d->edges != nullptr) {
+            d->edges->setBottomLeft(unscale(bottomleft, d->edges->width(), d->edges->height()));
+            emit bottomChanged();
+            emit leftChanged();
+        }
     }
 }
 
@@ -139,6 +149,11 @@ void CutFilter::setBottomRight(QPointF bottomright)
     if (d->bottomright != bottomright) {
         d->bottomright = bottomright;
         emit bottomRightChanged();
+        if (d->edges != nullptr) {
+            d->edges->setBottomRight(unscale(bottomright, d->edges->width(), d->edges->height()));
+            emit bottomChanged();
+            emit rightChanged();
+        }
     }
 }
 

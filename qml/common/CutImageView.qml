@@ -163,7 +163,12 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            Scanner.cutFilter.topLeft = mapPoint(center)
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+            pane.update(center)
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -175,7 +180,12 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            Scanner.cutFilter.topRight = mapPoint(center)
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+            pane.update(center)
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -187,7 +197,12 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            Scanner.cutFilter.bottomLeft = mapPoint(center)
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+            pane.update(center)
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -199,7 +214,12 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            Scanner.cutFilter.bottomRight = mapPoint(center)
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+            pane.update(center)
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -302,6 +322,12 @@ Item {
     function mapPoint(p) {
         var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
         var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
+        return Qt.point(x, y)
+    }
+
+    function unmapPoint(p) {
+        var x = p.x * image.paintedWidth + (pane.width - image.paintedWidth) / 2
+        var y = p.y * image.paintedHeight + (pane.height - image.paintedHeight) / 2
         return Qt.point(x, y)
     }
 
