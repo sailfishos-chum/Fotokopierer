@@ -28,9 +28,9 @@ class ColorizeChooser : public QQuickPaintedItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(int lattice READ lattice WRITE setLattice NOTIFY latticeChanged);
-    Q_PROPERTY(int blackLevel READ blackLevel WRITE setBlackLevel NOTIFY blackLevelChanged);
-    Q_PROPERTY(int maxBlackLevel READ maxBlackLevel NOTIFY maxBlackLevelChanged);
+    Q_PROPERTY(int lattice READ lattice WRITE setLattice NOTIFY latticeChanged)
+    Q_PROPERTY(int blackLevel READ blackLevel WRITE setBlackLevel NOTIFY blackLevelChanged)
+    Q_PROPERTY(int maxBlackLevel READ maxBlackLevel NOTIFY maxBlackLevelChanged)
 
 public:
     ColorizeChooser(QQuickItem* parent = nullptr);
