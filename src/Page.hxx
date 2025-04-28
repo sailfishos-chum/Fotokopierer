@@ -105,6 +105,9 @@ signals:
 
     void statusChanged();
 
+    /// An error occurred.
+    void error(const QString& errorMessage);
+
 private:
     struct Data;
     QScopedPointer<Data> d;

@@ -205,6 +205,7 @@ void Page::generationFinished()
         // start generation of thumbnail
         (void)thumbnail();
     } catch (GeneratingError& e) {
+        emit error(e.message());
         setStatus(Invalid);
     }
 }
