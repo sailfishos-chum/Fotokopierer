@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Fri Jul 2 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.2-1
+- fix segmentation fault when cancelling a taken image
+
 * Fri Jun 25 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.1-1
 - fix missing add button in document page
 - update Slovak and Swedish translations
