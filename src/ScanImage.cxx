@@ -46,8 +46,8 @@ ScanImage::ScanImage(QObject* parent)
 {
     d->filter.reserve(3);
     d->filter.push_back(new RotateFilter(this));
-    d->filter.push_back(new CutFilter(this, d->filter.back()));
-    d->filter.push_back(new ColorizeFilter(this, d->filter.back()));
+    d->filter.push_back(new CutFilter(this, d->filter.constLast()));
+    d->filter.push_back(new ColorizeFilter(this, d->filter.constLast()));
 
     connect(&d->saveFuture, &QFutureWatcher<void>::finished, this, &ScanImage::imageSaved);
 }
