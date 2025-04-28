@@ -17,6 +17,7 @@
 
 #include "ColorizeView.hxx"
 
+#include "ColorizeChooser.hxx"
 #include "Convert.hxx"
 #include "ScanImage.hxx"
 #include "Scanner.hxx"
@@ -31,9 +32,11 @@
 struct ColorizeView::Data {
     ScanImage::Parameters params;
     ColorMode colorMode = ColorMode::FullColor;
+    ColorizeChooser* colorizeChooser = nullptr;
 
     std::shared_ptr<ScanImage> scanImage = nullptr;
     cv::Mat scaled;
+    cv::Mat hsv, mask;
 
     QFutureWatcher<cv::Mat> image = QFutureWatcher<cv::Mat>();
     bool hasImage = false;
@@ -125,6 +128,21 @@ void ColorizeView::setColorMode(ColorMode colormode)
     }
 }
 
+ColorizeChooser* ColorizeView::colorizeChooser() const
+{
+    return d->colorizeChooser;
+}
+
+void ColorizeView::setColorizeChooser(ColorizeChooser* colorizeChooser)
+{
+    if (colorizeChooser != d->colorizeChooser) {
+        d->colorizeChooser = colorizeChooser;
+        emit colorizeChooserChanged();
+        d->hasImage = false;
+        updateView();
+    }
+}
+
 void ColorizeView::updateView()
 {
     if (!d->scaled.empty()) {
@@ -133,7 +151,7 @@ void ColorizeView::updateView()
             d->need_restart = true;
         } else {
             d->image.setFuture(QtConcurrent::run([this]() {
-                return computeColorizedImage(d->scaled, d->params, d->colorMode);
+                return computeColorizedImage(d->scaled, d->params, d->colorMode, &d->hsv, &d->mask);
             }));
         }
     }
@@ -170,6 +188,9 @@ void ColorizeView::onImageUpdated()
         updateView();
     } else {
         setBusy(false);
+        if (!d->hsv.empty() && !d->mask.empty() && d->colorizeChooser != nullptr) {
+            d->colorizeChooser->updateImage(d->hsv, d->mask);
+        }
         update();
     }
 }
@@ -183,13 +204,22 @@ QImage ColorizeView::image() const
     };
 }
 
+cv::Mat ColorizeView::cutImage() const
+{
+    return d->scanImage != nullptr ? d->scanImage->cutImage() : cv::Mat();
+}
+
 void ColorizeView::onCutImageChanged()
 {
-    auto image = d->scanImage->cutImage();
+    if (d->scanImage != nullptr) {
+        auto image = d->scanImage->cutImage();
 
-    if (!image.empty()) {
-        auto factor = 1000.0 / std::max(image.cols, image.rows);
-        cv::resize(image, d->scaled, cv::Size(), factor, factor);
+        if (!image.empty()) {
+            auto factor = 1000.0 / std::max(image.cols, image.rows);
+            cv::resize(image, d->scaled, cv::Size(), factor, factor);
+        }
+
+        emit cutImageChanged();
     }
 
     updateView();

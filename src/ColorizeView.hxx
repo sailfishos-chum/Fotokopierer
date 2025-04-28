@@ -20,6 +20,10 @@
 
 #include "ScanImageView.hxx"
 
+#include <opencv2/core.hpp>
+
+class ColorizeChooser;
+
 class ColorizeView : public ScanImageView
 {
     Q_OBJECT
@@ -29,6 +33,8 @@ class ColorizeView : public ScanImageView
     Q_PROPERTY(qreal threshold READ threshold WRITE setThreshold NOTIFY thresholdChanged)
     Q_PROPERTY(qreal blockSize READ blockSize WRITE setBlockSize NOTIFY blockSizeChanged)
     Q_PROPERTY(ColorMode colorMode READ colorMode WRITE setColorMode NOTIFY colorModeChanged)
+
+    Q_PROPERTY(ColorizeChooser* colorizeChooser READ colorizeChooser WRITE setColorizeChooser NOTIFY colorizeChooserChanged);
 
 public:
     /// The color mode to be used.
@@ -75,6 +81,15 @@ public:
     /// Set the color mode.
     void setColorMode(ColorMode colormode);
 
+    /// Return the associated colorize chooser.
+    ColorizeChooser* colorizeChooser() const;
+
+    /// Set the associated colorize chooser.
+    void setColorizeChooser(ColorizeChooser* colorizeChooser);
+
+    /// Return the current (unscaled) cut image.
+    cv::Mat cutImage() const;
+
     /// Apply the current colorization to the scan image.
     Q_INVOKABLE void apply();
 
@@ -85,6 +100,8 @@ signals:
     void blockSizeChanged();
     void colorModeChanged();
     void imageChanged();
+    void cutImageChanged();
+    void colorizeChooserChanged();
 
 protected:
     QImage image() const override;
