@@ -135,6 +135,9 @@ public slots:
     /// Move a page `from` to position `to`.
     void move(int from, int to);
 
+    /// Cancel the selection of all pages.
+    void clearSelection();
+
     /// Export document as PDF to a file with the given name.
     ///
     /// If the file exists and `overwrite` is `true` the file will be replaced.

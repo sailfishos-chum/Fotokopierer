@@ -312,6 +312,18 @@ void Document::move(int from, int to)
     }
 }
 
+void Document::clearSelection()
+{
+    for (int i = 0; i < d->doc.pages.count(); i++) {
+        auto& p = d->doc.pages[i];
+        if (p.selected) {
+            p.selected = false;
+            auto idx = index(i, 0);
+            emit dataChanged(idx, idx, {SelectionRole});
+        }
+    }
+}
+
 Page* Document::newPage()
 {
     if (d->status != Ready) {
