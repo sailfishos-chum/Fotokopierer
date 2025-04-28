@@ -100,6 +100,7 @@ void ZoomImage::setImage(ScanImage* image)
 {
     if (image == d->image) return;
     d->image = image;
+    updateFilter();
     emit imageChanged();
     update();
 }
