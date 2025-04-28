@@ -201,7 +201,7 @@ Item {
     }
 
     function update(x, y) {
-        pane.valid = Util.isConvex(
+        pane.valid = Fotokopierer.isConvex(
             mapPoint(topleft.center),
             mapPoint(topright.center),
             mapPoint(bottomright.center),

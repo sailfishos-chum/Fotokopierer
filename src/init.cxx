@@ -36,7 +36,7 @@
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
     qmlRegisterSingletonType<Util>(
-        "Fotokopierer", 1, 0, "Util", [](QQmlEngine*, QJSEngine*) -> QObject* {
+        "Fotokopierer", 1, 0, "Fotokopierer", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new Util();
         });
 

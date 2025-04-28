@@ -34,7 +34,7 @@ Page {
             popOnSelection: false
 
             onSelectedContentPropertiesChanged: {
-                var plain = Util.loadPlainImage(selectedContentProperties.filePath)
+                var plain = Fotokopierer.loadPlainImage(selectedContentProperties.filePath)
 
                 var CutPage = Qt.createComponent(Qt.resolvedUrl("CutPage.qml"))
                 var cutpage = CutPage.createObject(docpage, {"source": plain})
