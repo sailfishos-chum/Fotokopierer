@@ -30,6 +30,7 @@ class ScannedImage : public QObject
 
     Q_PROPERTY(QString original READ originalImage NOTIFY originalChanged)
     Q_PROPERTY(QString image READ image NOTIFY imageChanged)
+    Q_PROPERTY(bool scale READ scale WRITE setScale NOTIFY scaleChanged)
     Q_PROPERTY(double angle READ angle WRITE setAngle NOTIFY angleChanged)
     Q_PROPERTY(
         double contrast READ contrast WRITE setContrast NOTIFY contrastChanged)
@@ -57,6 +58,12 @@ public:
     ///
     /// This is the base address for all image manipulations.
     QString image() const;
+
+    /// Set scaling of image.
+    void setScale(bool enabled);
+
+    /// Return scaling.
+    bool scale() const;
 
     /// Set the rotation angle.
     void setAngle(double angle);
@@ -121,6 +128,7 @@ signals:
     void originalChanged();
     void imageChanged();
 
+    void scaleChanged();
     void angleChanged();
     void contrastChanged();
     void brightnessChanged();

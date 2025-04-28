@@ -128,6 +128,20 @@ QString ScannedImage::image() const
     return d->id;
 }
 
+void ScannedImage::setScale(bool enable)
+{
+    if (enable != d->scaled) {
+        d->scaled = enable;
+        d->state = (ImageState)std::min((int)d->state, Rotated - 1);
+        emit scaleChanged();
+    }
+}
+
+bool ScannedImage::scale() const
+{
+    return d->scaled;
+}
+
 void ScannedImage::setAngle(double angle)
 {
     auto rotAngle = (int)angle % 360;
