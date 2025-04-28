@@ -195,6 +195,12 @@ QVariant Document::data(const QModelIndex &index, int role) const
             }
             break;
         }
+        case PageRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QVariant::fromValue(d->doc.pages[index.row()].data());
+            }
+            break;
+        }
     }
 
     return {};
@@ -204,7 +210,8 @@ QHash<int, QByteArray> Document::roleNames() const
 {
     static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
                                                  {ResultRole, "role_result"},
-                                                 {CreationTimeRole, "role_creationTime"}};
+                                                 {CreationTimeRole, "role_creationTime"},
+                                                 {PageRole, "role_page"}};
     return roles;
 }
 
@@ -432,6 +439,7 @@ Document::DocData Document::DocData::fromFile(const QString &filename)
         if (!p->read(page.toObject())) {
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
+        p->moveToThread(QCoreApplication::instance()->thread());
         docpages.push_back(p);
     }
 

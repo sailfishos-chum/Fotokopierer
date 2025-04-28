@@ -39,7 +39,7 @@ class Document : public QAbstractListModel
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
-    enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole };
+    enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole, PageRole };
 
     enum Status {
         Ready,    ///< Document is ready
