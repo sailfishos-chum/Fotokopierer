@@ -25,6 +25,7 @@
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
+#include <QtQml/QQmlEngine>
 
 struct DocumentList::Data {
     QVector<QSharedPointer<Document>> docs;
@@ -65,7 +66,9 @@ Document *DocumentList::newDocument()
 {
     auto doc = QSharedPointer<Document>(new Document(Document::create()));
     addDocument(doc);
-    return doc.data();
+    auto d = doc.data();
+    QQmlEngine::setObjectOwnership(d, QQmlEngine::CppOwnership);
+    return d;
 }
 
 void DocumentList::deleteDocument(int docIndex)
