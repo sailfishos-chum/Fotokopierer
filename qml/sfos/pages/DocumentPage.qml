@@ -112,7 +112,7 @@ Page {
             }
 
             function openPage() {
-                console.log("open page")
+                pageStack.push(Qt.resolvedUrl("PagePage.qml"), { "image": role_result })
             }
 
             onDeletePage: {

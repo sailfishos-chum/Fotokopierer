@@ -10,5 +10,6 @@
 	 <file>qml/sfos/pages/DocumentPage.qml</file>
 	 <file>qml/sfos/pages/DocumentsPage.qml</file>
 	 <file>qml/sfos/pages/NewImagePage.qml</file>
+	 <file>qml/sfos/pages/PagePage.qml</file>
   </qresource>
 </RCC>
