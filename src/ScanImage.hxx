@@ -69,6 +69,8 @@ public:
 signals:
     void originalImageChanged();
 
+    void addPage(QImage original, QImage result);
+
     void imageSaved();
 
 private:

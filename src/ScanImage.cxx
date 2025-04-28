@@ -23,6 +23,8 @@
 #include "Filter.hxx"
 #include "RotateFilter.hxx"
 
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QFutureWatcher>
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 
@@ -32,6 +34,7 @@ struct ScanImage::Data {
     QVector<Filter*> filter;
     QImage original;
     QImage scaled;
+    QFutureWatcher<void> saveFuture;
 };
 
 ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
@@ -40,6 +43,8 @@ ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
     d->filter.push_back(new RotateFilter(this));
     d->filter.push_back(new CutFilter(this, d->filter.back()));
     d->filter.push_back(new ColorizeFilter(this, d->filter.back()));
+
+    connect(&d->saveFuture, &QFutureWatcher<void>::finished, this, &ScanImage::imageSaved);
 }
 
 ScanImage::~ScanImage() = default;
@@ -88,24 +93,30 @@ void ScanImage::saveAndClear(Document* doc)
 {
     assert(doc != nullptr);
 
-    QImage image = d->original;
-    for (auto filter : d->filter) {
-        image = filter->apply(std::move(image));
-    }
+    connect(this, &ScanImage::addPage, doc, &Document::addPage);
 
-    // Add a new page.
-    doc->addPage(d->original, image);
+    QImage original = d->original;
 
-    // Clear the image.
     clear();
 
-    emit imageSaved();
+    d->saveFuture.setFuture(QtConcurrent::run([this, original] {
+        QImage image = original;
+        for (auto filter : d->filter) {
+            image = filter->apply(std::move(image));
+        }
+
+        // Add a new page.
+        emit addPage(original, image);
+    }));
 }
 
 void ScanImage::clear()
 {
-    d->original = QImage();
-    emit originalImageChanged();
+    if (!d->saveFuture.isRunning()) {
+        d->original = QImage();
+        d->scaled = QImage();
+        emit originalImageChanged();
+    }
 }
 
 QImage ScanImage::originalImage() const
