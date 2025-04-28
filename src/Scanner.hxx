@@ -66,6 +66,8 @@ public:
 
     Filter* filter(FilterType type);
 
+    Q_INVOKABLE bool loadPage(Page* page);
+
     Q_INVOKABLE bool loadFile(const QString& file_name);
 
     Q_INVOKABLE void clear();

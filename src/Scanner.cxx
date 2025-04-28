@@ -133,6 +133,21 @@ void Scanner::updatePage(Page* page)
     page->updateFromScanner(this);
 }
 
+bool Scanner::loadPage(Page* page)
+{
+    if (page == nullptr) {
+        return false;
+    }
+
+    if (!loadFile(page->original())) {
+        return false;
+    }
+
+    loadJson(page->settings());
+
+    return true;
+}
+
 bool Scanner::loadFile(const QString& file_name)
 {
     QImageReader imageReader(file_name);
