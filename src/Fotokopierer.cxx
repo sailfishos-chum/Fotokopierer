@@ -71,3 +71,13 @@ QString Fotokopierer::newImagePath()
 
     return raw.absoluteFilePath(QStringLiteral("%1.jpg").arg(QDateTime::currentDateTime().toString(FilenameFormat)));
 }
+
+void cleanupImageDirectory()
+{
+    auto raw = getDocumentDirectory();
+    if (raw.cd(QStringLiteral(".raw"))) {
+        for (auto& path : raw.entryList({QStringLiteral("*.jpg")}, QDir::Files)) {
+            QFile(raw.absoluteFilePath(path)).remove();
+        }
+    }
+}

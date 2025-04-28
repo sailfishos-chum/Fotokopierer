@@ -38,6 +38,11 @@ extern const QString DocumentRoot;
 /// If the document root directory does not exist it is created.
 QDir getDocumentDirectory();
 
+/// Remove all image files from the .raw data directory.
+///
+/// These files are temporary files created when taking a new picture.
+void cleanupImageDirectory();
+
 /// General utilities exported to QML.
 class Fotokopierer : public QObject
 {
