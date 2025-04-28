@@ -104,6 +104,7 @@ struct Document::Data {
     QFutureWatcher<DocData> pendingDoc;  ///< the document data to be read
     QFutureWatcher<QUrl> pendingPdf;     ///< the document es being exported to pdf
     Status status = Ready;               ///< the current status
+    int nselected = 0;                   ///< the number of selected pages
 };
 
 Document::Document(QObject* parent)
@@ -281,8 +282,10 @@ bool Document::setData(const QModelIndex& index, const QVariant& value, int role
                 auto selected = value.toBool();
                 auto& page = d->doc.pages[index.row()];
                 if (selected != page.selected) {
+                    d->nselected += selected ? 1 : -1;
                     page.selected = selected;
                     emit dataChanged(index, index, {SelectionRole});
+                    emit selectedPagesChanged();
                 }
             }
             break;
@@ -313,6 +316,11 @@ void Document::move(int from, int to)
     }
 }
 
+bool Document::hasSelectedPages() const
+{
+    return d->nselected != 0;
+}
+
 void Document::clearSelection()
 {
     for (int i = 0; i < d->doc.pages.count(); i++) {
@@ -322,6 +330,10 @@ void Document::clearSelection()
             auto idx = index(i, 0);
             emit dataChanged(idx, idx, {SelectionRole});
         }
+    }
+    if (d->nselected != 0) {
+        d->nselected = 0;
+        emit selectedPagesChanged();
     }
 }
 

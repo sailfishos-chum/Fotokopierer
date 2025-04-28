@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,6 +41,7 @@ class Document : public QAbstractListModel
     Q_PROPERTY(QStringList thumbnails READ thumbnails NOTIFY pagesChanged)
     Q_PROPERTY(int numPages READ numPages NOTIFY pagesChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(bool hasSelectedPages READ hasSelectedPages NOTIFY selectedPagesChanged)
 
 public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1,
@@ -141,6 +142,8 @@ public slots:
     /// Move a page `from` to position `to`.
     void move(int from, int to);
 
+    bool hasSelectedPages() const;
+
     /// Cancel the selection of all pages.
     void clearSelection();
 
@@ -193,6 +196,8 @@ signals:
     ///
     /// This could be a new thumbnail, creation time or the order of the pages.
     void pagesChanged();
+
+    void selectedPagesChanged();
 
     /// Status changed.
     void statusChanged();
