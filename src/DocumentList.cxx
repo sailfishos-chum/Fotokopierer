@@ -64,6 +64,7 @@ void DocumentList::addDocument(const QSharedPointer<Document>& doc)
     connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::statusChanged, this, &DocumentList::documentStatusChanged);
+    connect(doc.data(), &Document::error, this, &DocumentList::error);
 
     beginInsertRows({}, d->docs.size(), d->docs.size());
     d->docs.push_back(doc);

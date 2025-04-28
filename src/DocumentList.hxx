@@ -63,6 +63,8 @@ public:
 signals:
     void latestDocumentChanged();
 
+    void error(const QString& errorMessage);
+
 private:
     void addDocument(const QSharedPointer<Document>& document);
 
