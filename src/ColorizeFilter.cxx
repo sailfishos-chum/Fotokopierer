@@ -177,8 +177,10 @@ QImage ColorizeFilter::apply(QImage&& image)
             details += 1;
         }
 
+        cv::blur(img_gray, bg_mask, {3, 3});
+
         cv::adaptiveThreshold(
-            img_gray, bg_mask, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, details, 5);
+            bg_mask, bg_mask, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, details, 5);
     }
     img_gray.release();
 
