@@ -70,8 +70,8 @@ Url:
 
 # >> macros2
 %global opencv_version 3.4.16
-%global podofo_version 0.9.8
-%global freetype_version 2.13.0
+%global podofo_version 0.10.1
+%global freetype_version 2.13.2
 # << macros2
 
 %prep
