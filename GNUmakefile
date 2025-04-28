@@ -2,26 +2,27 @@ target = harbour-fotokopierer
 
 arch := i486
 #arch := armv7hl
-sfos_version := 3.2.1.20
+#arch := aarch64
+
 device := jolla
 
 sdk_dir := $(HOME)/SailfishOS
+sfdk := $(sdk_dir)/bin/sfdk
+
 projects_root := $(HOME)/JollaProjekte
 emu_dir := $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
-mer_root_dir := $(subst $(HOME),/home/src1,$(current_dir))
+#mer_root_dir := $(subst $(projects_root),/home/fifr,$(current_dir))
+mer_root_dir := $(current_dir)
 
-mersdk_target := SailfishOS-$(sfos_version)-$(arch)
-mersdk_device := Sailfish OS Emulator $(sfos_version)
 mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost
-mersdk_mb2 := cd $(mer_root_dir) && mb2 -t $(mersdk_target)
 
 ifeq ($(arch),i486)
-  mersdk_sb2 := cd $(mer_root_dir)/rpmbuilddir-i386 && sb2 -t $(mersdk_target)
+  build_dir := rpmbuilddir-i386
 else
-  mersdk_sb2 := cd $(mer_root_dir)/rpmbuilddir-arm && sb2 -t $(mersdk_target)
+  build_dir := rpmbuilddir-arm
 endif
 
 emu_ssh := ssh -p 2223 -i $(emu_dir)/nemo nemo@localhost
@@ -36,23 +37,23 @@ reformat:
 	clang-format -i --style=file src/*xx
 
 installdeps:
-	$(mersdk_ssh) '$(mersdk_mb2) build-requires'
+	sf
 
 build: reformat lrelease
-	$(mersdk_ssh) '$(mersdk_mb2) build'
+	$(sfdk) build
 
 compile: reformat lrelease
-	$(mersdk_ssh) '$(mersdk_sb2) make'
+	$(sfdk) build-shell make -C $(build_dir)
 
 make:
-	$(mersdk_ssh) '$(mersdk_mb2) make'
+	$(sfdk) build-shell make -C $(build_dir)
 
 install:
-	$(mersdk_ssh) '$(mersdk_mb2) make-install'
+	$(sfdk) make-install
 
 rpm: lrelease
 	touch rpm/*.yaml
-	$(mersdk_ssh) '$(mersdk_mb2) package'
+	$(sfdk) package
 
 deploy-emu: all rpm
 	scp -P 2223 -i $(emu_dir)/nemo RPMS/* nemo@localhost:
