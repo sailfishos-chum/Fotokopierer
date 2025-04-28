@@ -135,6 +135,9 @@ private slots:
     /// The status of a page has changed.
     void updatePage();
 
+    /// The asynchronously loaded document data is ready.
+    void setPendingDoc();
+
 signals:
     void titleChanged();
 

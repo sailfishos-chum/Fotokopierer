@@ -78,15 +78,7 @@ struct Document::Data {
 Document::Document(QObject *parent)
     : QAbstractListModel(parent), d(new Data)
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, [this]() {
-        try {
-            setDocData(d->pendingDoc.result());
-            setStatus(Ready);
-        } catch (ReadError &e) {
-            setStatus(Invalid);
-            emit error(e.message());
-        }
-    });
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
 }
 
 Document::Document(Document &&doc) noexcept
@@ -163,6 +155,17 @@ QDateTime Document::creationTime() const
 int Document::rowCount(const QModelIndex &parent) const
 {
     return d->doc.pages.size();
+}
+
+void Document::setPendingDoc()
+{
+    try {
+        setDocData(d->pendingDoc.result());
+        setStatus(Ready);
+    } catch (ReadError &e) {
+        setStatus(Invalid);
+        emit error(e.message());
+    }
 }
 
 void Document::setDocData(DocData &&docdata)
