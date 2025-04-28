@@ -69,8 +69,6 @@ CoverBackground {
             height: parent.height * 0.9
             anchors.centerIn: parent
 
-            //color: Theme.secondaryHighlightColor
-
             Repeater {
                 id: repeater
                 model: _thumbnails
