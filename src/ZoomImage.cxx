@@ -39,12 +39,12 @@ QPointF ZoomImage::viewSize() const
     return d->viewSize;
 }
 
-void ZoomImage::setViewSize(QPointF viewSize)
+void ZoomImage::setViewSize(const QPointF& viewSize)
 {
     // all ratio coordinates must be in [0,1]
-    viewSize = QPointF{qBound<qreal>(0, viewSize.x(), 1), qBound<qreal>(0, viewSize.y(), 1)};
-    if (viewSize != d->viewSize) {
-        d->viewSize = viewSize;
+    QPointF vs = QPointF{qBound<qreal>(0, viewSize.x(), 1), qBound<qreal>(0, viewSize.y(), 1)};
+    if (vs != d->viewSize) {
+        d->viewSize = vs;
         emit viewSizeChanged();
         update();
     }

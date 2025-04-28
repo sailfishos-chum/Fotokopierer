@@ -66,7 +66,7 @@ public:
 
 public slots:
     /// Set the view ratio.
-    void setViewSize(QPointF viewSize);
+    void setViewSize(const QPointF& viewSize);
 
     /// Set the center point.
     void setCenter(const QPointF& center);
