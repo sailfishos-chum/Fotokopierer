@@ -60,6 +60,7 @@ pushd %{_sourcedir}/../3rdparty
 unzip %{SOURCE1}
 tar -xzf %{SOURCE2}
 tar -xzf %{SOURCE3}
+# << setup
 
 %build
 # >> build pre
