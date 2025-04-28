@@ -23,7 +23,7 @@
 
 const QString ApplicationName = QStringLiteral("Fotokopierer");
 
-const QString ApplicationVersion = QStringLiteral("0.1");
+const QString ApplicationVersion = QStringLiteral(FOTOKOPIERER_VERSION);
 
 const QString FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
@@ -80,4 +80,34 @@ void cleanupImageDirectory()
             QFile(raw.absoluteFilePath(path)).remove();
         }
     }
+}
+
+QString Fotokopierer::applicationName() const
+{
+    return ApplicationName;
+}
+
+QString Fotokopierer::applicationVersion() const
+{
+    return ApplicationVersion;
+}
+
+QString Fotokopierer::author() const
+{
+    return QStringLiteral(FOTOKOPIERER_AUTHOR);
+}
+
+QString Fotokopierer::licenseTitle() const
+{
+    return QStringLiteral("GNU GPLv3");
+}
+
+QString Fotokopierer::podofoVersion() const
+{
+    return QStringLiteral(PODOFO_VERSION);
+}
+
+QString Fotokopierer::opencvVersion() const
+{
+    return QStringLiteral(OPENCV_VERSION);
 }
