@@ -39,7 +39,7 @@ Dialog {
             placeholderText: document.defaultTitle
             text: document.title
             focus: true
-            EnterKey.onClicked: page.accept
+            EnterKey.onClicked: page.accept()
         }
     }
 
