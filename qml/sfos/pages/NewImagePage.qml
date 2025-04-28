@@ -21,41 +21,31 @@ import Sailfish.Pickers 1.0
 import Fotokopierer 1.0
 
 ImagePickerPage {
-    signal addPage(PlainImage original, CutImage result)
+    property Page destination
+
+    signal addPage(PlainImage original, ColorizeImage result)
 
     // Note that this property might become unsupported in future
     popOnSelection: false
 
+    PlainImage { id: plain }
+
+    CutPage { id: cutpage; source: plain }
+
+    ColorizePage {
+        id: colpage
+        source: cutpage.image
+        acceptDestination: destination
+        acceptDestinationAction: PageStackAction.Pop
+
+        onAccepted: {
+            addPage(plain, colpage.image)
+        }
+    }
+
     onSelectedContentPropertiesChanged: {
-        var plain = Fotokopierer.loadPlainImage(selectedContentProperties.filePath)
-
-        var CutPage = Qt.createComponent(Qt.resolvedUrl("CutPage.qml"))
-        var cutpage = CutPage.createObject(docpage, {"source": plain})
+        plain.loadFile(selectedContentProperties.filePath)
         pageStack.push(cutpage)
-
-        var ColorizePage = Qt.createComponent(Qt.resolvedUrl("ColorizePage.qml"))
-        var colpage = ColorizePage.createObject(docpage,
-                                                {
-                                                    "source": cutpage.image,
-                                                    "acceptDestination": docpage,
-                                                    "acceptDestinationAction": PageStackAction.Pop,
-                                                })
-        pageContainer.pushAttached(colpage)
-        colpage.accepted.connect(function() {
-            document.addPage(plain, colpage.image)
-        })
-
-        // Ensure the pages are destroyed once they are dropped from the
-        // page stack. This is necessary so that the memory allocated by
-        // the image classes is freed (the memory is allocated on the
-        // C++ side and possibly not visible for the QML garbage
-        // collector).
-        cutpage.pageContainerChanged.connect(function() {
-            if (cutpage.pageContainer == null) {
-                colpage.destroy()
-                cutpage.destroy()
-                plain.destroy()
-            }
-        })
+        pageStack.pushAttached(colpage)
     }
 }
