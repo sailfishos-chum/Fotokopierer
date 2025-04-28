@@ -58,8 +58,7 @@ public:
     bool read(const QJsonObject& json);
 
 public slots:
-    void save(const QString& directory);
-
+    /// Delete all files associated with this page.
     void remove();
 
 private slots:

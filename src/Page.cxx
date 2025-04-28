@@ -154,9 +154,12 @@ QString Page::getResultImagePath() const
     return d->result_path;
 }
 
-void Page::save(const QString& directory) {}
-
-void Page::remove() {}
+void Page::remove()
+{
+    QFile(d->original_path).remove();
+    QFile(d->result_path).remove();
+    QFile(d->thumbnail_path).remove();
+}
 
 bool Page::write(QJsonObject& json) const
 {

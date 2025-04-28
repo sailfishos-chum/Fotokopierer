@@ -153,7 +153,8 @@ void Document::deletePage(int pageIndex)
     qDebug() << "Delete Page";
 
     beginRemoveRows({}, pageIndex, pageIndex);
-    d->pages.removeAt(pageIndex);
+    auto page = d->pages.takeAt(pageIndex);
+    page->remove();
     endRemoveRows();
     save();
 }
