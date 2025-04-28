@@ -173,7 +173,7 @@ Page {
             MenuItem {
                 text: PageClipboard.empty ?
                       qsTr("Paste pages") : qsTr("Paste pages (%1)").arg(PageClipboard.numPages)
-                onClicked: docpage.state = "Marking"
+                onClicked: document.pastePages()
                 enabled: !PageClipboard.empty
             }
 
@@ -280,7 +280,12 @@ Page {
                 icon.source: Qt.resolvedUrl("/icons/toolbar-copy.svg")
                 icon.fillMode: Image.PreserveAspectFit
                 icon.height: Theme.iconSizeMedium
-                onClicked: console.log("Copy")
+                onClicked: {
+                    document.copySelectedPages()
+                    document.clearSelection()
+                    buttons.open = false
+                    docpage._nmarked = 0
+                }
 
                 ColorOverlay {
                     anchors.fill: parent
@@ -296,7 +301,12 @@ Page {
                 icon.source: Qt.resolvedUrl("/icons/toolbar-cut.svg")
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
-                onClicked: console.log("Cut")
+                onClicked: {
+                    document.cutSelectedPages()
+                    document.clearSelection()
+                    buttons.open = false
+                    docpage._nmarked = 0
+                }
 
                 ColorOverlay {
                     anchors.fill: parent
@@ -323,6 +333,7 @@ Page {
                 onClicked: {
                     document.clearSelection()
                     buttons.open = false
+                    docpage._nmarked = 0
                 }
             }
         }
