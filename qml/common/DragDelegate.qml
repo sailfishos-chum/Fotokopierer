@@ -22,6 +22,7 @@ import Sailfish.Silica 1.0
 MouseArea {
     id: dragArea
 
+    property bool dragEnabled: true
     property bool held: false
     default property alias data: content.data
 
@@ -46,9 +47,9 @@ MouseArea {
     DropArea {
         anchors { fill: parent; margins: 10 }
         onEntered: {
-            dragArea.DelegateModel.model.items.move(drag.source.DelegateModel.itemsIndex,
-                                                    dragArea.DelegateModel.itemsIndex)
+            dragArea.DelegateModel.model.items.move(drag.source.DelegateModel.itemsIndex, dragArea.DelegateModel.itemsIndex)
         }
+        enabled: dragArea.dragEnabled
     }
 
     Item {

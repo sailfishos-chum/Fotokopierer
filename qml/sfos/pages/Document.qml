@@ -29,20 +29,11 @@ Page {
     DelegateModel {
         id: visualModel
         model: TestDocument
-        delegate: DragDelegate {
-
+        delegate: PageDelegate {
             width: grid.cellWidth
             height: grid.cellHeight
-
-            PageView {
-                anchors {
-                    horizontalCenter: parent.horizontalCenter
-                    verticalCenter: parent.verticalCenter
-                }
-                width: parent.width * 0.9
-                height: parent.height * 0.9
-                page: role_page
-            }
+            page: role_page
+            isAddButton: role_isAddButton
         }
     }
 

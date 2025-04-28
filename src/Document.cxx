@@ -39,6 +39,7 @@ struct Document::Data {
     QString filename;                   ///< filename of the document data
     QDateTime creation_time;            ///< time when the document has been created
     QList<QSharedPointer<Page>> pages;  ///< page of the document
+    bool addButtonEnabled = true;       ///< whether the model returns an add-button
 };
 
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
@@ -67,16 +68,34 @@ Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
 
 Document::~Document() = default;
 
+bool Document::isAddButtonEnabled() const
+{
+    return d->addButtonEnabled;
+}
+
+void Document::setAddButtonEnabled(bool enabled)
+{
+    if (enabled != d->addButtonEnabled) {
+        d->addButtonEnabled = enabled;
+        emit addButtonEnabledChanged();
+    }
+}
+
 int Document::rowCount(const QModelIndex &parent) const
 {
-    return d->pages.size();
+    return d->pages.size() + (d->addButtonEnabled ? 1 : 0);
 }
 
 QVariant Document::data(const QModelIndex &index, int role) const
 {
-    if (role == PageRole) {
-        if (index.column() == 0 && index.row() < d->pages.size()) {
-            return QVariant::fromValue(d->pages[index.row()].data());
+    switch (role) {
+        case PageRole: {
+            if (index.column() == 0 && index.row() < d->pages.size()) {
+                return QVariant::fromValue(d->pages[index.row()].data());
+            }
+        }
+        case AddButtonRole: {
+            return d->addButtonEnabled && index.row() == d->pages.size();
         }
     }
 
@@ -87,6 +106,7 @@ QHash<int, QByteArray> Document::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[PageRole] = "role_page";
+    roles[AddButtonRole] = "role_isAddButton";
     return roles;
 }
 
