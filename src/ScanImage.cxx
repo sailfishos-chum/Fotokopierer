@@ -62,9 +62,7 @@ struct ScanImage::Data {
     QPointF bottomRight = {};
     QPointF bottomLeft = {};
 
-    double contrast = 0.5;
-    double brightness = 0.5;
-    double details = 0.5;
+    Parameters params = {};
     ColorMode colorMode = ColorMode::FullColor;
 
     cv::Mat computeCutImage(const cv::Mat& image) const;
@@ -101,9 +99,9 @@ QJsonObject ScanImage::saveJson() const
     };
 
     settings[QStringLiteral("colorize")] = QJsonObject{
-        {QStringLiteral("contrast"), d->contrast},
-        {QStringLiteral("brightness"), d->brightness},
-        {QStringLiteral("details"), d->details},
+        {QStringLiteral("contrast"), d->params.contrast},
+        {QStringLiteral("brightness"), d->params.brightness},
+        {QStringLiteral("details"), d->params.threshold_c},
         {QStringLiteral("mode"), d->colorMode},
     };
 
@@ -124,7 +122,8 @@ void ScanImage::loadJson(const QJsonObject& settings)
     auto col = settings[QStringLiteral("colorize")].toObject();
     setContrast(static_cast<qreal>(col[QStringLiteral("contrast")].toDouble(0.5)));
     setBrightness(static_cast<qreal>(col[QStringLiteral("brightness")].toDouble(0.5)));
-    setDetails(static_cast<qreal>(col[QStringLiteral("details")].toDouble(0.5)));
+    setThreshold(static_cast<qreal>(col[QStringLiteral("threshold")].toDouble(0.5)));
+    setBlockSize(static_cast<qreal>(col[QStringLiteral("blocksize")].toDouble(0.5)));
     auto mode = col[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
     switch (mode) {
         case ColorMode::BlackAndWhite:
@@ -217,13 +216,13 @@ void ScanImage::setBottomLeft(QPointF bottomLeft)
 
 double ScanImage::contrast() const
 {
-    return d->contrast;
+    return d->params.contrast;
 }
 
 void ScanImage::setContrast(double contrast)
 {
-    if (contrast != d->contrast) {
-        d->contrast = contrast;
+    if (contrast != d->params.contrast) {
+        d->params.contrast = contrast;
         d->colorizedReady = false;
         emit contrastChanged();
     }
@@ -231,30 +230,57 @@ void ScanImage::setContrast(double contrast)
 
 double ScanImage::brightness() const
 {
-    return d->brightness;
+    return d->params.brightness;
 }
 
 void ScanImage::setBrightness(double brightness)
 {
-    if (brightness != d->brightness) {
-        d->brightness = brightness;
+    if (brightness != d->params.brightness) {
+        d->params.brightness = brightness;
         d->colorizedReady = false;
         emit brightnessChanged();
     }
 }
 
-double ScanImage::details() const
+double ScanImage::threshold() const
 {
-    return d->details;
+    return d->params.threshold_c;
 }
 
-void ScanImage::setDetails(double details)
+void ScanImage::setThreshold(double threshold)
 {
-    if (details != d->details) {
-        d->details = details;
+    if (threshold != d->params.threshold_c) {
+        d->params.threshold_c = threshold;
         d->colorizedReady = false;
-        emit detailsChanged();
+        emit thresholdChanged();
     }
+}
+
+double ScanImage::blockSize() const
+{
+    return d->params.blocksize;
+}
+
+void ScanImage::setBlockSize(double blockSize)
+{
+    if (blockSize != d->params.blocksize) {
+        d->params.blocksize = blockSize;
+        d->colorizedReady = false;
+        emit blockSizeChanged();
+    }
+}
+
+ScanImage::Parameters ScanImage::parameters() const
+{
+    return d->params;
+}
+
+void ScanImage::setParameters(Parameters params)
+{
+    setContrast(params.contrast);
+    setBrightness(params.brightness);
+    setThreshold(params.threshold_c);
+    setBlockSize(params.blocksize);
 }
 
 ScanImage::ColorMode ScanImage::colorMode() const
@@ -426,28 +452,32 @@ double ScanImage::Data::getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPoin
 
 cv::Mat ScanImage::Data::computeColorizedImage(const cv::Mat& image) const
 {
-    return ::computeColorizedImage(image, contrast, brightness, details, colorMode);
+    return ::computeColorizedImage(image, params, colorMode);
 }
 
-cv::Mat computeColorizedImage(const cv::Mat& image, qreal contrast_, qreal brightness_, qreal details_, ScanImage::ColorMode colorMode)
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode)
 {
     auto img_cut = image;
 
-    // Apply contrast and brightness transform.
-    auto contrast = std::pow(4.0, contrast_ * 2 - 1);
-    auto brightness = 128 - contrast * 128 + (2 * brightness_ - 1) * 128;
     cv::Mat img_bright;
-    img_cut.convertTo(img_bright, -1, contrast, brightness);
-    img_cut.release();
 
-    if (colorMode == ColorizeView::FullColor) {
-        return img_bright;
+    if (colorMode == ColorizeView::FullColor || colorMode == ColorizeView::Gray) {
+        // Apply contrast and brightness transform.
+        auto contrast = std::pow(4.0, params.contrast * 2 - 1);
+        auto brightness = 128 - params.contrast * 128 + (2 * params.brightness - 1) * 128;
+        img_cut.convertTo(img_bright, -1, contrast, brightness);
+        img_cut.release();
+
+        if (colorMode == ColorizeView::FullColor) {
+            return img_bright;
+        }
+    } else {
+        img_bright = img_cut;
     }
 
     // Compute a gray-scale image.
     cv::Mat img_gray;
     cv::cvtColor(img_bright, img_gray, cv::COLOR_BGR2GRAY);
-
     if (colorMode == ColorizeView::Gray) {
         return img_gray;
     }
@@ -455,15 +485,17 @@ cv::Mat computeColorizedImage(const cv::Mat& image, qreal contrast_, qreal brigh
     // Threshold filter for background mask.
     cv::Mat bg_mask;
     {
-        int details = std::max(details_ * 50, static_cast<qreal>(3));
-        if (details % 2 == 0) {
-            details += 1;
-        }
+        cv::GaussianBlur(img_gray, bg_mask, {3, 3}, 0);
+        auto blocksize = std::max(qRound(std::max(img_gray.rows, img_gray.cols) * params.blocksize), 3);
+        if (blocksize % 2 == 0) blocksize += 1;
 
-        cv::blur(img_gray, bg_mask, {3, 3});
+        auto threshold_c = qBound(-255.0, params.threshold_c * 32 - 16, 255.0);
+
+        qDebug() << "Blocksize: " << blocksize << " (" << params.blocksize << ")"
+                 << " threshold-c: " << threshold_c;
 
         cv::adaptiveThreshold(
-            bg_mask, bg_mask, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, details, 5);
+            bg_mask, bg_mask, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, blocksize, threshold_c);
     }
     img_gray.release();
 

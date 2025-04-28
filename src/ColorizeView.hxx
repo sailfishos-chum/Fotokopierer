@@ -26,7 +26,8 @@ class ColorizeView : public ScanImageView
 
     Q_PROPERTY(qreal contrast READ contrast WRITE setContrast NOTIFY contrastChanged)
     Q_PROPERTY(qreal brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged)
-    Q_PROPERTY(qreal details READ details WRITE setDetails NOTIFY detailsChanged)
+    Q_PROPERTY(qreal threshold READ threshold WRITE setThreshold NOTIFY thresholdChanged)
+    Q_PROPERTY(qreal blockSize READ blockSize WRITE setBlockSize NOTIFY blockSizeChanged)
     Q_PROPERTY(ColorMode colorMode READ colorMode WRITE setColorMode NOTIFY colorModeChanged)
 
 public:
@@ -56,11 +57,17 @@ public:
     /// Set the brightness level in [0,1].
     void setBrightness(qreal brightness);
 
-    /// Return the details level.
-    qreal details() const;
+    /// Return the threshold level.
+    qreal threshold() const;
 
-    /// Set the details level in [0,1].
-    void setDetails(qreal details);
+    /// Set the threshold level in [0,1].
+    void setThreshold(qreal threshold);
+
+    /// Return the relative threshold block size for b/w.
+    qreal blockSize() const;
+
+    /// Set the relative threshold block size for b/w in [0,1].
+    void setBlockSize(qreal blockSize);
 
     /// Return the colormode.
     ColorMode colorMode() const;
@@ -74,8 +81,10 @@ public:
 signals:
     void contrastChanged();
     void brightnessChanged();
-    void detailsChanged();
+    void thresholdChanged();
+    void blockSizeChanged();
     void colorModeChanged();
+    void imageChanged();
 
 protected:
     QImage image() const override;
