@@ -52,6 +52,9 @@ A camera-scanning application for Sailfish OS.
 %global opencv_version 3.4.16
 %global podofo_version 0.9.7
 %global freetype_version 2.11.1
+# Local: {_builddir}
+# OBS: srcpath {_builddir}/{name}-{version}
+%global srcpath %{_builddir}
 # << macros2
 
 %prep
@@ -149,10 +152,10 @@ popd
 
 
 pushd rpmbuilddir-%{_arch} &&  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
--DCMAKE_PREFIX_PATH="%{_builddir}/%{name}-%{version}/rpmbuilddir-%{_arch}/3rdparty/opencv;%{_builddir}/rpmbuilddir-%{_arch}/usr" \
+-DCMAKE_PREFIX_PATH="%{srcpath}/rpmbuilddir-%{_arch}/3rdparty/opencv;%{_builddir}/rpmbuilddir-%{_arch}/usr" \
 -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;%{_builddir}/rpmbuilddir-%{_arch}/usr/include" \
--DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr/lib;%{_builddir}/%{name}-%{version}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib" \
--DCMAKE_INSTALL_PREFIX=/usr %{_builddir}
+-DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr/lib;%{srcpath}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib" \
+-DCMAKE_INSTALL_PREFIX=/usr %{srcpath}
 popd
 make -C rpmbuilddir-%{_arch} VERBOSE=1 %{?_smp_mflags}
 # << build pre
