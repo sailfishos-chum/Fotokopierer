@@ -46,7 +46,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
             return new Fotokopierer();
         });
 
-    qmlRegisterSingletonType<Document>(
+    qmlRegisterSingletonType<DocumentList>(
         "Fotokopierer", 1, 0, "DocumentList", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new DocumentList;
         });
