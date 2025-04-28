@@ -122,7 +122,7 @@ public slots:
     ///
     /// The new page will be created with the given original and result image
     /// and the current time. It will be the last page of the current document.
-    void addPage(QImage original, QImage result);
+    void addPage(const QImage &original, const QImage &result);
 
 private:
     /// Set the document data.

@@ -227,7 +227,7 @@ void Document::move(int from, int to)
     }
 }
 
-void Document::addPage(QImage original, QImage result)
+void Document::addPage(const QImage &original, const QImage &result)
 {
     if (original.isNull()) {
         qWarning() << "Page could not be created: no original image";
