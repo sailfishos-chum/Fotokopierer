@@ -101,7 +101,7 @@ public:
 signals:
     void originalImageChanged();
 
-    void addPage(QImage original, QImage result);
+    void addPage(const QImage& original, const QImage& result);
 
     void imageSaved();
 
