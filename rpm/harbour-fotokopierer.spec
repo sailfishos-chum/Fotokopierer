@@ -10,7 +10,7 @@ Name:       harbour-fotokopierer
 
 Summary:    Document Scanner
 Version:    0.4.7
-Release:    1%{?dist}
+Release:    2%{?dist}
 Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://chiselapp.com/user/fifr/repository/fotokopierer
