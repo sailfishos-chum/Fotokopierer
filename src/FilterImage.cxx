@@ -20,6 +20,8 @@
 #include "Filter.hxx"
 #include "ScanImage.hxx"
 
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QFutureWatcher>
 #include <QtGui/QPainter>
 
 struct FilterImage::Data {
@@ -29,9 +31,18 @@ struct FilterImage::Data {
 
     ScanImage::FilterType filter_type = ScanImage::FilterType::None;
     ScanImage* image = nullptr;
+
+    bool restart = false;
+    QFutureWatcher<QImage> filteredImage;
 };
 
-FilterImage::FilterImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data) {}
+FilterImage::FilterImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data)
+{
+    connect(&d->filteredImage,
+            &QFutureWatcher<QImage>::finished,
+            this,
+            &FilterImage::filteredImageReady);
+}
 
 FilterImage::~FilterImage() = default;
 
@@ -91,12 +102,33 @@ void FilterImage::updateFilter()
     } else {
         d->filter = nullptr;
     }
+
     update();
 }
 
 void FilterImage::update()
 {
+    qDebug() << "FilterImage::update";
+    if (d->filteredImage.isRunning()) {
+        d->restart = true;
+    } else if (d->filter != nullptr) {
+        d->restart = false;
+        d->filteredImage.setFuture(
+            QtConcurrent::run(std::mem_fn(&Filter::filteredImage), d->filter));
+    } else {
+        qDebug() << "FilterImage::update direct";
+        QQuickPaintedItem::update();
+    }
+}
+
+void FilterImage::filteredImageReady()
+{
     QQuickPaintedItem::update();
+    if (d->restart) {
+        d->restart = false;
+        d->filteredImage.setFuture(
+            QtConcurrent::run(std::mem_fn(&Filter::filteredImage), d->filter));
+    }
 }
 
 void FilterImage::paint(QPainter* painter)
@@ -104,7 +136,7 @@ void FilterImage::paint(QPainter* painter)
     QImage image;
 
     if (d->filter)
-        image = d->filter->filteredImage();
+        image = d->filteredImage.result();
     else if (d->image)
         image = d->image->originalImage();
     else

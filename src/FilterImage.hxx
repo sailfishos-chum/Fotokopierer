@@ -66,6 +66,8 @@ private:
 private slots:
     void update();
 
+    void filteredImageReady();
+
 signals:
     void paintedSizeChanged();
 
