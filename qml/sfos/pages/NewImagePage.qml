@@ -141,8 +141,8 @@ Page {
 
         anchors.top: header.bottom
         anchors.bottom: buttons.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width - 2 * Theme.iconSizeSmall
 
         VideoOutput {
             anchors.fill: parent

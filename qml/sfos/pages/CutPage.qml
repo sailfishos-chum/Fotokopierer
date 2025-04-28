@@ -43,9 +43,9 @@ Page {
         id: cutview
 
         anchors.top: header.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
         anchors.bottom: buttons.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width - 2 * Theme.iconSizeSmall
         markerColor: Theme.primaryColor
         lineColor: Theme.highlightColor
     }

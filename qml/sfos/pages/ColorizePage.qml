@@ -48,9 +48,9 @@ Dialog {
         filterType: ScanImage.Colorize
 
         anchors.top: header.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
         anchors.bottom: buttons.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width - 2 * Theme.iconSizeSmall
     }
 
     DockedPanel {
