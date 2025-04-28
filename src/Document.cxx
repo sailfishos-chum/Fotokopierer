@@ -165,6 +165,7 @@ void Document::addPage(BaseImage *original, BaseImage *result)
 
     auto ctime = QDateTime::currentDateTime();
     auto dir = QFileInfo(d->filename).dir();
+    if (!dir.exists()) dir.mkpath(QStringLiteral("."));
 
     auto original_path =
         dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
