@@ -121,7 +121,7 @@ Page {
 
             onClicked: {
                 if (docpage.editing) {
-                    var index = grid.indexAt(mouse.x, mouse.y)
+                    var index = grid.indexAt(grid.contentX + mouse.x, grid.contentY + mouse.y)
                     if (index == -1 || index == visualModel.count - 1) {
                         docpage.editing = false
                     } else {
