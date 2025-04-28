@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
