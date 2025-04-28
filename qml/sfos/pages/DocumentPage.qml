@@ -30,10 +30,15 @@ Page {
     property bool editing: false
     property bool dragging: false
 
-    NewImagePage {
-        id: newImagePage
-        onAddPage: {
-            document.addPage(original, result)
+    Loader {
+        id: imageLoader
+    }
+
+    onStatusChanged: {
+        // ensure the image pages are deleted if not needed because the need a
+        // lot of C++ memory
+        if (status == PageStatus.Active) {
+            imageLoader.source = ""
         }
     }
 
@@ -98,7 +103,12 @@ Page {
             onItemMoved: visualModel.model.move(from, to)
 
             function addPage() {
-                pageStack.push(newImagePage)
+                imageLoader.source = Qt.resolvedUrl("NewImagePage.qml")
+                imageLoader.item.destination = docpage
+                imageLoader.item.addPage.connect(function(original, result) { 
+                        document.addPage(original, result)
+                })
+                pageStack.push(imageLoader.item)
             }
 
             function openPage() {
