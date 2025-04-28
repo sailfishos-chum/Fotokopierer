@@ -75,6 +75,11 @@ Dialog {
                 onClicked: { image.filter.colorMode = ColorizeFilter.Gray }
             }
             Button {
+                text: "Color"
+                Layout.fillWidth: true
+                onClicked: { image.filter.colorMode = ColorizeFilter.FullColor }
+            }
+            Button {
                 text: "Magic"
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.Colored }
