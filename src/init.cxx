@@ -17,7 +17,6 @@
 
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QTranslator>
-
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlEngine>
 #include <QtQml/QtQml>
@@ -26,13 +25,12 @@
 #include "ColorizeChooser.hxx"
 #include "ColorizeView.hxx"
 #include "CutView.hxx"
-#include "Scanner.hxx"
-#include "ZoomImage.hxx"
-
 #include "Document.hxx"
 #include "DocumentList.hxx"
 #include "Fotokopierer.hxx"
 #include "Page.hxx"
+#include "Scanner.hxx"
+#include "ZoomImage.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {

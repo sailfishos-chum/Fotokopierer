@@ -17,7 +17,6 @@
 
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlApplicationEngine>
-
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "init.hxx"

@@ -22,7 +22,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QObject>
 #include <QtGui/QImage>
-
 #include <memory>
 
 class Document;
