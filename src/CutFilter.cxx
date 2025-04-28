@@ -290,6 +290,28 @@ QPointF CutFilter::right() const
     }
 }
 
+QVariantList CutFilter::selectAll()
+{
+    if (d->edges == nullptr) {
+        QImage img =
+            previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+        d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+    }
+
+    d->edges->selectAll();
+
+    d->topleft = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+    d->topright = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+    d->bottomright = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
+    d->bottomleft = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+
+    QVariantList lst;
+    lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
+
+    return lst;
+}
+
 QVariantList CutFilter::autoDetectCutRect()
 {
     QImage img =
@@ -310,6 +332,17 @@ QVariantList CutFilter::autoDetectCutRect()
 
 void CutFilter::fixSnappyEdges()
 {
+    if (d->edges == nullptr) {
+        QImage img =
+            previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+        d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+        emit topChanged();
+        emit bottomChanged();
+        emit leftChanged();
+        emit rightChanged();
+    }
+
     if (d->edges != nullptr) d->edges->fixNonSnappyEdges();
 }
 

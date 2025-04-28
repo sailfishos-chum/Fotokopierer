@@ -446,6 +446,17 @@ void EdgeDetection::autoDetect()
     d->project_quadrangle();
 }
 
+void EdgeDetection::selectAll()
+{
+    d->quad.tl = QPointF{0.0, 0.0};
+    d->quad.tr = QPointF{static_cast<qreal>(d->image.width()), 0.0};
+    d->quad.br = QPointF{static_cast<qreal>(d->image.width()), static_cast<qreal>(d->image.height())};
+    d->quad.bl = QPointF{0.0, static_cast<qreal>(d->image.height())};
+
+    fixNonSnappyEdges();
+    d->project_quadrangle();
+}
+
 EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
 {
     auto edges = EdgeDetection(image);

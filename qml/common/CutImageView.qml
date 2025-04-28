@@ -88,7 +88,8 @@ Item {
     }
 
     function selectAll() {
-        _selectPoints(Qt.point(0, 0), Qt.point(1, 0), Qt.point(1, 1), Qt.point(0, 1))
+        var points = Scanner.cutFilter.selectAll()
+        _selectPoints(points[0], points[1], points[2], points[3])
     }
 
     function selectAuto() {
@@ -112,10 +113,13 @@ Item {
         bottomright.setCenter(br)
         bottomleft.setCenter(bl)
 
-        top.setCenter(Qt.point(0.5 * (tl.x + tr.x), 0.5 * (tl.y + tr.y)))
-        bottom.setCenter(Qt.point(0.5 * (bl.x + br.x), 0.5 * (bl.y + br.y)))
-        left.setCenter(Qt.point(0.5 * (tl.x + bl.x), 0.5 * (tl.y + bl.y)))
-        right.setCenter(Qt.point(0.5 * (tr.x + br.x), 0.5 * (tr.y + br.y)))
+        top.setCenter(unmapPoint(Scanner.cutFilter.top))
+        bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+        left.setCenter(unmapPoint(Scanner.cutFilter.left))
+        right.setCenter(unmapPoint(Scanner.cutFilter.right))
+
+        Scanner.cutFilter.fixSnappyEdges()
+        frame.requestPaint()
     }
 
     function cutImage() {

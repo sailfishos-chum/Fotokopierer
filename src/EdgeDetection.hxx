@@ -87,6 +87,9 @@ public:
     /// Must be called after changing a parameter.
     void autoDetect();
 
+    /// Select everything.
+    void selectAll();
+
     /// Return the width in pixels of the current image.
     int width() const;
 

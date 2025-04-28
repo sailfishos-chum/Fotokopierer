@@ -95,6 +95,9 @@ public:
     /// Fix the current selection as new state for snappy edges.
     Q_INVOKABLE void fixSnappyEdges();
 
+    /// Select everything.
+    Q_INVOKABLE QVariantList selectAll();
+
     /// Return the auto-detected cut box.
     ///
     /// The method returns a list of four points (topleft, topright,
