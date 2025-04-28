@@ -115,10 +115,32 @@ QString ColorizeFilter::name() const
 
 QJsonObject ColorizeFilter::saveJson() const
 {
-    return {};
+    return {
+        {QStringLiteral("contrast"), d->contrast},
+        {QStringLiteral("brightness"), d->brightness},
+        {QStringLiteral("details"), d->details},
+        {QStringLiteral("mode"), d->colormode},
+    };
 }
 
-void ColorizeFilter::loadJson(const QJsonObject& object) {}
+void ColorizeFilter::loadJson(const QJsonObject& object)
+{
+    setContrast(static_cast<qreal>(object[QStringLiteral("contrast")].toDouble(0.5)));
+    setBrightness(static_cast<qreal>(object[QStringLiteral("brightness")].toDouble(0.5)));
+    setDetails(static_cast<qreal>(object[QStringLiteral("details")].toDouble(0.5)));
+
+    auto mode = object[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
+    switch (mode) {
+        case ColorMode::BlackAndWhite:
+        case ColorMode::Gray:
+        case ColorMode::Colored:
+        case ColorMode::FullColor:
+            setColorMode(static_cast<ColorMode>(mode));
+            return;
+    }
+
+    setColorMode(ColorMode::BlackAndWhite);
+}
 
 QImage ColorizeFilter::apply(QImage&& image)
 {
