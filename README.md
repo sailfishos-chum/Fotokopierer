@@ -54,16 +54,16 @@ Note that the OS version and target might differ for you.
 
 You need to download the sources of OpenCV, Podofo and FreeType (the CMake file will automatically download them):
 
-- [https://github.com/opencv/opencv/archive/3.4.16.zip](https://github.com/opencv/opencv/archive/3.4.16.zip)
+- [https://github.com/opencv/opencv/archive/opencv-3.4.16.zip](https://github.com/opencv/opencv/archive/3.4.16.zip)
 - [http://sourceforge.net/projects/podofo/files/podofo/0.9.8/podofo-0.9.8.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.9.8/podofo-0.9.8.tar.gz/download)
-- [https://download.savannah.gnu.org/releases/freetype/freetype-2.13.0.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.0.tar.gz)
+- [https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz)
 
 Put all archives to the `rpm/` directory.
 
     cd path/to/fotokopierer/rpm
 	cp path/to/opencv-3.4.16.zip .
 	cp path/to/podofo-0.9.8.tar.gz .
-	cp path/to/freetype-2.13.0.tar.gz .
+	cp path/to/freetype-2.13.2.tar.gz .
 
 Finally, build the project using the build engine:
 
