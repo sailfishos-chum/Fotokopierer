@@ -78,6 +78,20 @@ int ColorizeChooser::blackLevel() const
     return d->blackLevel;
 }
 
+void ColorizeChooser::setColorAngles(const std::array<qreal, 6>& angles)
+{
+    d->angles = angles;
+    d->needSort = true;
+    update();
+}
+
+std::array<qreal, 6> ColorizeChooser::colorAngles() const
+{
+    std::array<qreal, 6> angles = d->angles;
+    std::sort(angles.begin(), angles.end());
+    return angles;
+}
+
 void ColorizeChooser::updateImage(const cv::Mat& image, const cv::Mat& mask)
 {
     if (image.empty()) return;

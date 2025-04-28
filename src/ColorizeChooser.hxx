@@ -44,6 +44,10 @@ public:
 
     void setBlackLevel(int blackLevel);
 
+    std::array<qreal, 6> colorAngles() const;
+
+    void setColorAngles(const std::array<qreal, 6>& angles);
+
     void updateImage(const cv::Mat& image, const cv::Mat& mask);
 
     void paint(QPainter* painter) override;
