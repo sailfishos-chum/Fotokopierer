@@ -77,7 +77,11 @@ bool ScanImage::loadFile(const QString& file_name)
     if (image.isNull()) {
         return false;
     } else {
-        d->original = image;
+        if (image.width() > image.height()) {
+            d->original = image.scaledToWidth(qMin(image.width(), 1000));
+        } else {
+            d->original = image.scaledToHeight(qMin(image.height(), 1000));
+        }
         emit originalImageChanged();
         return true;
     }
