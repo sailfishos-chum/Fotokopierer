@@ -62,9 +62,39 @@ DragDelegate {
     Component {
         id: pageView
         PageView {
-            thumbnail: dragDelegate.thumbnail
-            pagenumber: dragDelegate.pagenumber
-            creationTime: dragDelegate.creationTime
+            Rectangle {
+                anchors.fill: parent
+                color: "transparent"
+                border.color: Theme.highlightColor
+            }
+
+            Rectangle {
+                color: Theme.secondaryHighlightColor
+
+                anchors.top: parent.top
+                anchors.bottom: info.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                Image {
+                    source: dragDelegate.thumbnail
+                    anchors.fill: parent
+                    fillMode: Image.PreserveAspectFit
+                }
+            }
+
+            Text {
+                id: info
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+
+                color: Theme.highlightColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                text: qsTr("Page %1\n%2").arg(dragDelegate.pagenumber).arg(dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
+            }
         }
     }
 
