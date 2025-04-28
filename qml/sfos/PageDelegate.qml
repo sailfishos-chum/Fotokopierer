@@ -61,7 +61,7 @@ DragDelegate {
 
     Component {
         id: pageView
-        PageView {
+        Item {
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
