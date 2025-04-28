@@ -79,7 +79,7 @@ struct Document::DocData {
 struct Document::Data {
     DocData doc;                         ///< the document data
     QFutureWatcher<DocData> pendingDoc;  ///< the document data to be read
-    QFutureWatcher<QString> pendingPdf;  ///< the document es being exported to pdf
+    QFutureWatcher<QUrl> pendingPdf;     ///< the document es being exported to pdf
     Status status = Ready;               ///< the current status
 };
 
@@ -87,7 +87,7 @@ Document::Document(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
     connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
-    connect(&d->pendingPdf, &QFutureWatcher<QString>::finished, this, &Document::onPdfExportFinished);
+    connect(&d->pendingPdf, &QFutureWatcher<QUrl>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
 
@@ -558,37 +558,30 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
     }
 
     d->pendingPdf.setFuture(QtConcurrent::run([title, pageimages, filename]() {
-        try {
-            PdfStreamedDocument pdf(filename.toUtf8().constData());
-            PdfPainter painter;
+        PdfStreamedDocument pdf(filename.toUtf8().constData());
+        PdfPainter painter;
 
-            for (auto& page : pageimages) {
-                PdfImage pageimage(&pdf);
-                pageimage.LoadFromFile(page.toUtf8().data());
+        for (auto& page : pageimages) {
+            PdfImage pageimage(&pdf);
+            pageimage.LoadFromFile(page.toUtf8().data());
 
-                auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
-                if (pdfpage == nullptr) {
-                    PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
-                }
-
-                painter.SetPage(pdfpage);
-
-                painter.DrawImage(0.0, 0.0, &pageimage);
-
-                painter.FinishPage();
+            auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
+            if (pdfpage == nullptr) {
+                PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
             }
 
-            pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
-            pdf.GetInfo()->SetTitle(toPdfString(title));
-            pdf.Close();
+            painter.SetPage(pdfpage);
 
-            return QString();
-        } catch (PdfError& e) {
-            qWarning() << e.what();
-            return tr("Error creating pdf-file %1: %2")
-                .arg(filename)
-                .arg(QString::fromUtf8(e.what()));
+            painter.DrawImage(0.0, 0.0, &pageimage);
+
+            painter.FinishPage();
         }
+
+        pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
+        pdf.GetInfo()->SetTitle(toPdfString(title));
+        pdf.Close();
+
+        return QUrl::fromLocalFile(filename);
     }));
 }
 
@@ -599,9 +592,11 @@ void Document::exportToPdf(bool overwrite)
 
 void Document::onPdfExportFinished()
 {
-    auto err = d->pendingPdf.result();
-    if (!err.isEmpty()) {
-        emit error(err);
+    try {
+        auto path = d->pendingPdf.result();
+        emit exportToPdfFinished(path);
+    } catch (QUnhandledException& e) {
+        emit error(tr("Error creating pdf-file"));
     }
 
     setStatus(Ready);
