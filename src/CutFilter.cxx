@@ -169,19 +169,13 @@ void CutFilter::setTop(QPointF top)
     auto p = unscale(top, d->edges->width(), d->edges->height());
     if (p != d->edges->topPoint()) {
         d->edges->setTopPoint(p);
+        d->topleft = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+        d->topright = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
         emit topChanged();
-
-        auto tl = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
-        if (tl != d->topleft) {
-            d->topleft = tl;
-            emit topLeftChanged();
-        }
-
-        auto tr = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
-        if (tr != d->topright) {
-            d->topright = tr;
-            emit topRightChanged();
-        }
+        emit topLeftChanged();
+        emit topRightChanged();
+        emit leftChanged();
+        emit rightChanged();
     }
 }
 
@@ -201,19 +195,13 @@ void CutFilter::setBottom(QPointF bottom)
     auto p = unscale(bottom, d->edges->width(), d->edges->height());
     if (p != d->edges->bottomPoint()) {
         d->edges->setBottomPoint(p);
+        d->bottomleft = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+        d->bottomright = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
         emit bottomChanged();
-
-        auto bl = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
-        if (bl != d->bottomleft) {
-            d->bottomleft = bl;
-            emit bottomLeftChanged();
-        }
-
-        auto br = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
-        if (br != d->bottomright) {
-            d->bottomright = br;
-            emit bottomRightChanged();
-        }
+        emit bottomLeftChanged();
+        emit bottomRightChanged();
+        emit leftChanged();
+        emit rightChanged();
     }
 }
 
@@ -233,19 +221,13 @@ void CutFilter::setLeft(QPointF left)
     auto p = unscale(left, d->edges->width(), d->edges->height());
     if (p != d->edges->leftPoint()) {
         d->edges->setLeftPoint(p);
+        d->topleft = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+        d->bottomleft = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
         emit leftChanged();
-
-        auto tl = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
-        if (tl != d->topleft) {
-            d->topleft = tl;
-            emit topLeftChanged();
-        }
-
-        auto bl = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
-        if (bl != d->bottomleft) {
-            d->bottomleft = bl;
-            emit bottomLeftChanged();
-        }
+        emit topLeftChanged();
+        emit bottomLeftChanged();
+        emit topChanged();
+        emit bottomChanged();
     }
 }
 
@@ -265,19 +247,13 @@ void CutFilter::setRight(QPointF right)
     auto p = unscale(right, d->edges->width(), d->edges->height());
     if (p != d->edges->rightPoint()) {
         d->edges->setRightPoint(p);
+        d->topright = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+        d->bottomright = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
         emit rightChanged();
-
-        auto tr = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
-        if (tr != d->topright) {
-            d->topright = tr;
-            emit topRightChanged();
-        }
-
-        auto br = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
-        if (br != d->bottomright) {
-            d->bottomright = br;
-            emit bottomRightChanged();
-        }
+        emit topRightChanged();
+        emit bottomRightChanged();
+        emit topChanged();
+        emit bottomChanged();
     }
 }
 
