@@ -115,7 +115,7 @@ Page {
         cameraState: Camera.UnloadedState
 
         viewfinder {
-            resolution: Qt.size(640, 480)
+            resolution: Qt.size(1920, 1080)
         }
 
         imageCapture {
