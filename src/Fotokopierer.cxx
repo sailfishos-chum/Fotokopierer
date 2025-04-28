@@ -102,11 +102,6 @@ QString Fotokopierer::licenseTitle() const
     return QStringLiteral("GNU GPLv3");
 }
 
-QString Fotokopierer::podofoVersion() const
-{
-    return QStringLiteral(PODOFO_VERSION);
-}
-
 QString Fotokopierer::opencvVersion() const
 {
     return QStringLiteral(OPENCV_VERSION);

@@ -52,7 +52,6 @@ class Fotokopierer : public QObject
     Q_PROPERTY(QString ApplicationVersion READ applicationVersion CONSTANT)
     Q_PROPERTY(QString Author READ author CONSTANT)
     Q_PROPERTY(QString LicenseTitle READ licenseTitle CONSTANT)
-    Q_PROPERTY(QString PoDoFoVersion READ podofoVersion CONSTANT)
     Q_PROPERTY(QString OpenCVVersion READ opencvVersion CONSTANT)
 
 public:
@@ -70,8 +69,6 @@ public:
     QString author() const;
 
     QString licenseTitle() const;
-
-    QString podofoVersion() const;
 
     QString opencvVersion() const;
 };

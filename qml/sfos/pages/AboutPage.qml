@@ -107,9 +107,7 @@ Page {
                 textFormat: Text.RichText
 
                 text: (qsTr("This application uses") +
-                       "<br><a href=\"http://podofo.sourceforge.net\">PoDoFo %1</a>" +
-                       "<br><a href=\"https://opencv.org\">OpenCV %2</a>")
-                    .arg(Fotokopierer.PoDoFoVersion)
+                       "<br><a href=\"https://opencv.org\">OpenCV %1</a>")
                     .arg(Fotokopierer.OpenCVVersion)
 
                 onLinkActivated: Qt.openUrlExternally(link)
