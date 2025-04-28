@@ -116,13 +116,15 @@ QString Fotokopierer::opencvVersion() const
 
 QSize Fotokopierer::defaultResolution(QObject* capture) const
 {
-    auto captures = capture->findChildren<QCameraImageCapture*>();
-    if (captures.count() > 0) {
-        auto cap = captures[0];
-        auto resolutions = cap->supportedResolutions();
+    if (capture == nullptr) {
+        return {};
+    }
 
+    auto captures = capture->findChildren<QCameraImageCapture*>();
+
+    if (captures.count() > 0) {
         QSize resolution;
-        for (auto&& r : resolutions) {
+        for (auto&& r : captures[0]->supportedResolutions()) {
             if (r.width() * 3 == r.height() * 4 && r.width() > resolution.width()) {
                 resolution = r;
             }
