@@ -28,6 +28,8 @@ ApplicationWindow {
 	 width: 400
 	 height: 600
 
+	 property string colormode : "colored"
+
 	 ScannedImage {
 		  id: img
 	 }
@@ -46,15 +48,95 @@ ApplicationWindow {
 				visible: true
 		  }
 
-		  Image {
-	 	  		id: cutimage
-	 	  		anchors.fill: parent
-	 	  		fillMode: Image.PreserveAspectFit
-
-	 	  		source: "image://Scanned/" + img.cut
-				cache: false
-
+		  Item {
+				id: cutbox
+				anchors.fill: parent
 	 	  		visible: false
+
+				Image {
+	 	  			 id: cutimage
+
+					 anchors.top: parent.top
+	 	  			 anchors.left: parent.left
+	 	  			 anchors.right: parent.right
+	 	  			 anchors.bottom: contrastRow.top
+
+	 	  			 fillMode: Image.PreserveAspectFit
+
+	 	  			 source: "image://Scanned/" + img.cut +
+						  "/" + colormode +
+						  "/" + contrast.value +
+						  "/" + brightness.value +
+						  "/" + details.value
+					 cache: false
+				}
+
+				Row {
+					 id: contrastRow
+	 	  			 anchors.left: parent.left
+	 	  			 anchors.right: parent.right
+					 anchors.bottom: brightnessRow.top
+
+					 Label {
+						  text: "Contrast: "
+					 }
+					 Slider {
+						  id: contrast
+						  value: 0.5
+					 }
+				}
+
+				Row {
+					 id: brightnessRow
+	 	  			 anchors.left: parent.left
+	 	  			 anchors.right: parent.right
+					 anchors.bottom: detailsRow.top
+
+					 Label {
+						  text: "Brightness"
+					 }
+					 Slider {
+						  id: brightness
+						  value: 0.5
+					 }
+				}
+
+				Row {
+					 id: detailsRow
+	 	  			 anchors.left: parent.left
+	 	  			 anchors.right: parent.right
+					 anchors.bottom: buttonRow.top
+
+					 Label {
+						  text: "Details"
+					 }
+					 Slider {
+						  id: details
+						  value: 0.5
+					 }
+				}
+
+				Row {
+					 id: buttonRow
+					 anchors.left: parent.left
+					 anchors.right: parent.right
+					 anchors.bottom: parent.bottom
+
+					 Button {
+						  text: "B&W"
+						  onClicked: colormode = "bw"
+					 }
+
+					 Button {
+						  text: "Gray"
+						  onClicked: colormode = "gray"
+					 }
+
+					 Button {
+						  text: "Colored"
+						  onClicked: colormode = "colored"
+					 }
+				}
 		  }
 	 }
 
@@ -65,12 +147,12 @@ ApplicationWindow {
 		  anchors.bottom: parent.bottom
 		  text: "Ok"
 		  onClicked: {
-				if (image.visible) {
-					 cutimage.source = ""
-					 cutimage.source = "image://Scanned/" + img.cut
-				}
+				/* if (image.visible) { */
+				/* 	 cutimage.source = "" */
+				/* 	 cutimage.source = "image://Scanned/" + img.cut */
+				/* } */
 				image.visible = !image.visible
-				cutimage.visible = !cutimage.visible
+				cutbox.visible = !cutbox.visible
 		  }
 	 }
 

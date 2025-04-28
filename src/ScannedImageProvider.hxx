@@ -24,6 +24,14 @@
 class ScannedImageProvider : public QQuickImageProvider
 {
 public:
+    /// The color mode to be used.
+    enum ColorMode {
+        Gray,
+        BlackAndWhite,
+        Colored,
+    };
+
+public:
     ScannedImageProvider();
 
     ~ScannedImageProvider();
@@ -49,6 +57,17 @@ public:
                      const QPointF& topright,
                      const QPointF& bottomright,
                      const QPointF& bottomleft);
+
+    /// Set the contrast of the image.
+    void setContrast(const QString& image, double contrast);
+
+    /// Set the brightness of the image.
+    void setBrightness(const QString& image, double brightness);
+
+    void setColorMode(const QString& image, ColorMode colormode);
+
+    /// Set the detail level.
+    void setDetails(const QString& image, double details);
 
 public:
     /// A global instance used throughout the app.

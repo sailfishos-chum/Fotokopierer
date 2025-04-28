@@ -40,9 +40,11 @@ enum ImageState {
     /// Only the original image is valid.
     Original = 0,
     /// The image has been rotated.
-    Rotated = 1,
+    Rotated,
     /// The image has been cut and perspectively transformed.
-    Cut = 2,
+    Cut,
+    /// The image has been decolorized.
+    Colorized,
 };
 
 struct ImageSet {
@@ -68,13 +70,20 @@ struct ImageSet {
     /// The perspectively transformed (cut) image.
     cv::Mat cut;
 
-    /// The colourised image.
+    double contrast;
+    double brightness;
+    double details;
+
+    ScannedImageProvider::ColorMode colormode;
+
+    /// The colorised image.
     cv::Mat colorized;
 };
 }
 
 static const cv::Mat& getRotatedImage(ImageSet& img);
 static const cv::Mat& getCutImage(ImageSet& img);
+static const cv::Mat& getColorizedImage(ImageSet& img);
 
 ScannedImageProvider* ScannedImageProvider::instance = nullptr;
 
@@ -115,9 +124,30 @@ QImage ScannedImageProvider::requestImage(const QString& id,
         set_angle(toks[0], toks[3].toFloat());
         return cvMatToQImage(img->original);
     } else if (toks[1] == QLatin1String("cut")) {
-        return cvMatToQImage(getCutImage(*img));
-    } else if (toks[1] == QLatin1String("colorized")) {
-        return cvMatToQImage(img->colorized);
+        auto colormode = Colored;
+
+        if (toks.size() >= 3) {
+            if (toks[2] == QLatin1String("colored")) {
+                colormode = Colored;
+            } else if (toks[2] == QLatin1String("gray")) {
+                colormode = Gray;
+            } else if (toks[2] == QLatin1String("bw")) {
+                colormode = BlackAndWhite;
+            } else {
+                qWarning() << "Unknown color mode: " << toks[2];
+            }
+        }
+
+        auto contrast = toks.size() >= 4 ? toks[3].toFloat() : 0.5;
+        auto brightness = toks.size() >= 5 ? toks[4].toFloat() : 0.5;
+        auto details = toks.size() >= 6 ? toks[5].toFloat() : 0.5;
+
+        setColorMode(toks[0], colormode);
+        setContrast(toks[0], contrast);
+        setBrightness(toks[0], brightness);
+        setDetails(toks[0], details);
+
+        return cvMatToQImage(getColorizedImage(*img));
     } else {
         // TODO: return ERROR picture
         return {};
@@ -173,6 +203,7 @@ bool ScannedImageProvider::set_cut_box(const QString& image,
         img->topright = topright;
         img->bottomright = bottomright;
         img->bottomleft = bottomleft;
+        img->state = (ImageState)std::min((int)img->state, Cut - 1);
         return true;
     } else {
         qWarning() << "(set_cut_image) Unknown image id: " << image;
@@ -180,9 +211,76 @@ bool ScannedImageProvider::set_cut_box(const QString& image,
     }
 }
 
+void ScannedImageProvider::setColorMode(const QString& image,
+                                        ColorMode colormode)
+{
+    auto img = d->images.find(image);
+    if (img != d->images.end()) {
+        if (colormode != img->colormode) {
+            img->colormode = colormode;
+            img->state = (ImageState)std::min((int)img->state, Colorized - 1);
+        }
+    } else {
+        qWarning() << "(setColorMode) Unknown image id: " << image;
+    }
+}
+
+void ScannedImageProvider::setContrast(const QString& image, double contrast)
+{
+    auto img = d->images.find(image);
+    if (img != d->images.end()) {
+        contrast = std::max(0.0, std::min(1.0, contrast));
+        if (contrast != img->contrast) {
+            img->contrast = contrast;
+            img->state = (ImageState)std::min((int)img->state, Colorized - 1);
+        }
+    } else {
+        qWarning() << "(set_contrast) Unknown image id: " << image;
+    }
+}
+
+void ScannedImageProvider::setBrightness(const QString& image,
+                                         double brightness)
+{
+    auto img = d->images.find(image);
+    if (img != d->images.end()) {
+        brightness = std::max(0.0, std::min(1.0, brightness));
+        if (brightness != img->brightness) {
+            img->brightness = brightness;
+            img->state = (ImageState)std::min((int)img->state, Colorized - 1);
+        }
+    } else {
+        qWarning() << "(set_brightness) Unknown image id: " << image;
+    }
+}
+
+void ScannedImageProvider::setDetails(const QString& image, double details)
+{
+    auto img = d->images.find(image);
+    if (img != d->images.end()) {
+        details = std::max(0.0, std::min(1.0, details));
+        if (details != img->details) {
+            img->details = details;
+            img->state = (ImageState)std::min((int)img->state, Colorized - 1);
+        }
+    } else {
+        qWarning() << "(set_details) Unknown image id: " << image;
+    }
+}
+
 const cv::Mat& getRotatedImage(ImageSet& img)
 {
     if (img.state < Rotated) {
+        auto factor = std::max(
+            0.01, 600.0 / std::max(img.original.cols, img.original.rows));
+        cv::resize(img.original,
+                   img.rotated,
+                   cv::Size(),
+                   factor,
+                   factor,
+                   cv::INTER_AREA);
+        qDebug() << "FACTOR " << factor << " " << img.rotated.cols << " "
+                 << img.rotated.rows;
         switch ((int)img.rotAngle % 360) {
             case 90:
                 cv::rotate(img.original, img.rotated, cv::ROTATE_90_CLOCKWISE);
@@ -207,9 +305,6 @@ const cv::Mat& getCutImage(ImageSet& img)
 {
     if (img.state < Cut) {
         auto rotated = getRotatedImage(img);
-        if (rotated.data == nullptr) {
-            return img.cut;
-        }
 
         float w = rotated.cols;
         float h = rotated.rows;
@@ -231,4 +326,53 @@ const cv::Mat& getCutImage(ImageSet& img)
     }
 
     return img.cut;
+}
+
+const cv::Mat& getColorizedImage(ImageSet& img)
+{
+    if (img.state < Colorized) {
+        auto cut = getCutImage(img);
+
+        img.state = Colorized;
+
+        auto contrast = pow(4.0, img.contrast * 2 - 1);
+        auto brightness = img.brightness * 400 - 200;
+
+        cut.convertTo(img.colorized, -1, contrast, brightness);
+
+        switch (img.colormode) {
+            case ScannedImageProvider::BlackAndWhite:
+            case ScannedImageProvider::Gray:
+                cv::cvtColor(img.colorized, img.colorized, cv::COLOR_BGR2GRAY);
+                break;
+            default:
+                break;
+        }
+
+        if (img.colormode == ScannedImageProvider::BlackAndWhite) {
+            // cv::equalizeHist(img.colorized, img.colorized);
+
+            int d = std::max(img.details * 50, 3.0);
+            if (d % 2 == 0) d += 1;
+            cv::adaptiveThreshold(img.colorized,
+                                  img.colorized,
+                                  255,
+                                  cv::ADAPTIVE_THRESH_GAUSSIAN_C,
+                                  cv::THRESH_BINARY,
+                                  d,
+                                  5);
+        } else if (img.colormode == ScannedImageProvider::Colored) {
+            auto numcols = 64;
+            auto nrows = img.colorized.rows;
+            auto ncols = img.colorized.cols * img.colorized.channels();
+            for (int j = 0; j < nrows; j++) {
+                uchar* data = img.colorized.ptr<uchar>(j);
+                for (int i = 0; i < ncols; i++) {
+                    data[i] = data[i] / numcols * numcols + numcols / 2;
+                }
+            }
+        }
+    }
+
+    return img.colorized;
 }
