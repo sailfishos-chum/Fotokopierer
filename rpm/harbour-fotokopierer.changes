@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
+- Fix position of zoom
+
 * Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
 - Update translation
 
