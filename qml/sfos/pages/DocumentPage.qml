@@ -171,6 +171,11 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: qsTr("Export to pdf")
+                onClicked: document.exportToPdf()
+            }
+
+            MenuItem {
                 text: qsTr("Rename")
                 onClicked: pageStack.push(Qt.resolvedUrl("RenamePage.qml"), { document: document })
             }
