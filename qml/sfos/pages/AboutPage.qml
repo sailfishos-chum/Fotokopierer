@@ -123,8 +123,8 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: (qsTr("Find me on Freenode: ") + 
-                       "<a href=\"https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer\">" +
+                text: (qsTr("Find me on libera.chat: ") +
+                       "<a href=\"https://web.libera.chat/#fotokopierer\">" +
                        "#fotokopierer")
 
                 onLinkActivated: Qt.openUrlExternally(link)
