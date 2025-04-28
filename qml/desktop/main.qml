@@ -140,6 +140,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colimage.filter.contrast = value / 100
             }
         }
 
@@ -158,6 +159,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colimage.filter.brightness = value / 100
             }
         }
 
@@ -176,6 +178,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colimage.filter.details = value / 100
             }
         }
 
