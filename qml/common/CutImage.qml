@@ -1,11 +1,9 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.0
 import Fotokopierer 1.0
 
 Item {
 	 id: pane
-	 property alias fillMode: image.fillMode
 
 	 property rect cutrect: Qt.rect(10, 10, 50, 100)
 
@@ -16,6 +14,7 @@ Item {
 	 Image {
 		  id: image
 		  anchors.fill: parent
+		  fillMode: Image.PreserveAspectFit
 		  source: "image://Scanned/" + img.original
 	 }
 

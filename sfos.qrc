@@ -1,6 +1,6 @@
 <RCC>
   <qresource>
-	 <file>qml/fotokopierer.qml</file>
-	 <file>qml/pages/Documents.qml</file>
+	 <file>qml/sfos/main.qml</file>
+	 <file>qml/sfos/pages/Documents.qml</file>
   </qresource>
 </RCC>

@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
     init_app(app, engine);
 
-    engine.load(QUrl(QStringLiteral("qrc:///qml-desktop/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:///qml/desktop/main.qml")));
 
     return app.exec();
 }

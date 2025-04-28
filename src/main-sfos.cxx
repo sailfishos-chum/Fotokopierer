@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
     init_app(*app, *view->engine());
 
-    view->setSource(QUrl(QStringLiteral("qrc:///qml/fotokopierer.qml")));
+    view->setSource(QUrl(QStringLiteral("qrc:///qml/sfos/main.qml")));
     view->show();
 
     return app->exec();

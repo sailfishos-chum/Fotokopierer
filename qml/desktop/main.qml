@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.0
 import Fotokopierer 1.0
+import "../common"
 
 ApplicationWindow {
 	 visible: true
@@ -16,7 +17,6 @@ ApplicationWindow {
 
 		  CutImage {
 				id: image
-				fillMode: Image.PreserveAspectFit
 				anchors.fill: parent
 		  }
 	 }

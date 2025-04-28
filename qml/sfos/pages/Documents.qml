@@ -1,18 +1,17 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
+import "../../common"
+
 Page {
 	 id: page
 
 	 SilicaFlickable {
 		  anchors.fill: parent
 
-		  Column {
-				id: column
-				width: page.width
-				Label {
-					 text: qsTr("Hallo Welt")
-				}
+		  CutImage {
+				id: img
+				anchors.fill: parent
 		  }
 	 }
 }

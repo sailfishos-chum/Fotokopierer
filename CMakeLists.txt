@@ -119,11 +119,11 @@ set(PODOFO_LIBS
 set(SOURCES src/init.cxx src/ScannedImage.cxx src/ScannedImageProvider.cxx)
 
 if (SAILFISH_FOUND)
-  qt5_add_resources(RESOURCES sfos.qrc translations.qrc)
+  qt5_add_resources(RESOURCES sfos.qrc common.qrc translations.qrc)
   set(TARGET harbour-fotokopierer)
   add_executable(${TARGET} src/main-sfos.cxx ${SOURCES} ${RESOURCES})
 else ()
-  qt5_add_resources(RESOURCES desktop.qrc translations.qrc)
+  qt5_add_resources(RESOURCES desktop.qrc common.qrc translations.qrc)
   set(TARGET fotokopierer)
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
 endif()
