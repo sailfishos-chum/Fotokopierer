@@ -133,6 +133,7 @@ Page {
                     icon.width: Theme.iconSizeMedium
                     icon.height: Theme.iconSizeMedium
                     onClicked: listModel.actions[name]()
+                    enabled: name != "auto" || cutview.hasAutoSelection
                 }
             }
         }

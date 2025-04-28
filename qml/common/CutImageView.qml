@@ -30,6 +30,7 @@ Item {
     property bool valid: true
 
     property alias busy: cutview.busy
+    property alias hasAutoSelection: cutview.hasAutoSelection
 
     // The next properties are used to rotate the selection when the image has
     // been rotated. Because the computation of the rotated image is done
