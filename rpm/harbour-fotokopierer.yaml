@@ -5,7 +5,7 @@ Release: 1%{?dist}
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
 Group: Qt/Qt
-URL: https://chiselapp.com/user/fifr/repository/fotokopierer
+URL: https://codeberg.org/fifr/Fotokopierer
 License: GPLv3+
 # This must be generated before uploading a package to a remote build service.
 # Usually this line does not need to be modified.
@@ -25,18 +25,17 @@ Description: |
     - Graphics
     - Office
   Custom:
-    Repo: https://chiselapp.com/user/fifr/repository/fotokopierer
-    Icon: https://chiselapp.com/user/fifr/repository/fotokopierer/doc/release/icons/harbour-fotokopierer.svg
+    Repo: https://codeberg.org/fifr/Fotokopierer
+    Icon: https://codeberg.org/fifr/Fotokopierer/raw/branch/main/icons/harbour-fotokopierer.svg
   Screenshots:
-    - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot1.png
-    - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot2.png
-    - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot3.png
-    - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot4.png
-  PackageIcon: https://chiselapp.com/user/fifr/repository/fotokopierer/uv/harbour-fotokopierer.svg
+    - https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot1.png
+    - https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot2.png
+    - https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot3.png
+    - https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot4.png
+  PackageIcon: https://codeberg.org/fifr/Fotokopierer/raw/branch/main/icons/harbour-fotokopierer.svg
   Url:
-    Homepage: https://chiselapp.com/user/fifr/repository/fotokopierer
-    Help: https://chiselapp.com/user/fifr/repository/fotokopierer/forum
-    Bugtracker: https://chiselapp.com/user/fifr/repository/fotokopierer/ticket
+    Homepage: https://codeberg.org/fifr/Fotokopierer
+    Bugtracker: https://codeberg.org/fifr/Fotokopierer/issues
 
 NoSetup: true
 Configure: none
