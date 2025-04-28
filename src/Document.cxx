@@ -123,6 +123,7 @@ void Document::move(int from, int to)
         d->pages.insert(to, p);
         endMoveRows();
         save();
+        emit pagesChanged();
     }
 }
 
@@ -166,6 +167,7 @@ void Document::addPage(BaseImage *original, BaseImage *result)
     endInsertRows();
 
     save();
+    emit pagesChanged();
 }
 
 void Document::deletePage(int pageIndex)
@@ -265,4 +267,6 @@ void Document::updateThumbnail()
             return;
         }
     }
+
+    emit pagesChanged();
 }

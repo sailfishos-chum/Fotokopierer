@@ -86,6 +86,11 @@ signals:
 
     void creationTimeChanged();
 
+    /// Signal emitted when at least on of the document's pages changed.
+    ///
+    /// This could be a new thumbnail, creation time or the order of the pages.
+    void pagesChanged();
+
     void error(const QString &msg);
 
 private:
