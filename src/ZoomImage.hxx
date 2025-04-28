@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -40,8 +40,7 @@ class ZoomImage : public QQuickPaintedItem
     Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged);
     Q_PROPERTY(QColor crossColor READ crossColor WRITE setCrossColor NOTIFY crossColorChanged);
 
-    Q_PROPERTY(Scanner* image READ image WRITE setImage NOTIFY imageChanged)
-    Q_PROPERTY(Scanner::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
+    Q_PROPERTY(Scanner* scanner READ scanner WRITE setScanner NOTIFY scannerChanged)
 
 public:
     explicit ZoomImage(QQuickItem* parent = nullptr);
@@ -60,11 +59,8 @@ public:
     /// Return the color of the cross.
     QColor crossColor() const;
 
-    /// Return the source image.
-    Scanner* image() const;
-
-    /// Return the filter.
-    Scanner::FilterType filterType() const;
+    /// Return the image scanner.
+    Scanner* scanner() const;
 
     void paint(QPainter* painter) override;
 
@@ -81,17 +77,8 @@ public slots:
     /// Set the cross color.
     void setCrossColor(const QColor& color);
 
-    /// Set the source image.
-    void setImage(Scanner* image);
-
-    /// Set the filter type.
-    void setFilterType(Scanner::FilterType filter_type);
-
-private:
-    void updateFilter();
-
-private slots:
-    void onFilterChanged();
+    /// Set the image scanner.
+    void setScanner(Scanner* scanner);
 
 signals:
     void viewSizeChanged();
@@ -103,14 +90,14 @@ signals:
     void crossColorChanged();
 
     /// The source image has been changed.
-    void imageChanged();
+    void scannerChanged();
 
-    /// The filter has been changed.
-    void filterTypeChanged();
+private slots:
+    void onImageChanged();
 
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

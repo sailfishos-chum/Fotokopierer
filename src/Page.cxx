@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,9 +17,8 @@
 
 #include "Page.hxx"
 
-#include "ColorizeFilter.hxx"
 #include "Fotokopierer.hxx"
-#include "Scanner.hxx"
+#include "ScanImage.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>
@@ -56,6 +55,7 @@ public:
 private:
     QString message_;
 };
+
 }  // namespace
 
 struct Page::Data {
@@ -71,8 +71,10 @@ struct Page::Data {
     Status status = Ready;
 };
 
-Page::Page(QObject* parent)
-    : QObject(parent), d(new Data)
+static bool fixPath(const QString& filePath, const QDir& docpath, QString& result);
+
+Page::Page()
+    : d(new Data)
 {
     // TODO: For some reason, that I do not understand, the 'finished' signal is not emitted.
     // We send our own signals to replace them when the concurrent work task is
@@ -86,7 +88,7 @@ Page::Page(QObject* parent)
 
 Page::~Page() = default;
 
-void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
+void Page::newFromImage(const QDir& dir, const std::shared_ptr<ScanImage>& scanImage)
 {
     setStatus(Generating);
 
@@ -95,18 +97,18 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
     auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
 
     auto ext = QStringLiteral("png");
-    switch (scanner->colorizeFilter()->colorMode()) {
-        case ColorizeFilter::FullColor:
-        case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
+    switch (scanImage->colorMode()) {
+        case ColorizeView::FullColor:
+        case ColorizeView::Gray: ext = QStringLiteral("jpg"); break;
         default: break;
     }
     auto result_path = dir.filePath(QStringLiteral("%1-result.%2")
                                         .arg(ctime.toString(FilenameFormat), ext));
 
-    updateFromScanner(scanner, original_path, result_path, ctime);
+    updateImage(scanImage, original_path, result_path, ctime);
 }
 
-void Page::updateFromScanner(const Scanner* scanner)
+void Page::updateFromImage(const std::shared_ptr<ScanImage>& scanImage)
 {
     auto original_path = d->original_path;
     auto result_path = d->result_path;
@@ -115,29 +117,44 @@ void Page::updateFromScanner(const Scanner* scanner)
     if (!d->thumbnail_path.isEmpty()) {
         QFile(d->thumbnail_path).remove();
     }
+    // the result file is old and might be renamed (different image type)
+    if (!result_path.isEmpty()) {
+        QFile(result_path).remove();
+    }
 
     // Remove existing data (because it is regenerated).
     setOriginal({});
     setResult({});
     setThumbnail({});
 
-    updateFromScanner(scanner, original_path, result_path, d->creation_time);
+    // Compute the new result path.
+    auto ext = QStringLiteral("png");
+    switch (scanImage->colorMode()) {
+        case ColorizeView::FullColor:
+        case ColorizeView::Gray: ext = QStringLiteral("jpg"); break;
+        default: break;
+    }
+
+    QFileInfo fi(result_path);
+    result_path = QStringLiteral("%1/%2.%3").arg(fi.path(), fi.completeBaseName(), ext);
+
+    updateImage(scanImage, original_path, result_path, d->creation_time);
 }
 
-void Page::updateFromScanner(const Scanner* scanner,
-                             const QString& original_path,
-                             const QString& result_path,
-                             const QDateTime& creation_time)
+void Page::updateImage(const std::shared_ptr<ScanImage>& scanImage,
+                       const QString& original_path,
+                       const QString& result_path,
+                       const QDateTime& creation_time)
 {
     setStatus(Generating);
 
     setCreationTime(creation_time);
 
-    d->settings = scanner->saveJson();
+    d->settings = scanImage->saveJson();
 
-    d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path]() {
-        QImage original = scanner->original();
-        QImage result = scanner->computeFilteredImage();
+    d->generating.setFuture(QtConcurrent::run([this, scanImage, original_path, result_path]() {
+        QImage original = scanImage->original();
+        QImage result = scanImage->colorizedImage(true);
 
         if (!original.save(original_path)) {
             qWarning() << "Page could not be created: error saving original image";
@@ -309,54 +326,74 @@ QString Page::updateThumbnail(const QString& filename)
     return scaled_filename;
 }
 
-bool Page::write(QJsonObject& json) const
+bool Page::write(QJsonObject& json, const QDir& docpath) const
 {
     json[QStringLiteral("creationTime")] = d->creation_time.toString(FilenameFormat);
-    json[QStringLiteral("originalPath")] = d->original_path;
-    json[QStringLiteral("resultPath")] = d->result_path;
+    json[QStringLiteral("originalPath")] = docpath.relativeFilePath(d->original_path);
+    json[QStringLiteral("resultPath")] = docpath.relativeFilePath(d->result_path);
     if (!d->thumbnail_path.isEmpty()) {
-        json[QStringLiteral("thumbnailPath")] = d->thumbnail_path;
+        json[QStringLiteral("thumbnailPath")] = docpath.relativeFilePath(d->thumbnail_path);
     }
     json[QStringLiteral("filters")] = d->settings;
 
     return true;
 }
 
-bool Page::read(const QJsonObject& json)
+bool Page::read(const QJsonObject& json, const QDir& docpath)
 {
     auto page_creation_time = json[QStringLiteral("creationTime")];
     if (!page_creation_time.isString()) {
+        qDebug() << "Error: empty page creation time";
         return false;
     }
     auto page_ctime = QDateTime::fromString(page_creation_time.toString(), FilenameFormat);
     if (page_ctime.isNull()) {
+        qDebug() << "Error: invalid page creation time";
         return false;
     }
 
     auto page_original_path = json[QStringLiteral("originalPath")];
     if (!page_original_path.isString()) {
+        qDebug() << "Error: original image path is empty";
         return false;
     }
 
     auto page_result_path = json[QStringLiteral("resultPath")];
     if (!page_result_path.isString()) {
+        qDebug() << "Error: result image path is empty";
         return false;
     }
 
     auto page_thumbnail_path = json[QStringLiteral("thumbnailPath")];
     if (!page_thumbnail_path.isString() && !page_thumbnail_path.isUndefined()) {
+        qDebug() << "Error: thumbnail image path is invalid";
         return false;
     }
 
-    // Verify that the result file exist.
-    if (!QFileInfo::exists(page_result_path.toString())) {
+    QString pg_original_path;
+    if (!fixPath(page_original_path.toString(), docpath, pg_original_path)) {
+        qDebug() << "Error: original image does not exist";
         return false;
     }
+
+    QString pg_result_path;
+    if (!fixPath(page_result_path.toString(), docpath, pg_result_path)) {
+        qDebug() << "Error: result image does not exist";
+        return false;
+    }
+
+    QString pg_thumbnail_path;
+    if (!page_thumbnail_path.isUndefined() &&
+        !fixPath(page_thumbnail_path.toString(), docpath, pg_thumbnail_path)) {
+        qDebug() << "Error: thumbnail does not exist, throw it away";
+    }
+
+    qDebug() << "Use orig: " << pg_original_path << " result: " << pg_result_path << " thumb: " << pg_thumbnail_path;
 
     setCreationTime(page_ctime);
-    setOriginal(page_original_path.toString());
-    setResult(page_result_path.toString());
-    setThumbnail(page_thumbnail_path.toString());
+    setOriginal(pg_original_path);
+    setResult(pg_result_path);
+    setThumbnail(pg_thumbnail_path);
     d->settings = json[QStringLiteral("filters")].toObject();
 
     return true;
@@ -365,4 +402,46 @@ bool Page::read(const QJsonObject& json)
 QJsonObject Page::settings() const
 {
     return d->settings;
+}
+
+/// Extract the correct absolute filename from the path in the stored json document.
+///
+/// Because of a bad design decision, old documents may store absolute
+/// paths to all files. This is bad because documents cannot be moved
+/// or copied easily. This function possibly converts absolute paths to paths
+/// relative to the document directory. This works in most cases because by default
+/// all images are stored directly in the document's directory.
+bool fixPath(const QString& filePath, const QDir& docpath, QString& result)
+{
+    auto finfo = QFileInfo(filePath);
+
+    if (finfo.isRelative()) {
+        auto path = docpath.filePath(finfo.filePath());
+        if (QFileInfo(path).exists()) {
+            result = path;
+            return true;
+        }
+
+        qDebug() << "Error: file at " << path << " does not exist";
+    } else {
+        if (finfo.exists()) {
+            result = filePath;
+            return true;
+        }
+
+        // This is actually a workaround because older versions of Fotokopierer stored
+        // absolute file paths. However, this does not work well because the paths may be
+        // different on different systems preventing moving a document from one system
+        // to another.
+        auto relative_path = docpath.filePath(QFileInfo(filePath).fileName());
+        qDebug() << "Absolute file " << filePath << " does not exist, try relative path " << relative_path;
+        if (QFileInfo(relative_path).exists()) {
+            result = docpath.absoluteFilePath(relative_path);
+            return true;
+        }
+
+        qDebug() << "Error: image at relative path " << relative_path << " does not exist";
+    }
+
+    return false;
 }

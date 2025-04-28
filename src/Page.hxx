@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,10 +21,11 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QObject>
-#include <QtCore/QScopedPointer>
 #include <QtGui/QImage>
 
-class Scanner;
+#include <memory>
+
+class ScanImage;
 
 /// A single scanned page.
 class Page : public QObject
@@ -52,7 +53,7 @@ public:
     Q_ENUM(Status)
 
 public:
-    explicit Page(QObject* parent = nullptr);
+    explicit Page();
 
     Page(const Page&) = delete;
     Page(Page&&) = delete;
@@ -76,16 +77,16 @@ public:
     /// Initialize this page from the results of a Scanner.
     ///
     /// The page files are stored in the document directory `dir`.
-    void loadFromScanner(const QDir& dir, const Scanner* scanner);
+    void newFromImage(const QDir& dir, const std::shared_ptr<ScanImage>& scanImage);
 
     /// Initialize this page from the results of a Scanner.
     ///
     /// The page files reuse (and overwrite) the current files.
-    void updateFromScanner(const Scanner* scanner);
+    void updateFromImage(const std::shared_ptr<ScanImage>& scanImage);
 
-    bool write(QJsonObject& json) const;
+    bool write(QJsonObject& json, const QDir& docpath) const;
 
-    bool read(const QJsonObject& json);
+    bool read(const QJsonObject& json, const QDir& docpath);
 
     /// Return the filter settings of this page.
     QJsonObject settings() const;
@@ -95,10 +96,10 @@ public slots:
     void remove();
 
 private:
-    void updateFromScanner(const Scanner* scanner,
-                           const QString& original_path,
-                           const QString& result_path,
-                           const QDateTime& creation_time);
+    void updateImage(const std::shared_ptr<ScanImage>& scanImage,
+                     const QString& original_path,
+                     const QString& result_path,
+                     const QDateTime& creation_time);
 
     QString updateThumbnail(const QString& filename);
 
@@ -137,7 +138,7 @@ signals:
 
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,29 +24,18 @@
 
 class Document;
 class Page;
-class Filter;
-class RotateFilter;
-class CutFilter;
-class ColorizeFilter;
+class ScanImage;
 
+/// The image scanner.
+///
+/// This is the basic interface to create new or modify existing
+/// images. It basically creates and manages `ScanImage` objects.
 class Scanner : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(RotateFilter* rotateFilter READ rotateFilter CONSTANT);
-    Q_PROPERTY(CutFilter* cutFilter READ cutFilter CONSTANT);
-    Q_PROPERTY(ColorizeFilter* ColorizeFilter READ colorizeFilter CONSTANT);
     Q_PROPERTY(bool deleteOriginalOnClear READ deleteOriginalOnClear WRITE setDeleteOriginalOnClear
                    NOTIFY deleteOriginalOnClearChanged);
-
-public:
-    enum class FilterType {
-        None = -1,
-        Rotate = 0,
-        Cut = 1,
-        Colorize = 2,
-    };
-    Q_ENUM(FilterType);
 
 public:
     Scanner(QObject* parent = nullptr);
@@ -58,14 +47,6 @@ public:
 
     ~Scanner() override;
 
-    /// Return the original image.
-    QImage original() const;
-
-    /// Compute and return the filtered image.
-    QImage computeFilteredImage() const;
-
-    Filter* filter(FilterType type);
-
     Q_INVOKABLE bool loadPage(Page* page);
 
     Q_INVOKABLE bool loadFile(const QString& file_name);
@@ -74,17 +55,12 @@ public:
 
     Q_INVOKABLE void clear();
 
-    QImage originalImage() const;
-
-    RotateFilter* rotateFilter() const;
-
-    CutFilter* cutFilter() const;
-
-    ColorizeFilter* colorizeFilter() const;
-
     void setDeleteOriginalOnClear(bool enabled);
 
     bool deleteOriginalOnClear() const;
+
+    /// Return the current scan image.
+    std::shared_ptr<ScanImage> currentImage() const;
 
     /// Add this scanned page to the given `Document`.
     Q_INVOKABLE void addPage(Document* doc);
@@ -92,18 +68,10 @@ public:
     /// Add this scanned page to the given `Document`.
     Q_INVOKABLE void updatePage(Page* page);
 
-    /// Return all filter settings as a JSON object.
-    QJsonObject saveJson() const;
-
-    /// Load all filter settings from a JSON object.
-    void loadJson(const QJsonObject& settings);
-
 signals:
-    void originalImageChanged();
-
     void addPage(const QImage& original, const QImage& result);
 
-    void imageSaved();
+    void currentImageChanged();
 
     void deleteOriginalOnClearChanged();
 

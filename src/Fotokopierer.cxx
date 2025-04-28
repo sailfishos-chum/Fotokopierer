@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -115,6 +115,11 @@ QString Fotokopierer::podofoVersion() const
 QString Fotokopierer::opencvVersion() const
 {
     return QStringLiteral(OPENCV_VERSION);
+}
+
+QString Fotokopierer::freetypeVersion() const
+{
+    return QStringLiteral(FREETYPE_VERSION);
 }
 
 QSize Fotokopierer::defaultResolution(QObject* capture, int desiredWidth, int desiredHeight) const
