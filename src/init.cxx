@@ -29,7 +29,6 @@
 #include "ZoomImage.hxx"
 
 #include "Document.hxx"
-#include "Page.hxx"
 #include "Util.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
@@ -49,8 +48,6 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
     qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
-    qmlRegisterUncreatableType<Page>(
-        "Fotokopierer", 1, 0, "ScannedPage", QObject::tr("ScannedPage objects cannot be created"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
