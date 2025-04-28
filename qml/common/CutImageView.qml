@@ -64,10 +64,10 @@ Item {
         var bl = mapPoint(bottomleft.center)
 
         // compute and store the points of the rotated selection
-        _next_tr = Qt.point(tl.y, 1-tl.x)
-        _next_br = Qt.point(tr.y, 1-tr.x)
-        _next_bl = Qt.point(br.y, 1-br.x)
-        _next_tl = Qt.point(bl.y, 1-bl.x)
+        _next_tl = Qt.point(tr.y, 1-tr.x)
+        _next_tr = Qt.point(br.y, 1-br.x)
+        _next_br = Qt.point(bl.y, 1-bl.x)
+        _next_bl = Qt.point(tl.y, 1-tl.x)
 
         image.filter.orientation -= 1
     }
@@ -79,10 +79,10 @@ Item {
         var bl = mapPoint(bottomleft.center)
 
         // compute and store the points of the rotated selection
-        _next_bl = Qt.point(1-tl.y, tl.x)
-        _next_tl = Qt.point(1-tr.y, tr.x)
-        _next_tr = Qt.point(1-br.y, br.x)
-        _next_br = Qt.point(1-bl.y, bl.x)
+        _next_tl = Qt.point(1-bl.y, bl.x)
+        _next_tr = Qt.point(1-tl.y, tl.x)
+        _next_br = Qt.point(1-tr.y, tr.x)
+        _next_bl = Qt.point(1-br.y, br.x)
 
         image.filter.orientation += 1
     }
