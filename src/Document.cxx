@@ -157,14 +157,17 @@ void Document::move(int from, int to)
 
 void Document::addPage(BaseImage *original, BaseImage *result)
 {
-    QImage original_img = original->image();
+    addPage(original->image(), result->image());
+}
+
+void Document::addPage(QImage original_img, QImage result_img)
+{
     if (original_img.isNull()) {
         qWarning() << "Page could not be created: no original image";
         emit error(QStringLiteral("Page could not be created: no original image"));
         return;
     }
 
-    QImage result_img = result->image();
     if (result_img.isNull()) {
         qWarning() << "Page could not be created: no result image";
         emit error(QStringLiteral("Page could not be created: no result image"));
