@@ -20,7 +20,7 @@
 
 #include <QtQuick/QQuickPaintedItem>
 
-class BaseImage;
+#include "ScanImage.hxx"
 
 /// A zoomed view of an image.
 ///
@@ -29,7 +29,7 @@ class BaseImage;
 ///
 /// The position and portion of the source image to be shown are specified in
 /// ratio coordinates (i.e. center (x,y) refers to the pixel `(x *
-/// source().width(), y * source().height())`). Using these kind of coordinates
+/// image().width(), y * image().height())`). Using these kind of coordinates
 /// makes ZoomImage independent of the actual resolution of the source image.
 class ZoomImage : public QQuickPaintedItem
 {
@@ -40,7 +40,9 @@ class ZoomImage : public QQuickPaintedItem
     Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged);
     Q_PROPERTY(QColor crossColor READ crossColor WRITE setCrossColor NOTIFY crossColorChanged);
 
-    Q_PROPERTY(BaseImage* source READ source WRITE setSource NOTIFY sourceChanged)
+    Q_PROPERTY(ScanImage* image READ image WRITE setImage NOTIFY imageChanged)
+    Q_PROPERTY(
+        ScanImage::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
 
 public:
     explicit ZoomImage(QQuickItem* parent = nullptr);
@@ -59,8 +61,11 @@ public:
     /// Return the color of the cross.
     QColor crossColor() const;
 
-    /// Return the current image source.
-    BaseImage* source();
+    /// Return the source image.
+    ScanImage* image() const;
+
+    /// Return the filter.
+    ScanImage::FilterType filterType() const;
 
     void paint(QPainter* painter) override;
 
@@ -78,7 +83,13 @@ public slots:
     void setCrossColor(const QColor& color);
 
     /// Set the source image.
-    void setSource(BaseImage* source);
+    void setImage(ScanImage* image);
+
+    /// Set the filter type.
+    void setFilterType(ScanImage::FilterType filter_type);
+
+private:
+    void updateFilter();
 
 private slots:
     void updateImage();
@@ -93,7 +104,10 @@ signals:
     void crossColorChanged();
 
     /// The source image has been changed.
-    void sourceChanged();
+    void imageChanged();
+
+    /// The filter has been changed.
+    void filterTypeChanged();
 
 private:
     struct Data;
