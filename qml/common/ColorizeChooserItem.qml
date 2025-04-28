@@ -22,40 +22,46 @@ Item {
     id: root
 
     property alias blackLevel: colorizer.blackLevel
-
     property real _radius: Math.min(width, height) / 2
+
+    signal updateTouchPoints()
 
     ColorizeChooser {
         id: colorizer
         anchors.fill: parent
-
-        onColorAnglesChanged: updateTouchPoints()
     }
 
-    CornerMarker {
-        id: marker0
-        radius: 10
-        minX: 0
-        maxX: root.width
-        minY: 0
-        maxY: root.height
+    Repeater {
+        model: 6
+        CornerMarker {
+            radius: 10
+            minX: 0
+            maxX: root.width
+            minY: 0
+            maxY: root.height
 
-        onDragged: {
-            colorizer.setColorAngle(0, pos2angle(markerPos))
+            onDragged: colorizer.setColorAngle(index, pos2angle(markerPos))
+
+            Connections {
+                target: colorizer
+                onColorAnglesChanged: updateAngle()
+            }
+
+            Connections {
+                target: root
+                onUpdateTouchPoints: updateAngle()
+            }
+
+            function updateAngle() {
+                var angle = colorizer.colorAngle(index) / 180 * Math.PI
+                setCenter(Qt.point(Math.cos(angle) * _radius + root.width / 2,
+                                   -Math.sin(angle) * _radius + root.height / 2))
+            }
         }
     }
 
-    Component.onCompleted: updateTouchPoints()
-
-    on_RadiusChanged: updateTouchPoints()
-
     function chooser () {
         return colorizer
-    }
-
-    function updateTouchPoints() {
-        marker0.setCenter(Qt.point(Math.cos(colorizer.colorAngle(0) / 180 * Math.PI) * _radius + root.width / 2,
-                                   -Math.sin(colorizer.colorAngle(0) / 180 * Math.PI) * _radius + root.height / 2))
     }
 
     function pos2angle(pos) {
@@ -78,4 +84,6 @@ Item {
             }
         }
     }
+
+    on_RadiusChanged: updateTouchPoints()
 }
