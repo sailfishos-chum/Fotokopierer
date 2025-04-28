@@ -131,6 +131,12 @@ Page {
             RemorseItem {
                 id: remorse
             }
+
+            BusyIndicator {
+                size: BusyIndicatorSize.Large
+                anchors.centerIn: parent
+                running: role_page != null && role_page.status != DocPage.Ready
+            }
         }
 
         Component.onCompleted: {
