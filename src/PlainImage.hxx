@@ -33,9 +33,9 @@ class PlainImage : public BaseImage
 public:
     explicit PlainImage(QQuickItem* parent = nullptr);
 
-    ~PlainImage();
+    ~PlainImage() override;
 
-    QImage sourceImage() const;
+    QImage sourceImage() const override;
 
     bool scaling() const;
 
@@ -57,7 +57,7 @@ signals:
     void maxSizeChanged();
 
 protected:
-    QImage transform(const QImage& image);
+    QImage transform(const QImage& image) override;
 
 private:
     struct Data;

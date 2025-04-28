@@ -44,7 +44,7 @@ public:
          const QString& thumbnail_path,
          QObject* parent);
 
-    ~Page();
+    ~Page() override;
 
     QDateTime creationTime() const;
 

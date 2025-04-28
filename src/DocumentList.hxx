@@ -40,7 +40,7 @@ public:
 public:
     explicit DocumentList(QObject *parent = nullptr);
 
-    ~DocumentList();
+    ~DocumentList() override;
 
     /// Create and return a new document.
     ///

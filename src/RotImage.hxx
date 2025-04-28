@@ -31,7 +31,7 @@ public:
 public:
     explicit RotImage(QQuickItem* parent = nullptr);
 
-    ~RotImage();
+    ~RotImage() override;
 
     int orientation() const;
 
@@ -42,7 +42,7 @@ signals:
     void orientationChanged();
 
 protected:
-    QImage transform(const QImage& image);
+    QImage transform(const QImage& image) override;
 
 private:
     int orientation_;

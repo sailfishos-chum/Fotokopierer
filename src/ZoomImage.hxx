@@ -45,7 +45,7 @@ class ZoomImage : public QQuickPaintedItem
 public:
     explicit ZoomImage(QQuickItem* parent = nullptr);
 
-    ~ZoomImage();
+    ~ZoomImage() override;
 
     /// Return the viewSize ratio.
     QPointF viewSize() const;

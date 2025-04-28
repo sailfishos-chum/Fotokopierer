@@ -46,7 +46,7 @@ public:
 
     Document(Document &&doc) noexcept;
 
-    ~Document();
+    ~Document() override;
 
     /// Create a new document with the current time.
     static Document create(QObject *parent = nullptr);

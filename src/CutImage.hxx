@@ -30,7 +30,7 @@ class CutImage : public AsyncImage
 public:
     explicit CutImage(QQuickItem* parent = nullptr);
 
-    ~CutImage();
+    ~CutImage() override;
 
     /// Set the corner points of the cut box.
     ///
@@ -48,7 +48,7 @@ public:
     Q_INVOKABLE QVariantList autoDetectCutRect();
 
 protected:
-    QImage transform(const QImage& image);
+    QImage transform(const QImage& image) override;
 
 private:
     struct Data;
