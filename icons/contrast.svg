@@ -25,11 +25,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.78216891"
-     inkscape:cx="15.842934"
-     inkscape:cy="-18.567934"
+     inkscape:zoom="1.107279"
+     inkscape:cx="152.36443"
+     inkscape:cy="328.61752"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="svg8"
      showgrid="true"
      objecttolerance="10000"
      fit-margin-top="0"
@@ -40,7 +40,8 @@
      inkscape:window-height="1053"
      inkscape:window-x="0"
      inkscape:window-y="27"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     scale-x="0.6">
     <inkscape:grid
        type="xygrid"
        id="grid4532"
@@ -66,11 +67,11 @@
      style="display:inline"
      transform="translate(-42.287722,-69.412681)">
     <path
-       style="opacity:0.72899996;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.34477112;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.34477112;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 300,262.51953 a 140,140 0 0 0 -140,140 140,140 0 0 0 140,140 140,140 0 0 0 140,-140 140,140 0 0 0 -140,-140 z m 0,20 a 120,120 0 0 1 120,120 120,120 0 0 1 -120,120 120,120 0 0 1 -120,-120 120,120 0 0 1 120,-120 z"
-       transform="scale(0.26458333)"
        id="path4534"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       transform="scale(0.26458333)" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -79,10 +80,10 @@
      style="display:inline"
      transform="translate(-42.287722,-69.412681)">
     <path
-       style="display:inline;opacity:0.72899996;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.34477112;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.34477112;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 300,282.51953 v 240 a 120,120 0 0 0 120,-120 120,120 0 0 0 -120,-120 z"
-       transform="scale(0.26458333)"
        id="circle4538"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       transform="scale(0.26458333)" />
   </g>
 </svg>

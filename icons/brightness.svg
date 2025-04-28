@@ -27,8 +27,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.87741146"
-     inkscape:cx="375.52234"
-     inkscape:cy="458.1987"
+     inkscape:cx="549.92751"
+     inkscape:cy="468.78039"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -68,13 +68,13 @@
      style="display:inline"
      transform="translate(13.483711,-14.302696)">
     <path
-       style="opacity:0.72899996;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.34477112;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#090909;fill-opacity:1;stroke:#000000;stroke-width:0.34477112;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 140.17188,0.171875 A 140,140 0 0 0 0.171875,140.17188 a 140,140 0 0 0 140.000005,140 140,140 0 0 0 140,-140 140,140 0 0 0 -140,-140.000005 z m 0,60 a 79.999831,79.999831 0 0 1 80,80.000005 79.999831,79.999831 0 0 1 -80,80 79.999831,79.999831 0 0 1 -80.000005,-80 79.999831,79.999831 0 0 1 80.000005,-80.000005 z"
        transform="matrix(0.26458333,0,0,0.26458333,42.287722,69.412681)"
        id="path4616"
        inkscape:connector-curvature="0" />
     <path
-       style="opacity:0.72899996;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.0786597;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.0786597;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 71.4375,17.066273 c 2.93529,-3.632329 12.939714,-3.632331 15.875001,0 2.64583,3.274134 2.387993,12.137571 2.387993,19.644817 0,7.507245 0.257837,16.370675 -2.387993,19.644816 -2.935285,3.632329 -12.939713,3.632327 -15.875001,0 -2.645835,-3.274141 -2.086444,-11.888799 -2.086444,-19.396044 0,-7.507245 -0.559391,-16.619455 2.086444,-19.893589 z"
        id="rect4619"
        inkscape:connector-curvature="0"
@@ -86,7 +86,8 @@
        id="use4624"
        transform="rotate(180,79.504502,107.16142)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
     <use
        x="0"
        y="0"
@@ -94,7 +95,8 @@
        id="use4626"
        transform="rotate(-45,79.375059,107.16142)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
     <use
        x="0"
        y="0"
@@ -102,7 +104,8 @@
        id="use4628"
        transform="rotate(-45,79.374999,107.16146)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
     <use
        x="0"
        y="0"
@@ -110,7 +113,8 @@
        id="use4630"
        transform="rotate(-45,79.374999,107.16146)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
     <use
        x="0"
        y="0"
@@ -118,7 +122,8 @@
        id="use4632"
        transform="rotate(-45,79.374999,107.16146)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
     <use
        x="0"
        y="0"
@@ -126,7 +131,8 @@
        id="use4634"
        transform="rotate(-45,79.374999,107.16146)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
     <use
        x="0"
        y="0"
@@ -134,7 +140,8 @@
        id="use4636"
        transform="rotate(-45,79.374999,107.16146)"
        width="100%"
-       height="100%" />
+       height="100%"
+       style="fill:#090909;fill-opacity:1" />
   </g>
   <g
      inkscape:groupmode="layer"
