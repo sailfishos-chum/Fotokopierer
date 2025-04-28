@@ -41,10 +41,20 @@ DocumentList::~DocumentList() = default;
 
 void DocumentList::addDocument(const QSharedPointer<Document> &doc)
 {
-    d->docs.push_back(doc);
     connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
+
+    beginInsertRows({}, d->docs.size(), d->docs.size());
+    d->docs.push_back(doc);
+    endInsertRows();
+}
+
+Document *DocumentList::newDocument()
+{
+    auto doc = QSharedPointer<Document>(new Document(Document::create()));
+    addDocument(doc);
+    return doc.data();
 }
 
 void DocumentList::documentChanged()

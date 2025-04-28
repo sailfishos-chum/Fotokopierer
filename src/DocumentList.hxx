@@ -42,6 +42,11 @@ public:
 
     ~DocumentList();
 
+    /// Create and return a new document.
+    ///
+    /// On error return NULL.
+    Q_INVOKABLE Document *newDocument();
+
 private:
     void addDocument(const QSharedPointer<Document> &document);
 
