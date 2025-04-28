@@ -48,7 +48,7 @@ public:
 
     void paint(QPainter* painter) override;
 
-    qreal colorAngle(int which) const;
+    Q_INVOKABLE qreal colorAngle(int which) const;
 
 public slots:
     void setColorAngle(int which, qreal angle);
