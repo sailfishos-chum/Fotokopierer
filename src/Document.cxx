@@ -92,6 +92,21 @@ QHash<int, QByteArray> Document::roleNames() const
     return roles;
 }
 
+void Document::move(int from, int to)
+{
+    if (beginMoveRows({}, from, from, {}, to)) {
+        auto p = d->pages[from];
+        d->pages.removeAt(from);
+        if (from < to) {
+            d->pages.insert(to - 1, p);
+        } else {
+            d->pages.insert(to, p);
+        }
+        endMoveRows();
+        save();
+    }
+}
+
 bool Document::save() const
 {
     QFileInfo finfo(d->filename);

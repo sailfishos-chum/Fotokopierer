@@ -24,13 +24,23 @@ MouseArea {
 
     property bool dragEnabled: true
     property bool held: false
+    property int sourceIndex: 0
+
     default property alias data: content.data
+
+    signal itemMoved(int from, int to)
 
     drag.target: held ? content : undefined
     drag.axis: Drag.XAndYAxis
 
-    onPressAndHold: held = true
-    onReleased: held = false
+    onPressAndHold: {
+        held = true
+        sourceIndex = DelegateModel.itemsIndex
+    }
+    onReleased: {
+        held = false
+        itemMoved(sourceIndex, DelegateModel.itemsIndex)
+    }
 
     states: State {
         when: dragArea.held

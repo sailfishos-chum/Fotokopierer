@@ -46,7 +46,11 @@ public:
 
     Q_INVOKABLE bool save() const;
 
-    bool load(const QString &filename, QObject *parent = nullptr);
+    Q_INVOKABLE bool load(const QString &filename, QObject *parent = nullptr);
+
+public slots:
+    /// Move a page `from` to position `to`.
+    void move(int from, int to);
 
 private:
     struct Data;

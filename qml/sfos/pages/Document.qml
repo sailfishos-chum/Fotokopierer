@@ -34,6 +34,10 @@ Page {
             height: grid.cellHeight
             page: role_page
             isAddButton: role_page == null
+
+            Component.onCompleted: {
+                itemMoved.connect(visualModel.model.move)
+            }
         }
 
         Component.onCompleted: {
