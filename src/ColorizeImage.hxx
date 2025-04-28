@@ -67,7 +67,7 @@ public slots:
     void setDetails(double details);
 
     /// Set the color mode.
-    void setColorMode(ColorMode colormode);
+    void setColorMode(ColorizeImage::ColorMode colormode);
 
 signals:
     void contrastChanged();
