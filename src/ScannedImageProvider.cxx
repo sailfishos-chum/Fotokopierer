@@ -18,21 +18,63 @@
 #include "ScannedImageProvider.hxx"
 
 #include "Convert.hxx"
+#include "Util.hxx"
 
+#include <QDebug>
 #include <QtCore/QMap>
 #include <QtGui/QPixmap>
 
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <cmath>
+
 namespace
 {
+/// The valid states of the image transformation.
+///
+/// The state indicates which steps of the whole image processing are
+/// up-to-date. If the state of the image is requested that is not
+/// up-to-date, all required transformations will be updated.
+enum ImageState {
+    /// Only the original image is valid.
+    Original = 0,
+    /// The image has been rotated.
+    Rotated = 1,
+    /// The image has been cut and perspectively transformed.
+    Cut = 2,
+};
+
 struct ImageSet {
+    ImageState state = Original;
+
+    /// The original image.
     cv::Mat original;
+
+    /// The rotation angle.
+    double rotAngle = 0;
+    /// The rotated image.
+    cv::Mat rotated;
+
+    /// The top left point of the perspective quadrangle.
+    QPointF topleft = {0, 0};
+    /// The top right point of the perspective quadrangle.
+    QPointF topright = {0, 0};
+    /// The bottom right point of the perspective quadrangle.
+    QPointF bottomright = {0, 0};
+    /// The bottom left point of the perspective quadrangle.
+    QPointF bottomleft = {0, 0};
+
+    /// The perspectively transformed (cut) image.
     cv::Mat cut;
+
+    /// The colourised image.
     cv::Mat colorized;
 };
 }
+
+static const cv::Mat& getRotatedImage(ImageSet& img);
+static const cv::Mat& getCutImage(ImageSet& img);
 
 ScannedImageProvider* ScannedImageProvider::instance = nullptr;
 
@@ -66,17 +108,14 @@ QImage ScannedImageProvider::requestImage(const QString& id,
     }
 
     if (toks[1] == QLatin1String("original")) {
-        auto orig = cvMatToQImage(img->original);
+        auto angle = 0.0;
         if (toks.size() == 4 && toks[2] == QLatin1String("rotate")) {
-            auto angle = toks[3].toFloat();
-            QTransform transform;
-            transform.rotate(angle);
-            return orig.transformed(transform);
-        } else {
-            return orig;
+            angle = toks[3].toFloat();
         }
+        set_angle(toks[0], toks[3].toFloat());
+        return cvMatToQImage(img->original);
     } else if (toks[1] == QLatin1String("cut")) {
-        return cvMatToQImage(img->cut);
+        return cvMatToQImage(getCutImage(*img));
     } else if (toks[1] == QLatin1String("colorized")) {
         return cvMatToQImage(img->colorized);
     } else {
@@ -94,27 +133,91 @@ QString ScannedImageProvider::loadImage(const QString& fileName)
     }
 
     auto id = QString::number(d->next_id);
-    d->images[id] = {.original = pic, .cut = {}, .colorized = {}};
+
+    ImageSet img;
+    img.state = Original;
+    img.original = std::move(pic);
+    d->images[id] = std::move(img);
 
     return id;
 }
 
-void ScannedImageProvider::set_cut_image(const QString& image,
-                                         double angle,
-                                         const QPointF& topleft,
-                                         const QPointF& topright,
-                                         const QPointF& bottomright,
-                                         const QPointF& bottomleft)
+void ScannedImageProvider::set_angle(const QString& image, double angle)
 {
     auto img = d->images.find(image);
     if (img != d->images.end()) {
-        float w = img->original.cols;
-        float h = img->original.rows;
+        auto rotAngle = (int)angle % 360;
+        if (rotAngle != img->rotAngle) {
+            img->rotAngle = rotAngle;
+            img->state = (ImageState)std::min((int)img->state, Rotated - 1);
+        }
+    } else {
+        qWarning() << "(set_angle) Unknown image id: " << image;
+    }
+}
 
-        cv::Point2f tl(topleft.x() * w, topleft.y() * h);
-        cv::Point2f tr(topright.x() * w, topright.y() * h);
-        cv::Point2f br(bottomright.x() * w, bottomright.y() * h);
-        cv::Point2f bl(bottomleft.x() * w, bottomleft.y() * h);
+bool ScannedImageProvider::set_cut_box(const QString& image,
+                                       const QPointF& topleft,
+                                       const QPointF& topright,
+                                       const QPointF& bottomright,
+                                       const QPointF& bottomleft)
+{
+    static Util util;
+
+    auto img = d->images.find(image);
+    if (img != d->images.end()) {
+        if (!util.isConvex(topleft, topright, bottomright, bottomleft)) {
+            return false;
+        }
+        img->topleft = topleft;
+        img->topright = topright;
+        img->bottomright = bottomright;
+        img->bottomleft = bottomleft;
+        return true;
+    } else {
+        qWarning() << "(set_cut_image) Unknown image id: " << image;
+        return false;
+    }
+}
+
+const cv::Mat& getRotatedImage(ImageSet& img)
+{
+    if (img.state < Rotated) {
+        switch ((int)img.rotAngle % 360) {
+            case 90:
+                cv::rotate(img.original, img.rotated, cv::ROTATE_90_CLOCKWISE);
+                break;
+            case 180:
+                cv::rotate(img.original, img.rotated, cv::ROTATE_180);
+                break;
+            case 270:
+                cv::rotate(
+                    img.original, img.rotated, cv::ROTATE_90_COUNTERCLOCKWISE);
+                break;
+            default:
+                img.rotated = img.original;
+                break;
+        }
+        img.state = Rotated;
+    }
+    return img.rotated;
+}
+
+const cv::Mat& getCutImage(ImageSet& img)
+{
+    if (img.state < Cut) {
+        auto rotated = getRotatedImage(img);
+        if (rotated.data == nullptr) {
+            return img.cut;
+        }
+
+        float w = rotated.cols;
+        float h = rotated.rows;
+
+        cv::Point2f tl(img.topleft.x() * w, img.topleft.y() * h);
+        cv::Point2f tr(img.topright.x() * w, img.topright.y() * h);
+        cv::Point2f br(img.bottomright.x() * w, img.bottomright.y() * h);
+        cv::Point2f bl(img.bottomleft.x() * w, img.bottomleft.y() * h);
 
         float width = cv::max(cv::norm(tr - tl), cv::norm(br - bl));
         float height = cv::max(cv::norm(tr - br), cv::norm(tl - bl));
@@ -124,7 +227,8 @@ void ScannedImageProvider::set_cut_image(const QString& image,
             {0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
 
         auto M = cv::getPerspectiveTransform(src, dst);
-        cv::warpPerspective(
-            img->original, img->cut, M, {(int)width, (int)height});
+        cv::warpPerspective(rotated, img.cut, M, {(int)width, (int)height});
     }
+
+    return img.cut;
 }

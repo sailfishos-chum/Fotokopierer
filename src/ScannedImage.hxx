@@ -37,11 +37,12 @@ public:
     QString originalImage() const;
     QString cutImage() const;
 
-    Q_INVOKABLE void set_cut_image(double angle,
-                                   const QPointF& topleft,
-                                   const QPointF& topright,
-                                   const QPointF& bottomright,
-                                   const QPointF& bottomleft);
+    Q_INVOKABLE void set_angle(double angle);
+
+    Q_INVOKABLE bool set_cut_box(const QPointF& topleft,
+                                 const QPointF& topright,
+                                 const QPointF& bottomright,
+                                 const QPointF& bottomleft);
 
 signals:
     void originalChanged();

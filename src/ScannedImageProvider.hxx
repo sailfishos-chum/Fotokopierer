@@ -37,14 +37,18 @@ public:
     /// Return an empty string if the image could not be loaded.
     QString loadImage(const QString& fileName);
 
-    /// The set cut image according to the given rotation angle and corner
-    /// points.
-    void set_cut_image(const QString& image,
-                       double angle,
-                       const QPointF& topleft,
-                       const QPointF& topright,
-                       const QPointF& bottomright,
-                       const QPointF& bottomleft);
+    /// Set the rotation angle of a certain image.
+    void set_angle(const QString& image, double angle);
+
+    /// The set corners of the cut quadrangle of a certain image.
+    ///
+    /// The method returns `false` if the corners do not form a valid
+    /// quadrangle (e.g. if it is not convex).
+    bool set_cut_box(const QString& image,
+                     const QPointF& topleft,
+                     const QPointF& topright,
+                     const QPointF& bottomright,
+                     const QPointF& bottomleft);
 
 public:
     /// A global instance used throughout the app.

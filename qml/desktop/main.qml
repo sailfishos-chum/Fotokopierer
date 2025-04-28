@@ -66,11 +66,6 @@ ApplicationWindow {
 		  text: "Ok"
 		  onClicked: {
 				if (image.visible) {
-					 img.set_cut_image(image.angle,
-											 image.tl,
-											 image.tr,
-											 image.br,
-											 image.bl)
 					 cutimage.source = ""
 					 cutimage.source = "image://Scanned/" + img.cut
 				}

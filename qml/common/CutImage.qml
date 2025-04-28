@@ -158,7 +158,11 @@ Item {
 	 }
 
 	 function update(x, y) {
-		  pane.valid = Util.isConvex(topleft.center, topright.center, bottomright.center, bottomleft.center)
+		  pane.valid = img.set_cut_box(
+				mapPoint(topleft.center),
+				mapPoint(topright.center),
+				mapPoint(bottomright.center),
+				mapPoint(bottomleft.center))
 		  zoomimg.imagex = x
 		  zoomimg.imagey = y
 
