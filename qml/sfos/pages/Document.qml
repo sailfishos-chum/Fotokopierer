@@ -84,7 +84,7 @@ Page {
             onAddPage: pageStack.push(imagePickerPage)
 
             IconButton {
-                visible: docpage.editing && isAddButton
+                visible: docpage.editing && !isAddButton
                 anchors { top: parent.top; right: parent.right }
                 icon.source: "image://theme/icon-l-clear"
                 onClicked: {
