@@ -90,6 +90,7 @@ void DocumentList::documentChanged()
 
 int DocumentList::rowCount(const QModelIndex &parent) const
 {
+    (void)parent;
     return d->docs.size();
 }
 
