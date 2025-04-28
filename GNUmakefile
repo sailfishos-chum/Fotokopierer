@@ -43,8 +43,15 @@ installdeps:
 	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
 	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator 3.0.2.8" installdeps'
 
+run:
+	ssh -tt -p 2223 -i $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest/nemo nemo@localhost 'sh -c "env LD_LIBRARY_PATH=/usr/local/lib $(target) ${ARGS}"'
+
+.PHONY: install-jolla copy-jolla run-jolla
 install-jolla: rpm
 	scp RPMS/harbour-fotokopierer*.armv7hl.rpm jolla:
 
-run:
-	ssh -p 2223 -i $(sdk_dir)/vmshare/ssh/private_keys/SailfishOS_Emulator/nemo nemo@localhost 'sh -c "env LD_LIBRARY_PATH=/usr/local/lib $(target) ${ARGS}"'
+copy-jolla:
+	scp rpmbuilddir/harbour-fotokopierer jolla:
+
+run-jolla: copy-jolla
+	ssh -tt jolla './harbour-fotokopierer'
