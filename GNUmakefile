@@ -29,10 +29,10 @@ reformat:
 installdeps:
 	$(mersdk_ssh) '$(mersdk_mb2) installdeps'
 
-build: reformat
+build: reformat lrelease
 	$(mersdk_ssh) '$(mersdk_mb2) build'
 
-compile: reformat
+compile: reformat lrelease
 	$(mersdk_ssh) '$(mersdk_sb2) make'
 
 make:
@@ -41,7 +41,7 @@ make:
 install:
 	$(mersdk_ssh) '$(mersdk_mb2) install'
 
-rpm:
+rpm: lrelease
 	$(mersdk_ssh) '$(mersdk_mb2) rpm'
 
 deploy:
