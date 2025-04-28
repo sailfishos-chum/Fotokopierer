@@ -246,4 +246,41 @@ Page {
         //     }
         // }
     }
+
+    Component {
+        id: overwritedlg
+
+        Dialog {
+            property string filename
+
+            DialogHeader {
+                id: header
+
+                width: parent.width
+                anchors.top: parent.top
+            }
+
+            Label {
+                anchors.top: header.bottom
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                font.pixelSize: Theme.fontSizeHuge
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.WordWrap
+
+                text: qsTr("Overwrite existing file <%1>?").arg(filename)
+            }
+
+            onAccepted: document.exportToPdf(true)
+        }
+    }
+
+    onDocumentChanged: {
+        document.errorPdfExists.connect(function (filename) {
+            pageStack.push(overwritedlg, { filename: filename })
+        })
+    }
 }
