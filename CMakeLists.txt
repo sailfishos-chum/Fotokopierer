@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.2.2)
+set(FOTOKOPIERER_VERSION 0.2.4)
 set(PODOFO_VERSION 0.9.6)
 set(OPENCV_VERSION 3.4.0)
 
