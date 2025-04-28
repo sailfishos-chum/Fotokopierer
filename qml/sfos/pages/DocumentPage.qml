@@ -98,7 +98,7 @@ Page {
             onReleased: {
                 if (docpage.dragging) {
                     docpage.dragging = false
-                    stopDragging()
+                    endDragging()
                 }
             }
 
