@@ -1,5 +1,7 @@
 # Fotokopierer
 
+## Introduction
+
 Fotokopierer is a document scanning application for [Sailfish OS](https://sailfishos.org) and the Desktop.
 
 ## Author
