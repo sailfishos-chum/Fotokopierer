@@ -11,6 +11,8 @@
 * Mon Mar 21 2022 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.5-1
 - update OpenCV to 3.4.16
 - update FreeType to 2.11.1
+- add Bulgarian translation
+- add French translation
 
 * Sat Nov 13 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.4-1
 - nothing new, just had to increase the version to make harbour happy
