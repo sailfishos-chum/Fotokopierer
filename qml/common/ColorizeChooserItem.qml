@@ -45,7 +45,10 @@ Item {
             onDragged: colorizer.setColorAngle(index, pos2angle(markerPos))
 
             onDragActiveChanged: {
-                if (!dragActive) changed()
+                if (!dragActive) {
+                    updateAngle()
+                    changed()
+                }
             }
 
             Connections {
