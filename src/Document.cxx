@@ -229,7 +229,10 @@ bool Document::save() const
     QFileInfo finfo(d->filename);
 
     if (!finfo.dir().exists()) {
-        finfo.dir().mkpath(QStringLiteral("."));
+        if (!finfo.dir().mkpath(QStringLiteral("."))) {
+            qWarning() << tr("Cannot create path %1").arg(finfo.dir().path());
+            return false;
+        }
     }
 
     QFile file(d->filename);
