@@ -17,9 +17,9 @@
 
 #include "Page.hxx"
 
-#include "ColorizeFilter.hxx"
+#include "Convert.hxx"
 #include "Fotokopierer.hxx"
-#include "Scanner.hxx"
+#include "ScanImage.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>
@@ -89,7 +89,7 @@ Page::Page()
 
 Page::~Page() = default;
 
-void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
+void Page::newFromImage(const QDir& dir, const std::shared_ptr<ScanImage>& scanImage)
 {
     setStatus(Generating);
 
@@ -98,18 +98,18 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
     auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
 
     auto ext = QStringLiteral("png");
-    switch (scanner->colorizeFilter()->colorMode()) {
-        case ColorizeFilter::FullColor:
-        case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
+    switch (scanImage->colorMode()) {
+        case ColorizeView::FullColor:
+        case ColorizeView::Gray: ext = QStringLiteral("jpg"); break;
         default: break;
     }
     auto result_path = dir.filePath(QStringLiteral("%1-result.%2")
                                         .arg(ctime.toString(FilenameFormat), ext));
 
-    updateFromScanner(scanner, original_path, result_path, ctime);
+    updateImage(scanImage, original_path, result_path, ctime);
 }
 
-void Page::updateFromScanner(const Scanner* scanner)
+void Page::updateFromImage(const std::shared_ptr<ScanImage>& scanImage)
 {
     auto original_path = d->original_path;
     auto result_path = d->result_path;
@@ -130,39 +130,39 @@ void Page::updateFromScanner(const Scanner* scanner)
 
     // Compute the new result path.
     auto ext = QStringLiteral("png");
-    switch (scanner->colorizeFilter()->colorMode()) {
-        case ColorizeFilter::FullColor:
-        case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
+    switch (scanImage->colorMode()) {
+        case ColorizeView::FullColor:
+        case ColorizeView::Gray: ext = QStringLiteral("jpg"); break;
         default: break;
     }
 
     QFileInfo fi(result_path);
     result_path = QStringLiteral("%1/%2.%3").arg(fi.path(), fi.completeBaseName(), ext);
 
-    updateFromScanner(scanner, original_path, result_path, d->creation_time);
+    updateImage(scanImage, original_path, result_path, d->creation_time);
 }
 
-void Page::updateFromScanner(const Scanner* scanner,
-                             const QString& original_path,
-                             const QString& result_path,
-                             const QDateTime& creation_time)
+void Page::updateImage(const std::shared_ptr<ScanImage>& scanImage,
+                       const QString& original_path,
+                       const QString& result_path,
+                       const QDateTime& creation_time)
 {
     setStatus(Generating);
 
     setCreationTime(creation_time);
 
-    d->settings = scanner->saveJson();
+    d->settings = scanImage->saveJson();
 
-    d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path]() {
-        QImage original = scanner->original();
-        QImage result = scanner->computeFilteredImage();
+    d->generating.setFuture(QtConcurrent::run([this, scanImage, original_path, result_path]() {
+        auto original = scanImage->original();
+        auto result = scanImage->colorizedImage(true);
 
-        if (!original.save(original_path)) {
+        if (!cvMatToQImage(original).save(original_path)) {
             qWarning() << "Page could not be created: error saving original image";
             throw GeneratingError(tr("Page could not be created: error saving original image"));
         };
 
-        if (!result.save(result_path)) {
+        if (!cvMatToQImage(result).save(result_path)) {
             qWarning() << "Page could not be created: error saving result image";
             throw GeneratingError(tr("Page could not be created: error saving result image"));
         };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +29,10 @@ Item {
 
     property bool valid: true
 
+    property alias busy: cutview.busy
+    property alias isAutoDetectionRunning: cutview.isAutoDetectionRunning
+    property alias hasAutoSelection: cutview.hasAutoSelection
+
     // The next properties are used to rotate the selection when the image has
     // been rotated. Because the computation of the rotated image is done
     // asynchronously, we must wait with the update until the rotation has been
@@ -38,80 +42,38 @@ Item {
     property var _next_br
     property var _next_bl
 
-    FilterImage {
-        id: image
+    property bool dontchange: false
 
-        image: Scanner
-        filterType: Scanner.Rotate
+    CutView {
+        id: cutview
+
+        scanner: Scanner
 
         anchors.fill: parent
-
-        onPaintedSizeChanged: {
-            // update the selection after a rotation has been completed
-            if (_next_tl) {
-                _selectPoints(_next_tl, _next_tr, _next_br, _next_bl)
-                _next_tl = null
-            }
-        }
     }
 
     function rotateLeft() {
-        var tl = mapPoint(topleft.center)
-        var tr = mapPoint(topright.center)
-        var br = mapPoint(bottomright.center)
-        var bl = mapPoint(bottomleft.center)
-
-        // compute and store the points of the rotated selection
-        _next_tl = Qt.point(tr.y, 1-tr.x)
-        _next_tr = Qt.point(br.y, 1-br.x)
-        _next_br = Qt.point(bl.y, 1-bl.x)
-        _next_bl = Qt.point(tl.y, 1-tl.x)
-
-        image.filter.orientation -= 1
+        cutview.rotateLeft()
+        frame.requestPaint()
     }
 
     function rotateRight() {
-        var tl = mapPoint(topleft.center)
-        var tr = mapPoint(topright.center)
-        var br = mapPoint(bottomright.center)
-        var bl = mapPoint(bottomleft.center)
-
-        // compute and store the points of the rotated selection
-        _next_tl = Qt.point(1-bl.y, bl.x)
-        _next_tr = Qt.point(1-tl.y, tl.x)
-        _next_br = Qt.point(1-tr.y, tr.x)
-        _next_bl = Qt.point(1-br.y, br.x)
-
-        image.filter.orientation += 1
+        cutview.rotateRight()
+        frame.requestPaint()
     }
 
     function selectAll() {
-        _selectPoints(Qt.point(0, 0), Qt.point(1, 0), Qt.point(1, 1), Qt.point(0, 1))
+        cutview.selectAll()
+        frame.requestPaint()
     }
 
     function selectAuto() {
-        var points = Scanner.cutFilter.autoDetectCutRect()
-        _selectPoints(points[0], points[1], points[2], points[3])
-    }
-
-    function _selectPoints(tl, tr, br, bl) {
-        var w = image.paintedWidth
-        var h = image.paintedHeight
-        var offx = (pane.width - w) / 2
-        var offy = (pane.height - h) / 2
-        topleft.setCenter(Qt.point(tl.x * w + offx, tl.y * h + offy))
-        topright.setCenter(Qt.point(tr.x * w + offx, tr.y * h + offy))
-        bottomright.setCenter(Qt.point(br.x * w + offx, br.y * h + offy))
-        bottomleft.setCenter(Qt.point(bl.x * w + offx, bl.y * h + offy))
+        cutview.selectAuto()
+        frame.requestPaint()
     }
 
     function cutImage() {
-        var f = Scanner.cutFilter
-        f.topLeft = mapPoint(topleft.center)
-        f.topRight = mapPoint(topright.center)
-        f.bottomRight = mapPoint(bottomright.center)
-        f.bottomLeft = mapPoint(bottomleft.center)
-        Scanner.cutFilter.updateCut()
+        cutview.apply()
     }
 
     Canvas {
@@ -147,56 +109,183 @@ Item {
     CornerMarker {
         id: topleft
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.topLeft = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                cutview.updateSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
         id: topright
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.topRight = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                cutview.updateSnappyEdges();
+            }
+        }
     }
 
     CornerMarker {
         id: bottomleft
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.bottomLeft = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                cutview.updateSnappyEdges();
+            }
+        }
     }
 
     CornerMarker {
         id: bottomright
         color: pane.markerColor
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.bottomRight = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                cutview.updateSnappyEdges();
+            }
+        }
+    }
+
+    CornerMarker {
+        id: top
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.top = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                top.center = unmapPoint(cutview.top)
+                cutview.updateSnappyEdges();
+            }
+        }
+    }
+
+    CornerMarker {
+        id: bottom
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.bottom = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                bottom.center = unmapPoint(cutview.bottom)
+                cutview.updateSnappyEdges();
+            }
+        }
+    }
+
+    CornerMarker {
+        id: left
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.left = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                left.center = unmapPoint(cutview.left)
+                cutview.updateSnappyEdges();
+            }
+        }
+    }
+
+    CornerMarker {
+        id: right
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - cutview.paintedWidth) / 2
+        maxX: (pane.width + cutview.paintedWidth) / 2
+        minY: (pane.height - cutview.paintedHeight) / 2
+        maxY: (pane.height + cutview.paintedHeight) / 2
+        onDragged: {
+            cutview.right = mapPoint(position)
+            pane.update(center)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(center)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                right.center = unmapPoint(cutview.right)
+                cutview.updateSnappyEdges();
+            }
+        }
     }
 
     ZoomImage {
         id: zoomimg
 
-        image: image.image
-        filter: image.filterType
+        scanner: Scanner
 
         borderColor: pane.markerColor
         crossColor: pane.lineColor
@@ -204,7 +293,7 @@ Item {
         width: Math.min(parent.width, parent.height) / 4
         height: Math.min(parent.width, parent.height) / 4
 
-        viewSize: Qt.point(2.0 * markerRadius / image.paintedWidth, 2.0 * markerRadius / image.paintedHeight)
+        viewSize: Qt.point(2.0 * markerRadius / cutview.paintedWidth, 2.0 * markerRadius / cutview.paintedHeight)
 
         anchors.left: pane.left
         anchors.top: pane.top
@@ -221,7 +310,7 @@ Item {
             mapPoint(bottomleft.center))
         zoomimg.center = mapPoint(zoompoint)
 
-        if (zoompoint.x < image.width / 2) {
+        if (zoompoint.x < cutview.width / 2) {
             zoomimg.anchors.left = undefined
             zoomimg.anchors.right = pane.right
         } else {
@@ -229,7 +318,7 @@ Item {
             zoomimg.anchors.left = pane.left
         }
 
-        if (zoompoint.y < image.height / 2) {
+        if (zoompoint.y < cutview.height / 2) {
             zoomimg.anchors.top = undefined
             zoomimg.anchors.bottom = pane.bottom
         } else {
@@ -240,17 +329,85 @@ Item {
         frame.requestPaint()
     }
 
+    function initSelection() {
+        cutview.topLeft = Qt.point(0.1, 0.1)
+        cutview.topRight = Qt.point(0.9, 0.1)
+        cutview.bottomRight = Qt.point(0.9, 0.9)
+        cutview.bottomLeft = Qt.point(0.1, 0.9)
+        restoreSelection()
+    }
+
+    function restoreSelection() {
+        topleft.center = unmapPoint(cutview.topLeft)
+        topright.center = unmapPoint(cutview.topRight)
+        bottomright.center = unmapPoint(cutview.bottomRight)
+        bottomleft.center = unmapPoint(cutview.bottomLeft)
+        top.center = unmapPoint(cutview.top)
+        bottom.center = unmapPoint(cutview.bottom)
+        left.center = unmapPoint(cutview.left)
+        right.center = unmapPoint(cutview.right)
+        cutview.updateSnappyEdges()
+        frame.requestPaint()
+    }
+
     function mapPoint(p) {
-        var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
-        var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
+        var x = (p.x - (pane.width - cutview.paintedWidth) / 2) / cutview.paintedWidth
+        var y = (p.y - (pane.height - cutview.paintedHeight) / 2) / cutview.paintedHeight
         return Qt.point(x, y)
     }
 
-    function selectionFromFilter() {
-        _selectPoints(Scanner.cutFilter.topLeft,
-                      Scanner.cutFilter.topRight,
-                      Scanner.cutFilter.bottomRight,
-                      Scanner.cutFilter.bottomLeft)
+    function unmapPoint(p) {
+        var x = p.x * cutview.paintedWidth + (pane.width - cutview.paintedWidth) / 2
+        var y = p.y * cutview.paintedHeight + (pane.height - cutview.paintedHeight) / 2
+        return Qt.point(x, y)
+    }
 
+    Timer {
+        id: initTimer
+        interval: 1
+        repeat: false
+        onTriggered: selectAuto()
+    }
+
+    Component.onCompleted: {
+        cutview.topLeftChanged.connect(function() {
+            topleft.center = unmapPoint(cutview.topLeft)
+        })
+
+        cutview.topRightChanged.connect(function() {
+            topright.center = unmapPoint(cutview.topRight)
+        })
+
+        cutview.bottomRightChanged.connect(function() {
+            bottomright.center = unmapPoint(cutview.bottomRight)
+        })
+
+        cutview.bottomLeftChanged.connect(function() {
+            bottomleft.center = unmapPoint(cutview.bottomLeft)
+        })
+
+        cutview.topChanged.connect(function() {
+            top.center = unmapPoint(cutview.top)
+        })
+
+        cutview.bottomChanged.connect(function() {
+            bottom.center = unmapPoint(cutview.bottom)
+        })
+
+        cutview.leftChanged.connect(function() {
+            left.center = unmapPoint(cutview.left)
+        })
+
+        cutview.rightChanged.connect(function() {
+            right.center = unmapPoint(cutview.right)
+        })
+
+        cutview.rotationChanged.connect(function() {
+            frame.requestPaint()
+        })
+
+        /* Scanner.originalImageChanged.connect(function() { */
+        /*     initTimer.start() */
+        /* }) */
     }
 }

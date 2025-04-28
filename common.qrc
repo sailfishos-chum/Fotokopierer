@@ -1,10 +1,13 @@
 <RCC>
   <qresource>
 	 <file>qml/common/CutImageView.qml</file>
+	 <file>qml/common/ColorizeChooserItem.qml</file>
 	 <file>qml/common/CornerMarker.qml</file>
 	 <file>qml/common/DragDelegate.qml</file>
 	 <file>icons/brightness.svg</file>
 	 <file>icons/contrast.svg</file>
+	 <file>icons/threshold.svg</file>
+	 <file>icons/blocksize.svg</file>
 	 <file>icons/harbour-fotokopierer.svg</file>
 	 <file>icons/toolbar-copy.svg</file>
 	 <file>icons/toolbar-cut.svg</file>

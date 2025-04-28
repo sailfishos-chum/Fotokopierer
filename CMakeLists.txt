@@ -2,14 +2,14 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.2.6)
+set(FOTOKOPIERER_VERSION 0.3.2)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.14)
 set(FREETYPE_VERSION 2.10.4)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -29,19 +29,23 @@ else()
 endif()
 
 set(SOURCES
-  src/Clipboard.cxx
-  src/ColorizeFilter.cxx
-  src/Convert.cxx
-  src/CutFilter.cxx
-  src/Document.cxx
   src/DocumentList.cxx
-  src/Filter.cxx
-  src/FilterImage.cxx
-  src/Fotokopierer.cxx
+  src/Document.cxx
   src/Page.cxx
-  src/RotateFilter.cxx
+  src/Clipboard.cxx
+
   src/Scanner.cxx
+  src/ScanImage.cxx
+  src/ScanImageView.cxx
+  src/CutView.cxx
+  src/ColorizeView.cxx
+  src/ColorizeChooser.cxx
   src/ZoomImage.cxx
+
+  src/Fotokopierer.cxx
+  src/Convert.cxx
+  src/EdgeDetection.cxx
+
   src/init.cxx)
 
 set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
@@ -61,6 +65,12 @@ if (SAILFISH_FOUND)
   # configure OpenCV
   set(OpenCV_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/opencv)
 
+  if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL i486)
+    # we disable this flag because otherwise OpenCV will complain about some undefined
+    # _mm_pause function (a compiler intrinsic?)
+    set(OPENCV_EXTRA_CXX_FLAGS "-U__SSE2__")
+  endif()
+
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
@@ -69,6 +79,8 @@ if (SAILFISH_FOUND)
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_BUILD_TYPE=Release
+    -DOPENCV_EXTRA_CXX_FLAGS=${OPENCV_EXTRA_CXX_FLAGS}
     -DBUILD_DOCS=OFF
     -DBUILD_EXAMPLES=OFF
     -DBUILD_FAT_JAVA_LIB=OFF
@@ -78,6 +90,8 @@ if (SAILFISH_FOUND)
     -DBUILD_PERF_TESTS=OFF
     -DBUILD_SHARED_LIBS=OFF
     -DBUILD_TESTS=OFF
+    # we must disable libjpeg-turbo because of a version clash
+    -DBUILD_JPEG_TURBO_DISABLE=ON
     -DBUILD_opencv_apps=OFF
     -DBUILD_opencv_calib3d=OFF
     -DBUILD_opencv_dnn=OFF
@@ -112,6 +126,8 @@ if (SAILFISH_FOUND)
     add_custom_target(opencv-3rdparty)
   endif ()
 
+  link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+
   # We must use our own freetype library
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
@@ -128,7 +144,7 @@ if (SAILFISH_FOUND)
     -DBUILD_SHARED_LIBS:BOOL=false
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
 
-  link_directories(${FREETYPE_PREFIX}/lib)
+  link_directories(${FREETYPE_PREFIX}/lib64 ${FREETYPE_PREFIX}/lib)
 
   # configure PoDoFo
   find_package(PNG REQUIRED)
@@ -154,12 +170,15 @@ if (SAILFISH_FOUND)
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
     -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
     -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
-    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib
+    # the following should be libjpeg-turbo in case that would work ...
+    -DLIBJPEG_LIBRARY_NAMES=jpeg)
 
   link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg-turbo PNG::PNG freetype)
+  # use libjpeg-turbo in case that would work ...
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 
@@ -188,6 +207,10 @@ if (SAILFISH_FOUND)
 else()
   qt5_add_resources(RESOURCES desktop.qrc)
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
+
+  add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
+  qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
+  target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 endif()
 
 set_property(TARGET ${TARGET} PROPERTY
@@ -210,8 +233,10 @@ qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+
 # install(DIRECTORY qml DESTINATION share/${TARGET})
 # install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
+
 install(FILES ${TARGET}.desktop DESTINATION share/applications)
 install(FILES icons/86x86/${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
 install(FILES icons/108x108/${TARGET}.png DESTINATION share/icons/hicolor/108x108/apps)

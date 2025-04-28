@@ -1,14 +1,18 @@
-target = harbour-fotokopierer
+program = harbour-fotokopierer
 
 sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
 
 arch := i486
 #arch := armv7hl
+arch := i486
 #arch := aarch64
 
 # Select the latest available target for the given architecture
 target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+
+# Select the emulator device '#0'
+emulator := $(shell $(sfdk) emulator list | awk -F'"' '/\#0/ { print $$2 }')
 
 device := jolla
 
@@ -18,8 +22,6 @@ emu_dir := $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 mer_root_dir := $(current_dir)
-
-mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost
 
 ifeq ($(arch),i486)
   build_dir := rpmbuilddir-i386
@@ -31,49 +33,51 @@ else
 endif
 endif
 
-emu_ssh := ssh -p 2223 -i $(emu_dir)/nemo nemo@localhost
-emu_ssh_root := ssh -p 2223 -i $(emu_dir)/root root@localhost
-
 TRANSLATIONS = de sv
 
-.PHONY: all build buildall clean install rpm run deploy-emu
+.PHONY: all
 all: compile
 
+.PHONY: reformat
 reformat:
 	clang-format -i --style=file src/*xx
 
-installdeps:
-	sf
-
+.PHONY: build
 build: reformat lrelease
 	$(sfdk) -c "target=$(target)" build
 
+.PHONY: compile
 compile: reformat lrelease
 	$(sfdk) -c "target=$(target)" build-shell make -C $(build_dir) -j4
 
 .PHONY: make
 make: compile
 
+$(build_dir)/$(program): make
+
+.PHONY: install
 install:
 	$(sfdk) -c "target=$(target)" make-install
 
-rpm: lrelease
+rpm_version := $(shell cat rpm/$(program).yaml | awk '/^Version:/ {print $$2}')
+rpm_release := $(shell cat rpm/$(program).yaml | awk '/^Release:/ {print $$2}' | awk -F% '{print $$1}')
+rpm_file := RPMS/$(program)-$(rpm_version)-$(rpm_release).$(arch).rpm
+
+.PHONY: rpm
+rpm:
+	$(MAKE) lrelease $(rpm_file)
+
+$(rpm_file): $(build_dir)/$(program) rpm/$(program).yaml rpm/$(program).changes
 	touch rpm/*.yaml
 	$(sfdk) -c "target=$(target)" package
 
-deploy-emu: all rpm
-	scp -P 2223 -i $(emu_dir)/nemo RPMS/* nemo@localhost:
-	$(emu_ssh_root) 'rpm --reinstall /home/nemo/$(target)-*.i486.rpm'
+.PHONY: deploy-emu
+deploy-emu: $(rpm_file)
+	$(sfdk) -c "device=$(emulator)" deploy --rsync
 
-.PHONY: install-jolla copy-jolla run-jolla
-rpm-jolla: rpm
-	scp RPMS/harbour-fotokopierer*.armv7hl.rpm $(device):
-
-install-jolla:
-	scp rpmbuilddir-arm/harbour-fotokopierer $(device):
-
-run-jolla:
-	ssh -tt $(device) './harbour-fotokopierer'
+.PHONY: run-emu
+run-emu:
+	$(sfdk) emulator exec /opt/sdk/$(program)/usr/bin/$(program)
 
 # Translations
 $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po
@@ -93,9 +97,10 @@ translations.qrc: $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm)
 	@echo "  </qresource>" >> $@
 	@echo "</RCC>" >> $@
 
-snapshot_version := $(shell fossil info | awk '/^checkout:/ {print "1%{?dist}.fossil+" substr($$2, 1, 8)}')
+snapshot_version := $(shell fossil info | awk '/^checkout:/ {print substr($$2, 1, 8)}')
 snapshot:
-	sed -ie 's/^Release: 1%{?dist}.*$$/Release: ${snapshot_version}/' rpm/harbour-fotokopierer.yaml
+	sed -i -e 's/^Release: 1%{?dist}.*$$/Release: 1%{?dist}.fossil+${snapshot_version}/' rpm/harbour-fotokopierer.yaml
+	sed -i -e 's/FOTOKOPIERER_VERSION="$${FOTOKOPIERER_VERSION.*"/FOTOKOPIERER_VERSION="$${FOTOKOPIERER_VERSION}.fossil+${snapshot_version}"/' CMakeLists.txt
 
 clean:
 	$(sfdk) build-shell make -C $(build_dir) clean

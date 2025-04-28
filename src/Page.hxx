@@ -25,7 +25,7 @@
 
 #include <memory>
 
-class Scanner;
+class ScanImage;
 
 /// A single scanned page.
 class Page : public QObject
@@ -77,12 +77,12 @@ public:
     /// Initialize this page from the results of a Scanner.
     ///
     /// The page files are stored in the document directory `dir`.
-    void loadFromScanner(const QDir& dir, const Scanner* scanner);
+    void newFromImage(const QDir& dir, const std::shared_ptr<ScanImage>& scanImage);
 
     /// Initialize this page from the results of a Scanner.
     ///
     /// The page files reuse (and overwrite) the current files.
-    void updateFromScanner(const Scanner* scanner);
+    void updateFromImage(const std::shared_ptr<ScanImage>& scanImage);
 
     /// Make this page a copy of another page.
     ///
@@ -101,10 +101,10 @@ public slots:
     void remove();
 
 private:
-    void updateFromScanner(const Scanner* scanner,
-                           const QString& original_path,
-                           const QString& result_path,
-                           const QDateTime& creation_time);
+    void updateImage(const std::shared_ptr<ScanImage>& scanImage,
+                     const QString& original_path,
+                     const QString& result_path,
+                     const QDateTime& creation_time);
 
     QString updateThumbnail(const QString& filename);
 

@@ -646,19 +646,33 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
         PdfPainter painter;
 
         for (auto& page : pageimages) {
-            PdfImage pageimage(&pdf);
-            pageimage.LoadFromFile(page.toUtf8().data());
+            try {
+                PdfImage pageimage(&pdf);
+                pageimage.LoadFromFile(page.toUtf8().data());
 
-            auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
-            if (pdfpage == nullptr) {
-                PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
+                auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
+                if (pdfpage == nullptr) {
+                    PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
+                }
+
+                painter.SetPage(pdfpage);
+
+                painter.DrawImage(0.0, 0.0, &pageimage);
+
+                painter.FinishPage();
+            } catch (PdfError& e) {
+                qWarning() << "Error exporting pdf: " << e.what() << " while processing " << page;
+                auto fmts = PdfImage::GetSupportedFormats();
+                QStringList formats;
+                for (auto fmt = fmts; *fmt != nullptr; ++fmt) {
+                    formats << QString::fromLatin1(*fmt);
+                }
+                qWarning() << "Supported image formats: " << formats.join(QStringLiteral(", "));
+
+                e.PrintErrorMsg();
+
+                throw;
             }
-
-            painter.SetPage(pdfpage);
-
-            painter.DrawImage(0.0, 0.0, &pageimage);
-
-            painter.FinishPage();
         }
 
         pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
@@ -671,7 +685,12 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
 void Document::exportToPdf(bool overwrite)
 {
-    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"), overwrite);
+    QString filename = d->doc.title;
+    // replace some illegal characters in the filename
+    filename.replace(QLatin1Char(':'), QLatin1Char('_'));
+    filename.replace(QLatin1Char('/'), QLatin1Char('_'));
+    filename.replace(QLatin1Char('\\'), QLatin1Char('_'));
+    exportToPdf(getDocumentDirectory().filePath(filename) + QStringLiteral(".pdf"), overwrite);
 }
 
 void Document::onPdfExportFinished()

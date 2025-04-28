@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,69 +15,59 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_FILTERIMAGE_HXX__
-#define __FOTOKOPIERER_FILTERIMAGE_HXX__
+#ifndef __FOTOKOPIERER_SCANIMAGEVIEW_HXX__
+#define __FOTOKOPIERER_SCANIMAGEVIEW_HXX__
 
 #include <QtQuick/QQuickPaintedItem>
 
 #include <memory>
 
-#include "Scanner.hxx"
+class Scanner;
 
-class Filter;
-
-class FilterImage : public QQuickPaintedItem
+class ScanImageView : public QQuickPaintedItem
 {
     Q_OBJECT
 
     Q_PROPERTY(qreal paintedWidth READ paintedWidth NOTIFY paintedSizeChanged)
     Q_PROPERTY(qreal paintedHeight READ paintedHeight NOTIFY paintedSizeChanged)
 
-    Q_PROPERTY(Scanner::FilterType filterType READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
-    Q_PROPERTY(Scanner* image READ image WRITE setImage NOTIFY imageChanged)
-    Q_PROPERTY(QVariant filter READ filter NOTIFY filterTypeChanged)
+    Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
+
+    Q_PROPERTY(Scanner* scanner READ scanner WRITE setScanner NOTIFY scannerChanged)
 
 public:
-    FilterImage(QQuickItem* parent = nullptr);
+    ScanImageView(QQuickItem* parent = nullptr);
 
-    FilterImage(const FilterImage&) = delete;
-    FilterImage(FilterImage&&) = delete;
-    FilterImage& operator=(const FilterImage&) = delete;
-    FilterImage& operator=(FilterImage&&) = delete;
+    ~ScanImageView() override;
 
-    ~FilterImage() override;
+    Scanner* scanner() const;
+
+    void setScanner(Scanner* scanner);
 
     qreal paintedWidth() const;
 
     qreal paintedHeight() const;
 
-    Scanner::FilterType filterType() const;
-
-    Scanner* image() const;
+    bool busy() const;
 
     void paint(QPainter* painter) override;
 
-    QVariant filter() const;
-
-public slots:
-    void setFilterType(Scanner::FilterType type);
-
-    void setImage(Scanner* image);
-
-private:
-    void updateFilter();
-
-private slots:
-    void update();
-
-    void onFilteredImageReady();
-
 signals:
+    void scannerChanged();
+    void busyChanged();
     void paintedSizeChanged();
 
-    void filterTypeChanged();
+protected:
+    /// Change the busy marker.
+    void setBusy(bool busy);
 
-    void imageChanged();
+    void setPaintedSize(qreal pwidth, qreal pheight);
+
+    /// Return the image to be drawn.
+    virtual QImage image() const = 0;
+
+protected slots:
+    virtual void onNewImage() = 0;
 
 private:
     struct Data;

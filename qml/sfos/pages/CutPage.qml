@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,11 +24,17 @@ import "../../common"
 Page {
     id: page
 
+    property bool restoreSelection: false
+
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            cutview.selectionFromFilter()
+            if (restoreSelection) {
+                cutview.restoreSelection()
+            } else {
+                cutview.initSelection()
+            }
         }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
@@ -49,6 +55,15 @@ Page {
         width: parent.width - 2 * Theme.iconSizeSmall
         markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
+
+        onBusyChanged: console.log("set busy indicator to " + cutview.busy)
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
+            running: cutview.busy
+        }
     }
 
     DockedPanel {
@@ -118,6 +133,13 @@ Page {
                     icon.width: Theme.iconSizeMedium
                     icon.height: Theme.iconSizeMedium
                     onClicked: listModel.actions[name]()
+                    enabled: name != "auto" || cutview.hasAutoSelection
+
+                    BusyIndicator {
+                        size: BusyIndicatorSize.Medium
+                        anchors.centerIn: parent
+                        running: name == "auto" && cutview.isAutoDetectionRunning
+                    }
                 }
             }
         }
