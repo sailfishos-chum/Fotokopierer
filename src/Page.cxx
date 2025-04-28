@@ -17,6 +17,7 @@
 
 #include "Page.hxx"
 
+#include "Document.hxx"
 #include "PlainImage.hxx"
 
 #include <QtCore/QDateTime>
@@ -183,8 +184,7 @@ void Page::remove()
 
 bool Page::write(QJsonObject& json) const
 {
-    json[QStringLiteral("creationTime")] =
-        d->creation_time.toString(QStringLiteral("yyyyMMddTHHmmss"));
+    json[QStringLiteral("creationTime")] = d->creation_time.toString(Document::FilenameFormat);
     json[QStringLiteral("originalPath")] = d->original_path;
     json[QStringLiteral("resultPath")] = d->result_path;
     if (!d->thumbnail_path.isEmpty()) {
@@ -199,7 +199,7 @@ bool Page::read(const QJsonObject& json)
     auto page_creation_time = json[QStringLiteral("creationTime")];
     if (!page_creation_time.isString()) return false;
     auto page_ctime =
-        QDateTime::fromString(page_creation_time.toString(), QStringLiteral("yyyyMMddTHHmmss"));
+        QDateTime::fromString(page_creation_time.toString(), Document::FilenameFormat);
     if (page_ctime.isNull()) return false;
 
     auto page_original_path = json[QStringLiteral("originalPath")];
