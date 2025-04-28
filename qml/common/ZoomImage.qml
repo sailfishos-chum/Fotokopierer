@@ -51,7 +51,6 @@ Rectangle {
 		  Image {
 				id: zoomimg
 				fillMode: Image.PreserveAspectFit
-				cache: false
 				width: image.paintedWidth * zoom.scaleFactor
 				height: image.paintedHeight * zoom.scaleFactor
 				source: image.source
