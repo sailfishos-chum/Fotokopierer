@@ -15,11 +15,40 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-import QtQuick 2.2
-import Sailfish.Silica 1.0
-import "pages"
+#ifndef __FOTOKOPIERER_DOCUMENTLIST_HXX__
+#define __FOTOKOPIERER_DOCUMENTLIST_HXX__
 
-ApplicationWindow
+#include <QtCore/QAbstractListModel>
+
+#include <memory>
+
+/// Collection of all documents.
+class DocumentList : public QAbstractListModel
 {
-    initialPage: Component { Documents { } }
-}
+    Q_OBJECT
+public:
+    enum DocumentRoles {
+        TitleRole = Qt::UserRole + 1,
+        CreationTimeRole,
+        NumPagesRole,
+        DocumentRole
+    };
+
+public:
+    DocumentList(QObject *parent = nullptr);
+
+    ~DocumentList();
+
+private:
+    int rowCount(const QModelIndex &parent) const override;
+
+    QVariant data(const QModelIndex &index, int role) const override;
+
+    QHash<int, QByteArray> roleNames() const override;
+
+private:
+    struct Data;
+    std::unique_ptr<Data> d;
+};
+
+#endif

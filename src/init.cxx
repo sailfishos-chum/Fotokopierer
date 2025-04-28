@@ -29,6 +29,7 @@
 #include "ZoomImage.hxx"
 
 #include "Document.hxx"
+#include "DocumentList.hxx"
 #include "Util.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
@@ -39,8 +40,8 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         });
 
     qmlRegisterSingletonType<Document>(
-        "Fotokopierer", 1, 0, "TestDocument", [](QQmlEngine*, QJSEngine*) -> QObject* {
-            return new Document;
+        "Fotokopierer", 1, 0, "DocumentList", [](QQmlEngine*, QJSEngine*) -> QObject* {
+            return new DocumentList;
         });
 
     qmlRegisterType<ColorizeImage>("Fotokopierer", 1, 0, "ColorizeImage");
@@ -48,6 +49,8 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
     qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
+    qmlRegisterUncreatableType<Document>(
+        "Fotokopierer", 1, 0, "Doc", QStringLiteral("Document cannot be used as QML component"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));

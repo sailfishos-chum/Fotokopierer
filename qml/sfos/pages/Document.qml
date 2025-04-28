@@ -27,7 +27,7 @@ import "../../common"
 Page {
     id: docpage
 
-    property var document: TestDocument
+    property var document
     property bool editing: false
     property bool dragging: false
     property bool deleting: false
@@ -112,12 +112,8 @@ Page {
     }
 
     Component.onCompleted: {
-        if (!document.load("/home/nemo/fotokopierer/doc1/doc.json", null)) {
-            console.log("can't load document file")
-        } else {
-            visualModel.model = document
-            visualModel.items.insert({"role_thumbnail": null})
-        }
+        visualModel.model = document
+        visualModel.items.insert({"role_thumbnail": null})
     }
 
     SilicaGridView {

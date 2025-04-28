@@ -16,21 +16,70 @@
  */
 
 import QtQuick 2.0
+import QtQml.Models 2.2
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 
 import "../../common"
 
 Page {
     id: page
 
-    SilicaFlickable {
+    DelegateModel {
+        id: visualModel
+        model: DocumentList
+        delegate: MouseArea {
+            width: grid.cellWidth
+            height: grid.cellHeight
+
+            Rectangle {
+                border.width: 1
+                border.color: Theme.highlightColor
+                color: "transparent"
+
+                anchors.fill: parent
+
+                Column {
+                    width: parent.width
+
+                    Text {
+                        text: role_title
+                        color: Theme.highlightColor
+                    }
+
+                    Text {
+                        text: role_creationTime
+                        color: Theme.highlightColor
+                    }
+
+                    Text {
+                        text: role_numPages
+                        color: Theme.highlightColor
+                    }
+                }
+            }
+
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("Document.qml"), {"document": role_document})
+            }
+        }
+    }
+
+    SilicaGridView {
+        id: grid
+
         anchors.fill: parent
 
-        /* CutImage { */
-        /*     id: img */
-        /*     anchors.fill: parent */
-        /*     markerColor: Theme.primaryColor */
-        /*     lineColor: Theme.highlightColor */
-        /* } */
+        cellWidth: width / 2
+        cellHeight: (height - Theme.itemSizeLarge) / 2
+
+        header: PageHeader {
+            id: head
+            title: qsTr("Documents")
+        }
+
+        model: visualModel
+
+        VerticalScrollDecorator {}
     }
 }

@@ -30,6 +30,7 @@ set(SOURCES
   src/Convert.cxx
   src/CutImage.cxx
   src/Document.cxx
+  src/DocumentList.cxx
   src/Page.cxx
   src/PlainImage.cxx
   src/RotImage.cxx
