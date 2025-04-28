@@ -28,7 +28,9 @@ Page {
     id: docpage
 
     property var document: TestDocument
+    property bool editing: false
     property bool dragging: false
+    property bool deleting: false
 
     Component {
         id: imagePickerPage
@@ -62,9 +64,10 @@ Page {
     DelegateModel {
         id: visualModel
         delegate: PageDelegate {
+            id: pageDelegate
             width: grid.cellWidth
             height: grid.cellHeight
-            factor: docpage.dragging ? 0.8 : 0.9
+            factor: docpage.editing || docpage.dragging ? 0.8 : 0.9
             page: role_page
             isAddButton: role_page == null
 
@@ -72,9 +75,31 @@ Page {
                 NumberAnimation { duration: 100 }
             }
 
+            onDraggingStarted: {
+                docpage.editing = false
+                docpage.dragging = true
+            }
             onDraggingFinished: docpage.dragging = false
             onItemMoved: visualModel.model.move(from, to)
             onAddPage: pageStack.push(imagePickerPage)
+
+            IconButton {
+                visible: docpage.editing && isAddButton
+                anchors { top: parent.top; right: parent.right }
+                icon.source: "image://theme/icon-l-clear"
+                onClicked: {
+                    docpage.dragging = false
+                    docpage.editing = false
+                    docpage.deleting = true
+                    remorse.execute(pageDelegate, qsTr("Delete page"), function () { console.log("BAAAAAM")})
+                }
+            }
+
+            RemorseItem {
+                id: remorse
+                onCanceled: docpage.deleting = false
+                onTriggered: docpage.deleting = false
+            }
         }
 
         Component.onCompleted: {
@@ -114,10 +139,10 @@ Page {
 
         MouseArea {
             anchors.fill: parent
-            visible: !docpage.dragging
+            visible: !docpage.dragging && !docpage.deleting && !docpage.editing
 
             onPressAndHold: {
-                docpage.dragging = true
+                docpage.editing = true
             }
         }
 

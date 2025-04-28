@@ -29,6 +29,7 @@ MouseArea {
     default property alias data: content.data
 
     signal itemMoved(int from, int to)
+    signal draggingStarted()
     signal draggingFinished()
 
     drag.target: held ? content : undefined
@@ -37,6 +38,7 @@ MouseArea {
     onPressed: {
         held = true
         sourceIndex = DelegateModel.itemsIndex
+        draggingStarted()
     }
 
     onReleased: {
