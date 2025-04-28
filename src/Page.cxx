@@ -29,29 +29,29 @@
 
 namespace
 {
-/// Thread to load and scale image asynchronously.
+/// Task to load and scale an image asynchronously.
 ///
 /// This thread loads the original file, scales it down, stores the thumbnail in
 /// a file and the sends the resulting image as its signal.
-class LoadThread : public QThread
+class ThumbnailTask : public QObject
 {
     Q_OBJECT
 
-public:
-    LoadThread(const QString& filename) : filename_(filename)
+public slots:
+    void run(const QString& filename)
     {
         // compute the resulting filename by attaching "-thumb" to the file name
-        QFileInfo f(filename_);
-        scaled_filename_ = f.path() + QStringLiteral("/") + f.baseName() +
-                           QStringLiteral("-thumb.") + f.completeSuffix();
-    }
+        QFileInfo f(filename);
+        QString scaled_filename = f.path() + QStringLiteral("/") + f.baseName() +
+                                  QStringLiteral("-thumb.") + f.completeSuffix();
 
-    void run() override
-    {
         // load original file
-        QImage img(filename_);
+        QImage img(filename);
 
-        if (img.isNull()) return;
+        if (img.isNull()) {
+            emit resultReady({});
+            return;
+        }
 
         // scale down
         QImage scaled;
@@ -62,23 +62,31 @@ public:
         }
 
         // write thumbnail to file
-        scaled.save(scaled_filename_);
+        scaled.save(scaled_filename);
 
         // send result
-        emit imageLoaded(scaled_filename_);
+        emit resultReady(scaled_filename);
     }
 
 signals:
-    void imageLoaded(const QString& path);
-
-private:
-    QString filename_;
-    QString scaled_filename_;
+    void resultReady(const QString& path);
 };
+
+static QThread* thumbnailThread()
+{
+    static QThread thread;
+    static bool started = false;
+    if (!started) {
+        started = true;
+        thread.start();
+    }
+    return &thread;
+}
 
 }  // namespace
 
 struct Page::Data {
+    ThumbnailTask* task = nullptr;
     QDateTime creation_time;
     QString original_path;
     QString result_path;
@@ -102,7 +110,10 @@ Page::Page(const QDateTime& creation_time,
     d->thumbnail_path = thumbnail_path;
 }
 
-Page::~Page() = default;
+Page::~Page()
+{
+    if (d->task) d->task->deleteLater();
+}
 
 QDateTime Page::creationTime() const
 {
@@ -126,11 +137,16 @@ QString Page::thumbnail()
         if (!d->thumbnail_path.isEmpty()) {
             d->thumbnail_path = QString();
         }
-        LoadThread* thr = new LoadThread(d->result_path);
-        connect(thr, &LoadThread::imageLoaded, this, &Page::setThumbnail);
-        connect(thr, &LoadThread::finished, thr, &QObject::deleteLater);
-        connect(thr, &LoadThread::finished, thr, [this]() { d->loading = false; });
-        thr->start();
+
+        if (!d->task) {
+            auto task = new ThumbnailTask();
+            task->moveToThread(thumbnailThread());
+            connect(task, &ThumbnailTask::resultReady, this, &Page::setThumbnail);
+            connect(this, &Page::refreshThumbnail, task, &ThumbnailTask::run);
+            d->task = task;
+        }
+
+        emit refreshThumbnail(d->result_path);
     }
 
     return {};
@@ -142,6 +158,10 @@ void Page::setThumbnail(const QString& path)
         d->thumbnail_path = path;
         emit thumbnailChanged();
     }
+
+    d->loading = false;
+    d->task->deleteLater();
+    d->task = nullptr;
 }
 
 QString Page::getOriginalImagePath() const

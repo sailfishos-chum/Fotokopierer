@@ -65,6 +65,7 @@ private slots:
     void setThumbnail(const QString& path);
 
 signals:
+    void refreshThumbnail(const QString& filename);
     void thumbnailChanged();
 
 private:
