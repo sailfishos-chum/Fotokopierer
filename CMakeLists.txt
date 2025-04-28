@@ -34,7 +34,6 @@ set(SOURCES
   src/Page.cxx
   src/PlainImage.cxx
   src/RotImage.cxx
-  src/TransformWorker.cxx
   src/Util.cxx
   src/ZoomImage.cxx
   src/init.cxx)

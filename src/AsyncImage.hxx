@@ -20,10 +20,14 @@
 
 #include "BaseImage.hxx"
 
+class AsyncImageTask;
+
 /// A base image with asynchronous transformation.
 class AsyncImage : public BaseImage
 {
     Q_OBJECT
+
+    friend class AsyncImageTask;
 
 public:
     AsyncImage();

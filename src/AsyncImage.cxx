@@ -17,10 +17,25 @@
 
 #include "AsyncImage.hxx"
 
-#include "TransformWorker.hxx"
-
 #include <QtCore/QThread>
 #include <QtGui/QImage>
+
+class AsyncImageTask : public QObject
+{
+    Q_OBJECT
+
+public:
+    AsyncImageTask(AsyncImage* image) : image_(image) {}
+
+public slots:
+    void run(const QImage& source) { emit resultReady(image_->transform(source)); }
+
+signals:
+    void resultReady(const QImage& image);
+
+private:
+    AsyncImage* image_;
+};
 
 struct AsyncImage::Data {
     QThread thread;
@@ -36,11 +51,11 @@ struct AsyncImage::Data {
 
 AsyncImage::AsyncImage() : d(new Data)
 {
-    auto worker = new TransformWorker(this);
-    worker->moveToThread(&d->thread);
-    connect(&d->thread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(this, &AsyncImage::startTransform, worker, &TransformWorker::doTransform);
-    connect(worker, &TransformWorker::resultReady, this, &AsyncImage::finishTransform);
+    auto task = new AsyncImageTask(this);
+    task->moveToThread(&d->thread);
+    connect(&d->thread, &QThread::finished, task, &QObject::deleteLater);
+    connect(this, &AsyncImage::startTransform, task, &AsyncImageTask::run);
+    connect(task, &AsyncImageTask::resultReady, this, &AsyncImage::finishTransform);
     d->thread.start();
 }
 
@@ -68,3 +83,5 @@ void AsyncImage::finishTransform(const QImage& image)
         d->thread_running = false;
     }
 }
+
+#include "AsyncImage.moc"
