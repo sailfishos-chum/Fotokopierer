@@ -10,11 +10,11 @@ Name:       harbour-fotokopierer
 
 Summary:    Document Scanner
 Version:    0.4.5
-Release:    1%{?dist}
+Release:    2%{?dist}
 Group:      Qt/Qt
 License:    GPLv3+
-URL:        https://fifr.spdns.de/fossils/harbour-fotokopierer
-Source0:    %{name}-%{version}.tar.bz2
+URL:        https://chiselapp.com/user/fifr/repository/fotokopierer
+Source0:    %{name}-%{version}.tar.gz
 Source100:  harbour-fotokopierer.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
@@ -42,8 +42,7 @@ BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
 %description
-This sample project shows how to build a Sailfish application with a
-custom build system.
+A camera-scanning application for Sailfish OS.
 
 
 %prep

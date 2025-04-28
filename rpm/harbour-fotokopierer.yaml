@@ -1,19 +1,18 @@
 Name: harbour-fotokopierer
 Summary: Document Scanner
 Version: 0.4.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
 Group: Qt/Qt
-URL: https://fifr.spdns.de/fossils/harbour-fotokopierer
+URL: https://chiselapp.com/user/fifr/repository/fotokopierer
 License: GPLv3+
 # This must be generated before uploading a package to a remote build service.
 # Usually this line does not need to be modified.
 Sources:
-- '%{name}-%{version}.tar.bz2'
+- '%{name}-%{version}.tar.gz'
 Description: |
-  This sample project shows how to build a Sailfish application with a
-  custom build system.
+  A camera-scanning application for Sailfish OS.
 Configure: none
 # Do not use automatic builder.
 Builder: none
