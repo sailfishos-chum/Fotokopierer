@@ -72,7 +72,7 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: (qsTr("Icons by %1").arg("Tobias Planitzer"))
+                text: (qsTr("Icons by %1").arg("planetos"))
             }
 
             Separator {
