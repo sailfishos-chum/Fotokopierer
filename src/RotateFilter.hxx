@@ -29,7 +29,7 @@ class RotateFilter : public Filter
 public:
     explicit RotateFilter(ScanImage* image);
 
-    explicit RotateFilter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter);
+    explicit RotateFilter(ScanImage* image, Filter* previous_filter);
 
     ~RotateFilter() override;
 

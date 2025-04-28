@@ -23,7 +23,7 @@
 #include <QtGui/QPainter>
 
 struct FilterImage::Data {
-    std::shared_ptr<Filter> filter = nullptr;
+    Filter* filter = nullptr;
     qreal painted_width = 0;
     qreal painted_height = 0;
 
@@ -75,19 +75,19 @@ void FilterImage::setImage(ScanImage* image)
 
 QVariant FilterImage::filter() const
 {
-    return QVariant::fromValue(d->filter.get());
+    return QVariant::fromValue(d->filter);
 }
 
 void FilterImage::updateFilter()
 {
     if (d->filter != nullptr) {
-        disconnect(d->filter.get(), &Filter::filterChanged, this, &FilterImage::update);
+        disconnect(d->filter, &Filter::filterChanged, this, &FilterImage::update);
     }
 
     if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
         qDebug() << "FilterImage: set filter type = " << d->filter_type;
         d->filter = d->image->filter(d->filter_type);
-        connect(d->filter.get(), &Filter::filterChanged, this, &FilterImage::update);
+        connect(d->filter, &Filter::filterChanged, this, &FilterImage::update);
     } else {
         d->filter = nullptr;
     }

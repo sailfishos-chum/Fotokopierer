@@ -33,7 +33,7 @@ struct ColorizeFilter::Data {
 
 ColorizeFilter::ColorizeFilter(ScanImage* image) : ColorizeFilter(image, nullptr) {}
 
-ColorizeFilter::ColorizeFilter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter)
+ColorizeFilter::ColorizeFilter(ScanImage* image, Filter* previous_filter)
     : Filter(image, previous_filter), d(new Data)
 {
     connect(this, &ColorizeFilter::contrastChanged, this, &Filter::filterChanged);

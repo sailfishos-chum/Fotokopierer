@@ -30,7 +30,7 @@ struct ZoomImage::Data {
 
     ScanImage* image = nullptr;
     ScanImage::FilterType filter_type = ScanImage::FilterType::None;
-    std::shared_ptr<Filter> filter = nullptr;
+    Filter* filter = nullptr;
 };
 
 ZoomImage::ZoomImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data) {}
@@ -126,12 +126,12 @@ ScanImage::FilterType ZoomImage::filterType() const
 void ZoomImage::updateFilter()
 {
     if (d->filter != nullptr) {
-        disconnect(d->filter.get(), &Filter::filterChanged, this, &ZoomImage::updateImage);
+        disconnect(d->filter, &Filter::filterChanged, this, &ZoomImage::updateImage);
     }
 
     if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
         d->filter = d->image->filter(d->filter_type);
-        connect(d->filter.get(), &Filter::filterChanged, this, &ZoomImage::updateImage);
+        connect(d->filter, &Filter::filterChanged, this, &ZoomImage::updateImage);
     }
     update();
 }

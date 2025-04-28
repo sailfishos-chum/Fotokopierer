@@ -29,7 +29,7 @@ class CutFilter : public Filter
 public:
     explicit CutFilter(ScanImage* image);
 
-    CutFilter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter);
+    CutFilter(ScanImage* image, Filter* previous_filter);
 
     ~CutFilter() override;
 

@@ -50,7 +50,7 @@ public:
 
     ~ScanImage() override;
 
-    std::shared_ptr<Filter> filter(FilterType type);
+    Filter* filter(FilterType type);
 
     Q_INVOKABLE bool loadFile(const QString& file_name);
 

@@ -31,7 +31,7 @@ class Filter : public QObject
 public:
     explicit Filter(ScanImage* image);
 
-    Filter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter);
+    Filter(ScanImage* image, Filter* previous_filter);
 
     virtual ~Filter();
 
@@ -49,7 +49,7 @@ signals:
     void filterChanged();
 
 protected:
-    std::shared_ptr<Filter> previous_filter_;
+    Filter* previous_filter_;
 };
 
 #endif

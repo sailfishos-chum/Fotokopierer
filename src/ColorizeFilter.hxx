@@ -41,7 +41,7 @@ public:
 public:
     explicit ColorizeFilter(ScanImage* image);
 
-    ColorizeFilter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter);
+    ColorizeFilter(ScanImage* image, Filter* previous_filter);
 
     ~ColorizeFilter() override;
 

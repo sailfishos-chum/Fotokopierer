@@ -40,7 +40,7 @@ struct CutFilter::Data {
 
 CutFilter::CutFilter(ScanImage* image) : CutFilter(image, nullptr) {}
 
-CutFilter::CutFilter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter)
+CutFilter::CutFilter(ScanImage* image, Filter* previous_filter)
     : Filter(image, previous_filter), d(new Data)
 {
 }

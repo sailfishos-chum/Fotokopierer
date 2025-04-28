@@ -26,22 +26,29 @@
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 
+#include <QtDebug>
+
+#include <cassert>
+
 struct ScanImage::Data {
-    QVector<std::shared_ptr<Filter>> filter;
+    QVector<Filter*> filter;
     QImage original;
 };
 
 ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
 {
     d->filter.reserve(3);
-    d->filter.push_back(std::shared_ptr<Filter>(new RotateFilter(this)));
-    d->filter.push_back(std::shared_ptr<Filter>(new CutFilter(this, d->filter.back())));
-    d->filter.push_back(std::shared_ptr<Filter>(new ColorizeFilter(this, d->filter.back())));
+    d->filter.push_back(new RotateFilter(this));
+    d->filter.push_back(new CutFilter(this, d->filter.back()));
+    d->filter.push_back(new ColorizeFilter(this, d->filter.back()));
 }
 
-ScanImage::~ScanImage() = default;
+ScanImage::~ScanImage()
+{
+    qDebug() << "Delete ScanImage";
+}
 
-std::shared_ptr<Filter> ScanImage::filter(FilterType type)
+Filter* ScanImage::filter(FilterType type)
 {
     if (type == FilterType::None)
         return nullptr;
@@ -51,17 +58,17 @@ std::shared_ptr<Filter> ScanImage::filter(FilterType type)
 
 RotateFilter* ScanImage::rotateFilter() const
 {
-    return qobject_cast<RotateFilter*>(d->filter[static_cast<int>(FilterType::Rotate)].get());
+    return qobject_cast<RotateFilter*>(d->filter[static_cast<int>(FilterType::Rotate)]);
 }
 
 CutFilter* ScanImage::cutFilter() const
 {
-    return qobject_cast<CutFilter*>(d->filter[static_cast<int>(FilterType::Cut)].get());
+    return qobject_cast<CutFilter*>(d->filter[static_cast<int>(FilterType::Cut)]);
 }
 
 ColorizeFilter* ScanImage::colorizeFilter() const
 {
-    return qobject_cast<ColorizeFilter*>(d->filter[static_cast<int>(FilterType::Colorize)].get());
+    return qobject_cast<ColorizeFilter*>(d->filter[static_cast<int>(FilterType::Colorize)]);
 }
 
 bool ScanImage::loadFile(const QString& file_name)
@@ -78,16 +85,30 @@ bool ScanImage::loadFile(const QString& file_name)
 
 void ScanImage::saveAndClear(Document* doc)
 {
+    qDebug() << "SaveAndClear " << (void*)doc;
+    assert(doc != nullptr);
+
+    qDebug() << "SaveAndClear #2";
+
     // Compute the result image.
-    QImage image = d->original;
-    auto f = filter(static_cast<FilterType>(d->filter.size()));
-    f->apply(QImage(image));
+    qDebug() << "SaveAndClear #3";
+    auto f = filter(static_cast<FilterType>(d->filter.size() - 1));
+    qDebug() << "SaveAndClear #4";
 
-    // Clear all filters.
-    for (int i = 0; i < d->filter.size(); i++) d->filter[i] = nullptr;
+    qDebug() << "SaveAndClear #5";
 
+    assert(f != nullptr);
+    QImage image = f->apply(QImage(d->original));
+
+    qDebug() << "AddPage";
     // Add a new page.
     doc->addPage(d->original, image);
+
+    // Clear the image.
+    d->original = QImage();
+    emit originalImageChanged();
+
+    qDebug() << "Done saveAndClear";
 }
 
 QImage ScanImage::originalImage() const
