@@ -149,6 +149,8 @@ Page {
     }
 
     function addDocument() {
+        pageStack.pop(docpage, PageStackAction.Immediate)
+
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
         newPage.item.scanImage = scanImage
         newPage.item.destination = docpage
@@ -158,6 +160,7 @@ Page {
                 doc.addScannedPage(scanImage)
             }
         })
+
         pageStack.push(newPage.item)
     }
 
