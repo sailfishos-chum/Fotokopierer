@@ -28,6 +28,11 @@ class CutFilter : public Filter
 {
     Q_OBJECT
 
+    Q_PROPERTY(QPointF topLeft READ topLeft WRITE setTopLeft NOTIFY topLeftChanged)
+    Q_PROPERTY(QPointF topRight READ topRight WRITE setTopRight NOTIFY topRightChanged)
+    Q_PROPERTY(QPointF bottomRight READ bottomRight WRITE setBottomRight NOTIFY bottomRightChanged)
+    Q_PROPERTY(QPointF bottomLeft READ bottomLeft WRITE setBottomLeft NOTIFY bottomLeftChanged)
+
 public:
     explicit CutFilter(Scanner* image);
 
@@ -59,11 +64,33 @@ public:
                                QPointF bottomright,
                                QPointF bottomleft);
 
+    QPointF topLeft() const;
+
+    void setTopLeft(const QPointF& topleft);
+
+    QPointF topRight() const;
+
+    void setTopRight(const QPointF& topright);
+
+    QPointF bottomRight() const;
+
+    void setBottomRight(const QPointF& bottomright);
+
+    QPointF bottomLeft() const;
+
+    void setBottomLeft(const QPointF& bottomleft);
+
     /// Return the auto-detected cut box.
     ///
     /// The method returns a list of four points (topleft, topright,
     /// bottomright, bottomleft).
     Q_INVOKABLE QVariantList autoDetectCutRect();
+
+signals:
+    void topLeftChanged();
+    void topRightChanged();
+    void bottomRightChanged();
+    void bottomLeftChanged();
 
 private:
     struct Data;
