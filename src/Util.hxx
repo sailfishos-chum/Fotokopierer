@@ -25,7 +25,9 @@ class Util : public QObject
     Q_OBJECT
 
 public:
-    Q_INVOKABLE bool isConvex(const QPointF& x1, const QPointF& x2, const QPointF& x3,
+    Q_INVOKABLE bool isConvex(const QPointF& x1,
+                              const QPointF& x2,
+                              const QPointF& x3,
                               const QPointF& x4);
 };
 

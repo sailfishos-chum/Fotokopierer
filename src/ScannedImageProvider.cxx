@@ -43,11 +43,15 @@ struct ScannedImageProvider::Data {
     int64_t next_id = 0;
 };
 
-ScannedImageProvider::ScannedImageProvider() : QQuickImageProvider(ImageType::Image), d(new Data) {}
+ScannedImageProvider::ScannedImageProvider()
+    : QQuickImageProvider(ImageType::Image), d(new Data)
+{
+}
 
 ScannedImageProvider::~ScannedImageProvider() {}
 
-QImage ScannedImageProvider::requestImage(const QString& id, QSize* size,
+QImage ScannedImageProvider::requestImage(const QString& id,
+                                          QSize* size,
                                           const QSize& requestedSize)
 {
     auto toks = id.split(QLatin1Char('/'));
@@ -97,8 +101,11 @@ QString ScannedImageProvider::loadImage(const QString& fileName)
     return id;
 }
 
-void ScannedImageProvider::set_cut_image(const QString& image, double angle, const QPointF& topleft,
-                                         const QPointF& topright, const QPointF& bottomright,
+void ScannedImageProvider::set_cut_image(const QString& image,
+                                         double angle,
+                                         const QPointF& topleft,
+                                         const QPointF& topright,
+                                         const QPointF& bottomright,
                                          const QPointF& bottomleft)
 {
     auto img = d->images.find(image);
@@ -115,9 +122,11 @@ void ScannedImageProvider::set_cut_image(const QString& image, double angle, con
         float height = cv::max(cv::norm(tr - br), cv::norm(tl - bl));
 
         cv::Point2f src[4] = {tl, tr, br, bl};
-        cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
+        cv::Point2f dst[4] = {
+            {0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
 
         auto M = cv::getPerspectiveTransform(src, dst);
-        cv::warpPerspective(img->original, img->cut, M, {(int)width, (int)height});
+        cv::warpPerspective(
+            img->original, img->cut, M, {(int)width, (int)height});
     }
 }

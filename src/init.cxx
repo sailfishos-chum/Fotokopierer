@@ -28,8 +28,10 @@
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
-    qmlRegisterSingletonType<Util>("Fotokopierer", 1, 0, "Util",
-                                   [](QQmlEngine*, QJSEngine*) -> QObject* { return new Util(); });
+    qmlRegisterSingletonType<Util>(
+        "Fotokopierer", 1, 0, "Util", [](QQmlEngine*, QJSEngine*) -> QObject* {
+            return new Util();
+        });
     qmlRegisterType<ScannedImage>("Fotokopierer", 1, 0, "ScannedImage");
 
     auto imgprovider = new ScannedImageProvider();
@@ -40,15 +42,17 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
 
     QTranslator qtTranslator;
-    qtTranslator.load(QLatin1String("harbour-fotokopierer-") + QLocale::system().name(),
-                      QLatin1String(":/translations/"));
+    qtTranslator.load(
+        QLatin1String("harbour-fotokopierer-") + QLocale::system().name(),
+        QLatin1String(":/translations/"));
     app.installTranslator(&qtTranslator);
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Document Scanner"));
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument(QStringLiteral("file"), QStringLiteral("The image file to show"));
+    parser.addPositionalArgument(QStringLiteral("file"),
+                                 QStringLiteral("The image file to show"));
     parser.process(app);
 
     for (auto img : parser.positionalArguments()) {
