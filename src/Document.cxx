@@ -56,7 +56,10 @@ QString Document::title() const
 
 void Document::setTitle(const QString &title)
 {
-    d->title = title;
+    if (title != d->title) {
+        d->title = title;
+        emit titleChanged();
+    }
 }
 
 int Document::rowCount(const QModelIndex &parent) const
