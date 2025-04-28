@@ -28,8 +28,12 @@ MouseArea {
     property int pagecount
     property date creationTime
     property var thumbnails
+
     property bool isAddButton: false
-    property bool zoom: false
+
+    property alias deleting: deletable.deleting
+
+    signal deleteDocument()
 
     Component {
         id: addButtonView
@@ -52,7 +56,7 @@ MouseArea {
     }
 
     Component {
-        id: pageView
+        id: docView
         Item {
             Rectangle {
                 anchors.fill: parent
@@ -122,30 +126,29 @@ MouseArea {
         }
     }
 
-    Loader {
-        id: loader
+    DeletableItem {
+        id: deletable
 
-        width: parent.width * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
-        height: parent.height * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
+        anchors.fill: parent
+        onDeleteItem: deleteDocument()
 
-        Behavior on width {
-            NumberAnimation { duration: 100 }
-        }
+        Loader {
+            id: loader
 
-        Behavior on height {
-            NumberAnimation { duration: 100 }
-        }
+            anchors {
+                fill: parent
+                leftMargin: 0.05 * parent.width
+                rightMargin: 0.05 * parent.width
+                topMargin: 0.05 * parent.height
+                bottomMargin: 0.05 * parent.height
+            }
 
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
-        }
-
-        Component.onCompleted: {
-            if (!isAddButton) {
-                loader.sourceComponent = pageView;
-            } else {
-                loader.sourceComponent = addButtonView;
+            Component.onCompleted: {
+                if (!isAddButton) {
+                    loader.sourceComponent = docView;
+                } else {
+                    loader.sourceComponent = addButtonView;
+                }
             }
         }
     }

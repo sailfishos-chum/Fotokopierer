@@ -34,19 +34,19 @@ Page {
         model: DocumentList
         delegate: DocumentDelegate {
             id: docDelegate
+
             width: grid.cellWidth
             height: grid.cellHeight
-            zoom: docpage.editing
 
             title: role_title
             pagecount: role_numPages
             creationTime: role_creationTime
             thumbnails: role_thumbnails
 
+            deleting: docpage.editing
+
             isAddButton: role_thumbnails == null
             visible: !isAddButton || !docpage.editing
-
-            enabled: true
 
             onClicked: {
                 if (docpage.editing) {
@@ -66,18 +66,13 @@ Page {
                 pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
 
-            IconButton {
-                visible: docpage.editing && !isAddButton
-                anchors { top: parent.top; right: parent.right }
-                icon.source: "image://theme/icon-l-clear"
-                onClicked: {
-                    docpage.editing = false
-                    docpage.deleting = true
-                    remorse.execute(docDelegate, qsTr("Delete document"), function () {
-                        console.log("delete document")
-                        //document.deletePage(docDelegate.DelegateModel.itemsIndex)
-                    })
-                }
+            onDeleteDocument: {
+                docpage.editing = false
+                docpage.deleting = true
+                remorse.execute(docDelegate, qsTr("Delete document"), function () {
+                    console.log("delete document")
+                    //document.deletePage(docDelegate.DelegateModel.itemsIndex)
+                })
             }
 
             RemorseItem {
