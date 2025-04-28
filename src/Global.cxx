@@ -17,8 +17,6 @@
 
 #include "Global.hxx"
 
-#include "PlainImage.hxx"
-
 #include <QtCore/QLineF>
 
 bool Fotokopierer::isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4)

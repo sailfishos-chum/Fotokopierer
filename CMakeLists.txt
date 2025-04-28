@@ -24,11 +24,7 @@ else()
 endif()
 
 set(SOURCES
-  src/AsyncImage.cxx
-  src/BaseImage.cxx
-  src/ColorizeImage.cxx
   src/Convert.cxx
-  src/CutImage.cxx
   src/Document.cxx
   src/DocumentList.cxx
   src/Filter.cxx
@@ -38,8 +34,6 @@ set(SOURCES
   src/FilterImage.cxx
   src/Global.cxx
   src/Page.cxx
-  src/PlainImage.cxx
-  src/RotImage.cxx
   src/ScanImage.cxx
   src/ZoomImage.cxx
   src/init.cxx)
