@@ -76,7 +76,6 @@ Page {
                 imageLoader.item.addPage.connect(function() {
                     var doc = DocumentList.newDocument();
                     if (doc != null) {
-                        console.log("save item")
                         imageLoader.item.savePage(doc)
                         //pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": doc})
                     }
