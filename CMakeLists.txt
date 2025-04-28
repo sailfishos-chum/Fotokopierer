@@ -136,12 +136,12 @@ endif()
 set(SOURCES
   src/AsyncImage.cxx
   src/BaseImage.cxx
-  src/BaseImageTransformWorker.cxx
   src/ColorizeImage.cxx
   src/Convert.cxx
   src/CutImage.cxx
   src/PlainImage.cxx
   src/RotImage.cxx
+  src/TransformWorker.cxx
   src/Util.cxx
   src/init.cxx)
 

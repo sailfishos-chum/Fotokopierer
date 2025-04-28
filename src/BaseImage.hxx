@@ -91,7 +91,7 @@ private:
     struct Data;
     QScopedPointer<Data> d;
 
-    friend class BaseImageTransformWorker;
+    friend class TransformWorker;
 };
 
 #endif

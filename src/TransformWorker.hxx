@@ -15,19 +15,19 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_BASEIMAGETRANSFORMWORKER_HXX__
-#define __FOTOKOPIERER_BASEIMAGETRANSFORMWORKER_HXX__
+#ifndef __FOTOKOPIERER_TRANSFORMWORKER_HXX__
+#define __FOTOKOPIERER_TRANSFORMWORKER_HXX__
 
 #include <QtCore/QObject>
 
 class BaseImage;
 
-class BaseImageTransformWorker : public QObject
+class TransformWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    BaseImageTransformWorker(BaseImage* base_image);
+    TransformWorker(BaseImage* base_image);
 
 public slots:
     void doTransform(const QImage& image);

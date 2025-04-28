@@ -15,17 +15,15 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include "BaseImageTransformWorker.hxx"
+#include "TransformWorker.hxx"
 
 #include "BaseImage.hxx"
 
 #include <QtGui/QImage>
 
-BaseImageTransformWorker::BaseImageTransformWorker(BaseImage* base_image) : base_image_(base_image)
-{
-}
+TransformWorker::TransformWorker(BaseImage* base_image) : base_image_(base_image) {}
 
-void BaseImageTransformWorker::doTransform(const QImage& image)
+void TransformWorker::doTransform(const QImage& image)
 {
     emit resultReady(base_image_->transform(image));
 }
