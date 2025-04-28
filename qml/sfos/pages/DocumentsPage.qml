@@ -29,6 +29,18 @@ Page {
     property bool editing: false
     property bool deleting: false
 
+    Loader {
+        id: imageLoader
+    }
+
+    onStatusChanged: {
+        // ensure the image pages are deleted if not needed because the need a
+        // lot of C++ memory
+        if (status == PageStatus.Active) {
+            imageLoader.source = ""
+        }
+    }
+
     DelegateModel {
         id: visualModel
         model: DocumentList
@@ -59,7 +71,13 @@ Page {
             }
 
             function addDocument() {
-                console.log("add document")
+                imageLoader.source = Qt.resolvedUrl("NewImagePage.qml")
+                imageLoader.item.destination = docpage
+                imageLoader.item.addPage.connect(function(original, result) { 
+                    console.log("add new document")
+                    // document.addPage(original, result)
+                })
+                pageStack.push(imageLoader.item)
             }
 
             function openDocument() {
