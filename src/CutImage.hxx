@@ -36,10 +36,10 @@ public:
     ///
     /// If the cut box is not convex return false otherwise return
     /// true.
-    Q_INVOKABLE bool setCutBox(const QPointF& topleft,
-                               const QPointF& topright,
-                               const QPointF& bottomright,
-                               const QPointF& bottomleft);
+    Q_INVOKABLE bool setCutBox(QPointF topleft,
+                               QPointF topright,
+                               QPointF bottomright,
+                               QPointF bottomleft);
 
     /// Return the auto-detected cut box.
     ///

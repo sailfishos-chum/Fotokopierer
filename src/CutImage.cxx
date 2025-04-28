@@ -32,20 +32,14 @@ struct CutImage::Data {
     QPointF bottomleft;
     QPointF bottomright;
 
-    double getAspectRatio(const QPointF& tl,
-                          const QPointF& tr,
-                          const QPointF& br,
-                          const QPointF& bl);
+    double getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl);
 };
 
 CutImage::CutImage(QQuickItem* parent) : AsyncImage(parent), d(new Data) {}
 
 CutImage::~CutImage() = default;
 
-bool CutImage::setCutBox(const QPointF& topleft,
-                         const QPointF& topright,
-                         const QPointF& bottomright,
-                         const QPointF& bottomleft)
+bool CutImage::setCutBox(QPointF topleft, QPointF topright, QPointF bottomright, QPointF bottomleft)
 {
     static Fotokopierer util;
 
@@ -242,10 +236,7 @@ QVariantList CutImage::autoDetectCutRect()
 /// aspect ratio can then be computed as \f$ \frac{\|q_{tr} -
 /// q_{tl}\|}{\|q_{bl} - q_{tl}\|} \f$, which is the value returned by
 /// this function.
-double CutImage::Data::getAspectRatio(const QPointF& tl,
-                                      const QPointF& tr,
-                                      const QPointF& br,
-                                      const QPointF& bl)
+double CutImage::Data::getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl)
 {
     double a_tl = (br.x() - tl.x());
     double a_tr = (tr.x() - br.x());

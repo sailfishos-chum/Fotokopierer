@@ -66,10 +66,10 @@ public:
 
 public slots:
     /// Set the view ratio.
-    void setViewSize(const QPointF& viewSize);
+    void setViewSize(QPointF viewSize);
 
     /// Set the center point.
-    void setCenter(const QPointF& center);
+    void setCenter(QPointF center);
 
     /// Set the border color.
     void setBorderColor(const QColor& color);

@@ -30,10 +30,7 @@ class Fotokopierer : public QObject
 public:
     Fotokopierer(QObject* parent = nullptr) : QObject(parent) {}
 
-    Q_INVOKABLE bool isConvex(const QPointF& x1,
-                              const QPointF& x2,
-                              const QPointF& x3,
-                              const QPointF& x4);
+    Q_INVOKABLE bool isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4);
 
     Q_INVOKABLE PlainImage* loadPlainImage(const QString& filename);
 };

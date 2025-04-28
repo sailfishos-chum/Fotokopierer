@@ -39,7 +39,7 @@ QPointF ZoomImage::viewSize() const
     return d->viewSize;
 }
 
-void ZoomImage::setViewSize(const QPointF& viewSize)
+void ZoomImage::setViewSize(QPointF viewSize)
 {
     // all ratio coordinates must be in [0,1]
     QPointF vs = QPointF{qBound<qreal>(0, viewSize.x(), 1), qBound<qreal>(0, viewSize.y(), 1)};
@@ -55,7 +55,7 @@ QPointF ZoomImage::center() const
     return d->center;
 }
 
-void ZoomImage::setCenter(const QPointF& center)
+void ZoomImage::setCenter(QPointF center)
 {
     QPointF c = QPointF{qBound<qreal>(0, center.x(), 1), qBound<qreal>(0, center.y(), 1)};
     if (c != d->center) {
