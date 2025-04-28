@@ -33,8 +33,7 @@ class FilterImage : public QQuickPaintedItem
     Q_PROPERTY(qreal paintedWidth READ paintedWidth NOTIFY paintedSizeChanged)
     Q_PROPERTY(qreal paintedHeight READ paintedHeight NOTIFY paintedSizeChanged)
 
-    Q_PROPERTY(ScanImage::FilterType filterType READ filterType WRITE setFilterType NOTIFY
-                   filterTypeChanged)
+    Q_PROPERTY(ScanImage::FilterType filterType READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
     Q_PROPERTY(ScanImage* image READ image WRITE setImage NOTIFY imageChanged)
     Q_PROPERTY(QVariant filter READ filter NOTIFY filterTypeChanged)
 

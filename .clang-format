@@ -10,7 +10,7 @@ AllowAllParametersOfDeclarationOnNextLine: false
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Linux
-ColumnLimit: 100
+ColumnLimit: 0
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 Standard:        Cpp11
 IndentWidth:     4

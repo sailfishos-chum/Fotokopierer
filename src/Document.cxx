@@ -46,7 +46,8 @@ namespace
 class ReadError : public QException
 {
 public:
-    ReadError(const QString &message) : message_(message) {}
+    ReadError(const QString &message)
+        : message_(message) {}
     ReadError(const ReadError &) = default;
 
     void raise() const { throw *this; }
@@ -74,7 +75,8 @@ struct Document::Data {
     Status status = Ready;               ///< the current status
 };
 
-Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
+Document::Document(QObject *parent)
+    : QAbstractListModel(parent), d(new Data)
 {
     connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, [this]() {
         try {
@@ -87,7 +89,8 @@ Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
     });
 }
 
-Document::Document(Document &&doc) noexcept : QAbstractListModel(doc.parent()), d(std::move(doc.d))
+Document::Document(Document &&doc) noexcept
+    : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
 }
 

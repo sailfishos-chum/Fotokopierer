@@ -36,7 +36,8 @@ namespace
 class GeneratingError : public QException
 {
 public:
-    GeneratingError(const QString& message) : message_(message) {}
+    GeneratingError(const QString& message)
+        : message_(message) {}
     GeneratingError(const GeneratingError&) = default;
 
     void raise() const { throw *this; }
@@ -61,7 +62,8 @@ struct Page::Data {
     Status status = Ready;
 };
 
-Page::Page(QObject* parent) : QObject(parent), d(new Data)
+Page::Page(QObject* parent)
+    : QObject(parent), d(new Data)
 {
     connect(
         &d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::thumbnailFinished);
@@ -82,7 +84,8 @@ Page::Page(const QDateTime& creation_time,
     d->thumbnail_path = thumbnail_path;
 }
 
-Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent) : Page(parent)
+Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent)
+    : Page(parent)
 {
     setStatus(Generating);
 

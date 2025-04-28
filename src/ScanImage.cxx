@@ -41,7 +41,8 @@ struct ScanImage::Data {
     bool deleteOriginalOnClear = false;
 };
 
-ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
+ScanImage::ScanImage(QObject* parent)
+    : QObject(parent), d(new Data)
 {
     d->filter.reserve(3);
     d->filter.push_back(new RotateFilter(this));

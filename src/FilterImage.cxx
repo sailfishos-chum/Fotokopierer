@@ -36,7 +36,8 @@ struct FilterImage::Data {
     QFutureWatcher<QImage> filteredImage;
 };
 
-FilterImage::FilterImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data)
+FilterImage::FilterImage(QQuickItem* parent)
+    : QQuickPaintedItem(parent), d(new Data)
 {
     connect(&d->filteredImage,
             &QFutureWatcher<QImage>::finished,

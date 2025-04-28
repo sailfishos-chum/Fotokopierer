@@ -33,7 +33,8 @@ struct ZoomImage::Data {
     Filter* filter = nullptr;
 };
 
-ZoomImage::ZoomImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data) {}
+ZoomImage::ZoomImage(QQuickItem* parent)
+    : QQuickPaintedItem(parent), d(new Data) {}
 
 ZoomImage::~ZoomImage() = default;
 
