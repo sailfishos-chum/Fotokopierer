@@ -17,15 +17,22 @@
 
 #include "ScannedImageProvider.hxx"
 
+#include "asmOpenCV.h"
+
 #include <QtCore/QMap>
 #include <QtGui/QPixmap>
+
+#include <opencv2/imgcodecs/imgcodecs.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+using namespace ASM;
 
 namespace
 {
 struct ImageSet {
-    QPixmap original;
-    QPixmap cut;
-    QPixmap colorized;
+    cv::Mat original;
+    cv::Mat cut;
+    cv::Mat colorized;
 };
 }
 
@@ -36,18 +43,16 @@ struct ScannedImageProvider::Data {
     int64_t next_id = 0;
 };
 
-ScannedImageProvider::ScannedImageProvider() : QQuickImageProvider(ImageType::Pixmap), d(new Data)
-{
-}
+ScannedImageProvider::ScannedImageProvider() : QQuickImageProvider(ImageType::Image), d(new Data) {}
 
 ScannedImageProvider::~ScannedImageProvider() {}
 
-QPixmap ScannedImageProvider::requestPixmap(const QString& id, QSize* size,
-                                            const QSize& requestedSize)
+QImage ScannedImageProvider::requestImage(const QString& id, QSize* size,
+                                          const QSize& requestedSize)
 {
     auto toks = id.split(QLatin1Char('/'));
 
-    if (toks.size() < 1 || toks.size() > 2) {
+    if (toks.size() < 1) {
         // TODO: return ERROR picture
         return {};
     }
@@ -58,12 +63,20 @@ QPixmap ScannedImageProvider::requestPixmap(const QString& id, QSize* size,
         return {};
     }
 
-    if (toks.size() == 1 || toks[1] == QLatin1String("original")) {
-        return img->original;
-    } else if (toks[2] == QLatin1String("cut")) {
-        return img->cut;
-    } else if (toks[2] == QLatin1String("colorized")) {
-        return img->colorized;
+    if (toks[1] == QLatin1String("original")) {
+        auto orig = cvMatToQImage(img->original);
+        if (toks.size() == 4 && toks[2] == QLatin1String("rotate")) {
+            auto angle = toks[3].toFloat();
+            QTransform transform;
+            transform.rotate(angle);
+            return orig.transformed(transform);
+        } else {
+            return orig;
+        }
+    } else if (toks[1] == QLatin1String("cut")) {
+        return cvMatToQImage(img->cut);
+    } else if (toks[1] == QLatin1String("colorized")) {
+        return cvMatToQImage(img->colorized);
     } else {
         // TODO: return ERROR picture
         return {};
@@ -72,9 +85,9 @@ QPixmap ScannedImageProvider::requestPixmap(const QString& id, QSize* size,
 
 QString ScannedImageProvider::loadImage(const QString& fileName)
 {
-    auto pic = QPixmap(fileName);
+    auto pic = cv::imread(fileName.toStdString());
 
-    if (pic.isNull()) {
+    if (pic.data == nullptr) {
         return {};
     }
 
@@ -82,4 +95,29 @@ QString ScannedImageProvider::loadImage(const QString& fileName)
     d->images[id] = {.original = pic, .cut = {}, .colorized = {}};
 
     return id;
+}
+
+void ScannedImageProvider::set_cut_image(const QString& image, double angle, const QPointF& topleft,
+                                         const QPointF& topright, const QPointF& bottomright,
+                                         const QPointF& bottomleft)
+{
+    auto img = d->images.find(image);
+    if (img != d->images.end()) {
+        float w = img->original.cols;
+        float h = img->original.rows;
+
+        cv::Point2f tl(topleft.x() * w, topleft.y() * h);
+        cv::Point2f tr(topright.x() * w, topright.y() * h);
+        cv::Point2f br(bottomright.x() * w, bottomright.y() * h);
+        cv::Point2f bl(bottomleft.x() * w, bottomleft.y() * h);
+
+        float width = cv::max(cv::norm(tr - tl), cv::norm(br - bl));
+        float height = cv::max(cv::norm(tr - br), cv::norm(tl - bl));
+
+        cv::Point2f src[4] = {tl, tr, br, bl};
+        cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
+
+        auto M = cv::getPerspectiveTransform(src, dst);
+        cv::warpPerspective(img->original, img->cut, M, {(int)width, (int)height});
+    }
 }

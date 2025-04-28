@@ -1,6 +1,7 @@
 <RCC>
   <qresource>
 	 <file>qml/sfos/main.qml</file>
+	 <file>qml/sfos/pages/CutPage.qml</file>
 	 <file>qml/sfos/pages/Documents.qml</file>
   </qresource>
 </RCC>

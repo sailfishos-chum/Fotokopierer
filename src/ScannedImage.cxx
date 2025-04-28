@@ -17,6 +17,8 @@
 
 #include "ScannedImage.hxx"
 
+#include "ScannedImageProvider.hxx"
+
 #include <QtGui/QPixmap>
 
 struct ScannedImage::Data {
@@ -33,4 +35,16 @@ ScannedImage::~ScannedImage() {}
 QString ScannedImage::originalImage() const
 {
     return d->image + QLatin1String("/original");
+}
+
+QString ScannedImage::cutImage() const
+{
+    return d->image + QLatin1String("/cut");
+}
+
+void ScannedImage::set_cut_image(double angle, const QPointF& topleft, const QPointF& topright,
+                                 const QPointF& bottomright, const QPointF& bottomleft)
+{
+    ScannedImageProvider::instance->set_cut_image(d->image, angle, topleft, topright, bottomright,
+                                                  bottomleft);
 }

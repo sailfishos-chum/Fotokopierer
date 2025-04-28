@@ -31,6 +31,21 @@ Item {
 
 	 property bool valid: true
 
+	 property int angle: 0
+
+	 property point tl : mapPoint(topleft.center)
+	 property point tr : mapPoint(topright.center)
+	 property point br : mapPoint(bottomright.center)
+	 property point bl : mapPoint(bottomleft.center)
+
+	 function rotateLeft() {
+		  angle = (angle - 90) % 360
+	 }
+
+	 function rotateRight() {
+		  angle = (angle + 90) % 360
+	 }
+
 	 ScannedImage {
 		  id: img
 	 }
@@ -39,7 +54,7 @@ Item {
 		  id: image
 		  anchors.fill: parent
 		  fillMode: Image.PreserveAspectFit
-		  source: "image://Scanned/" + img.original
+		  source: "image://Scanned/" + img.original + "/rotate/" + angle
 	 }
 
 	 Canvas {
@@ -164,5 +179,11 @@ Item {
 		  }
 
 		  frame.requestPaint()
+	 }
+
+	 function mapPoint(p) {
+		  var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
+		  var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
+		  return Qt.point(x, y)
 	 }
 }

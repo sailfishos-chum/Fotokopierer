@@ -25,22 +25,28 @@
 
 class ScannedImage : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	Q_PROPERTY(QString original READ originalImage NOTIFY originalChanged)
+    Q_PROPERTY(QString original READ originalImage NOTIFY originalChanged)
+    Q_PROPERTY(QString cut READ cutImage NOTIFY cutChanged)
 
 public:
-	ScannedImage(QObject* parent = nullptr);
-	~ScannedImage();
+    ScannedImage(QObject* parent = nullptr);
+    ~ScannedImage();
 
-	QString originalImage() const;
+    QString originalImage() const;
+    QString cutImage() const;
+
+    Q_INVOKABLE void set_cut_image(double angle, const QPointF& topleft, const QPointF& topright,
+                                   const QPointF& bottomright, const QPointF& bottomleft);
 
 signals:
-	void originalChanged();
+    void originalChanged();
+    void cutChanged();
 
 private:
-	struct Data;
-	QScopedPointer<Data> d;
+    struct Data;
+    QScopedPointer<Data> d;
 };
 
 #endif

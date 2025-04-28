@@ -28,12 +28,17 @@ public:
 
     ~ScannedImageProvider();
 
-    QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize);
+    QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize) override;
 
     /// Load a (original) image from the given file and return the ID.
     ///
     /// Return an empty string if the image could not be loaded.
     QString loadImage(const QString& fileName);
+
+    /// The set cut image according to the given rotation angle and corner points.
+    void set_cut_image(const QString& image, double angle, const QPointF& topleft,
+                       const QPointF& topright, const QPointF& bottomright,
+                       const QPointF& bottomleft);
 
 public:
     /// A global instance used throughout the app.

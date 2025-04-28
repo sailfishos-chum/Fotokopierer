@@ -25,16 +25,59 @@ ApplicationWindow {
 	 visible: true
 	 title: "Fotokopierer"
 
+	 width: 400
+	 height: 600
+
 	 ScannedImage {
 		  id: img
 	 }
 
-	 ColumnLayout {
-		  anchors.fill: parent
+	 Item {
+		  id: imagebox
+		  anchors.top: parent.top
+		  anchors.left: parent.left
+		  anchors.right: parent.right
+		  anchors.bottom: button.top
 
 		  CutImage {
 				id: image
 				anchors.fill: parent
+
+				visible: true
+		  }
+
+		  Image {
+	 	  		id: cutimage
+	 	  		anchors.fill: parent
+	 	  		fillMode: Image.PreserveAspectFit
+
+	 	  		source: "image://Scanned/" + img.cut
+				cache: false
+
+	 	  		visible: false
 		  }
 	 }
+
+	 Button {
+		  id: button
+		  anchors.left: parent.left
+		  anchors.right: parent.right
+		  anchors.bottom: parent.bottom
+		  text: "Ok"
+		  onClicked: {
+				if (image.visible) {
+					 img.set_cut_image(image.angle,
+											 image.tl,
+											 image.tr,
+											 image.br,
+											 image.bl)
+					 cutimage.source = ""
+					 cutimage.source = "image://Scanned/" + img.cut
+				}
+				image.visible = !image.visible
+				cutimage.visible = !cutimage.visible
+		  }
+	 }
+
+
 }
