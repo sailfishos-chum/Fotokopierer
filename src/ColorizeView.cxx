@@ -149,6 +149,11 @@ void ColorizeView::setColorizeChooser(ColorizeChooser* colorizeChooser)
     }
 }
 
+void ColorizeView::refreshColorization()
+{
+    updateView();
+}
+
 void ColorizeView::updateView()
 {
     if (!d->scaled.empty()) {

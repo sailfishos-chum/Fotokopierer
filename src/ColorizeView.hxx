@@ -93,6 +93,9 @@ public:
     /// Apply the current colorization to the scan image.
     Q_INVOKABLE void apply();
 
+    /// Refresh the colorization.
+    Q_INVOKABLE void refreshColorization();
+
 signals:
     void contrastChanged();
     void brightnessChanged();
