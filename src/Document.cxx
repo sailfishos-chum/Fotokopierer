@@ -529,7 +529,7 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
     using namespace PoDoFo;
 
     if (QFileInfo(filename).exists() && !overwrite) {
-        emit errorPdfExists(filename);
+        emit errorPdfExists(QFileInfo(filename).fileName());
         return;
     }
 
