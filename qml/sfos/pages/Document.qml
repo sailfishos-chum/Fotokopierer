@@ -71,7 +71,7 @@ Page {
 
             thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
             pagenumber: DelegateModel.itemsIndex
-            creationTime: role_creationTime || Date.new()
+            creationTime: role_creationTime || new Date()
 
             dragEnabled: docpage.editing || docpage.dragging
             isAddButton: role_thumbnail == null
