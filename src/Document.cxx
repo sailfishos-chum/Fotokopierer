@@ -115,14 +115,12 @@ Document Document::create(QObject* parent)
 
     doc.d->doc.creation_time = QDateTime::currentDateTime();
     doc.d->doc.title = doc.defaultTitle();
-    auto dir = QStandardPaths::locate(QStandardPaths::HomeLocation,
-                                      QStringLiteral("fotokopierer"),
-                                      QStandardPaths::LocateDirectory);
+    auto dir = getDocumentDirectory();
 
-    if (!dir.isEmpty()) {
-        doc.d->doc.filename = QStringLiteral("%1/%2/doc.json")
-                                  .arg(dir)
-                                  .arg(doc.d->doc.creation_time.toString(FilenameFormat));
+    if (dir.exists()) {
+        // TODO: ensure that document does not exist, yet
+        doc.d->doc.filename = dir.absoluteFilePath(doc.d->doc.creation_time.toString(FilenameFormat) +
+                                                   QStringLiteral("/doc.json"));
     }
 
     return doc;
