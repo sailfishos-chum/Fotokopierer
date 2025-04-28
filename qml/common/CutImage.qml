@@ -17,6 +17,7 @@
 
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
+import QtGraphicalEffects 1.0
 import Fotokopierer 1.0
 
 Item {
@@ -69,27 +70,93 @@ Item {
 		  onCenterChanged: frame.requestPaint()
 	 }
 
+	 ZoomImage {
+		  image: image
+
+		  anchors.right: pane.right
+		  anchors.bottom: pane.bottom
+		  anchors.leftMargin: 5
+		  anchors.rightMargin: 5
+		  anchors.topMargin: 5
+		  anchors.bottomMargin: 5
+
+		  imagex: topleft.x
+		  imagey: topleft.y
+
+		  visible: topleft.dragActive
+	 }
+
 	 CornerMarker {
 		  id: topright
-	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+	 	  x: (pane.width  + image.paintedWidth) / 2 - 10 - markerRadius
 	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
 		  radius: markerRadius
 		  onCenterChanged: frame.requestPaint()
 	 }
 
+	 ZoomImage {
+		  image: image
+
+		  anchors.left: pane.left
+		  anchors.bottom: pane.bottom
+		  anchors.leftMargin: 5
+		  anchors.rightMargin: 5
+		  anchors.topMargin: 5
+		  anchors.bottomMargin: 5
+
+		  imagex: topright.x
+		  imagey: topright.y
+
+		  visible: topright.dragActive
+	 }
+
 	 CornerMarker {
 		  id: bottomleft
 	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
-	 	  y: (pane.height - image.paintedHeight) / 2 + 100 - markerRadius
+	 	  y: (pane.height + image.paintedHeight) / 2 - 10 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: frame.requestPaint()
+		  onCenterChanged: {
+				frame.requestPaint()
+		  }
+	 }
+
+	 ZoomImage {
+		  image: image
+
+		  anchors.right: pane.right
+		  anchors.top: pane.top
+		  anchors.leftMargin: 5
+		  anchors.rightMargin: 5
+		  anchors.topMargin: 5
+		  anchors.bottomMargin: 5
+
+		  imagex: bottomleft.x
+		  imagey: bottomleft.y
+
+		  visible: bottomleft.dragActive
 	 }
 
 	 CornerMarker {
 		  id: bottomright
-	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-	 	  y: (pane.height - image.paintedHeight) / 2 + 100 - markerRadius
+	 	  x: (pane.width  + image.paintedWidth) / 2 - 10- markerRadius
+	 	  y: (pane.height + image.paintedHeight) / 2 - 10 - markerRadius
 		  radius: markerRadius
 		  onCenterChanged: frame.requestPaint()
+	 }
+
+	 ZoomImage {
+		  image: image
+
+		  anchors.left: pane.left
+		  anchors.top: pane.top
+		  anchors.leftMargin: 5
+		  anchors.rightMargin: 5
+		  anchors.topMargin: 5
+		  anchors.bottomMargin: 5
+
+		  imagex: bottomright.x
+		  imagey: bottomright.y
+
+		  visible: bottomright.dragActive
 	 }
 }
