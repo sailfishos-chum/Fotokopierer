@@ -91,7 +91,27 @@ endif()
 
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(Freetype REQUIRED)
+
+# We must use our own freetype library
+set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1)
+set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
+ExternalProject_Add(freetype-3rdparty
+  SOURCE_DIR ${FREETYPE_SOURCE_DIR}
+  PREFIX ${FREETYPE_PREFIX}
+  UPDATE_COMMAND ""
+  INSTALL_COMMAND ""
+  LIST_SEPARATOR ,
+  CMAKE_ARGS
+  -DBUILD_SHARED_LIBS:BOOL=false
+  -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
+pkg_search_module(HARFBUZZ harfbuzz)
+if (HARFBUZZ_FOUND)
+  find_package(BZip2 REQUIRED)
+  set(FREETYPE_LIBRARIES freetype ${HARFBUZZ_LIBRARIES} BZip2::BZip2)
+else()
+  set(FREETYPE_LIBRARIES freetype)
+endif()
+link_directories(${FREETYPE_PREFIX}/src/freetype-3rdparty-build)
 
 set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.6)
 set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
@@ -163,6 +183,7 @@ if (NOT OpenCV_FOUND)
   add_dependencies(${TARGET} opencv)
 endif ()
 add_dependencies(${TARGET} podofo-3rdparty)
+add_dependencies(${TARGET} freetype-3rdparty)
 
 set_property(TARGET ${TARGET} PROPERTY
   INCLUDE_DIRECTORIES
