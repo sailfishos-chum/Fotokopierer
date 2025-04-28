@@ -99,8 +99,8 @@ translations.qrc: $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm)
 
 snapshot_version := $(shell fossil info | awk '/^checkout:/ {print substr($$2, 1, 8)}')
 snapshot:
-	sed -ie 's/^Release: 1%{?dist}.*$$/Release: 1%{?dist}.fossil+${snapshot_version}/' rpm/harbour-fotokopierer.yaml
-	sed -ie 's/FOTOKOPIERER_VERSION="$${FOTOKOPIERER_VERSION.*"/FOTOKOPIERER_VERSION="$${FOTOKOPIERER_VERSION}.fossil+${snapshot_version}"/' CMakeLists.txt
+	sed -i -e 's/^Release: 1%{?dist}.*$$/Release: 1%{?dist}.fossil+${snapshot_version}/' rpm/harbour-fotokopierer.yaml
+	sed -i -e 's/FOTOKOPIERER_VERSION="$${FOTOKOPIERER_VERSION.*"/FOTOKOPIERER_VERSION="$${FOTOKOPIERER_VERSION}.fossil+${snapshot_version}"/' CMakeLists.txt
 
 clean:
 	$(sfdk) build-shell make -C $(build_dir) clean
