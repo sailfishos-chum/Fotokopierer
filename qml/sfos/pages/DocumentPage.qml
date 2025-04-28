@@ -288,13 +288,12 @@ Page {
         anchors.fill: parent
         color: Theme.secondaryHighlightColor
         opacity: 0.5
-        visible: busy.running
-    }
+        visible: document.status == Document.Exporting
 
-    BusyIndicator {
-        id: busy
-        size: BusyIndicatorSize.Large
-        anchors.centerIn: parent
-        running: document.status == Document.Exporting
+        BusyIndicator {
+            size: BusyIndicatorSize.Large
+            anchors.centerIn: parent
+            running: parent.visible
+        }
     }
 }
