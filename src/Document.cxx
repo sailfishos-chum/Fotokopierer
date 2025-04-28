@@ -309,7 +309,7 @@ void Document::addPage(const QImage& original, const QImage& result)
     emit pagesChanged();
 }
 
-void Document::addScannedPage(ScanImage* image)
+void Document::addScannedPage(Scanner* scanner)
 {
     if (d->status != Ready) {
         emit error(tr("Cannot add page, document is not ready"));
@@ -323,7 +323,7 @@ void Document::addScannedPage(ScanImage* image)
         dir.mkpath(QStringLiteral("."));
     }
 
-    QSharedPointer<Page> page(new Page(dir, image, this));
+    QSharedPointer<Page> page(new Page(dir, scanner, this));
     connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);

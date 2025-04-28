@@ -26,7 +26,7 @@
 #include "CutFilter.hxx"
 #include "FilterImage.hxx"
 #include "RotateFilter.hxx"
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 #include "ZoomImage.hxx"
 
 #include "Document.hxx"
@@ -51,9 +51,9 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
             return new DocumentList;
         });
 
-    qmlRegisterSingletonType<ScanImage>(
+    qmlRegisterSingletonType<Scanner>(
         "Fotokopierer", 1, 0, "Scanner", [](QQmlEngine*, QJSEngine*) -> QObject* {
-            return new ScanImage();
+            return new Scanner();
         });
 
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");

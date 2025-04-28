@@ -38,7 +38,7 @@ set(SOURCES
   src/Fotokopierer.cxx
   src/Page.cxx
   src/RotateFilter.cxx
-  src/ScanImage.cxx
+  src/Scanner.cxx
   src/ZoomImage.cxx
   src/init.cxx)
 

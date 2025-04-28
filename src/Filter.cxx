@@ -17,28 +17,28 @@
 
 #include "Filter.hxx"
 
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 #include <QtGui/QImage>
 
-Filter::Filter(ScanImage* image)
+Filter::Filter(Scanner* image)
     : Filter(image, nullptr) {}
 
-Filter::Filter(ScanImage* image, Filter* previous_filter)
+Filter::Filter(Scanner* image, Filter* previous_filter)
     : QObject(image), previous_filter_(previous_filter)
 {
     if (previous_filter_ != nullptr) {
         connect(previous_filter_, &Filter::filterChanged, this, &Filter::filterChanged);
     } else {
-        connect(image, &ScanImage::originalImageChanged, this, &Filter::filterChanged);
+        connect(image, &Scanner::originalImageChanged, this, &Filter::filterChanged);
     }
 }
 
 Filter::~Filter() = default;
 
-ScanImage* Filter::image()
+Scanner* Filter::image()
 {
-    return qobject_cast<ScanImage*>(parent());
+    return qobject_cast<Scanner*>(parent());
 }
 
 QImage Filter::filteredImage()

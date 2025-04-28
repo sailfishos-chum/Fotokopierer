@@ -29,9 +29,9 @@ class CutFilter : public Filter
     Q_OBJECT
 
 public:
-    explicit CutFilter(ScanImage* image);
+    explicit CutFilter(Scanner* image);
 
-    CutFilter(ScanImage* image, Filter* previous_filter);
+    CutFilter(Scanner* image, Filter* previous_filter);
 
     CutFilter(const CutFilter&) = delete;
     CutFilter(CutFilter&&) = delete;

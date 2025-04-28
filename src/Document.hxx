@@ -25,7 +25,7 @@
 #include <memory>
 
 class Page;
-class ScanImage;
+class Scanner;
 
 /// A scanned document
 ///
@@ -102,7 +102,7 @@ public:
     ///
     /// The new page will be created with the given original and result image
     /// and the current time. It will be the last page of the current document.
-    Q_INVOKABLE void addScannedPage(ScanImage *image);
+    Q_INVOKABLE void addScannedPage(Scanner *scanner);
 
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);

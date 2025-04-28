@@ -20,7 +20,7 @@
 
 #include <QtQuick/QQuickPaintedItem>
 
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 /// A zoomed view of an image.
 ///
@@ -40,8 +40,8 @@ class ZoomImage : public QQuickPaintedItem
     Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged);
     Q_PROPERTY(QColor crossColor READ crossColor WRITE setCrossColor NOTIFY crossColorChanged);
 
-    Q_PROPERTY(ScanImage* image READ image WRITE setImage NOTIFY imageChanged)
-    Q_PROPERTY(ScanImage::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
+    Q_PROPERTY(Scanner* image READ image WRITE setImage NOTIFY imageChanged)
+    Q_PROPERTY(Scanner::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
 
 public:
     explicit ZoomImage(QQuickItem* parent = nullptr);
@@ -61,10 +61,10 @@ public:
     QColor crossColor() const;
 
     /// Return the source image.
-    ScanImage* image() const;
+    Scanner* image() const;
 
     /// Return the filter.
-    ScanImage::FilterType filterType() const;
+    Scanner::FilterType filterType() const;
 
     void paint(QPainter* painter) override;
 
@@ -82,10 +82,10 @@ public slots:
     void setCrossColor(const QColor& color);
 
     /// Set the source image.
-    void setImage(ScanImage* image);
+    void setImage(Scanner* image);
 
     /// Set the filter type.
-    void setFilterType(ScanImage::FilterType filter_type);
+    void setFilterType(Scanner::FilterType filter_type);
 
 private:
     void updateFilter();
