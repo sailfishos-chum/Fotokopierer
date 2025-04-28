@@ -168,6 +168,7 @@ void ColorizeChooser::setColorAngle(int which, qreal angle)
         d->angles[which] = angle;
         std::sort(d->angles.begin(), d->angles.end());
         emit colorAnglesChanged();
+        update();
     }
 }
 
