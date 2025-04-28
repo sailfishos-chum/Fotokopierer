@@ -24,10 +24,9 @@
 #include <QtCore/QMap>
 #include <QtGui/QPixmap>
 
+#include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
-#include <cmath>
 
 namespace
 {
@@ -272,7 +271,7 @@ const cv::Mat& getRotatedImage(ImageSet& img)
 {
     if (img.state < Rotated) {
         auto factor = std::max(
-            0.01, 600.0 / std::max(img.original.cols, img.original.rows));
+            0.01, 1000.0 / std::max(img.original.cols, img.original.rows));
         cv::resize(img.original,
                    img.rotated,
                    cv::Size(),
@@ -283,17 +282,16 @@ const cv::Mat& getRotatedImage(ImageSet& img)
                  << img.rotated.rows;
         switch ((int)img.rotAngle % 360) {
             case 90:
-                cv::rotate(img.original, img.rotated, cv::ROTATE_90_CLOCKWISE);
+                cv::rotate(img.rotated, img.rotated, cv::ROTATE_90_CLOCKWISE);
                 break;
             case 180:
-                cv::rotate(img.original, img.rotated, cv::ROTATE_180);
+                cv::rotate(img.rotated, img.rotated, cv::ROTATE_180);
                 break;
             case 270:
                 cv::rotate(
-                    img.original, img.rotated, cv::ROTATE_90_COUNTERCLOCKWISE);
+                    img.rotated, img.rotated, cv::ROTATE_90_COUNTERCLOCKWISE);
                 break;
             default:
-                img.rotated = img.original;
                 break;
         }
         img.state = Rotated;
@@ -331,39 +329,101 @@ const cv::Mat& getCutImage(ImageSet& img)
 const cv::Mat& getColorizedImage(ImageSet& img)
 {
     if (img.state < Colorized) {
-        auto cut = getCutImage(img);
+        auto img_cut = getCutImage(img);
 
         img.state = Colorized;
 
-        auto contrast = pow(4.0, img.contrast * 2 - 1);
-        auto brightness = img.brightness * 400 - 200;
+        // Apply contrast and brightness transform.
+        auto contrast = std::pow(4.0, img.contrast * 2 - 1);
+        auto brightness = 128 - contrast * 128 + (2 * img.brightness - 1) * 128;
+        cv::Mat img_bright;
+        img_cut.convertTo(img_bright, -1, contrast, brightness);
 
-        cut.convertTo(img.colorized, -1, contrast, brightness);
+        // Compute a gray-scale image.
+        cv::Mat img_gray;
+        cv::cvtColor(img_bright, img_gray, cv::COLOR_BGR2GRAY);
 
-        switch (img.colormode) {
-            case ScannedImageProvider::BlackAndWhite:
-            case ScannedImageProvider::Gray:
-                cv::cvtColor(img.colorized, img.colorized, cv::COLOR_BGR2GRAY);
-                break;
-            default:
-                break;
+        if (img.colormode == ScannedImageProvider::Gray) {
+            img.colorized = img_gray;
+            return img.colorized;
         }
 
-        if (img.colormode == ScannedImageProvider::BlackAndWhite) {
-            // cv::equalizeHist(img.colorized, img.colorized);
-
+        // Threshold filter for background mask.
+        cv::Mat bg_mask;
+        {
             int d = std::max(img.details * 50, 3.0);
             if (d % 2 == 0) d += 1;
-            cv::adaptiveThreshold(img.colorized,
-                                  img.colorized,
+
+            cv::adaptiveThreshold(img_gray,
+                                  bg_mask,
                                   255,
                                   cv::ADAPTIVE_THRESH_GAUSSIAN_C,
                                   cv::THRESH_BINARY,
                                   d,
                                   5);
-        } else if (img.colormode == ScannedImageProvider::Colored) {
         }
-    }
 
-    return img.colorized;
+        if (img.colormode == ScannedImageProvider::BlackAndWhite) {
+            img.colorized = bg_mask;
+            return img.colorized;
+        }
+
+        /// Set background to white
+        cv::Mat img_col;
+        img_bright.convertTo(img_col, CV_32F);
+        img_col.setTo(cv::Scalar(255, 255, 255), bg_mask);
+
+        std::vector<cv::Point3f> points;
+        {
+            auto itimg = img_col.begin<cv::Point3f>();
+            auto itimgend = img_col.end<cv::Point3f>();
+            auto itmask = bg_mask.begin<uchar>();
+            auto itmaskend = bg_mask.end<uchar>();
+            for (; itimg != itimgend; ++itimg, ++itmask) {
+                if (*itmask == 0) {
+                    points.push_back(*itimg);
+                }
+            }
+        }
+
+        if (!points.empty()) {
+            std::vector<int> labels;
+            cv::Mat centers;
+            cv::kmeans(
+                points,
+                8,
+                labels,
+                cv::TermCriteria(
+                    cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 10, 1.0),
+                3,
+                cv::KMEANS_PP_CENTERS,
+                centers);
+
+            // stretch colors
+            auto min =
+                *std::min_element(centers.begin<float>(), centers.end<float>());
+            auto max =
+                *std::max_element(centers.begin<float>(), centers.end<float>());
+
+            centers = 255 * (centers - min) / (max - min);
+            cv::Mat ucenters;
+            centers.convertTo(ucenters, CV_8U);
+
+            auto itimg = img_col.begin<cv::Vec3b>();
+            auto itimgend = img_col.end<cv::Vec3b>();
+            auto itmask = bg_mask.begin<uchar>();
+            auto itpnts = labels.begin();
+            for (; itimg != itimgend; ++itimg, ++itmask) {
+                if (*itmask == 0) {
+                    *itimg = ucenters.row(*itpnts);
+                    ++itpnts;
+                }
+            }
+        }
+
+        img_col.convertTo(img.colorized, CV_8U);
+        return img.colorized;
+    } else {
+        return img.colorized;
+    }
 }
