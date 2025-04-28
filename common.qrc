@@ -1,6 +1,7 @@
 <RCC>
   <qresource>
 	 <file>qml/common/CutImageView.qml</file>
+	 <file>qml/common/ColorizeChooserItem.qml</file>
 	 <file>qml/common/CornerMarker.qml</file>
 	 <file>qml/common/DragDelegate.qml</file>
 	 <file>icons/brightness.svg</file>

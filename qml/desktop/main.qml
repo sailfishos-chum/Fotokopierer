@@ -117,7 +117,7 @@ ApplicationWindow {
             id: colview
 
             scanner: Scanner
-            colorizeChooser: colorizer
+            colorizeChooser: colorizer.chooser()
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -165,7 +165,7 @@ ApplicationWindow {
             }
         }
 
-        ColorizeChooser {
+        ColorizeChooserItem {
             id: colorizer
             anchors.left: parent.left
             anchors.right: parent.right
