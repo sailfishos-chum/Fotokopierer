@@ -21,7 +21,7 @@ import Fotokopierer 1.0
 
 import "../../common"
 
-Page {
+Dialog {
     id: page
 
     property alias source : colimg.source

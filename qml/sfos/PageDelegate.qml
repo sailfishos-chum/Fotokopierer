@@ -30,6 +30,8 @@ DragDelegate {
 
     dragEnabled: !isAddButton
 
+    signal addPage()
+
     Component {
         id: addButtonView
 
@@ -47,6 +49,8 @@ DragDelegate {
                 border.width: 1
                 border.color: Theme.secondaryHighlightColor
             }
+
+            onClicked: addPage()
         }
     }
 

@@ -23,31 +23,4 @@ import "pages"
 ApplicationWindow
 {
     initialPage: Component { Document { } }
-
-    PlainImage {
-        id: image
-        visible: false
-    }
-
-    CutPage {
-        id: cutpage
-        source: image
-
-        Component.onCompleted: {
-            if (Qt.application.arguments.length > 1) {
-                console.log("FILE: " + Qt.application.arguments[1])
-                image.loadFile(Qt.application.arguments[1])
-            }
-        }
-
-        onStatusChanged: {
-            if (status == PageStatus.Active) {
-                pageContainer.pushAttached(Qt.resolvedUrl("pages/ColorizePage.qml"), {source: cutpage.image})
-            }
-        }
-    }
-
-    Component.onCompleted: {
-        pageStack.pushAttached(cutpage)
-    }
 }
