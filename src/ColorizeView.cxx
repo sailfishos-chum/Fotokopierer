@@ -39,6 +39,7 @@ struct ColorizeView::Data {
     bool need_restart = false;
 
     QMetaObject::Connection cutImageChangedConnection = {};
+    QMetaObject::Connection startCutImageUpdateConnection = {};
 };
 
 ColorizeView::ColorizeView(QQuickItem* parent)
@@ -126,12 +127,14 @@ void ColorizeView::onNewImage()
 {
     disconnect(d->cutImageChangedConnection);
     d->cutImageChangedConnection = {};
+    d->startCutImageUpdateConnection = {};
 
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
             d->need_restart = false;
             d->cutImageChangedConnection = connect(d->scanImage.get(), &ScanImage::cutImageChanged, this, &ColorizeView::onCutImageChanged);
+            d->startCutImageUpdateConnection = connect(d->scanImage.get(), &ScanImage::startCutImageUpdate, [this]() { setBusy(true); });
 
             // initialize settings
 
@@ -148,10 +151,12 @@ void ColorizeView::onNewImage()
 void ColorizeView::onImageUpdated()
 {
     d->hasImage = true;
-    update();
     if (d->need_restart) {
         d->need_restart = false;
         updateView();
+    } else {
+        setBusy(false);
+        update();
     }
 }
 

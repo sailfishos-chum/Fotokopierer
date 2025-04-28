@@ -53,6 +53,8 @@ struct CutView::Data {
     QPointF rotate_tl, rotate_tr, rotate_bl, rotate_br;
 
     QMetaObject::Connection rotatedImageChangedConnection = {};
+    QMetaObject::Connection startRotatedImageUpdateConnection = {};
+    QMetaObject::Connection finishRotatedImageUpdateConnection = {};
 };
 
 CutView::CutView(QQuickItem* parent)
@@ -328,11 +330,17 @@ void CutView::paint(QPainter* painter)
 void CutView::onNewImage()
 {
     disconnect(d->rotatedImageChangedConnection);
+    disconnect(d->startRotatedImageUpdateConnection);
+    disconnect(d->finishRotatedImageUpdateConnection);
     d->rotatedImageChangedConnection = {};
+    d->startRotatedImageUpdateConnection = {};
+    d->finishRotatedImageUpdateConnection = {};
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
             d->rotatedImageChangedConnection = connect(d->scanImage.get(), &ScanImage::rotatedImageChanged, this, &CutView::onRotatedImageChanged);
+            d->startRotatedImageUpdateConnection = connect(d->scanImage.get(), &ScanImage::startRotatedImageUpdate, [this]() { setBusy(true); });
+            d->finishRotatedImageUpdateConnection = connect(d->scanImage.get(), &ScanImage::finishRotatedImageUpdate, [this]() { setBusy(false); });
 
             // this means that the settings will be initialized from the scanImage
             d->doRotate = -1;

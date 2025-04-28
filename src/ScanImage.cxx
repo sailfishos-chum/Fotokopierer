@@ -291,6 +291,7 @@ QImage ScanImage::rotatedImage(bool wait) const
         if (!d->rotated.isRunning()) {
             auto orientation = d->orientation;
             auto original = d->original;
+            emit startRotatedImageUpdate();
             d->rotated.setFuture(QtConcurrent::run([orientation, original]() {
                 QTransform transform;
                 transform.rotate(orientation * 90.0);
@@ -312,12 +313,14 @@ void ScanImage::onRotatedReady()
 {
     d->rotatedReady = true;
     emit rotatedImageChanged();
+    emit finishRotatedImageUpdate();
 }
 
 QImage ScanImage::cutImage(bool wait) const
 {
     if (!d->original.isNull() && !d->cutReady) {
         if (!d->cut.isRunning()) {
+            emit startCutImageUpdate();
             d->cut.setFuture(QtConcurrent::run([this]() {
                 return d->computeCutImage(rotatedImage(true));
             }));
@@ -337,12 +340,14 @@ void ScanImage::onCutReady()
 {
     d->cutReady = true;
     emit cutImageChanged();
+    emit finishCutImageUpdate();
 }
 
 QImage ScanImage::colorizedImage(bool wait) const
 {
     if (!d->original.isNull() && !d->colorizedReady) {
         if (!d->colorized.isRunning()) {
+            emit startColorizedImageUpdate();
             d->colorized.setFuture(QtConcurrent::run([this]() {
                 return d->computeColorizedImage(cutImage(true));
             }));
@@ -362,6 +367,7 @@ void ScanImage::onColorizedReady()
 {
     d->colorizedReady = true;
     emit colorizedImageChanged();
+    emit finishColorizedImageUpdate();
 }
 
 QImage ScanImage::Data::computeCutImage(const QImage& image) const

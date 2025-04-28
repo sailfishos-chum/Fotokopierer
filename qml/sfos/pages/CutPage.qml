@@ -55,6 +55,15 @@ Page {
         width: parent.width - 2 * Theme.iconSizeSmall
         markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
+
+        onBusyChanged: console.log("set busy indicator to " + cutview.busy)
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
+            running: cutview.busy
+        }
     }
 
     DockedPanel {
