@@ -106,16 +106,16 @@ Page {
                 height: grid.cellHeight
 
                 Button {
-                    visible: model.text
+                    visible: model.text ? true : false
                     anchors.fill: parent
-                    text: model.text
+                    text: model.text || ""
                     onClicked: listModel.actions[name]()
                 }
 
                 IconButton {
-                    visible: model.icon
+                    visible: model.icon ? true : false
                     anchors.fill: parent
-                    icon.source: model.icon
+                    icon.source: model.icon || ""
                     onClicked: listModel.actions[name]()
                 }
             }
