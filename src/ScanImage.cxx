@@ -482,6 +482,13 @@ cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params
         return img_gray;
     }
 
+    // adjust brightness and contrast automatically
+    double min, max;
+    cv::minMaxLoc(img_gray, &min, &max);
+    auto alpha = 255 / (max - min);
+    auto beta = -min * alpha;
+    img_gray.convertTo(img_gray, -1, alpha, beta);
+
     // Threshold filter for background mask.
     cv::Mat bg_mask;
     {
