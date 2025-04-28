@@ -8,6 +8,22 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat Nov 13 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.4-1
+- nothing new, just had to increase the version to make harbour happy
+
+* Thu Nov 11 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.3-2
+- build everything with openssl 1.1
+
+* Mon Nov 1 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.3-1
+- fix setting of viewfinder resolution
+
+* Fri Jul 2 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.2-1
+- fix segmentation fault when cancelling a taken image
+
+* Fri Jun 25 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.1-1
+- fix missing add button in document page
+- update Slovak and Swedish translations
+
 * Thu Jun 24 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.0-1
 - add copy & paste for pages
 - access parameters for black/white mode directly
