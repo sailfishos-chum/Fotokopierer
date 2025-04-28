@@ -35,6 +35,7 @@ class Document : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString defaultTitle READ defaultTitle NOTIFY defaultTitleChanged)
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
@@ -75,6 +76,9 @@ public:
 
     /// Return the document creation time.
     QDateTime creationTime() const;
+
+    /// Return the default title of the document.
+    QString defaultTitle() const;
 
     /// Return the number of pages.
     int numPages() const;
@@ -140,6 +144,8 @@ private slots:
 
 signals:
     void titleChanged();
+
+    void defaultTitleChanged();
 
     void creationTimeChanged();
 

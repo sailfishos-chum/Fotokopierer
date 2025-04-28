@@ -169,6 +169,13 @@ Page {
 
         VerticalScrollDecorator {}
 
+        PullDownMenu {
+            MenuItem {
+                text: qsTr("Rename document")
+                onClicked: pageStack.push(Qt.resolvedUrl("RenamePage.qml"), { document: document })
+            }
+        }
+
         MouseArea {
             anchors.fill: grid
 

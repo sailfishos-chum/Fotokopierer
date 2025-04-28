@@ -84,11 +84,14 @@ Document::Document(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
     connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
 
 Document::Document(Document&& doc) noexcept
     : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
 
 Document::~Document() = default;
@@ -111,7 +114,7 @@ Document Document::create(QObject* parent)
     Document doc(parent);
 
     doc.d->doc.creation_time = QDateTime::currentDateTime();
-    doc.d->doc.title = doc.d->doc.creation_time.toString();
+    doc.d->doc.title = doc.defaultTitle();
     auto dir = QStandardPaths::locate(QStandardPaths::HomeLocation,
                                       QStringLiteral("fotokopierer"),
                                       QStandardPaths::LocateDirectory);
@@ -124,6 +127,11 @@ Document Document::create(QObject* parent)
     return doc;
 }
 
+QString Document::defaultTitle() const
+{
+    return d->doc.creation_time.toString();
+}
+
 QString Document::title() const
 {
     return d->doc.title;
@@ -133,6 +141,7 @@ void Document::setTitle(const QString& title)
 {
     if (title != d->doc.title) {
         d->doc.title = title;
+        save();
         emit titleChanged();
     }
 }
