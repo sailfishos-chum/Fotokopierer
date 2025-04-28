@@ -22,8 +22,7 @@ Item {
 	 Drag.hotSpot.x: width / 2
 	 Drag.hotSpot.y: height / 2
 
-	 property real centerx
-	 property real centery
+	 property point center: Qt.point(x + radius, y + radius)
 	 property real radius: 10
 	 property color color: "white"
 	 property real linewidth: 1
@@ -48,10 +47,5 @@ Item {
 		  id: mouseArea
 		  anchors.fill: parent
 		  drag.target: parent
-
-		  onPositionChanged: {
-				parent.centerx = parent.x + parent.radius
-				parent.centery = parent.y + parent.radius
-		  }
 	 }
 }

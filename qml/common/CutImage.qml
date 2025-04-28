@@ -28,10 +28,10 @@ Item {
 				ctx.clearRect(0, 0, width, height)
 				ctx.strokeStyle = "#00FF00"
 				ctx.beginPath()
-				ctx.moveTo(topleft.centerx, topleft.centery)
-				ctx.lineTo(topright.centerx, topright.centery)
-				ctx.lineTo(bottomright.centerx, bottomright.centery)
-				ctx.lineTo(bottomleft.centerx, bottomleft.centery)
+				ctx.moveTo(topleft.center.x, topleft.center.y)
+				ctx.lineTo(topright.center.x, topright.center.y)
+				ctx.lineTo(bottomright.center.x, bottomright.center.y)
+				ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
 				ctx.closePath()
 				ctx.stroke()
 		  }
@@ -48,37 +48,33 @@ Item {
 
 	 CornerMarker {
 	 	  id: topleft
-	 	  centerx: (pane.width  - image.paintedWidth) / 2 + 10
-	 	  centery: (pane.height - image.paintedHeight) / 2 + 10
+	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
+	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
 		  radius: markerRadius
-		  onCenterxChanged: frame.requestPaint()
-		  onCenteryChanged: frame.requestPaint()
+		  onCenterChanged: frame.requestPaint()
 	 }
 
 	 CornerMarker {
 		  id: topright
-	 	  centerx: (pane.width  - image.paintedWidth) / 2 + 50
-	 	  centery: (pane.height - image.paintedHeight) / 2 + 10
+	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
 		  radius: markerRadius
-		  onCenterxChanged: frame.requestPaint()
-		  onCenteryChanged: frame.requestPaint()
+		  onCenterChanged: frame.requestPaint()
 	 }
 
 	 CornerMarker {
 		  id: bottomleft
-	 	  centerx: (pane.width  - image.paintedWidth) / 2 + 10
-	 	  centery: (pane.height - image.paintedHeight) / 2 + 100
+	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
+	 	  y: (pane.height - image.paintedHeight) / 2 + 100 - markerRadius
 		  radius: markerRadius
-		  onCenterxChanged: frame.requestPaint()
-		  onCenteryChanged: frame.requestPaint()
+		  onCenterChanged: frame.requestPaint()
 	 }
 
 	 CornerMarker {
 		  id: bottomright
-	 	  centerx: (pane.width  - image.paintedWidth) / 2 + 50
-	 	  centery: (pane.height - image.paintedHeight) / 2 + 100
+	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+	 	  y: (pane.height - image.paintedHeight) / 2 + 100 - markerRadius
 		  radius: markerRadius
-		  onCenterxChanged: frame.requestPaint()
-		  onCenteryChanged: frame.requestPaint()
+		  onCenterChanged: frame.requestPaint()
 	 }
 }
