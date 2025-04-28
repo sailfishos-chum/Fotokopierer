@@ -46,6 +46,17 @@ Item {
 		  angle = (angle + 90) % 360
 	 }
 
+	 function selectAll() {
+		  topleft.x = (pane.width - image.paintedWidth) / 2 - markerRadius;
+		  topleft.y = (pane.height - image.paintedHeight) / 2 - markerRadius;
+		  bottomright.x = (pane.width + image.paintedWidth) / 2 - markerRadius;
+		  bottomright.y = (pane.height + image.paintedHeight) / 2 - markerRadius;
+		  topright.x = bottomright.x
+		  topright.y = topleft.y
+		  bottomleft.x = topleft.x
+		  bottomleft.y = bottomright.y
+	 }
+
 	 ScannedImage {
 		  id: img
 	 }
