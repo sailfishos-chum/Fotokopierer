@@ -10,6 +10,10 @@ Frank Fischer <frank-fischer@shadow-soft.de>
 
 planetos (Icons)
 
+G. Yavorov, Standjata (Bulgarian translation)
+
+pherjung (French translation)
+
 Åke Engelbrektson (Swedish translation)
 
 holask (Slovak translation)
@@ -38,7 +42,7 @@ In all cases you need [CMake][cmake] to build Fotokopierer.
 	cd path/to/fotokopierer
 	path/to/SailfishOS/bin/sfdk -c target=SailfishOS-4.0.1.48-i486 build
 
-In order to create 
+In order to create an rpm package execute
 
 	path/to/SailfishOS/bin/sfdk -c target=SailfishOS-4.0.1.48-i486 package
 
@@ -52,7 +56,7 @@ You need to download the sources of OpenCV, Podofo and FreeType (the CMake file 
 - [http://sourceforge.net/projects/podofo/files/podofo/0.9.7/podofo-0.9.7.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.9.7/podofo-0.9.7.tar.gz/download)
 - [https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz)
 
-Extract both archives to the `3rdparty` subdirectory.
+Extract all archives to the `3rdparty` subdirectory.
 
     cd path/to/fotokopierer
 	mkdir 3rdparty
