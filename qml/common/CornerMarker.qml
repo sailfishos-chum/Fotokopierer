@@ -27,6 +27,7 @@ Item {
 	 property point center: Qt.point(x + radius, y + radius)
 	 property real radius: 10
 	 property color color: "white"
+	 property real fillOpacity: 0.5
 	 property real linewidth: 1
 
 	 property real minX
@@ -47,7 +48,7 @@ Item {
 		  anchors.fill: parent
 		  antialiasing: true
 		  radius: width / 2
-		  color: "#00000000"
+		  color: Qt.rgba(parent.color.r, parent.color.g, parent.color.b, parent.fillOpacity)
 		  border.color: parent.color
 		  border.width: parent.linewidth
 	 }

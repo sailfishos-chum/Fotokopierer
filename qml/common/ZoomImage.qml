@@ -24,6 +24,7 @@ Rectangle {
 	 property real scaleFactor : 5
 	 property real imagex
 	 property real imagey
+	 property color crossColor: "green"
 
 	 property Image image
 
@@ -67,7 +68,7 @@ Rectangle {
 		  onPaint: {
 				var ctx = getContext("2d")
 				ctx.clearRect(0, 0, width, height)
-				ctx.strokeStyle = "#00FF00"
+				ctx.strokeStyle = zoom.crossColor
 				ctx.beginPath()
 				ctx.moveTo(x + width / 2 - width / 5, y + height / 2)
 				ctx.lineTo(x + width / 2 + width / 5, y + height / 2)

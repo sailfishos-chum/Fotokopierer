@@ -24,6 +24,8 @@ Item {
 	 id: pane
 
 	 property real markerRadius: 10
+	 property color markerColor: "white"
+	 property color lineColor: "green"
 
 	 ScannedImage {
 		  id: img
@@ -42,7 +44,7 @@ Item {
 		  onPaint: {
 				var ctx = getContext("2d")
 				ctx.clearRect(0, 0, width, height)
-				ctx.strokeStyle = "#00FF00"
+				ctx.strokeStyle = pane.lineColor
 				ctx.beginPath()
 				ctx.moveTo(topleft.center.x, topleft.center.y)
 				ctx.lineTo(topright.center.x, topright.center.y)
@@ -64,8 +66,9 @@ Item {
 
 	 CornerMarker {
 	 	  id: topleft
-	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
-	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
+		  color: pane.markerColor
+	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+	 	  y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
 		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
 		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -76,6 +79,9 @@ Item {
 
 	 ZoomImage {
 		  image: image
+
+		  color: pane.markerColor
+		  crossColor: pane.lineColor
 
 		  anchors.right: pane.right
 		  anchors.bottom: pane.bottom
@@ -89,8 +95,9 @@ Item {
 
 	 CornerMarker {
 		  id: topright
-	 	  x: (pane.width  + image.paintedWidth) / 2 - 10 - markerRadius
-	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
+		  color: pane.markerColor
+	 	  x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
+	 	  y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
 		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
 		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -101,6 +108,9 @@ Item {
 
 	 ZoomImage {
 		  image: image
+
+		  color: pane.markerColor
+		  crossColor: pane.lineColor
 
 		  anchors.left: pane.left
 		  anchors.bottom: pane.bottom
@@ -114,8 +124,9 @@ Item {
 
 	 CornerMarker {
 		  id: bottomleft
-	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
-	 	  y: (pane.height + image.paintedHeight) / 2 - 10 - markerRadius
+		  color: pane.markerColor
+	 	  x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
+	 	  y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
 		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
 		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -129,6 +140,9 @@ Item {
 	 ZoomImage {
 		  image: image
 
+		  color: pane.markerColor
+		  crossColor: pane.lineColor
+
 		  anchors.right: pane.right
 		  anchors.top: pane.top
 		  anchors.margins: 5
@@ -141,8 +155,9 @@ Item {
 
 	 CornerMarker {
 		  id: bottomright
-	 	  x: (pane.width  + image.paintedWidth) / 2 - 10- markerRadius
-	 	  y: (pane.height + image.paintedHeight) / 2 - 10 - markerRadius
+		  color: pane.markerColor
+	 	  x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
+	 	  y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
 		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
 		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
@@ -153,6 +168,9 @@ Item {
 
 	 ZoomImage {
 		  image: image
+
+		  color: pane.markerColor
+		  crossColor: pane.lineColor
 
 		  anchors.left: pane.left
 		  anchors.top: pane.top

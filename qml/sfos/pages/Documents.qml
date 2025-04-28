@@ -29,6 +29,8 @@ Page {
 		  CutImage {
 				id: img
 				anchors.fill: parent
+				markerColor: Theme.primaryColor
+				lineColor: Theme.highlightColor
 		  }
 	 }
 }
