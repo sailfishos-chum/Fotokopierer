@@ -52,6 +52,15 @@ public:
     /// Return the document creation time.
     QDateTime creationTime() const;
 
+    /// Return the number of pages.
+    int numPages() const;
+
+    /// Return the i-th page.
+    Page &page(int i);
+
+    /// Return the i-th page.
+    const Page &page(int i) const;
+
     /// Add a newly scanned page to the document.
     ///
     /// The new page will be created with the given original and result image

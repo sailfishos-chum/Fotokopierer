@@ -63,6 +63,21 @@ void Document::setTitle(const QString &title)
     }
 }
 
+int Document::numPages() const
+{
+    return d->pages.size();
+}
+
+Page &Document::page(int i)
+{
+    return *d->pages[i];
+}
+
+const Page &Document::page(int i) const
+{
+    return *d->pages[i];
+}
+
 QDateTime Document::creationTime() const
 {
     return d->creation_time;
