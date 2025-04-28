@@ -79,7 +79,7 @@ if (SAILFISH_FOUND)
   find_package(OpenSSL REQUIRED)
   find_package(Freetype REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
-  set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto PNG::PNG ${JPEG_LIBRARIES} TIFF::TIFF Freetype::Freetype)
+  set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} fontconfig OpenSSL::Crypto PNG::PNG ${JPEG_LIBRARIES} TIFF::TIFF Freetype::Freetype)
 endif()
 
 find_package(Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick)
