@@ -17,14 +17,14 @@ URL:        http://www.mathematik.uni-kassel.de/~fifr/fossils/cpp-fotokopierer
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-fotokopierer.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
-Requires:   freetype
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(freetype2)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake
-BuildRequires:  zlib-devel
-BuildRequires:  freetype-devel
 BuildRequires:  desktop-file-utils
 
 %description
