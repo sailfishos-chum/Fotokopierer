@@ -197,7 +197,11 @@ Dialog {
                 id: colorizer_button
                 visible: colview.colorMode == ColorizeView.Colored
                 icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
-                onClicked: { colorize.open = true; sliders.open = false }
+                onClicked: {
+                    colorize.open = true
+                    sliders.open = false
+                    blackLevel_slider.value = colorizer.blackLevel / colorizer.maxBlackLevel * 100
+                }
             }
         }
     }
