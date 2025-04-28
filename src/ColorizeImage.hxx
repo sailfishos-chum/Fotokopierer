@@ -37,7 +37,7 @@ public:
         BlackAndWhite,
         Colored,
     };
-    Q_ENUMS(ColorMode)
+    Q_ENUM(ColorMode)
 
 public:
     ColorizeImage();
