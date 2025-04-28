@@ -40,13 +40,14 @@ Page {
     }
 
     PageHeader {
+        id: header
         title: qsTr("Colorize")
     }
 
     ColorizeImage {
         id: colimg
 
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: buttons.top
