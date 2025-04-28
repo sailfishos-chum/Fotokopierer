@@ -157,11 +157,11 @@ private slots:
     /// Change the current status.
     void setStatus(Document::Status status);
 
-    /// The status of a page has changed.
-    void updatePage();
-
     /// The asynchronously loaded document data is ready.
-    void setPendingDoc();
+    void onPendingDocFinished();
+
+    /// The status of a page has changed.
+    void onPageUpdated();
 
     /// Called when the pdf export has been completed.
     void onPdfExportFinished();
@@ -201,7 +201,7 @@ private:
     static void ensureNoMedia(const QString &path);
 
 private slots:
-    void updateThumbnail();
+    void onThumbnailUpdated();
 
 private:
     struct Data;

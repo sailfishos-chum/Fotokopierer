@@ -86,7 +86,7 @@ struct Document::Data {
 Document::Document(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::onPendingDocFinished);
     connect(&d->pendingPdf, &QFutureWatcher<QUrl>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
@@ -94,7 +94,7 @@ Document::Document(QObject* parent)
 Document::Document(Document&& doc) noexcept
     : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::onPendingDocFinished);
     connect(&d->pendingPdf, &QFutureWatcher<QString>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
@@ -187,7 +187,7 @@ int Document::rowCount(const QModelIndex& parent) const
     return d->doc.pages.size();
 }
 
-void Document::setPendingDoc()
+void Document::onPendingDocFinished()
 {
     try {
         setDocData(d->pendingDoc.result());
@@ -202,7 +202,7 @@ void Document::setDocData(DocData&& docdata)
 {
     d->doc = std::move(docdata);
     for (auto& p : d->doc.pages) {
-        connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+        connect(p.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     }
     emit titleChanged();
 }
@@ -297,8 +297,8 @@ void Document::addPage(const QImage& original, const QImage& result)
 
     QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
 
-    connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
-    connect(p.data(), &Page::statusChanged, this, &Document::updatePage);
+    connect(p.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+    connect(p.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(p.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
@@ -324,8 +324,8 @@ void Document::addScannedPage(ScanImage* image)
     }
 
     QSharedPointer<Page> page(new Page(dir, image, this));
-    connect(page.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
-    connect(page.data(), &Page::statusChanged, this, &Document::updatePage);
+    connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+    connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
@@ -335,7 +335,7 @@ void Document::addScannedPage(ScanImage* image)
     emit pagesChanged();
 }
 
-void Document::updatePage()
+void Document::onPageUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
     // TODO: this only works reliably if at most one page is modified at the same time
@@ -484,8 +484,8 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
         }
         QSharedPointer<Page> p(new Page);
 
-        connect(p.data(), &Page::thumbnailChanged, document, &Document::updateThumbnail);
-        connect(p.data(), &Page::statusChanged, document, &Document::updatePage);
+        connect(p.data(), &Page::thumbnailChanged, document, &Document::onThumbnailUpdated);
+        connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
         connect(p.data(), &Page::error, document, &Document::error);
 
         if (!p->read(page.toObject())) {
@@ -505,7 +505,7 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
     return d;
 }
 
-void Document::updateThumbnail()
+void Document::onThumbnailUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
 
