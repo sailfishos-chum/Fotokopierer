@@ -23,92 +23,103 @@ msgctxt "CutPage|"
 msgid "Cut & Rotate"
 msgstr "Zuschneiden & Drehen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:232
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:267
 msgctxt "Document|"
 msgid "Page could not be created: no original image"
-msgstr ""
+msgstr "Seite kann nicht erstellt werden: Originalbild nicht gefunden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:238
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:273
 msgctxt "Document|"
 msgid "Page could not be created: no result image"
-msgstr ""
+msgstr "Seite kann nicht erstellt werden: Bild nicht gefunden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:252
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:288
 msgctxt "Document|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
+"Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:258
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:294
 msgctxt "Document|"
 msgid "Page could not be created: error saving result image"
-msgstr ""
+msgstr "Seite kann nicht erstellt werden: Fehler beim Speichern des Bildes"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:278
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:315
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
 msgstr "Seite kann nicht hinzugefügt werden, Dokument ist nicht bereit"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:342
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:382
 #, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
 msgstr "Pfad %1 kann nicht erstellt werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:349
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:389
 #, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
 msgstr "Dokumentdatei %1 kann nicht geschrieben werden: %2"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:368
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:410
 #, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
 msgstr "Fehler beim schreiben der Datei %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:378
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:397
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:422
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:441
 #, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
 msgstr ""
 "Dokument kann nicht von %1 gelesen werden während ein anderer Prozess läuft"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:411
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:457
 #, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
 msgstr "Dokumentdatei %1 kann nicht geöffnet werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:420
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:466
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
 msgstr "Dokumenttitel kann nicht von Datei %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:425
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:471
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
 msgstr "Erstellungszeit kann nicht von Datei %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:431
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:477
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
 msgstr "Seiten des Dokuments konnten nicht von %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:437
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:483
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
 msgstr "Eine Seite konnte nicht von Dokument %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:441
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:492
 #, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
 msgstr "Fehler beim lesen der Dokumentdatei %1"
+
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:543
+msgctxt "Document|"
+msgid "Cannot export to pdf, document is not ready"
+msgstr "Pdf kann nicht exportiert werden, Dokument ist nicht bereit"
+
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:599
+msgctxt "Document|"
+msgid "Error creating pdf-file"
+msgstr "Fehler beim Erstellen der pdf-Datei"
 
 #: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/DocumentDelegate.qml:124
 #, qt-format
@@ -120,22 +131,50 @@ msgstr ""
 "Seiten: %1\n"
 "%2"
 
-#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentPage.qml:126
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentPage.qml:103
+#, qt-format
+msgctxt "DocumentPage|"
+msgid "Page %1 of %2 (%3)"
+msgstr "Seite %1 von %2 (%3)"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentPage.qml:113
 msgctxt "DocumentPage|"
 msgid "Delete page"
 msgstr "Seite löschen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentsPage.qml:97
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentPage.qml:158
+msgctxt "DocumentPage|"
+msgid "Export to pdf"
+msgstr "Pdf exportieren"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentPage.qml:163
+msgctxt "DocumentPage|"
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentPage.qml:258
+#, qt-format
+msgctxt "DocumentPage|"
+msgid "Overwrite existing file <%1>?"
+msgstr "Existierende Datei <%1> überschreiben?"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentsPage.qml:81
 msgctxt "DocumentsPage|"
 msgid "Delete document"
 msgstr "Dokument löschen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentsPage.qml:135
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentsPage.qml:123
 msgctxt "DocumentsPage|"
 msgid "Documents"
 msgstr "Dokumente"
 
-#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/NewImagePage.qml:73
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/DocumentsPage.qml:130
+#, qt-format
+msgctxt "DocumentsPage|"
+msgid "About %1"
+msgstr "Über %1"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/NewImagePage.qml:90
 msgctxt "NewImagePage|"
 msgid "New Picture"
 msgstr "Neues Bild"
@@ -149,3 +188,57 @@ msgid ""
 msgstr ""
 "Seite %1\n"
 "%2"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/CoverPage.qml:46
+msgctxt "CoverPage|"
+msgid "Take a new picture"
+msgstr "Neues Bild aufnehmen"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/CoverPage.qml:79
+#, qt-format
+msgctxt "CoverPage|"
+msgid "Pages: %2"
+msgstr "Seiten: %2"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/AboutPage.qml:35
+#, qt-format
+msgctxt "AboutPage|"
+msgid "About %1"
+msgstr "Über %1"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/AboutPage.qml:63
+#, qt-format
+msgctxt "AboutPage|"
+msgid "A camera scanning application for SailfishOS by %1"
+msgstr "Eine Kamera-Scan Anwendung für SailfishOS von %1"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/AboutPage.qml:79
+msgctxt "AboutPage|"
+msgid "Homepage"
+msgstr "Homepage"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/AboutPage.qml:90
+msgctxt "AboutPage|"
+msgid "Find me on Freenode: "
+msgstr "Kontaktiere mich auf Freenode: "
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/AboutPage.qml:109
+msgctxt "AboutPage|"
+msgid "This application uses"
+msgstr "Dieses Programm verwendet"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/AboutPage.qml:129
+#, qt-format
+msgctxt "AboutPage|"
+msgid "Licensed under the %1"
+msgstr "Lizensiert unter %1"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/RenamePage.qml:32
+msgctxt "RenamePage|"
+msgid "Enter new document title"
+msgstr "Neuen Dokumenttitel eingeben"
+
+#: /home/fifr/JollaProjekte/fotokopierer/qml/sfos/pages/RenamePage.qml:38
+msgctxt "RenamePage|"
+msgid "Document title"
+msgstr "Dokumenttitel"
