@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019, 2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -75,7 +75,13 @@ public:
 
     QString opencvVersion() const;
 
-    Q_INVOKABLE QSize defaultResolution(QObject* capture) const;
+    /// Return the resolution to be used.
+    ///
+    /// The resolution is the maximum resolution whose aspect ratio is a close
+    /// as possible to the aspect ratio of the given width and height. In other
+    /// words, `desiredWidth` and `desiredHeight` should be the dimensions of
+    /// the target image.
+    Q_INVOKABLE QSize defaultResolution(QObject* capture, int desiredWidth, int desiredHeight) const;
 };
 
 #endif

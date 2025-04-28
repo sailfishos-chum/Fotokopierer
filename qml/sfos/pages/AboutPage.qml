@@ -38,7 +38,8 @@ Page {
             Image {
                 fillMode: Image.PreserveAspectFit
                 source: Qt.resolvedUrl("/icons/harbour-fotokopierer.svg")
-                width: 2/3 * parent.width
+                width: Math.min(2/3 * parent.width, 2/3 * parent.height)
+                height: width
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
@@ -62,6 +63,18 @@ Page {
 
                 text: qsTr("A camera scanning application for SailfishOS by %1")
                     .arg(Fotokopierer.Author)
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: (qsTr("Icons by %1").arg("Tobias Planitzer"))
+
+                onLinkActivated: Qt.openUrlExternally(link)
             }
 
             Separator {

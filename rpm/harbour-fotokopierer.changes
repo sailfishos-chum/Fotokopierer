@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat Apr 18 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.2-1
+- Fix wrong resolution and orientation in camera preview
+- Add new icons by Tobias Planitzer
+
 * Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-2
 - Fix version number
 

@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.2.1)
+set(FOTOKOPIERER_VERSION 0.2.2)
 set(PODOFO_VERSION 0.9.6)
 set(OPENCV_VERSION 3.4.0)
 
@@ -209,4 +209,7 @@ install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
 # install(DIRECTORY qml DESTINATION share/${TARGET})
 # install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
 install(FILES ${TARGET}.desktop DESTINATION share/applications)
-install(FILES ${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
+install(FILES icons/86x86/${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
+install(FILES icons/108x108/${TARGET}.png DESTINATION share/icons/hicolor/108x108/apps)
+install(FILES icons/128x128/${TARGET}.png DESTINATION share/icons/hicolor/128x128/apps)
+install(FILES icons/172x172/${TARGET}.png DESTINATION share/icons/hicolor/172x172/apps)
