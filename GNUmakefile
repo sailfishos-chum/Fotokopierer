@@ -14,7 +14,6 @@ emu_dir := $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
-#mer_root_dir := $(subst $(projects_root),/home/fifr,$(current_dir))
 mer_root_dir := $(current_dir)
 
 mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost
@@ -22,7 +21,11 @@ mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk m
 ifeq ($(arch),i486)
   build_dir := rpmbuilddir-i386
 else
+ifeq ($(arch),armv7hl)
   build_dir := rpmbuilddir-arm
+else
+  build_dir := rpmbuilddir-aarch64
+endif
 endif
 
 emu_ssh := ssh -p 2223 -i $(emu_dir)/nemo nemo@localhost
@@ -43,10 +46,10 @@ build: reformat lrelease
 	$(sfdk) build
 
 compile: reformat lrelease
-	$(sfdk) build-shell make -C $(build_dir)
+	$(sfdk) build-shell make -C $(build_dir) -j4
 
-make:
-	$(sfdk) build-shell make -C $(build_dir)
+.PHONY: make
+make: compile
 
 install:
 	$(sfdk) make-install
@@ -90,3 +93,7 @@ translations.qrc: $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm)
 snapshot_version := $(shell fossil info | awk '/^checkout:/ {print "1%{?dist}.fossil+" substr($$2, 1, 8)}')
 snapshot:
 	sed -ie 's/^Release: 1%{?dist}.*$$/Release: ${snapshot_version}/' rpm/harbour-fotokopierer.yaml
+
+clean:
+	$(sfdk) build-shell make -C $(build_dir) clean
+	rm -rf 3rdparty/*-$(arch)
