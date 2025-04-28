@@ -43,7 +43,7 @@ class ZoomImage : public QQuickPaintedItem
     Q_PROPERTY(BaseImage* source READ source WRITE setSource NOTIFY sourceChanged)
 
 public:
-    ZoomImage(QQuickItem* parent = nullptr);
+    explicit ZoomImage(QQuickItem* parent = nullptr);
 
     ~ZoomImage();
 

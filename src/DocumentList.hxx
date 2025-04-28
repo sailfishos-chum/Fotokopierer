@@ -38,7 +38,7 @@ public:
     };
 
 public:
-    DocumentList(QObject *parent = nullptr);
+    explicit DocumentList(QObject *parent = nullptr);
 
     ~DocumentList();
 

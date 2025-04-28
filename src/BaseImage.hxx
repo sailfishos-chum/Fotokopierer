@@ -38,7 +38,7 @@ class BaseImage : public QQuickPaintedItem
 
 public:
     /// The default constructor.
-    BaseImage(QQuickItem* parent = nullptr);
+    explicit BaseImage(QQuickItem* parent = nullptr);
 
     ~BaseImage();
 

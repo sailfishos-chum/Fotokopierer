@@ -28,7 +28,7 @@ class CutImage : public AsyncImage
     Q_OBJECT
 
 public:
-    CutImage(QQuickItem* parent = nullptr);
+    explicit CutImage(QQuickItem* parent = nullptr);
 
     ~CutImage();
 

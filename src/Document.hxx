@@ -42,7 +42,7 @@ public:
     static const QString FilenameFormat;
 
 public:
-    Document(QObject *parent = nullptr);
+    explicit Document(QObject *parent = nullptr);
 
     Document(Document &&doc);
 

@@ -36,7 +36,7 @@ public:
     static const int ThumbnailSize = 500;
 
 public:
-    Page(QObject* parent = nullptr);
+    explicit Page(QObject* parent = nullptr);
 
     Page(const QDateTime& creation_time,
          const QString& original_path,
