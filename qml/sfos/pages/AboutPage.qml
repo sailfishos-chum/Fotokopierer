@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019, 2020, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -144,9 +144,11 @@ Page {
 
                 text: (qsTr("This application uses") +
                        "<br><a href=\"http://podofo.sourceforge.net\">PoDoFo %1</a>" +
-                       "<br><a href=\"https://opencv.org\">OpenCV %2</a>")
+                       "<br><a href=\"https://opencv.org\">OpenCV %2</a>" +
+                       "<br><a href=\"https://www.freetype.org\">FreeType %3</a>")
                     .arg(Fotokopierer.PoDoFoVersion)
                     .arg(Fotokopierer.OpenCVVersion)
+                    .arg(Fotokopierer.FreeTypeVersion)
 
                 onLinkActivated: Qt.openUrlExternally(link)
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -54,6 +54,7 @@ class Fotokopierer : public QObject
     Q_PROPERTY(QString LicenseTitle READ licenseTitle CONSTANT)
     Q_PROPERTY(QString PoDoFoVersion READ podofoVersion CONSTANT)
     Q_PROPERTY(QString OpenCVVersion READ opencvVersion CONSTANT)
+    Q_PROPERTY(QString FreeTypeVersion READ freetypeVersion CONSTANT)
 
 public:
     explicit Fotokopierer(QObject* parent = nullptr)
@@ -74,6 +75,8 @@ public:
     QString podofoVersion() const;
 
     QString opencvVersion() const;
+
+    QString freetypeVersion() const;
 
     /// Return the resolution to be used.
     ///
