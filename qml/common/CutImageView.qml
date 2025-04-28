@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -99,10 +99,21 @@ Item {
         var h = image.paintedHeight
         var offx = (pane.width - w) / 2
         var offy = (pane.height - h) / 2
-        topleft.setCenter(Qt.point(tl.x * w + offx, tl.y * h + offy))
-        topright.setCenter(Qt.point(tr.x * w + offx, tr.y * h + offy))
-        bottomright.setCenter(Qt.point(br.x * w + offx, br.y * h + offy))
-        bottomleft.setCenter(Qt.point(bl.x * w + offx, bl.y * h + offy))
+
+        var tl = Qt.point(tl.x * w + offx, tl.y * h + offy)
+        var tr = Qt.point(tr.x * w + offx, tr.y * h + offy)
+        var br = Qt.point(br.x * w + offx, br.y * h + offy)
+        var bl = Qt.point(bl.x * w + offx, bl.y * h + offy)
+
+        topleft.setCenter(tl)
+        topright.setCenter(tr)
+        bottomright.setCenter(br)
+        bottomleft.setCenter(bl)
+
+        top.setCenter(Qt.point(0.5 * (tl.x + tr.x), 0.5 * (tl.y + tr.y)))
+        bottom.setCenter(Qt.point(0.5 * (bl.x + br.x), 0.5 * (bl.y + br.y)))
+        left.setCenter(Qt.point(0.5 * (tl.x + bl.x), 0.5 * (tl.y + bl.y)))
+        right.setCenter(Qt.point(0.5 * (tr.x + br.x), 0.5 * (tr.y + br.y)))
     }
 
     function cutImage() {
@@ -182,6 +193,54 @@ Item {
 
     CornerMarker {
         id: bottomright
+        color: pane.markerColor
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+    }
+
+    CornerMarker {
+        id: top
+        color: pane.markerColor
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+    }
+
+    CornerMarker {
+        id: bottom
+        color: pane.markerColor
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+    }
+
+    CornerMarker {
+        id: left
+        color: pane.markerColor
+        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        radius: markerRadius
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
+    }
+
+    CornerMarker {
+        id: right
         color: pane.markerColor
         minX: (pane.width - image.paintedWidth) / 2 - markerRadius
         maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
