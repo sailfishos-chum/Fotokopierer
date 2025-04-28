@@ -538,15 +538,16 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
         PdfPainter painter;
 
         for (auto& page : d->doc.pages) {
-            PdfPage* pdfpage = pdf.CreatePage(PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+            PdfImage pageimage(&pdf);
+            pageimage.LoadFromFile(page->result().toUtf8().data());
+
+            auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
             if (pdfpage == nullptr) {
                 PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
             }
 
             painter.SetPage(pdfpage);
 
-            PdfImage pageimage(&pdf);
-            pageimage.LoadFromFile(page->result().toUtf8().data());
             painter.DrawImage(0.0, 0.0, &pageimage);
 
             painter.FinishPage();
