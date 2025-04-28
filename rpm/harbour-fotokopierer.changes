@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Fri Sep 8 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.8-1
+- add Dutch translation
+- update FreeType to 2.13.2
+
 * Sat May 20 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.7-1
 - fix linking podofo against libjpeg in rpm build
 - add package icon for chum

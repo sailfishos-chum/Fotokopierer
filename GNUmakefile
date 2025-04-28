@@ -33,7 +33,7 @@ else
 endif
 endif
 
-TRANSLATIONS = bg de fr sk sv
+TRANSLATIONS = bg de fr sk sv nl
 
 .PHONY: all
 all: compile

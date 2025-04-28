@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, 2021, 2022 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019-2023 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -101,6 +101,16 @@ Page {
                 wrapMode: Text.WordWrap
 
                 text: "G. Yavorov, Standjata (%1)".arg(qsTr("Bulgarian"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "Godfried Cobben (%1)".arg(qsTr("Dutch"))
             }
 
             Label {
