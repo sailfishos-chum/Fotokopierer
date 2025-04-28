@@ -219,7 +219,7 @@ void EdgeDetection::setTopPoint(const QPointF& p)
 
 QPointF EdgeDetection::topPoint() const
 {
-    return QLineF(d->quad.tl, d->quad.tr).center();
+    return center(QLineF(d->quad.tl, d->quad.tr));
 }
 
 void EdgeDetection::setBottomPoint(const QPointF& p)
@@ -234,7 +234,7 @@ void EdgeDetection::setBottomPoint(const QPointF& p)
 
 QPointF EdgeDetection::bottomPoint() const
 {
-    return QLineF(d->quad.bl, d->quad.br).center();
+    return center(QLineF(d->quad.bl, d->quad.br));
 }
 
 void EdgeDetection::setLeftPoint(const QPointF& p)
@@ -249,7 +249,7 @@ void EdgeDetection::setLeftPoint(const QPointF& p)
 
 QPointF EdgeDetection::leftPoint() const
 {
-    return QLineF(d->quad.tl, d->quad.bl).center();
+    return center(QLineF(d->quad.tl, d->quad.bl));
 }
 
 void EdgeDetection::setRightPoint(const QPointF& p)
@@ -264,7 +264,7 @@ void EdgeDetection::setRightPoint(const QPointF& p)
 
 QPointF EdgeDetection::rightPoint() const
 {
-    return QLineF(d->quad.tr, d->quad.br).center();
+    return center(QLineF(d->quad.tr, d->quad.br));
 }
 
 void EdgeDetection::setBottomRight(const QPointF& br)
