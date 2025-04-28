@@ -67,20 +67,24 @@ bool CutFilter::setCutBox(QPointF topleft,
 
 QVariantList CutFilter::autoDetectCutRect()
 {
-    auto img_cut = QImageToCvMat(previous_filter_ != nullptr ? previous_filter_->filteredImage()
-                                                             : image()->originalImage());
+    QImage img =
+        previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+    auto img_cut = QImageToCvMat(img, false);
     auto width = img_cut.cols;
     auto height = img_cut.rows;
 
     cv::Mat img_gray;
     cv::cvtColor(img_cut, img_gray, cv::COLOR_BGR2GRAY);
+    img_cut.release();
 
     cv::blur(img_gray, img_gray, {3, 3});
     cv::Mat img_edges;
     cv::Canny(img_gray, img_edges, 10, 40);
+    img_gray.release();
 
     std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(img_edges, lines, 1, CV_PI / 180, 80, 30, img_gray.cols / 10);
+    cv::HoughLinesP(img_edges, lines, 1, CV_PI / 180, 80, 30, width / 10);
+    img_edges.release();
 
     // partition the lines according to their angles into horizontal
     // and vertical ones
