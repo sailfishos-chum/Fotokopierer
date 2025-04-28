@@ -36,7 +36,7 @@ class Document : public QAbstractListModel
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
 
 public:
-    enum PageRoles { ThumbnailRole = Qt::UserRole + 1 };
+    enum PageRoles { ThumbnailRole = Qt::UserRole + 1, CreationTimeRole };
 
     static const QString FilenameFormat;
 

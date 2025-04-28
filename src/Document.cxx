@@ -77,6 +77,12 @@ QVariant Document::data(const QModelIndex &index, int role) const
             }
             break;
         }
+        case CreationTimeRole: {
+            if (index.column() == 0 && index.row() < d->pages.size()) {
+                return d->pages[index.row()]->creationTime();
+            }
+            break;
+        }
     }
 
     return {};
@@ -84,7 +90,8 @@ QVariant Document::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> Document::roleNames() const
 {
-    static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"}};
+    static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
+                                                 {CreationTimeRole, "role_creationTime"}};
     return roles;
 }
 
