@@ -141,6 +141,9 @@ public:
     /// Apply image cut.
     void applyCut();
 
+    /// Apply image colorization.
+    void applyColorize();
+
     /// Return all filter settings as a JSON object.
     QJsonObject saveJson() const;
 

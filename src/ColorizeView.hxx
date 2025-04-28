@@ -68,6 +68,9 @@ public:
     /// Set the color mode.
     void setColorMode(ColorMode colormode);
 
+    /// Apply the current colorization to the scan image.
+    Q_INVOKABLE void apply();
+
 signals:
     void contrastChanged();
     void brightnessChanged();

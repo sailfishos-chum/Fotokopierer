@@ -123,15 +123,22 @@ void ColorizeView::updateView()
 void ColorizeView::onNewImage()
 {
     disconnect(d->cutImageChangedConnection);
+    d->cutImageChangedConnection = {};
+
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
             d->cutImageChangedConnection = connect(d->scanImage.get(), &ScanImage::cutImageChanged, this, &ColorizeView::onCutImageChanged);
-            return;
+
+            // initialize settings
+
+            d->contrast = d->scanImage->contrast();
+            d->brightness = d->scanImage->brightness();
+            d->details = d->scanImage->details();
+            d->colorMode = d->scanImage->colorMode();
         }
     }
 
-    d->cutImageChangedConnection = {};
     updateView();
 }
 
@@ -155,4 +162,15 @@ void ColorizeView::onCutImageChanged()
     }
 
     updateView();
+}
+
+void ColorizeView::apply()
+{
+    if (d->scanImage != nullptr) {
+        d->scanImage->setContrast(d->contrast);
+        d->scanImage->setBrightness(d->brightness);
+        d->scanImage->setDetails(d->details);
+        d->scanImage->setColorMode(d->colorMode);
+        d->scanImage->applyColorize();
+    }
 }

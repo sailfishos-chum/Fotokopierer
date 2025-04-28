@@ -281,6 +281,11 @@ void ScanImage::applyCut()
     emit cutImageChanged();
 }
 
+void ScanImage::applyColorize()
+{
+    emit colorizedImageChanged();
+}
+
 QImage ScanImage::rotatedImage(bool wait) const
 {
     if (!d->original.isNull() && !d->rotatedReady) {
