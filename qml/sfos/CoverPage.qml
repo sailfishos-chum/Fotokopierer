@@ -38,7 +38,6 @@ CoverBackground {
         width: parent.width * 0.9
         height: parent.height * 0.9
 
-        font.pixelSize: Theme.fontSizeHuge
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap
