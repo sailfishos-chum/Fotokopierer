@@ -136,6 +136,18 @@ public slots:
     /// and the current time. It will be the last page of the current document.
     void addPage(const QImage &original, const QImage &result);
 
+    /// Export document as PDF to a file with the given name.
+    ///
+    /// If the file exists and `overwrite` is `true` the file will be replaced.
+    /// If `overwrite` is false the signal `errorPdfExists` is raised.
+    void exportToPdf(const QString &filename, bool overwrite = false);
+
+    /// Export document as PDF to a file with the default file name.
+    ///
+    /// If the file exists and `overwrite` is `true` the file will be replaced.
+    /// If `overwrite` is false the signal `errorPdfExists` is raised.
+    void exportToPdf(bool overwrite = false);
+
 private:
     /// Set the document data.
     void setDocData(DocData &&docdata);
@@ -164,6 +176,9 @@ signals:
 
     /// Status changed.
     void statusChanged();
+
+    /// Error raised when the exported file already exists.
+    void errorPdfExists(const QString &filename);
 
     /// An error has been raised.
     void error(const QString &msg);

@@ -38,6 +38,8 @@
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
 
+#include <podofo/podofo.h>
+
 #include <memory>
 
 namespace
@@ -515,4 +517,53 @@ void Document::ensureNoMedia(const QString& path)
         QFile nomedia(dir.absoluteFilePath(QStringLiteral(".nomedia")));
         nomedia.open(QIODevice::WriteOnly);
     }
+}
+
+static PoDoFo::PdfString toPdfString(const QString& str)
+{
+    return {str.toUtf8().constData()};
+}
+
+void Document::exportToPdf(const QString& filename, bool overwrite)
+{
+    using namespace PoDoFo;
+
+    if (QFileInfo(filename).exists() && !overwrite) {
+        emit errorPdfExists(filename);
+        return;
+    }
+
+    try {
+        PdfStreamedDocument pdf(filename.toUtf8().constData());
+        PdfPainter painter;
+
+        for (auto& page : d->doc.pages) {
+            PdfPage* pdfpage = pdf.CreatePage(PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+            if (pdfpage == nullptr) {
+                PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
+            }
+
+            painter.SetPage(pdfpage);
+
+            PdfImage pageimage(&pdf);
+            pageimage.LoadFromFile(page->result().toUtf8().data());
+            painter.DrawImage(0.0, 0.0, &pageimage);
+
+            painter.FinishPage();
+        }
+
+        pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
+        pdf.GetInfo()->SetTitle(toPdfString(d->doc.title));
+        pdf.Close();
+    } catch (PdfError& e) {
+        qWarning() << e.what();
+        emit error(tr("Error creating pdf-file %1: %2")
+                       .arg(filename)
+                       .arg(QString::fromUtf8(e.what())));
+    }
+}
+
+void Document::exportToPdf(bool overwrite)
+{
+    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"));
 }
