@@ -45,6 +45,11 @@ void RotateFilter::setOrientation(int orientation)
     }
 }
 
+QString RotateFilter::name() const
+{
+    return QStringLiteral("rotate");
+}
+
 QJsonObject RotateFilter::saveJson() const
 {
     return {};

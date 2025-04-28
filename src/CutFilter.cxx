@@ -163,6 +163,11 @@ QVariantList CutFilter::autoDetectCutRect()
     return lst;
 }
 
+QString CutFilter::name() const
+{
+    return QStringLiteral("cut");
+}
+
 QJsonObject CutFilter::saveJson() const
 {
     return {};

@@ -44,6 +44,11 @@ public:
 
     QImage filteredImage();
 
+    /// Return the name of this filter.
+    ///
+    /// The name should be unique among all filter types.
+    virtual QString name() const = 0;
+
     virtual QJsonObject saveJson() const = 0;
 
     virtual void loadJson(const QJsonObject& object) = 0;

@@ -51,6 +51,8 @@ public:
 
     ~ColorizeFilter() override;
 
+    QString name() const override;
+
     QJsonObject saveJson() const override;
 
     void loadJson(const QJsonObject& object) override;

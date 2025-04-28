@@ -100,6 +100,11 @@ ColorizeFilter::ColorMode ColorizeFilter::colorMode() const
     return d->colormode;
 }
 
+QString ColorizeFilter::name() const
+{
+    return QStringLiteral("colorize");
+}
+
 QJsonObject ColorizeFilter::saveJson() const
 {
     return {};
