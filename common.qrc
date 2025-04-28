@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
 	 <file>qml/common/CutImage.qml</file>
+	 <file>qml/common/CornerMarker.qml</file>
   </qresource>
 </RCC>
