@@ -32,6 +32,7 @@ class Page : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
+    Q_PROPERTY(QString original READ original NOTIFY originalChanged)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
     Q_PROPERTY(QUrl resultUrl READ resultUrl NOTIFY resultChanged)
@@ -64,7 +65,7 @@ public:
 
     QString thumbnail();
 
-    QString originalImagePath() const;
+    QString original() const;
 
     QString result() const;
 
@@ -100,7 +101,11 @@ private slots:
 
     void setStatus(Page::Status status);
 
+    void setOriginal(const QString& original);
+
 signals:
+    void originalChanged();
+
     void thumbnailChanged();
 
     void resultChanged();

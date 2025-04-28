@@ -100,7 +100,7 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
                                         .arg(ext));
 
     d->creation_time = ctime;
-    d->original_path = original_path;
+    setOriginal(original_path);
     d->result_path = result_path;
 
     updateFromScanner(scanner);
@@ -191,9 +191,18 @@ QUrl Page::resultUrl() const
     return QUrl::fromLocalFile(result());
 }
 
-QString Page::originalImagePath() const
+QString Page::original() const
 {
     return d->original_path;
+}
+
+// TODO: add setters for other path properties
+void Page::setOriginal(const QString& original)
+{
+    if (d->original_path != original) {
+        d->original_path = original;
+        emit originalChanged();
+    }
 }
 
 QString Page::result() const
@@ -299,7 +308,7 @@ bool Page::read(const QJsonObject& json)
     }
 
     d->creation_time = page_ctime;
-    d->original_path = page_original_path.toString();
+    setOriginal(page_original_path.toString());
     d->result_path = page_result_path.toString();
     d->thumbnail_path = page_thumbnail_path.toString();
 
