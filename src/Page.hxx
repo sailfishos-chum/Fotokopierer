@@ -53,7 +53,7 @@ public:
     Q_ENUM(Status)
 
 public:
-    explicit Page(QObject* parent = nullptr);
+    explicit Page();
 
     Page(const Page&) = delete;
     Page(Page&&) = delete;

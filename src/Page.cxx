@@ -71,8 +71,8 @@ struct Page::Data {
     Status status = Ready;
 };
 
-Page::Page(QObject* parent)
-    : QObject(parent), d(new Data)
+Page::Page()
+    : d(new Data)
 {
     // TODO: For some reason, that I do not understand, the 'finished' signal is not emitted.
     // We send our own signals to replace them when the concurrent work task is
