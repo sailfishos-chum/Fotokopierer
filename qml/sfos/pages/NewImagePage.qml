@@ -30,8 +30,16 @@ Page {
 
     signal addPage()
 
+    onPageContainerChanged: {
+        if (pageContainer == null) {
+            console.log("NewImagePage closed")
+            scanImage.clear()
+        }
+    }
+
     function processImage(imagePath, deleteOnCancel) {
         scanImage.loadFile(imagePath)
+        scanImage.deleteOriginalOnClear = deleteOnCancel
         pageStack.push(cutpage)
         pageStack.pushAttached(colpage)
     }

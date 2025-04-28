@@ -24,6 +24,7 @@
 #include "RotateFilter.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QFile>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QVector>
 #include <QtGui/QImage>
@@ -33,8 +34,10 @@
 struct ScanImage::Data {
     QVector<Filter*> filter;
     QImage original;
+    QString originalPath;
     QImage scaled;
     QFutureWatcher<void> saveFuture;
+    bool deleteOriginalOnClear = false;
 };
 
 ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
@@ -47,7 +50,12 @@ ScanImage::ScanImage(QObject* parent) : QObject(parent), d(new Data)
     connect(&d->saveFuture, &QFutureWatcher<void>::finished, this, &ScanImage::imageSaved);
 }
 
-ScanImage::~ScanImage() = default;
+ScanImage::~ScanImage()
+{
+    if (d->deleteOriginalOnClear && !d->originalPath.isEmpty()) {
+        QFile::remove(d->originalPath);
+    }
+}
 
 Filter* ScanImage::filter(FilterType type)
 {
@@ -72,13 +80,28 @@ ColorizeFilter* ScanImage::colorizeFilter() const
     return qobject_cast<ColorizeFilter*>(d->filter[static_cast<int>(FilterType::Colorize)]);
 }
 
+void ScanImage::setDeleteOriginalOnClear(bool enabled)
+{
+    if (enabled != d->deleteOriginalOnClear) {
+        d->deleteOriginalOnClear = enabled;
+        emit deleteOriginalOnClearChanged();
+    }
+}
+
+bool ScanImage::deleteOriginalOnClear() const
+{
+    return d->deleteOriginalOnClear;
+}
+
 bool ScanImage::loadFile(const QString& file_name)
 {
     QImage image(file_name);
     if (image.isNull()) {
         return false;
     } else {
+        d->originalPath = file_name;
         d->original = image;
+        setDeleteOriginalOnClear(false);
         if (image.width() > image.height()) {
             d->scaled = image.scaledToWidth(qMin(image.width(), 1000));
         } else {
@@ -113,6 +136,10 @@ void ScanImage::saveAndClear(Document* doc)
 void ScanImage::clear()
 {
     if (!d->saveFuture.isRunning()) {
+        if (d->deleteOriginalOnClear && !d->originalPath.isEmpty()) {
+            QFile::remove(d->originalPath);
+            d->originalPath.clear();
+        }
         d->original = QImage();
         d->scaled = QImage();
         emit originalImageChanged();
