@@ -130,7 +130,7 @@ private:
 
 private slots:
     /// Change the current status.
-    void setStatus(Status status);
+    void setStatus(Document::Status status);
 
     /// The status of a page has changed.
     void updatePage();
