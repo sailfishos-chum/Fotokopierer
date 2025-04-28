@@ -8,7 +8,7 @@ arch := i486
 #arch := aarch64
 
 # Select the latest available target for the given architecture
-target := $(shell $(sfdk) tools list | sed -n '/$(arch)/p' |  sed -n 's/^.*\(SailfishOS[[:alnum:].-]*\).*$$/\1/p' | tail -n1)
+target := $(shell $(sfdk) tools list | sed -n '/$(arch)/p' |  sed -n 's/^.*\(SailfishOS[[:alnum:].-]*\).*$$/\1/p' | head -n1)
 
 # Select the emulator device '#0'
 emulator := $(shell $(sfdk) emulator list | cut -f1 -d' ')
