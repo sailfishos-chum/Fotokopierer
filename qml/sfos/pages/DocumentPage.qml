@@ -95,15 +95,33 @@ Page {
                 }
             }
 
+            // This timer is used to end dragging mode.
+            //
+            // The reason for using this timer is as follows. Dragging is
+            // finished by an `onReleased` event. If the event handler would set
+            // `dragging = false` the following `onClicked` event would trigger
+            // an `addPage` or `openPage` command because it comes after the
+            // `onReleased` event. However, because at this time `dragging ==
+            // false` the page seems to be in "standard" non-editing mode
+            // already. Therefore, instead of setting `dragging = false`
+            // directly the event handler will start this time whose
+            // `onTriggered` event will come after the `onClicked` event.
+            Timer {
+                id: endDraggingTimer
+                interval: 0
+                repeat: false
+                onTriggered: docpage.dragging = false
+            }
+
             onReleased: {
                 if (docpage.dragging) {
-                    docpage.dragging = false
+                    endDraggingTimer.start()
                     endDragging()
                 }
             }
 
             onClicked: {
-                if (docpage.editing) {
+                if (docpage.editing || docpage.dragging) {
                     docpage.editing = false
                 } else if (isAddButton) {
                     addPage()
