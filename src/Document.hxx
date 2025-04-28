@@ -82,7 +82,7 @@ public:
 
     Q_INVOKABLE bool save() const;
 
-    Q_INVOKABLE bool load(const QString &filename, QObject *parent = nullptr);
+    Q_INVOKABLE bool load(const QString &filename);
 
 public slots:
     /// Set the document title.

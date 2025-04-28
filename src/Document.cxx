@@ -254,7 +254,7 @@ bool Document::save() const
     return true;
 }
 
-bool Document::load(const QString &filename, QObject *parent)
+bool Document::load(const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
