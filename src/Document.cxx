@@ -324,6 +324,11 @@ bool Document::hasSelectedPages() const
     return d->nselected != 0;
 }
 
+int Document::numSelectedPages() const
+{
+    return d->nselected;
+}
+
 void Document::clearSelection()
 {
     for (int i = 0; i < d->doc.pages.count(); i++) {

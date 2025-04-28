@@ -40,8 +40,9 @@ class Document : public QAbstractListModel
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
     Q_PROPERTY(QStringList thumbnails READ thumbnails NOTIFY pagesChanged)
     Q_PROPERTY(int numPages READ numPages NOTIFY pagesChanged)
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(int numSelectedPages READ numSelectedPages NOTIFY selectedPagesChanged)
     Q_PROPERTY(bool hasSelectedPages READ hasSelectedPages NOTIFY selectedPagesChanged)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1,
@@ -142,7 +143,11 @@ public slots:
     /// Move a page `from` to position `to`.
     void move(int from, int to);
 
+    /// Return true if there is at least one selected page
     bool hasSelectedPages() const;
+
+    /// Return the number of selected pages.
+    int numSelectedPages() const;
 
     /// Cancel the selection of all pages.
     void clearSelection();
