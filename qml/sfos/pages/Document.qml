@@ -27,6 +27,8 @@ import "../../common"
 Page {
     id: docpage
 
+    property var document: TestDocument
+
     Component {
         id: imagePickerPage
         ImagePickerPage {
@@ -49,7 +51,7 @@ Page {
                                                         })
                 pageContainer.pushAttached(colpage)
                 colpage.accepted.connect(function() {
-                    TestDocument.addPage(plain, colpage.image)
+                    document.addPage(plain, colpage.image)
                     plain.destroy()
                 })
             }
@@ -74,10 +76,10 @@ Page {
     }
 
     Component.onCompleted: {
-        if (!TestDocument.load("/home/nemo/fotokopierer/doc1/doc.json", null)) {
+        if (!document.load("/home/nemo/fotokopierer/doc1/doc.json", null)) {
             console.log("can't load document file")
         } else {
-            visualModel.model = TestDocument
+            visualModel.model = document
             visualModel.items.insert({"role_page": null})
         }
     }
@@ -96,7 +98,7 @@ Page {
 
         header: PageHeader {
             id: head
-            title: "Document"
+            title: document.title
         }
 
         model: visualModel
