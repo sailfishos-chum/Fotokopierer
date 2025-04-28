@@ -385,7 +385,7 @@ void Document::pastePages()
 
 Page* Document::newPage()
 {
-    if (d->status != Ready) {
+    if (d->status != Ready && d->status != Adding) {
         emit error(tr("Cannot add page, document is not ready"));
         return nullptr;
     }
@@ -428,20 +428,30 @@ Page* Document::newCopiedPage(Document* sourceDoc, Page* source, bool move)
 void Document::onPageUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
-    // TODO: this only works reliably if at most one page is modified at the same time
+
+    // If there has been an error, remove the page.
     if (page->status() == Page::Invalid) {
-        setStatus(Ready);
         for (int i = 0; i < d->doc.pages.size(); i++) {
             if (page == d->doc.pages[i].page) {
                 deletePage(i);
                 break;
             }
         }
-    } else if (page->status() != Page::Ready) {
-        setStatus(Adding);
-    } else {
-        setStatus(Ready);
     }
+
+    // Now check if there is at least one non-ready page.
+
+    // TODO: this may be a little inefficient, because we iterate over all pages.
+    // Hopefully there aren't too many of them in a single document.
+    for (auto& p : d->doc.pages) {
+        if (p->status() != Page::Ready) {
+            setStatus(Adding);
+            return;
+        }
+    }
+
+    // All pages are ready, so the document is ready, too.
+    setStatus(Ready);
 }
 
 void Document::deletePage(int pageIndex)
