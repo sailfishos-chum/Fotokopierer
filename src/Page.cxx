@@ -103,28 +103,37 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
                                         .arg(ctime.toString(FilenameFormat))
                                         .arg(ext));
 
-    d->creation_time = ctime;
-    setOriginal(original_path);
-    d->result_path = result_path;
-
-    updateFromScanner(scanner);
+    updateFromScanner(scanner, original_path, result_path, ctime);
 }
 
 void Page::updateFromScanner(const Scanner* scanner)
 {
-    setStatus(Generating);
-
     auto original_path = d->original_path;
     auto result_path = d->result_path;
-    auto thumbnail_path = d->thumbnail_path;
-    d->result_path.clear();
-    emit resultChanged();
-    d->result_path = result_path;
 
-    d->thumbnail_path.clear();
-    emit thumbnailChanged();
+    // the thumbnail is outdated now
+    if (!d->thumbnail_path.isEmpty()) {
+        QFile(d->thumbnail_path).remove();
+    }
 
-    d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path, thumbnail_path]() {
+    // Remove existing data (because it is regenerated).
+    setOriginal({});
+    setResult({});
+    setThumbnail({});
+
+    updateFromScanner(scanner, original_path, result_path, d->creation_time);
+}
+
+void Page::updateFromScanner(const Scanner* scanner,
+                             const QString& original_path,
+                             const QString& result_path,
+                             const QDateTime& creation_time)
+{
+    setStatus(Generating);
+
+    setCreationTime(creation_time);
+
+    d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path]() {
         QImage original = scanner->original();
         QImage result = scanner->computeFilteredImage();
 
@@ -140,12 +149,7 @@ void Page::updateFromScanner(const Scanner* scanner)
                 QStringLiteral("Page could not be created: error saving result image"));
         };
 
-        // the thumbnail is outdated now
-        if (!thumbnail_path.isEmpty()) {
-            QFile(thumbnail_path).remove();
-        }
-
-        emit generationFinished();
+        emit generationFinished(original_path, result_path);
 
         return true;
     }));
@@ -167,6 +171,14 @@ void Page::setStatus(Status status)
 QDateTime Page::creationTime() const
 {
     return d->creation_time;
+}
+
+void Page::setCreationTime(const QDateTime& creation_time)
+{
+    if (creation_time != d->creation_time) {
+        d->creation_time = creation_time;
+        emit creationTimeChanged();
+    }
 }
 
 QString Page::thumbnail()
@@ -193,16 +205,18 @@ QString Page::thumbnail()
     return {};
 }
 
-void Page::onThumbnailFinished()
+void Page::setThumbnail(const QString& thumbnail)
 {
-    d->thumbnail_path = d->result_thumbnail.result();
-    emit thumbnailChanged();
-    setStatus(Ready);
+    if (thumbnail != d->thumbnail_path) {
+        d->thumbnail_path = thumbnail;
+        emit thumbnailChanged();
+    }
 }
 
-QUrl Page::resultUrl() const
+void Page::onThumbnailFinished(const QString& thumbnail)
 {
-    return QUrl::fromLocalFile(result());
+    setThumbnail(thumbnail);
+    setStatus(Ready);
 }
 
 QString Page::original() const
@@ -219,9 +233,22 @@ void Page::setOriginal(const QString& original)
     }
 }
 
+QUrl Page::resultUrl() const
+{
+    return QUrl::fromLocalFile(result());
+}
+
 QString Page::result() const
 {
     return d->result_path;
+}
+
+void Page::setResult(const QString& result)
+{
+    if (result != d->result_path) {
+        d->result_path = result;
+        emit resultChanged();
+    }
 }
 
 void Page::remove()
@@ -237,12 +264,13 @@ void Page::remove()
     }
 }
 
-void Page::onGenerationFinished()
+void Page::onGenerationFinished(const QString& original_path, const QString& result_path)
 {
     try {
         (void)d->generating.result();
+        setOriginal(original_path);
+        setResult(result_path);
         setStatus(Ready);
-        emit resultChanged();
         // start generation of thumbnail
         (void)thumbnail();
     } catch (GeneratingError& e) {
@@ -276,7 +304,7 @@ QString Page::updateThumbnail(const QString& filename)
     // write thumbnail to file
     scaled.save(scaled_filename);
 
-    emit thumbnailFinished();
+    emit thumbnailFinished(scaled_filename);
 
     return scaled_filename;
 }
@@ -324,10 +352,10 @@ bool Page::read(const QJsonObject& json)
         return false;
     }
 
-    d->creation_time = page_ctime;
+    setCreationTime(page_ctime);
     setOriginal(page_original_path.toString());
-    d->result_path = page_result_path.toString();
-    d->thumbnail_path = page_thumbnail_path.toString();
+    setResult(page_result_path.toString());
+    setThumbnail(page_thumbnail_path.toString());
 
     return true;
 }

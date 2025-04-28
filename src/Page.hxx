@@ -31,7 +31,7 @@ class Page : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
+    Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
     Q_PROPERTY(QString original READ original NOTIFY originalChanged)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
@@ -92,29 +92,42 @@ public slots:
     void remove();
 
 private:
+    void updateFromScanner(const Scanner* scanner,
+                           const QString& original_path,
+                           const QString& result_path,
+                           const QDateTime& creation_time);
+
     QString updateThumbnail(const QString& filename);
 
 private slots:
-    void onGenerationFinished();
+    void onGenerationFinished(const QString& original_path, const QString& result_path);
 
-    void onThumbnailFinished();
+    void onThumbnailFinished(const QString& thumbnail_path);
 
     void setStatus(Page::Status status);
 
     void setOriginal(const QString& original);
 
+    void setResult(const QString& result);
+
+    void setThumbnail(const QString& thumbnail);
+
+    void setCreationTime(const QDateTime& creation_time);
+
 signals:
     void originalChanged();
 
+    void resultChanged();
+
     void thumbnailChanged();
 
-    void resultChanged();
+    void creationTimeChanged();
 
     void statusChanged();
 
-    void generationFinished();
+    void generationFinished(const QString& original_path, const QString& result_path);
 
-    void thumbnailFinished();
+    void thumbnailFinished(const QString& thumbnail_path);
 
     /// An error occurred.
     void error(const QString& errorMessage);
