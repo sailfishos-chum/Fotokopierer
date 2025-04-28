@@ -92,7 +92,7 @@ public slots:
     void remove();
 
 private:
-    QString updateThumbnail(const QString& filename) const;
+    QString updateThumbnail(const QString& filename);
 
 private slots:
     void onGenerationFinished();
@@ -111,6 +111,10 @@ signals:
     void resultChanged();
 
     void statusChanged();
+
+    void generationFinished();
+
+    void thumbnailFinished();
 
     /// An error occurred.
     void error(const QString& errorMessage);

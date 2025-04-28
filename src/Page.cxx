@@ -73,8 +73,14 @@ struct Page::Data {
 Page::Page(QObject* parent)
     : QObject(parent), d(new Data)
 {
-    connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
-    connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
+    // TODO: For some reason, that I do not understand, the 'finished' signal is not emitted.
+    // We send our own signals to replace them when the concurrent work task is
+    // finished. This seems to work.
+
+    //connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
+    //connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
+    connect(this, &Page::thumbnailFinished, this, &Page::onThumbnailFinished, Qt::QueuedConnection);
+    connect(this, &Page::generationFinished, this, &Page::onGenerationFinished, Qt::QueuedConnection);
 }
 
 Page::~Page() = default;
@@ -82,8 +88,6 @@ Page::~Page() = default;
 void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
 {
     setStatus(Generating);
-
-    remove();
 
     auto ctime = QDateTime::currentDateTime();
 
@@ -112,8 +116,15 @@ void Page::updateFromScanner(const Scanner* scanner)
 
     auto original_path = d->original_path;
     auto result_path = d->result_path;
+    auto thumbnail_path = d->thumbnail_path;
+    d->result_path.clear();
+    emit resultChanged();
+    d->result_path = result_path;
 
-    d->generating.setFuture(QtConcurrent::run([scanner, original_path, result_path]() {
+    d->thumbnail_path.clear();
+    emit thumbnailChanged();
+
+    d->generating.setFuture(QtConcurrent::run([this, scanner, original_path, result_path, thumbnail_path]() {
         QImage original = scanner->original();
         QImage result = scanner->computeFilteredImage();
 
@@ -128,6 +139,13 @@ void Page::updateFromScanner(const Scanner* scanner)
             throw GeneratingError(
                 QStringLiteral("Page could not be created: error saving result image"));
         };
+
+        // the thumbnail is outdated now
+        if (!thumbnail_path.isEmpty()) {
+            QFile(thumbnail_path).remove();
+        }
+
+        emit generationFinished();
 
         return true;
     }));
@@ -169,8 +187,7 @@ QString Page::thumbnail()
             d->thumbnail_path.clear();
         }
 
-        d->result_thumbnail.setFuture(
-            QtConcurrent::run(this, &Page::updateThumbnail, d->result_path));
+        d->result_thumbnail.setFuture(QtConcurrent::run(this, &Page::updateThumbnail, d->result_path));
     }
 
     return {};
@@ -178,11 +195,8 @@ QString Page::thumbnail()
 
 void Page::onThumbnailFinished()
 {
-    auto path = d->result_thumbnail.result();
-    if (path != d->thumbnail_path) {
-        d->thumbnail_path = path;
-        emit thumbnailChanged();
-    }
+    d->thumbnail_path = d->result_thumbnail.result();
+    emit thumbnailChanged();
     setStatus(Ready);
 }
 
@@ -228,6 +242,7 @@ void Page::onGenerationFinished()
     try {
         (void)d->generating.result();
         setStatus(Ready);
+        emit resultChanged();
         // start generation of thumbnail
         (void)thumbnail();
     } catch (GeneratingError& e) {
@@ -236,7 +251,7 @@ void Page::onGenerationFinished()
     }
 }
 
-QString Page::updateThumbnail(const QString& filename) const
+QString Page::updateThumbnail(const QString& filename)
 {
     // compute the resulting filename by attaching "-thumb" to the file name
     QFileInfo f(filename);
@@ -260,6 +275,8 @@ QString Page::updateThumbnail(const QString& filename) const
 
     // write thumbnail to file
     scaled.save(scaled_filename);
+
+    emit thumbnailFinished();
 
     return scaled_filename;
 }
