@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Apr 19 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.3-2
+- Fix German translation file
+
 * Sun Apr 19 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.3-1
 - Add Swedish translation
 
