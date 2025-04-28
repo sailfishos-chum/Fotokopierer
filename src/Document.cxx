@@ -403,7 +403,7 @@ Page* Document::newPage()
         dir.mkpath(QStringLiteral("."));
     }
 
-    QSharedPointer<Page> page(new Page());
+    QSharedPointer<Page> page(new Page(), &QObject::deleteLater);
     connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
@@ -615,7 +615,7 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
             qDebug() << QStringLiteral("Could not read page from document file %1").arg(filename);
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
         }
-        QSharedPointer<Page> p(new Page);
+        QSharedPointer<Page> p(new Page, &QObject::deleteLater);
 
         connect(p.data(), &Page::thumbnailChanged, document, &Document::onThumbnailUpdated);
         connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
