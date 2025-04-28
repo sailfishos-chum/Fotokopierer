@@ -93,6 +93,12 @@ Page {
                     }
                     prevScale = scale
                 }
+
+                BusyIndicator {
+                    size: BusyIndicatorSize.Large
+                    anchors.centerIn: parent
+                    running: img.status != Image.Ready
+                }
             }
         }
 
