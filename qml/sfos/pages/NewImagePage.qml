@@ -186,10 +186,42 @@ Page {
                     } else if (jollaCameraSettings.viewfinderResolution) {
                         viewfinder.resolution = strToSize(jollaCameraSettings.viewfinderResolution)
                     } else {
-                        viewfinder.resolution = Qt.size(Screen.height, Screen.width)
+                        // The following code comes from harbour-advancedcamera
+                        var supportedResolutions = camera.supportedViewfinderResolutions()
+                        if (supportedResolutions.length > 0) {
+                            var currentRatio = 16/9
+                            var bestMatch = 0
+                            for (var i = 0; i < supportedResolutions.length; i++) {
+                                var w = supportedResolutions[i].width;
+                                var h = supportedResolutions[i].height;
+                                if (w > Screen.height || h > Screen.width) {
+                                    continue
+                                }
+                                if (currentRatio > 0) {
+                                    var ratio = w / h
+                                    var bestMatchRatio = supportedResolutions[bestMatch].width / supportedResolutions[bestMatch].height
+                                    if (Math.abs(ratio - currentRatio) < Math.abs(bestMatchRatio - currentRatio)) {
+                                        bestMatch = i; // better match to aspect ratio
+                                    } else if (Math.abs(ratio - currentRatio) == Math.abs(bestMatchRatio - currentRatio) &&
+                                               w > supportedResolutions[bestMatch].width && h > supportedResolutions[bestMatch].height) {
+                                        bestMatch = i; // same aspect ratio, better resolution
+                                    }
+                                } else {
+                                    if (w > supportedResolutions[bestMatch].width && h > supportedResolutions[bestMatch].height) {
+                                        bestMatch = i; // just select best resolution
+                                    }
+                                }
+                            }
+                            console.log("Choosing view finder resolution: " + supportedResolutions[bestMatch].width + "x" + supportedResolutions[bestMatch].height)
+                            viewfinder.resolution = Qt.size(supportedResolutions[bestMatch].width, supportedResolutions[bestMatch].height)
+                        } else {
+                            console.log("Found no resolution: " + res)
+                            viewfinder.resolution = Qt.size(Screen.height, Screen.width)
+                        }
                     }
                 } else {
                     console.log("Found no resolution: " + res)
+                    viewfinder.resolution = Qt.size(Screen.height, Screen.width)
                 }
                 _haveResolution = true
             }
