@@ -105,7 +105,7 @@ QJsonObject ColorizeFilter::saveJson() const
     return {};
 }
 
-void ColorizeFilter::loadJson(QJsonObject& object) {}
+void ColorizeFilter::loadJson(const QJsonObject& object) {}
 
 QImage ColorizeFilter::apply(QImage&& image)
 {

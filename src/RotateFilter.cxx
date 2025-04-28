@@ -50,7 +50,7 @@ QJsonObject RotateFilter::saveJson() const
     return {};
 }
 
-void RotateFilter::loadJson(QJsonObject& object) {}
+void RotateFilter::loadJson(const QJsonObject& object) {}
 
 QImage RotateFilter::apply(QImage&& image)
 {

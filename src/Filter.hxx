@@ -46,7 +46,7 @@ public:
 
     virtual QJsonObject saveJson() const = 0;
 
-    virtual void loadJson(QJsonObject& object) = 0;
+    virtual void loadJson(const QJsonObject& object) = 0;
 
     virtual QImage apply(QImage&& image) = 0;
 

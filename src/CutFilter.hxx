@@ -42,7 +42,7 @@ public:
 
     QJsonObject saveJson() const override;
 
-    void loadJson(QJsonObject& object) override;
+    void loadJson(const QJsonObject& object) override;
 
     QImage apply(QImage&& image) override;
 

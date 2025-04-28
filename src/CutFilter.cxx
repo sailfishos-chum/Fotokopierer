@@ -168,7 +168,7 @@ QJsonObject CutFilter::saveJson() const
     return {};
 }
 
-void CutFilter::loadJson(QJsonObject& object) {}
+void CutFilter::loadJson(const QJsonObject& object) {}
 
 QImage CutFilter::apply(QImage&& image)
 {
