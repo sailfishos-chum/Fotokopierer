@@ -3,6 +3,7 @@ target = harbour-fotokopierer
 sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
 
+arch := i486
 #arch := armv7hl
 arch := i486
 #arch := aarch64
