@@ -36,11 +36,7 @@ extern const QString DocumentRoot;
 /// Return the document directory.
 ///
 /// If the document root directory does not exist it is created.
-///
-/// If `check_nomedia` is `true` the existence of
-/// the `.nomedia` file to prevent the tracker from locating
-/// the document files is checked.
-QDir getDocumentDirectory(bool check_nomedia = false);
+QDir getDocumentDirectory();
 
 /// General utilities exported to QML.
 class Fotokopierer : public QObject

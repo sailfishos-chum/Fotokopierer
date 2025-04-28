@@ -39,7 +39,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     app.setApplicationName(ApplicationName);
     app.setApplicationVersion(ApplicationVersion);
 
-    getDocumentDirectory(true);
+    getDocumentDirectory();
 
     qmlRegisterSingletonType<Fotokopierer>(
         "Fotokopierer", 1, 0, "Fotokopierer", [](QQmlEngine*, QJSEngine*) -> QObject* {
