@@ -46,7 +46,8 @@ public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1,
                      ResultRole,
                      CreationTimeRole,
-                     PageRole };
+                     PageRole,
+                     SelectionRole };
 
     enum Status {
         Ready,      ///< Document is ready
@@ -191,6 +192,8 @@ private:
     int rowCount(const QModelIndex &parent) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
     QHash<int, QByteArray> roleNames() const override;
 

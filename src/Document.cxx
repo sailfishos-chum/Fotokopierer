@@ -66,13 +66,34 @@ public:
 private:
     QString message_;
 };
+
+struct PageData {
+    QSharedPointer<Page> page;
+    bool selected = false;
+
+    PageData() = default;
+    PageData(QSharedPointer<Page>&& page)
+        : page(std::move(page)) {}
+    PageData(const PageData&) = default;
+    PageData(PageData&&) = default;
+    PageData& operator=(const PageData&) = default;
+    PageData& operator=(PageData&&) = default;
+    ~PageData() = default;
+
+    Page& operator*() { return *page.data(); }
+    Page& operator*() const { return *page.data(); }
+
+    Page* operator->() { return page.data(); }
+    Page* operator->() const { return page.data(); }
+};
+
 }  // namespace
 
 struct Document::DocData {
-    QString title;                        ///< document title
-    QString filename;                     ///< filename of the document data
-    QDateTime creation_time;              ///< time when the document has been created
-    QVector<QSharedPointer<Page>> pages;  ///< page of the document
+    QString title;            ///< document title
+    QString filename;         ///< filename of the document data
+    QDateTime creation_time;  ///< time when the document has been created
+    QVector<PageData> pages;  ///< page of the document
 
     static DocData fromFile(Document* document, const QString& filename);
 };
@@ -208,7 +229,7 @@ void Document::setDocData(DocData&& docdata)
 {
     d->doc = std::move(docdata);
     for (auto& p : d->doc.pages) {
-        connect(p.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+        connect(p.page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     }
     emit titleChanged();
 }
@@ -236,13 +257,37 @@ QVariant Document::data(const QModelIndex& index, int role) const
         }
         case PageRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return QVariant::fromValue(d->doc.pages.at(index.row()).data());
+                return QVariant::fromValue(d->doc.pages.at(index.row()).page.data());
+            }
+            break;
+        }
+        case SelectionRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QVariant::fromValue(d->doc.pages.at(index.row()).selected);
             }
             break;
         }
     }
 
     return {};
+}
+
+bool Document::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    switch (role) {
+        case SelectionRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                auto selected = value.toBool();
+                auto& page = d->doc.pages[index.row()];
+                if (selected != page.selected) {
+                    page.selected = selected;
+                    emit dataChanged(index, index, {SelectionRole});
+                }
+            }
+            break;
+        }
+    }
+    return false;
 }
 
 QHash<int, QByteArray> Document::roleNames() const
@@ -284,7 +329,7 @@ Page* Document::newPage()
     connect(page.data(), &Page::error, this, &Document::error);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(page);
+    d->doc.pages.push_back({std::move(page)});
     endInsertRows();
 
     emit pagesChanged();
@@ -301,7 +346,7 @@ void Document::onPageUpdated()
     if (page->status() == Page::Invalid) {
         setStatus(Ready);
         for (int i = 0; i < d->doc.pages.size(); i++) {
-            if (page == d->doc.pages[i]) {
+            if (page == d->doc.pages[i].page) {
                 deletePage(i);
                 break;
             }
@@ -436,7 +481,7 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
         throw ReadError(tr("Could not read pages from document file %1").arg(filename));
     }
 
-    QVector<QSharedPointer<Page>> docpages;
+    QVector<PageData> docpages;
     for (auto&& page : pages.toArray()) {
         if (!page.isObject()) {
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
@@ -451,7 +496,7 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
         p->moveToThread(QCoreApplication::instance()->thread());
-        docpages.push_back(p);
+        docpages.push_back({std::move(p)});
     }
 
     ensureNoMedia(QFileInfo(file).absolutePath());
@@ -469,7 +514,7 @@ void Document::onThumbnailUpdated()
     Page* page = qobject_cast<Page*>(sender());
 
     for (int i = 0; i < d->doc.pages.size(); i++) {
-        if (page == d->doc.pages[i]) {
+        if (page == d->doc.pages[i].page) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailRole});
             save();
