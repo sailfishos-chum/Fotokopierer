@@ -34,7 +34,7 @@ MouseArea {
     drag.target: held ? content : undefined
     drag.axis: Drag.XAndYAxis
 
-    onPressAndHold: {
+    onPressed: {
         held = true
         sourceIndex = DelegateModel.itemsIndex
     }

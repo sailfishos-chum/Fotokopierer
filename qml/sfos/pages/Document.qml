@@ -28,6 +28,7 @@ Page {
     id: docpage
 
     property var document: TestDocument
+    property bool dragging: false
 
     Component {
         id: imagePickerPage
@@ -63,9 +64,15 @@ Page {
         delegate: PageDelegate {
             width: grid.cellWidth
             height: grid.cellHeight
+            factor: docpage.dragging ? 0.8 : 0.9
             page: role_page
             isAddButton: role_page == null
 
+            Behavior on factor {
+                NumberAnimation { duration: 100 }
+            }
+
+            onDraggingFinished: docpage.dragging = false
             onItemMoved: visualModel.model.move(from, to)
             onAddPage: pageStack.push(imagePickerPage)
         }
@@ -104,6 +111,15 @@ Page {
         model: visualModel
 
         VerticalScrollDecorator {}
+
+        MouseArea {
+            anchors.fill: parent
+            visible: !docpage.dragging
+
+            onPressAndHold: {
+                docpage.dragging = true
+            }
+        }
 
         property int scrollingDirection: 0
 
