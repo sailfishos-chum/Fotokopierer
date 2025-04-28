@@ -63,6 +63,12 @@ if (SAILFISH_FOUND)
   # configure OpenCV
   set(OpenCV_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/opencv)
 
+  if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL i486)
+    # we disable this flag because otherwise OpenCV will complain about some undefined
+    # _mm_pause function (a compiler intrinsic?)
+    set(OPENCV_EXTRA_CXX_FLAGS "-U__SSE2__")
+  endif()
+
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
@@ -72,6 +78,7 @@ if (SAILFISH_FOUND)
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DCMAKE_BUILD_TYPE=Release
+    -DOPENCV_EXTRA_CXX_FLAGS=${OPENCV_EXTRA_CXX_FLAGS}
     -DBUILD_DOCS=OFF
     -DBUILD_EXAMPLES=OFF
     -DBUILD_FAT_JAVA_LIB=OFF
