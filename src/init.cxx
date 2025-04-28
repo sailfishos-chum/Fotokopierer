@@ -57,11 +57,11 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         QStringLiteral("Document cannot be used as QML component"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
-    app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
+    app.setApplicationVersion(QStringLiteral(QT_VERSION_STR));
 
     QTranslator qtTranslator;
-    qtTranslator.load(QLatin1String("harbour-fotokopierer-") + QLocale::system().name(),
-                      QLatin1String(":/translations/"));
+    qtTranslator.load(QStringLiteral("harbour-fotokopierer-%1").arg(QLocale::system().name()),
+                      QStringLiteral(":/translations/"));
     app.installTranslator(&qtTranslator);
 
     QCommandLineParser parser;
