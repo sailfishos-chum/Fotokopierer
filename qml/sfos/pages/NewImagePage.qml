@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,6 +24,8 @@ import Fotokopierer 1.0
 
 Page {
     id: page
+
+    allowedOrientations: Orientation.Portrait
 
     property var acceptDestination
     property var acceptDestinationAction
@@ -113,7 +115,7 @@ Page {
         cameraState: Camera.UnloadedState
 
         viewfinder {
-            resolution: Qt.size(640, 480)
+            //resolution: Qt.size(640, 480)
         }
 
         imageCapture {
@@ -155,10 +157,10 @@ Page {
 
         onCameraStatusChanged: {
             if (cameraStatus == Camera.ActiveStatus && !_haveResolution) {
-                var res = Fotokopierer.defaultResolution(imageCapture)
+                var res = Fotokopierer.defaultResolution(imageCapture, viewArea.width, viewArea.height)
                 if (res.width > 0) {
-                    imageCapture.resolution = res
                     console.log("set resolution: " + res)
+                    imageCapture.setResolution(res)
                 }
                 _haveResolution = true
             }
@@ -177,8 +179,8 @@ Page {
             anchors.fill: parent
 
             visible: camera.cameraStatus == Camera.ActiveStatus && _haveResolution
-            fillMode: VideoOutput.Stretch
-            orientation: camera.orientation
+            fillMode: VideoOutput.PreserveAspectCrop
+            orientation: 0
             focus: visible
             source: camera
         }
