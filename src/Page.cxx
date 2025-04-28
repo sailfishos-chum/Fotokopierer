@@ -360,7 +360,7 @@ bool Page::read(const QJsonObject& json)
     setOriginal(page_original_path.toString());
     setResult(page_result_path.toString());
     setThumbnail(page_thumbnail_path.toString());
-    d->settings = json[QStringLiteral("settings")].toObject();
+    d->settings = json[QStringLiteral("filters")].toObject();
 
     return true;
 }
