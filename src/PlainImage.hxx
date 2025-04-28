@@ -34,6 +34,8 @@ public:
 
     ~PlainImage();
 
+    QImage sourceImage() const;
+
     bool scale() const;
 
     Q_INVOKABLE void loadFile(const QString& file_name);

@@ -48,7 +48,7 @@ public:
     BaseImage* source();
 
     /// Return the current source image.
-    QImage sourceImage() const;
+    virtual QImage sourceImage() const;
 
     /// Return the current image.
     QImage image() const;

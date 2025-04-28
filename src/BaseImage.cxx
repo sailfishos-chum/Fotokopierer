@@ -25,7 +25,6 @@
 struct BaseImage::Data {
     qreal painted_width = 0;          ///< width of the painted image (after scaling)
     qreal painted_height = 0;         ///< height of the painted image (after scaling)
-    QImage source_image;              ///< cache the original image before the transformation
     QImage image;                     ///< the transformed image
     BaseImage* base_image = nullptr;  ///< pointer to the source image producer
 
@@ -92,12 +91,9 @@ void BaseImage::setSource(BaseImage* base_image)
     d->base_image = base_image;
 
     if (d->base_image) {
-        d->source_image = d->base_image->image();
         qDebug() << "Connect " << (void*)d->base_image << " " << (void*)this;
         connect(d->base_image, &BaseImage::imageChanged, this, &BaseImage::updateImage);
         updateImage();
-    } else {
-        d->source_image = {};
     }
 
     emit sourceChanged();
@@ -108,24 +104,23 @@ BaseImage* BaseImage::source()
     return d->base_image;
 }
 
-QImage BaseImage::sourceImage() const
-{
-    return d->source_image;
-}
-
 QImage BaseImage::image() const
 {
     return d->image;
 }
 
+QImage BaseImage::sourceImage() const
+{
+    return d->base_image ? d->base_image->image() : QImage{};
+}
+
 void BaseImage::updateImage()
 {
     emit imageChanging();
-    if (d->base_image) d->source_image = d->base_image->image();
     if (!d->thread_running) {
         d->restart_thread = false;
         d->thread_running = true;
-        emit startTransform(d->source_image);
+        emit startTransform(sourceImage());
     } else {
         d->restart_thread = true;
     }
@@ -138,7 +133,7 @@ void BaseImage::finishTransform(const QImage& image)
     update();
     if (d->restart_thread) {
         d->restart_thread = false;
-        emit startTransform(d->source_image);
+        emit startTransform(sourceImage());
     } else {
         d->thread_running = false;
     }

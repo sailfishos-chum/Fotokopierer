@@ -35,6 +35,11 @@ bool PlainImage::scale() const
     return d->scale;
 }
 
+QImage PlainImage::sourceImage() const
+{
+    return d->image.isNull() ? BaseImage::sourceImage() : d->image;
+}
+
 void PlainImage::setScale(bool enabled)
 {
     if (enabled != d->scale) {
@@ -60,12 +65,7 @@ void PlainImage::loadFile(const QString& file_name)
 
 QImage PlainImage::transform(const QImage& image)
 {
-    if (image.isNull()) {
-        if (d->image.isNull())
-            return image;
-        else
-            return transform(d->image);
-    } else if (d->scale) {
+    if (d->scale) {
         if (image.width() > image.height()) {
             return image.scaledToWidth(1000);
         } else {
