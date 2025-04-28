@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -83,9 +83,9 @@ public:
     /// The page files reuse (and overwrite) the current files.
     void updateFromScanner(const Scanner* scanner);
 
-    bool write(QJsonObject& json) const;
+    bool write(QJsonObject& json, const QDir& docpath) const;
 
-    bool read(const QJsonObject& json);
+    bool read(const QJsonObject& json, const QDir& docpath);
 
     /// Return the filter settings of this page.
     QJsonObject settings() const;
