@@ -19,10 +19,14 @@
 
 #include "Page.hxx"
 
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
+#include <QtCore/QException>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QFutureWatcher>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
@@ -39,15 +43,47 @@
 
 const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
-struct Document::Data {
+namespace {
+    class ReadError : public QException {
+    public:
+        ReadError(const QString& message) : message_(message) {}
+        ReadError(const ReadError&) = default;
+
+        void raise() const { throw *this; }
+        ReadError* clone() const { return new ReadError(*this); }
+
+        QString message() const { return message_; }
+
+    private:
+        QString message_;
+    };
+}
+
+struct Document::DocData {
     QString title;                        ///< document title
     QString filename;                     ///< filename of the document data
     QDateTime creation_time;              ///< time when the document has been created
     QVector<QSharedPointer<Page>> pages;  ///< page of the document
+
+    static DocData fromFile(const QString& filename);
+};
+
+struct Document::Data {
+    DocData doc;                          ///< the document data
+    QFutureWatcher<DocData> pendingDoc;   ///< the document data to be read
     Status status = Ready;                ///< the current status
 };
 
-Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
+Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, [this] () {
+        setStatus(Ready);
+        try {
+            setDocData(d->pendingDoc.result());
+        } catch (ReadError& e) {
+            emit error(e.message());
+        }
+    });
+}
 
 Document::Document(Document &&doc) noexcept : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
@@ -72,15 +108,15 @@ Document Document::create(QObject *parent)
 {
     Document doc(parent);
 
-    doc.d->creation_time = QDateTime::currentDateTime();
-    doc.d->title = doc.d->creation_time.toString();
+    doc.d->doc.creation_time = QDateTime::currentDateTime();
+    doc.d->doc.title = doc.d->doc.creation_time.toString();
     auto dir = QStandardPaths::locate(QStandardPaths::HomeLocation,
                                       QStringLiteral("fotokopierer"),
                                       QStandardPaths::LocateDirectory);
 
     if (!dir.isEmpty()) {
-        doc.d->filename = QStringLiteral("%1/%2/doc.json")
-                              .arg(dir, doc.d->creation_time.toString(FilenameFormat));
+        doc.d->doc.filename = QStringLiteral("%1/%2/doc.json")
+                              .arg(dir, doc.d->doc.creation_time.toString(FilenameFormat));
     }
 
     return doc;
@@ -88,60 +124,69 @@ Document Document::create(QObject *parent)
 
 QString Document::title() const
 {
-    return d->title;
+    return d->doc.title;
 }
 
 void Document::setTitle(const QString &title)
 {
-    if (title != d->title) {
-        d->title = title;
+    if (title != d->doc.title) {
+        d->doc.title = title;
         emit titleChanged();
     }
 }
 
 int Document::numPages() const
 {
-    return d->pages.size();
+    return d->doc.pages.size();
 }
 
 Page &Document::page(int i)
 {
-    return *d->pages[i];
+    return *d->doc.pages[i];
 }
 
 const Page &Document::page(int i) const
 {
-    return *d->pages[i];
+    return *d->doc.pages[i];
 }
 
 QDateTime Document::creationTime() const
 {
-    return d->creation_time;
+    return d->doc.creation_time;
 }
 
 int Document::rowCount(const QModelIndex &parent) const
 {
-    return d->pages.size();
+    return d->doc.pages.size();
+}
+
+void Document::setDocData(DocData&& docdata)
+{
+    d->doc = std::move(docdata);
+    for (auto& p : d->doc.pages) {
+        connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+    }
+    emit titleChanged();
 }
 
 QVariant Document::data(const QModelIndex &index, int role) const
 {
     switch (role) {
         case ThumbnailRole: {
-            if (index.column() == 0 && index.row() < d->pages.size()) {
-                return QUrl::fromLocalFile(d->pages[index.row()]->thumbnail());
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QUrl::fromLocalFile(d->doc.pages[index.row()]->thumbnail());
             }
             break;
         }
         case CreationTimeRole: {
-            if (index.column() == 0 && index.row() < d->pages.size()) {
-                return d->pages[index.row()]->creationTime();
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return d->doc.pages[index.row()]->creationTime();
             }
             break;
         }
         case ResultRole: {
-            if (index.column() == 0 && index.row() < d->pages.size()) {
-                return QUrl::fromLocalFile(d->pages[index.row()]->result());
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QUrl::fromLocalFile(d->doc.pages[index.row()]->result());
             }
             break;
         }
@@ -161,9 +206,9 @@ QHash<int, QByteArray> Document::roleNames() const
 void Document::move(int from, int to)
 {
     if (beginMoveRows({}, from, from, {}, to > from ? to + 1 : to)) {
-        auto p = d->pages[from];
-        d->pages.removeAt(from);
-        d->pages.insert(to, p);
+        auto p = d->doc.pages[from];
+        d->doc.pages.removeAt(from);
+        d->doc.pages.insert(to, p);
         endMoveRows();
         save();
         emit pagesChanged();
@@ -185,7 +230,7 @@ void Document::addPage(QImage original, QImage result)
     }
 
     auto ctime = QDateTime::currentDateTime();
-    auto dir = QFileInfo(d->filename).dir();
+    auto dir = QFileInfo(d->doc.filename).dir();
     if (!dir.exists()) dir.mkpath(QStringLiteral("."));
 
     auto original_path =
@@ -208,8 +253,8 @@ void Document::addPage(QImage original, QImage result)
 
     connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
 
-    beginInsertRows({}, d->pages.size(), d->pages.size());
-    d->pages.push_back(p);
+    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
+    d->doc.pages.push_back(p);
     endInsertRows();
 
     save();
@@ -219,7 +264,7 @@ void Document::addPage(QImage original, QImage result)
 void Document::deletePage(int pageIndex)
 {
     beginRemoveRows({}, pageIndex, pageIndex);
-    auto page = d->pages.takeAt(pageIndex);
+    auto page = d->doc.pages.takeAt(pageIndex);
     page->remove();
     endRemoveRows();
     save();
@@ -227,7 +272,7 @@ void Document::deletePage(int pageIndex)
 
 void Document::remove()
 {
-    QFileInfo finfo(d->filename);
+    QFileInfo finfo(d->doc.filename);
     if (finfo.exists()) {
         finfo.dir().removeRecursively();
         d.reset(new Data);
@@ -236,7 +281,7 @@ void Document::remove()
 
 bool Document::save() const
 {
-    QFileInfo finfo(d->filename);
+    QFileInfo finfo(d->doc.filename);
 
     if (!finfo.dir().exists()) {
         if (!finfo.dir().mkpath(QStringLiteral("."))) {
@@ -245,19 +290,19 @@ bool Document::save() const
         }
     }
 
-    QFile file(d->filename);
+    QFile file(d->doc.filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << tr("Can't write document file %1:%2").arg(d->filename, file.error());
+        qWarning() << tr("Can't write document file %1:%2").arg(d->doc.filename, file.error());
         return false;
     }
     QJsonObject doc;
 
-    doc[QStringLiteral("title")] = d->title;
-    doc[QStringLiteral("filename")] = d->filename;
-    doc[QStringLiteral("creationTime")] = d->creation_time.toString(FilenameFormat);
+    doc[QStringLiteral("title")] = d->doc.title;
+    doc[QStringLiteral("filename")] = d->doc.filename;
+    doc[QStringLiteral("creationTime")] = d->doc.creation_time.toString(FilenameFormat);
 
     QJsonArray pages;
-    for (auto page : d->pages) {
+    for (auto page : d->doc.pages) {
         QJsonObject p;
         if (!page->write(p)) return false;
         pages << p;
@@ -275,10 +320,41 @@ bool Document::save() const
 
 bool Document::load(const QString &filename)
 {
+    if (d->status != Ready) {
+        emit error(tr("Cannot load document from '%1', another process is running").arg(filename));
+    }
+
+    try {
+        setDocData(DocData::fromFile(filename));
+    } catch (ReadError& e) {
+        emit error(e.message());
+        qWarning() << "Error reading file: " << e.message();
+        return false;
+    }
+
+    return true;
+}
+
+void Document::loadAsync(const QString& filename)
+{
+    if (d->status != Ready) {
+        emit error(tr("Cannot load document from '%1', another process is running").arg(filename));
+    }
+
+    setStatus(Loading);
+    d->pendingDoc.setFuture(QtConcurrent::run([this, filename] () {
+        return DocData::fromFile(filename);
+    }));
+}
+
+
+Document::DocData Document::DocData::fromFile(const QString& filename)
+{
+    auto tr = [] (const char* source) { return QCoreApplication::translate("Document", source); };
+
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << tr("Can't open document file %1").arg(filename);
-        return false;
+        throw ReadError(tr("Can't open document file %1").arg(filename));
     }
 
     auto docdata = file.readAll();
@@ -286,40 +362,47 @@ bool Document::load(const QString &filename)
     auto json = doc.object();
 
     auto title = json[QStringLiteral("title")];
-    if (!title.isString() && !title.isNull()) return false;
+    if (!title.isString() && !title.isNull()) {
+        throw ReadError(tr("Could not read document title from document file %1").arg(filename));
+    }
 
     auto creation_time = json[QStringLiteral("creationTime")];
-    if (!creation_time.isString()) return false;
-    auto ctime = QDateTime::fromString(creation_time.toString(), FilenameFormat);
+    if (!creation_time.isString()) {
+        throw ReadError(tr("Could not read creation time from document file %1").arg(filename));
+    }
+    auto ctime = QDateTime::fromString(creation_time.toString(), Document::FilenameFormat);
 
     auto pages = json[QStringLiteral("pages")];
-    if (!pages.isArray()) return false;
+    if (!pages.isArray()) {
+        throw ReadError(tr("Could not read pages from document file %1").arg(filename));
+    }
 
     QVector<QSharedPointer<Page>> docpages;
     for (auto page : pages.toArray()) {
-        if (!page.isObject()) return false;
+        if (!page.isObject()) {
+            throw ReadError(tr("Could not read page from document file %1").arg(filename));
+        }
         QSharedPointer<Page> p(new Page);
-        if (!p->read(page.toObject())) return false;
+        if (!p->read(page.toObject())) {
+            throw ReadError(tr("Error reading page from document file %1").arg(filename));
+        }
         docpages.push_back(p);
-        connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
     }
 
-    d->title = title.isString() ? title.toString() : ctime.toString();
-    d->filename = filename;
-    d->creation_time = ctime;
-    d->pages = docpages;
-
-    emit titleChanged();
-
-    return true;
+    DocData document;
+    document.title = title.isString() ? title.toString() : ctime.toString();
+    document.filename = filename;
+    document.creation_time = ctime;
+    document.pages = docpages;
+    return document;
 }
 
 void Document::updateThumbnail()
 {
     Page *page = qobject_cast<Page *>(sender());
 
-    for (int i = 0; i < d->pages.size(); i++) {
-        if (page == d->pages[i]) {
+    for (int i = 0; i < d->doc.pages.size(); i++) {
+        if (page == d->doc.pages[i]) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailRole});
             save();

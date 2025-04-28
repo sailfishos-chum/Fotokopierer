@@ -49,6 +49,8 @@ public:
 
     static const QString FilenameFormat;
 
+    struct DocData;
+
 public:
     explicit Document(QObject *parent = nullptr);
 
@@ -88,6 +90,9 @@ public:
     /// Load document from the given file.
     Q_INVOKABLE bool load(const QString &filename);
 
+    /// Load document from the given file asynchronously.
+    Q_INVOKABLE void loadAsync(const QString& filename);
+
     /// Return the current status.
     Status status() const;
 
@@ -103,6 +108,10 @@ public slots:
     /// The new page will be created with the given original and result image
     /// and the current time. It will be the last page of the current document.
     void addPage(QImage original, QImage result);
+
+private:
+    /// Set the document data.
+    void setDocData(DocData&& docdata);
 
 private slots:
     /// Change the current status.
@@ -121,6 +130,7 @@ signals:
     /// Status changed.
     void statusChanged();
 
+    /// An error has been raised.
     void error(const QString &msg);
 
 private:
