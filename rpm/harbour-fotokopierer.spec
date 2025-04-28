@@ -4,10 +4,6 @@
 # 
 
 Name:       harbour-fotokopierer
-
-# >> macros
-# << macros
-
 Summary:    Document Scanner
 Version:    0.1
 Release:    1
