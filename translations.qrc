@@ -1,7 +1,9 @@
 <RCC>
   <qresource>
+    <file>translations/harbour-fotokopierer-bg.qm</file>
     <file>translations/harbour-fotokopierer-de.qm</file>
-    <file>translations/harbour-fotokopierer-sv.qm</file>
+    <file>translations/harbour-fotokopierer-fr.qm</file>
     <file>translations/harbour-fotokopierer-sk.qm</file>
+    <file>translations/harbour-fotokopierer-sv.qm</file>
   </qresource>
 </RCC>
