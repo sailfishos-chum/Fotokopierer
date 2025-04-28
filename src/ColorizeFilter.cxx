@@ -109,7 +109,9 @@ void ColorizeFilter::loadJson(QJsonObject& object) {}
 
 QImage ColorizeFilter::apply(QImage&& image)
 {
-    if (image.isNull()) return image;
+    if (image.isNull()) {
+        return image;
+    }
 
     auto img_cut = QImageToCvMat(image, false);
 
@@ -132,7 +134,9 @@ QImage ColorizeFilter::apply(QImage&& image)
     cv::Mat bg_mask;
     {
         int details = std::max(d->details * 50, 3.0);
-        if (details % 2 == 0) details += 1;
+        if (details % 2 == 0) {
+            details += 1;
+        }
 
         cv::adaptiveThreshold(
             img_gray, bg_mask, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, details, 5);
