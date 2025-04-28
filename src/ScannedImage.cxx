@@ -340,12 +340,12 @@ QList<QPointF> ScannedImage::Data::autoDetectCutRect()
 
     // partition the lines according to their angles into horizontal
     // and vertical ones
-    auto mid = std::partition(lines.begin(), lines.end(), [](auto& line) {
+    auto mid = std::partition(lines.begin(), lines.end(), [](cv::Vec4i& line) {
         return std::abs(line[0] - line[2]) > std::abs(line[1] - line[3]);
     });
 
     // horizontal scores
-    auto h_score = [height](auto& l) {
+    auto h_score = [height](const cv::Vec4i& l) {
         auto len =
             std::sqrt(std::pow(l[0] - l[2], 2) + std::pow(l[1] - l[3], 2));
         auto pos = (l[1] + l[3] - height) / 2.0;
@@ -353,18 +353,19 @@ QList<QPointF> ScannedImage::Data::autoDetectCutRect()
     };
 
     // vertical scores
-    auto v_score = [width](auto& l) {
+    auto v_score = [width](const cv::Vec4i& l) {
         auto len =
             std::sqrt(std::pow(l[0] - l[2], 2) + std::pow(l[1] - l[3], 2));
         auto pos = (l[0] + l[2] - width) / 2.0;
         return len * pos;
     };
 
-    std::sort(lines.begin(), mid, [&](auto& l1, auto& l2) {
-        return h_score(l1) < h_score(l2);
-    });
+    std::sort(
+        lines.begin(), mid, [&](const cv::Vec4i& l1, const cv::Vec4i& l2) {
+            return h_score(l1) < h_score(l2);
+        });
 
-    std::sort(mid, lines.end(), [&](auto& l1, auto& l2) {
+    std::sort(mid, lines.end(), [&](const cv::Vec4i& l1, const cv::Vec4i& l2) {
         return v_score(l1) < v_score(l2);
     });
 
@@ -403,9 +404,9 @@ QList<QPointF> ScannedImage::Data::autoDetectCutRect()
         bottomright = {(qreal)width, (qreal)height};
     }
 
-    auto project = [width, height](auto& p) {
-        p.setX(std::max(0.0, std::min(1.0, p.x() / width)));
-        p.setY(std::max(0.0, std::min(1.0, p.y() / height)));
+    auto project = [width, height](QPointF& p) {
+        p.setX(std::max((qreal)0.0, std::min((qreal)1.0, p.x() / width)));
+        p.setY(std::max((qreal)0.0, std::min((qreal)1.0, p.y() / height)));
     };
 
     project(topleft);
