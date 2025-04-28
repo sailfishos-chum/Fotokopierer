@@ -31,6 +31,8 @@ MouseArea {
 
     property bool isAddButton: false
 
+    // This property is true if the Item can be deleted.
+    // It will be shrunk and a delete button will be shown.
     property alias deleting: deletable.deleting
 
     signal deleteDocument()
