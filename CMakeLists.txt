@@ -95,6 +95,7 @@ if (SAILFISH_FOUND)
     -DBUILD_opencv_videoio=OFF
     -DBUILD_opencv_videostab=OFF
     -DBUILD_opencv_world=OFF
+    -DENABLE_PRECOMPILED_HEADERS=OFF
     -DWITH_JASPER=OFF
     -DWITH_OPENEXR=OFF
     -DWITH_WEBP=OFF)
