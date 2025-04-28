@@ -30,7 +30,7 @@ const QString FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 const QString DocumentRoot = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
                              QStringLiteral("/Fotokopierer");
 
-QDir getDocumentDirectory(bool check_nomedia)
+QDir getDocumentDirectory()
 {
     auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 
@@ -38,19 +38,12 @@ QDir getDocumentDirectory(bool check_nomedia)
         if (!dir.mkdir(QStringLiteral("."))) {
             return {};
         }
-        check_nomedia = true;
     }
 
     if (!dir.cd(ApplicationName)) {
         if (!dir.mkdir(ApplicationName) || !dir.cd(ApplicationName)) {
             return {};
         }
-        check_nomedia = true;
-    }
-
-    if (check_nomedia && !dir.exists(QStringLiteral(".nomedia"))) {
-        QFile nomedia(dir.filePath(QStringLiteral(".nomedia")));
-        nomedia.open(QIODevice::WriteOnly);
     }
 
     return dir;
@@ -63,5 +56,28 @@ bool Fotokopierer::isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4)
 
 QString Fotokopierer::newImagePath()
 {
-    return getDocumentDirectory().absoluteFilePath(QDateTime::currentDateTime().toString(FilenameFormat) + QStringLiteral(".jpg"));
+    QDir raw = getDocumentDirectory();
+    if (!raw.cd(QStringLiteral(".raw"))) {
+        raw.mkpath(QStringLiteral(".raw"));
+        if (!raw.cd(QStringLiteral(".raw"))) {
+            return {};
+        }
+    }
+
+    if (!raw.exists(QStringLiteral(".nomedia"))) {
+        QFile nomedia(raw.filePath(QStringLiteral(".nomedia")));
+        nomedia.open(QIODevice::WriteOnly);
+    }
+
+    return raw.absoluteFilePath(QStringLiteral("%1.jpg").arg(QDateTime::currentDateTime().toString(FilenameFormat)));
+}
+
+void cleanupImageDirectory()
+{
+    auto raw = getDocumentDirectory();
+    if (raw.cd(QStringLiteral(".raw"))) {
+        for (auto& path : raw.entryList({QStringLiteral("*.jpg")}, QDir::Files)) {
+            QFile(raw.absoluteFilePath(path)).remove();
+        }
+    }
 }

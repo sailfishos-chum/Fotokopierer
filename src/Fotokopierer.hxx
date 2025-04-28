@@ -36,11 +36,12 @@ extern const QString DocumentRoot;
 /// Return the document directory.
 ///
 /// If the document root directory does not exist it is created.
+QDir getDocumentDirectory();
+
+/// Remove all image files from the .raw data directory.
 ///
-/// If `check_nomedia` is `true` the existence of
-/// the `.nomedia` file to prevent the tracker from locating
-/// the document files is checked.
-QDir getDocumentDirectory(bool check_nomedia = false);
+/// These files are temporary files created when taking a new picture.
+void cleanupImageDirectory();
 
 /// General utilities exported to QML.
 class Fotokopierer : public QObject
