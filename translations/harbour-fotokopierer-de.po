@@ -263,43 +263,43 @@ msgstr ""
 #~ msgid "Slovak"
 #~ msgstr "Slowakisch"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:45
+#: qml/sfos/CoverPage.qml:45
 #, fuzzy
 msgctxt "CoverPage|"
 msgid "Take a new picture"
 msgstr "Neues Bild aufnehmen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:78
+#: qml/sfos/CoverPage.qml:78
 #, fuzzy, qt-format
 msgctxt "CoverPage|"
 msgid "Pages: %2"
 msgstr "Seiten: %2"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/DocumentDelegate.qml:130
+#: qml/sfos/DocumentDelegate.qml:130
 #, fuzzy, qt-format
 msgctxt "DocumentDelegate|"
 msgid "Pages: %1"
 msgstr "Seiten: %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/PageDelegate.qml:105
+#: qml/sfos/PageDelegate.qml:105
 #, fuzzy, qt-format
 msgctxt "PageDelegate|"
 msgid "Page %1"
 msgstr "Seite %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:35
+#: qml/sfos/pages/AboutPage.qml:35
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "About %1"
 msgstr "Über %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:64
+#: qml/sfos/pages/AboutPage.qml:64
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "A camera scanning application for SailfishOS by %1"
 msgstr "Eine Kamera-Scan Anwendung für SailfishOS von %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:75
+#: qml/sfos/pages/AboutPage.qml:75
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid ""
@@ -311,232 +311,232 @@ msgstr ""
 "Copy-Icon von %2 (www.flaticon.com)\n"
 "Cut-Icon von %3 (www.flaticon.com)"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:93
+#: qml/sfos/pages/AboutPage.qml:93
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Translations"
 msgstr "Übersetzungen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:103
+#: qml/sfos/pages/AboutPage.qml:103
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Swedish"
 msgstr "Schwedisch"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:113
+#: qml/sfos/pages/AboutPage.qml:113
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Slovak"
 msgstr "Slowakisch"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:128
+#: qml/sfos/pages/AboutPage.qml:128
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Homepage"
 msgstr "Homepage"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:139
+#: qml/sfos/pages/AboutPage.qml:139
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Find me on libera.chat: "
 msgstr "Kontaktiere mich auf libera.chat: "
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:158
+#: qml/sfos/pages/AboutPage.qml:158
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "This application uses"
 msgstr "Dieses Programm verwendet"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:180
+#: qml/sfos/pages/AboutPage.qml:180
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
 msgstr "Lizensiert unter %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/ColorizePage.qml:39
+#: qml/sfos/pages/ColorizePage.qml:39
 #, fuzzy
 msgctxt "ColorizePage|"
 msgid "Colorize"
 msgstr "Einfärben"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/CutPage.qml:46
+#: qml/sfos/pages/CutPage.qml:46
 #, fuzzy
 msgctxt "CutPage|"
 msgid "Cut & Rotate"
 msgstr "Zuschneiden & Drehen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:137
+#: qml/sfos/pages/DocumentPage.qml:137
 #, fuzzy, qt-format
 msgctxt "DocumentPage|"
 msgid "Page %1 of %2 (%3)"
 msgstr "Seite %1 von %2 (%3)"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:146
+#: qml/sfos/pages/DocumentPage.qml:146
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Delete page"
 msgstr "Seite löschen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:207
+#: qml/sfos/pages/DocumentPage.qml:207
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Paste pages"
 msgstr "Seiten einfügen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:207
+#: qml/sfos/pages/DocumentPage.qml:207
 #, fuzzy, qt-format
 msgctxt "DocumentPage|"
 msgid "Paste pages (%1)"
 msgstr "Seiten einfügen (%1)"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:213
+#: qml/sfos/pages/DocumentPage.qml:213
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Select pages"
 msgstr "Seiten auswählen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:219
+#: qml/sfos/pages/DocumentPage.qml:219
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Export to pdf"
 msgstr "Pdf exportieren"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:225
+#: qml/sfos/pages/DocumentPage.qml:225
 #, fuzzy
 msgctxt "DocumentPage|"
 msgid "Rename"
 msgstr "Umbenennen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentPage.qml:397
+#: qml/sfos/pages/DocumentPage.qml:397
 #, fuzzy, qt-format
 msgctxt "DocumentPage|"
 msgid "Overwrite existing file <%1>?"
 msgstr "Existierende Datei <%1> überschreiben?"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:77
+#: qml/sfos/pages/DocumentsPage.qml:77
 #, fuzzy
 msgctxt "DocumentsPage|"
 msgid "Delete document"
 msgstr "Dokument löschen"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:119
+#: qml/sfos/pages/DocumentsPage.qml:119
 #, fuzzy
 msgctxt "DocumentsPage|"
 msgid "Documents"
 msgstr "Dokumente"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/DocumentsPage.qml:126
+#: qml/sfos/pages/DocumentsPage.qml:126
 #, fuzzy, qt-format
 msgctxt "DocumentsPage|"
 msgid "About %1"
 msgstr "Über %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/NewImagePage.qml:118
+#: qml/sfos/pages/NewImagePage.qml:118
 #, fuzzy
 msgctxt "NewImagePage|"
 msgid "New Picture"
 msgstr "Neues Bild"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/RenamePage.qml:32
+#: qml/sfos/pages/RenamePage.qml:32
 #, fuzzy
 msgctxt "RenamePage|"
 msgid "Enter new document title"
 msgstr "Neuen Dokumenttitel eingeben"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/RenamePage.qml:38
+#: qml/sfos/pages/RenamePage.qml:38
 #, fuzzy
 msgctxt "RenamePage|"
 msgid "Document title"
 msgstr "Dokumenttitel"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:402
+#: src/Document.cxx:402
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
 msgstr "Seite kann nicht hinzugefügt werden, Dokument ist nicht bereit"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:507
+#: src/Document.cxx:507
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
 msgstr "Pfad %1 kann nicht erstellt werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:514
+#: src/Document.cxx:514
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
 msgstr "Dokumentdatei %1 kann nicht geschrieben werden: %2"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:535
+#: src/Document.cxx:535
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
 msgstr "Fehler beim Schreiben der Datei %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:547
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:566
+#: src/Document.cxx:547
+#: src/Document.cxx:566
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
 msgstr ""
 "Dokument kann nicht von %1 gelesen werden während ein anderer Prozess läuft"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:584
+#: src/Document.cxx:584
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
 msgstr "Dokumentdatei %1 kann nicht geöffnet werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:601
+#: src/Document.cxx:601
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
 msgstr "Dokumenttitel kann nicht von Datei %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:607
+#: src/Document.cxx:607
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
 msgstr "Erstellungszeit kann nicht von Datei %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:614
+#: src/Document.cxx:614
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
 msgstr "Seiten des Dokuments konnten nicht von %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:621
+#: src/Document.cxx:621
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
 msgstr "Eine Seite konnte nicht von Dokument %1 gelesen werden"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:632
+#: src/Document.cxx:632
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
 msgstr "Fehler beim lesen der Dokumentdatei %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:683
+#: src/Document.cxx:683
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot export to pdf, document is not ready"
 msgstr "Pdf kann nicht exportiert werden, Dokument ist nicht bereit"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Document.cxx:758
+#: src/Document.cxx:758
 #, fuzzy
 msgctxt "Document|"
 msgid "Error creating pdf-file"
 msgstr "Fehler beim Erstellen der pdf-Datei"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Page.cxx:164
+#: src/Page.cxx:164
 #, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
 "Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/src/Page.cxx:169
+#: src/Page.cxx:169
 #, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"

@@ -85,8 +85,8 @@ $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po
 
 .PHONY: lupdate lrelease
 lupdate:
-	lupdate src qml -ts translations/harbour-fotokopierer.pot
-	lupdate src qml -ts $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
+	lupdate -locations relative src qml -ts translations/harbour-fotokopierer.pot $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
+	sed -i -e "s!^#: ${current_dir}!#: !" translations/harbour-fotokopierer.pot $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
 
 lrelease: translations.qrc
 
