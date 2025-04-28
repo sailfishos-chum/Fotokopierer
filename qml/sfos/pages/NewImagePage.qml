@@ -28,24 +28,24 @@ ImagePickerPage {
     // Note that this property might become unsupported in future
     popOnSelection: false
 
-    PlainImage { id: plain }
+    ScanImage { id: scanImage }
 
-    CutPage { id: cutpage; source: plain }
+    CutPage { id: cutpage; image: scanImage }
 
-    ColorizePage {
-        id: colpage
-        source: cutpage.image
-        acceptDestination: destination
-        acceptDestinationAction: PageStackAction.Pop
+    // ColorizePage {
+    //     id: colpage
+    //     source: cutpage.image
+    //     acceptDestination: destination
+    //     acceptDestinationAction: PageStackAction.Pop
 
-        onAccepted: {
-            addPage(plain, colpage.image)
-        }
-    }
+    //     onAccepted: {
+    //         addPage(plain, colpage.image)
+    //     }
+    // }
 
     onSelectedContentPropertiesChanged: {
-        plain.loadFile(selectedContentProperties.filePath)
+        scanImage.loadFile(selectedContentProperties.filePath)
         pageStack.push(cutpage)
-        pageStack.pushAttached(colpage)
+        // pageStack.pushAttached(colpage)
     }
 }

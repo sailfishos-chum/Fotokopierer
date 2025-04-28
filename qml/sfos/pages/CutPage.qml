@@ -24,8 +24,7 @@ import "../../common"
 Page {
     id: page
 
-    property alias source : cutview.source
-    property alias image : cutview.image
+    property alias image: cutview.scanImage
 
     canNavigateForward: cutview.valid
 
