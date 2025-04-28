@@ -40,7 +40,7 @@ Item {
         id: image
 
         image: scanImage
-        filter: ScanImage.Rotate
+        filterType: ScanImage.Rotate
 
         anchors.fill: parent
     }
@@ -180,7 +180,7 @@ Item {
         id: zoomimg
 
         image: image.image
-        filter: image.filter
+        filter: image.filterType
 
         borderColor: pane.markerColor
         crossColor: pane.lineColor
