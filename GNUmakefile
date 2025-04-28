@@ -79,13 +79,13 @@ run-emu:
 	$(sfdk) emulator exec /opt/sdk/$(program)/usr/bin/$(program)
 
 # Translations
-$(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po
+$(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.ts
 	lrelease $<
 
 .PHONY: lupdate lrelease
 lupdate:
-	lupdate -locations relative src qml -ts translations/harbour-fotokopierer.pot $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
-	sed -i -e "s!^#: ${current_dir}!#: !" translations/harbour-fotokopierer.pot $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
+	lupdate -locations relative src qml -ts translations/harbour-fotokopierer.ts $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.ts)
+	sed -i -e "s!^#: ${current_dir}!#: !" translations/harbour-fotokopierer.ts $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.ts)
 
 lrelease: translations.qrc
 
