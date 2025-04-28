@@ -48,7 +48,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         });
 
     qmlRegisterSingletonType<Clipboard>(
-        "Clipboard", 1, 0, "Clipboard", [](QQmlEngine* engine, QJSEngine*) -> QObject* {
+        "Fotokopierer", 1, 0, "PageClipboard", [](QQmlEngine* engine, QJSEngine*) -> QObject* {
             auto cb = Clipboard::instance();
             engine->setObjectOwnership(cb, QQmlEngine::CppOwnership);
             return cb;

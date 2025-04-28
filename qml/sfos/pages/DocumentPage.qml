@@ -171,6 +171,13 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: PageClipboard.empty ?
+                      qsTr("Paste pages") : qsTr("Paste pages (%1)").arg(PageClipboard.numPages)
+                onClicked: docpage.state = "Marking"
+                enabled: !PageClipboard.empty
+            }
+
+            MenuItem {
                 text: qsTr("Select pages")
                 onClicked: docpage.state = "Marking"
                 enabled: (document ? true : false) && docpage.state == "Normal"
