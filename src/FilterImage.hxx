@@ -35,7 +35,7 @@ class FilterImage : public QQuickPaintedItem
 
     Q_PROPERTY(
         ScanImage::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
-    Q_PROPERTY(ScanImage* image READ image NOTIFY imageChanged)
+    Q_PROPERTY(ScanImage* image READ image WRITE setImage NOTIFY imageChanged)
 
 public:
     FilterImage(QQuickItem* parent = nullptr);
