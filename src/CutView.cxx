@@ -48,7 +48,6 @@ static QPointF unscale(const QPointF& p, const std::unique_ptr<EdgeDetection>& e
 struct CutView::Data {
     std::unique_ptr<EdgeDetection> edges;
     std::shared_ptr<ScanImage> scanImage;
-    QImage image;
 
     QMetaObject::Connection orientationChangedConnection = {};
     bool updatePaintedSize = false;
@@ -423,14 +422,11 @@ void CutView::onNewImage()
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
-            // fetch the image
-            d->image = d->scanImage->original();
-
             // set up connections for the new ScanImage ...
             d->orientationChangedConnection = connect(d->scanImage.get(), &ScanImage::orientationChanged, this, &CutView::onOrientationChanged);
 
             // ... and its edge-detection data structure
-            d->edges = std::make_unique<EdgeDetection>(d->image);
+            d->edges = std::make_unique<EdgeDetection>(d->scanImage->original());
             connect(d->edges.get(), &EdgeDetection::hasAutoDetectionChanged, this, &CutView::hasAutoSelectionChanged);
             connect(d->edges.get(), &EdgeDetection::isAutoDetectionRunningChanged, this, &CutView::isAutoDetectionRunningChanged);
 
@@ -463,7 +459,7 @@ void CutView::onNewImage()
 
 QImage CutView::image() const
 {
-    return d->image;
+    return d->scanImage->original();
 }
 
 void CutView::onOrientationChanged()
