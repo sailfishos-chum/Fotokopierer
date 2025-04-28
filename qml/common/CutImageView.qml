@@ -31,11 +31,6 @@ Item {
 
     property bool valid: true
 
-    property point tl : mapPoint(topleft.center)
-    property point tr : mapPoint(topright.center)
-    property point br : mapPoint(bottomright.center)
-    property point bl : mapPoint(bottomleft.center)
-
     FilterImage {
         id: image
 
