@@ -24,14 +24,19 @@ import ".."
 import "../../common"
 
 Page {
-    id: page
+    id: docpage
+
+    property bool editing: false
+    property bool deleting: false
 
     DelegateModel {
         id: visualModel
         model: DocumentList
         delegate: DocumentDelegate {
+            id: docDelegate
             width: grid.cellWidth
             height: grid.cellHeight
+            zoom: docpage.editing
 
             title: role_title
             pagecount: role_numPages
@@ -39,11 +44,36 @@ Page {
             thumbnails: role_thumbnails
 
             isAddButton: role_thumbnails == null
+            visible: !isAddButton || !docpage.editing
 
             enabled: true
 
+            onAddDocument: {
+                console.log("add document")
+            }
+
             onOpenDocument: {
                 pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
+            }
+
+            IconButton {
+                visible: docpage.editing && !isAddButton
+                anchors { top: parent.top; right: parent.right }
+                icon.source: "image://theme/icon-l-clear"
+                onClicked: {
+                    docpage.editing = false
+                    docpage.deleting = true
+                    remorse.execute(docDelegate, qsTr("Delete document"), function () {
+                        console.log("delete document")
+                        //document.deletePage(docDelegate.DelegateModel.itemsIndex)
+                    })
+                }
+            }
+
+            RemorseItem {
+                id: remorse
+                onCanceled: docpage.deleting = false
+                onTriggered: docpage.deleting = false
             }
         }
 
@@ -56,7 +86,6 @@ Page {
             })
         }
     }
-
 
     SilicaGridView {
         id: grid
@@ -74,5 +103,18 @@ Page {
         model: visualModel
 
         VerticalScrollDecorator {}
+
+        MouseArea {
+            anchors.fill: grid
+            enabled: !docpage.deleting && !docpage.editing
+
+            propagateComposedEvents: true
+
+            onPressAndHold: {
+                if (visualModel.count > 1) {
+                    docpage.editing = true
+                }
+            }
+        }
     }
 }

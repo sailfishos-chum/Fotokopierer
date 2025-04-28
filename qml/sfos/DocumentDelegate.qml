@@ -21,7 +21,7 @@ import QtQuick 2.0
 
 import "../common"
 
-DragDelegate {
+MouseArea {
     id: dragDelegate
 
     property string title
@@ -29,8 +29,7 @@ DragDelegate {
     property date creationTime
     property var thumbnails
     property bool isAddButton: false
-
-    canBeDragged: !isAddButton
+    property bool zoom: false
 
     signal addDocument()
     signal openDocument()
@@ -133,8 +132,8 @@ DragDelegate {
     Loader {
         id: loader
 
-        width: parent.width * 0.9 * (dragDelegate.dragEnabled ? 0.9 : 1.0)
-        height: parent.height * 0.9 * (dragDelegate.dragEnabled ? 0.9 : 1.0)
+        width: parent.width * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
+        height: parent.height * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
 
         Behavior on width {
             NumberAnimation { duration: 100 }
