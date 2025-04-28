@@ -13,12 +13,13 @@ Version:    0.1
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
-URL:        http://www.mathematik.uni-kassel.de/~fifr/fossils/cpp-fotokopierer
+URL:        https://fifr.spdns.de/fossils/harbour-fotokopierer
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-fotokopierer.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(freetype2)
