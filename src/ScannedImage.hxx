@@ -45,12 +45,12 @@ public:
 
     Q_INVOKABLE QVariantList autoDetectCutRect();
 
-    Q_INVOKABLE void set_angle(double angle);
+    Q_INVOKABLE void setAngle(double angle);
 
-    Q_INVOKABLE bool set_cut_box(const QPointF& topleft,
-                                 const QPointF& topright,
-                                 const QPointF& bottomright,
-                                 const QPointF& bottomleft);
+    Q_INVOKABLE bool setCutBox(const QPointF& topleft,
+                               const QPointF& topright,
+                               const QPointF& bottomright,
+                               const QPointF& bottomleft);
 
 signals:
     void originalChanged();

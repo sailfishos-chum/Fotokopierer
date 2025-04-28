@@ -42,17 +42,17 @@ QString ScannedImage::image() const
     return d->image;
 }
 
-void ScannedImage::set_angle(double angle)
+void ScannedImage::setAngle(double angle)
 {
-    ScannedImageProvider::instance->set_angle(d->image, angle);
+    ScannedImageProvider::instance->setAngle(d->image, angle);
 }
 
-bool ScannedImage::set_cut_box(const QPointF& topleft,
-                               const QPointF& topright,
-                               const QPointF& bottomright,
-                               const QPointF& bottomleft)
+bool ScannedImage::setCutBox(const QPointF& topleft,
+                             const QPointF& topright,
+                             const QPointF& bottomright,
+                             const QPointF& bottomleft)
 {
-    return ScannedImageProvider::instance->set_cut_box(
+    return ScannedImageProvider::instance->setCutBox(
         d->image, topleft, topright, bottomright, bottomleft);
 }
 

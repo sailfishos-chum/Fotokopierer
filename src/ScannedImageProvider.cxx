@@ -143,7 +143,7 @@ QImage ScannedImageProvider::requestImage(const QString& id,
         if (toks.size() == 3) {
             angle = toks[2].toFloat();
         }
-        set_angle(toks[0], angle);
+        setAngle(toks[0], angle);
         return cvMatToQImage(getRotatedImage(*img));
     } else if (toks[1] == QLatin1String("cut")) {
         auto colormode = Colored;
@@ -196,7 +196,7 @@ QString ScannedImageProvider::loadImage(const QString& fileName)
     return id;
 }
 
-void ScannedImageProvider::set_angle(const QString& image, double angle)
+void ScannedImageProvider::setAngle(const QString& image, double angle)
 {
     auto img = d->images.find(image);
     if (img != d->images.end()) {
@@ -209,15 +209,15 @@ void ScannedImageProvider::set_angle(const QString& image, double angle)
             img->state = (ImageState)std::min((int)img->state, Rotated - 1);
         }
     } else {
-        qWarning() << "(set_angle) Unknown image id: " << image;
+        qWarning() << "(setAngle) Unknown image id: " << image;
     }
 }
 
-bool ScannedImageProvider::set_cut_box(const QString& image,
-                                       const QPointF& topleft,
-                                       const QPointF& topright,
-                                       const QPointF& bottomright,
-                                       const QPointF& bottomleft)
+bool ScannedImageProvider::setCutBox(const QString& image,
+                                     const QPointF& topleft,
+                                     const QPointF& topright,
+                                     const QPointF& bottomright,
+                                     const QPointF& bottomleft)
 {
     static Util util;
 
@@ -233,7 +233,7 @@ bool ScannedImageProvider::set_cut_box(const QString& image,
         img->state = (ImageState)std::min((int)img->state, Cut - 1);
         return true;
     } else {
-        qWarning() << "(set_cut_image) Unknown image id: " << image;
+        qWarning() << "(setCutBox) Unknown image id: " << image;
         return false;
     }
 }
