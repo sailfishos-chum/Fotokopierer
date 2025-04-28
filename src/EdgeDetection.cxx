@@ -215,7 +215,7 @@ void EdgeDetection::setTopPoint(const QPointF& p)
 
 QPointF EdgeDetection::topPoint() const
 {
-    return QLineF(d->quad.tl, d->quad.bl).center();
+    return QLineF(d->quad.tl, d->quad.tr).center();
 }
 
 void EdgeDetection::setBottomPoint(const QPointF& p)
