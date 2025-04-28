@@ -333,6 +333,9 @@ void CutView::onNewImage()
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
             d->rotatedImageChangedConnection = connect(d->scanImage.get(), &ScanImage::rotatedImageChanged, this, &CutView::onRotatedImageChanged);
+
+            // this means that the settings will be initialized from the scanImage
+            d->doRotate = -1;
         }
     }
 
@@ -349,7 +352,13 @@ void CutView::onRotatedImageChanged()
     if (d->scanImage != nullptr) {
         d->image = d->scanImage->rotatedImage();
         d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(d->image));
-        if (d->doRotate == 1) {
+        if (d->doRotate == -1) {
+            setTopLeft(d->scanImage->topLeft());
+            setTopRight(d->scanImage->topRight());
+            setBottomRight(d->scanImage->bottomRight());
+            setBottomLeft(d->scanImage->bottomLeft());
+            d->doRotate = 0;
+        } else if (d->doRotate == 1) {
             d->doRotate = 2;
         }
         update();
