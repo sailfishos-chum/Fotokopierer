@@ -167,7 +167,13 @@ Item {
             left.setCenter(unmapPoint(Scanner.cutFilter.left))
             pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
@@ -180,7 +186,13 @@ Item {
             right.setCenter(unmapPoint(Scanner.cutFilter.right))
             pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
@@ -193,7 +205,13 @@ Item {
             left.setCenter(unmapPoint(Scanner.cutFilter.left))
             pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
@@ -206,7 +224,13 @@ Item {
             right.setCenter(unmapPoint(Scanner.cutFilter.right))
             pane.update(markerPos)
         }
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(markerPos) }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
@@ -227,6 +251,7 @@ Item {
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
                 top.setCenter(unmapPoint(Scanner.cutFilter.top))
+                Scanner.cutFilter.fixSnappyEdges()
             }
         }
     }
@@ -249,6 +274,7 @@ Item {
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
                 bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+                Scanner.cutFilter.fixSnappyEdges()
             }
         }
     }
@@ -271,6 +297,7 @@ Item {
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
                 left.setCenter(unmapPoint(Scanner.cutFilter.left))
+                Scanner.cutFilter.fixSnappyEdges()
             }
         }
     }
@@ -293,6 +320,7 @@ Item {
             if (!dragActive) {
                 // end of dragging -> reset this point to the middle of the edge
                 right.setCenter(unmapPoint(Scanner.cutFilter.right))
+                Scanner.cutFilter.fixSnappyEdges()
             }
         }
     }

@@ -67,6 +67,21 @@ public:
     /// Return the contrast scaling factor before running canny edge detection.
     qreal contrastFactor() const;
 
+    /// Set the discretization size (in pixels) for snappy-edge selection.
+    void setSnappySize(std::size_t snappy_size);
+
+    /// Return the discretization size (in pixels) for snappy-edge selection.
+    size_t snappySize() const;
+
+    /// Fix current lines as "default" non-snappy lines.
+    ///
+    /// If one of the edge mid points is changed and the current pixel
+    /// is non-snappy, use the latest non-snappy lines. Otherwise the snappy line
+    /// for the current pixel is used.
+    ///
+    /// Should be called before any edge mid point interaction.
+    void fixNonSnappyEdges();
+
     /// Run the edge detection.
     ///
     /// Must be called after changing a parameter.

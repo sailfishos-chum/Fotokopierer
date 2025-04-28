@@ -19,6 +19,7 @@
 
 #include "Convert.hxx"
 
+#include <QDebug>
 #include <QtCore/QLineF>
 #include <QtGui/QImage>
 
@@ -58,6 +59,10 @@ struct EdgeDetection::Data {
     const int DefaultBlurRadius = 10;
     // The default contrast factor
     const qreal DefaultContractFactor = 1.5;
+    // The default snappy square size in pixels
+    const qreal DefaultSnappySize = 10;
+    // The default snappy distance size in pixels
+    const qreal DefaultSnappyDistance = 20;
 
     int cannyMinVal = DefaultCannyMin;
     int cannyMaxVal = DefaultCannyMax;
@@ -66,6 +71,21 @@ struct EdgeDetection::Data {
 
     std::vector<QLineF> hlines;
     std::vector<QLineF> vlines;
+
+    /// The size in pixels of each "pixel-square" for snappy edges
+    size_t snappy_size = DefaultSnappySize;
+    /// The size in pixels for snappy detection.
+    size_t snappy_dist = DefaultSnappyDistance;
+
+    /// Horizontal snappy edges for each pixel/square
+    std::vector<std::vector<std::size_t>> hsnappy;
+    /// Vertical snappy edges for each pixel/square
+    std::vector<std::vector<std::size_t>> vsnappy;
+
+    QLineF top_non_snappy;
+    QLineF bottom_non_snappy;
+    QLineF left_non_snappy;
+    QLineF right_non_snappy;
 
     Quadrangle quad;  ///< The currently selected quadrangle.
 
@@ -81,6 +101,10 @@ struct EdgeDetection::Data {
     static void cluster_edges(std::vector<QLineF>& hlines, qreal w, qreal h);
 
     void find_best_match();
+
+    void find_snappy_edges();
+
+    bool get_snappy_line(const QPointF& p, bool horizontal, QLineF& sline) const;
 
     static bool distances_to_intersection(const QLineF& l1, const QLineF& l2, qreal& alpha, qreal& beta);
     std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const;
@@ -139,6 +163,24 @@ void EdgeDetection::setContrastFactor(qreal factor)
 qreal EdgeDetection::contrastFactor() const
 {
     return d->contrastFactor;
+}
+
+void EdgeDetection::setSnappySize(std::size_t snappy_size)
+{
+    d->snappy_size = std::max(snappy_size, static_cast<std::size_t>(1));
+}
+
+size_t EdgeDetection::snappySize() const
+{
+    return d->snappy_size;
+}
+
+void EdgeDetection::fixNonSnappyEdges()
+{
+    d->top_non_snappy = QLineF(topLeft(), topRight());
+    d->bottom_non_snappy = QLineF(bottomLeft(), bottomRight());
+    d->left_non_snappy = QLineF(topLeft(), bottomLeft());
+    d->right_non_snappy = QLineF(topRight(), bottomRight());
 }
 
 int EdgeDetection::width() const
@@ -203,10 +245,14 @@ QPointF EdgeDetection::bottomLeft() const
 
 void EdgeDetection::setTopPoint(const QPointF& p)
 {
+    QLineF top;
+    if (!d->get_snappy_line(p, true, top)) {
+        top = d->top_non_snappy;
+        top.translate(p - center(top));
+    }
+
     QLineF left(d->quad.tl, d->quad.bl);
     QLineF right(d->quad.tr, d->quad.br);
-    QLineF top(d->quad.tl, d->quad.tr);
-    top.translate(p - center(top));
     top.intersect(left, &d->quad.tl);
     top.intersect(right, &d->quad.tr);
 }
@@ -218,10 +264,14 @@ QPointF EdgeDetection::topPoint() const
 
 void EdgeDetection::setBottomPoint(const QPointF& p)
 {
+    QLineF bottom;
+    if (!d->get_snappy_line(p, true, bottom)) {
+        bottom = d->bottom_non_snappy;
+        bottom.translate(p - center(bottom));
+    }
+
     QLineF left(d->quad.tl, d->quad.bl);
     QLineF right(d->quad.tr, d->quad.br);
-    QLineF bottom(d->quad.bl, d->quad.br);
-    bottom.translate(p - center(bottom));
     bottom.intersect(left, &d->quad.bl);
     bottom.intersect(right, &d->quad.br);
 }
@@ -233,7 +283,12 @@ QPointF EdgeDetection::bottomPoint() const
 
 void EdgeDetection::setLeftPoint(const QPointF& p)
 {
-    QLineF left(d->quad.tl, d->quad.bl);
+    QLineF left;
+    if (!d->get_snappy_line(p, false, left)) {
+        left = d->left_non_snappy;
+        left.translate(p - center(left));
+    }
+
     QLineF top(d->quad.tl, d->quad.tr);
     QLineF bottom(d->quad.bl, d->quad.br);
     left.translate(p - center(left));
@@ -248,7 +303,12 @@ QPointF EdgeDetection::leftPoint() const
 
 void EdgeDetection::setRightPoint(const QPointF& p)
 {
-    QLineF right(d->quad.tr, d->quad.br);
+    QLineF right;
+    if (!d->get_snappy_line(p, false, right)) {
+        right = d->right_non_snappy;
+        right.translate(p - center(right));
+    }
+
     QLineF top(d->quad.tl, d->quad.tr);
     QLineF bottom(d->quad.bl, d->quad.br);
     right.translate(p - center(right));
@@ -368,6 +428,10 @@ void EdgeDetection::autoDetect()
     d->cluster_edges();
 
     d->find_best_match();
+
+    d->find_snappy_edges();
+
+    fixNonSnappyEdges();
 }
 
 EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
@@ -560,6 +624,68 @@ void EdgeDetection::Data::find_best_match()
                 }
             }
         }
+    }
+}
+
+void EdgeDetection::Data::find_snappy_edges()
+{
+    auto s = std::max(snappy_size, static_cast<std::size_t>(1));
+
+    std::vector<std::vector<qreal>> hdists(image.width() / s, std::vector(image.height() / s, std::numeric_limits<qreal>::infinity()));
+    std::vector<std::vector<qreal>> vdists(image.width() / s, std::vector(image.height() / s, std::numeric_limits<qreal>::infinity()));
+
+    hsnappy.assign(image.width() / s, std::vector(image.height() / s, std::numeric_limits<std::size_t>::max()));
+    vsnappy.assign(image.width() / s, std::vector(image.height() / s, std::numeric_limits<std::size_t>::max()));
+
+    for (auto i : indices(hlines)) {
+        auto normal = hlines[i].normalVector().unitVector();
+        auto n = QPointF{normal.dx(), normal.dy()};
+        auto b = QPointF::dotProduct(n, {normal.x1(), normal.y1()});
+
+        for (auto x : indices(hsnappy)) {
+            for (auto y : indices(hsnappy[x])) {
+                auto dist = std::abs(QPointF::dotProduct(n, {(x + 0.5) * s, (y + 0.5) * s}) - b);
+
+                if (dist <= snappy_dist && dist < hdists[x][y]) {
+                    hdists[x][y] = dist;
+                    hsnappy[x][y] = i;
+                }
+            }
+        }
+    }
+
+    for (auto i : indices(vlines)) {
+        auto normal = vlines[i].normalVector().unitVector();
+        auto n = QPointF{normal.dx(), normal.dy()};
+        auto b = QPointF::dotProduct(n, {normal.x1(), normal.y1()});
+
+        for (auto x : indices(vsnappy)) {
+            for (auto y : indices(vsnappy[x])) {
+                auto dist = std::abs(QPointF::dotProduct(n, {(x + 0.5) * s, (y + 0.5) * s}) - b);
+
+                if (dist <= snappy_dist && dist < vdists[x][y]) {
+                    vdists[x][y] = dist;
+                    vsnappy[x][y] = i;
+                }
+            }
+        }
+    }
+}
+
+bool EdgeDetection::Data::get_snappy_line(const QPointF& p, bool horizontal, QLineF& sline) const
+{
+    auto x = static_cast<int>(p.x() / snappy_size);
+    auto y = static_cast<int>(p.y() / snappy_size);
+
+    auto& snappy = horizontal ? hsnappy : vsnappy;
+    auto& lines = horizontal ? hlines : vlines;
+
+    QLineF top;
+    if (x >= 0 && y >= 0 && x < snappy.size() && y < snappy[x].size() && snappy[x][y] < lines.size()) {
+        sline = lines[snappy[x][y]];
+        return true;
+    } else {
+        return false;
     }
 }
 

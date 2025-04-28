@@ -308,6 +308,11 @@ QVariantList CutFilter::autoDetectCutRect()
     return lst;
 }
 
+void CutFilter::fixSnappyEdges()
+{
+    if (d->edges != nullptr) d->edges->fixNonSnappyEdges();
+}
+
 QString CutFilter::name() const
 {
     return QStringLiteral("cut");

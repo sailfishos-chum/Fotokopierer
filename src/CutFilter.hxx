@@ -92,6 +92,9 @@ public:
 
     QPointF right() const;
 
+    /// Fix the current selection as new state for snappy edges.
+    Q_INVOKABLE void fixSnappyEdges();
+
     /// Return the auto-detected cut box.
     ///
     /// The method returns a list of four points (topleft, topright,
