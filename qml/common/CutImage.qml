@@ -25,7 +25,11 @@ Item {
 
 	 property real markerRadius: 10
 	 property color markerColor: "white"
+
 	 property color lineColor: "green"
+	 property color invalidLineColor: "red"
+
+	 property bool valid: true
 
 	 ScannedImage {
 		  id: img
@@ -44,7 +48,7 @@ Item {
 		  onPaint: {
 				var ctx = getContext("2d")
 				ctx.clearRect(0, 0, width, height)
-				ctx.strokeStyle = pane.lineColor
+				ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
 				ctx.beginPath()
 				ctx.moveTo(topleft.center.x, topleft.center.y)
 				ctx.lineTo(topright.center.x, topright.center.y)
@@ -74,7 +78,7 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: frame.requestPaint()
+		  onCenterChanged: pane.update()
 	 }
 
 	 ZoomImage {
@@ -103,7 +107,7 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: frame.requestPaint()
+		  onCenterChanged: pane.update()
 	 }
 
 	 ZoomImage {
@@ -132,9 +136,7 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: {
-				frame.requestPaint()
-		  }
+		  onCenterChanged: pane.update()
 	 }
 
 	 ZoomImage {
@@ -163,7 +165,7 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: frame.requestPaint()
+		  onCenterChanged: pane.update()
 	 }
 
 	 ZoomImage {
@@ -180,5 +182,10 @@ Item {
 		  imagey: bottomright.y
 
 		  visible: bottomright.dragActive
+	 }
+
+	 function update() {
+		  pane.valid = Util.isConvex(topleft.center, topright.center, bottomright.center, bottomleft.center)
+		  frame.requestPaint()
 	 }
 }
