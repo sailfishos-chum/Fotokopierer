@@ -34,6 +34,9 @@ DragDelegate {
 
     signal addPage()
 
+    onPressed: startDragging()
+    onReleased: endDragging()
+
     Component {
         id: addButtonView
 

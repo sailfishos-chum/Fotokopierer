@@ -39,13 +39,13 @@ MouseArea {
     drag.target: held ? content : undefined
     drag.axis: Drag.XAndYAxis
 
-    onPressed: {
+    function startDragging() {
         held = true
         sourceIndex = DelegateModel.itemsIndex
         draggingStarted()
     }
 
-    onReleased: {
+    function endDragging() {
         held = false
         itemMoved(sourceIndex, DelegateModel.itemsIndex)
         draggingFinished()
