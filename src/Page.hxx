@@ -92,9 +92,9 @@ private:
     QString updateThumbnail(const QString& filename) const;
 
 private slots:
-    void generationFinished();
+    void onGenerationFinished();
 
-    void thumbnailFinished();
+    void onThumbnailFinished();
 
     void setStatus(Page::Status status);
 

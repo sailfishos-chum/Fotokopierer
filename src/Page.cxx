@@ -72,10 +72,8 @@ struct Page::Data {
 Page::Page(QObject* parent)
     : QObject(parent), d(new Data)
 {
-    connect(
-        &d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::thumbnailFinished);
-
-    connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::generationFinished);
+    connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
+    connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
 }
 
 Page::Page(const QDateTime& creation_time,
@@ -181,7 +179,7 @@ QString Page::thumbnail()
     return {};
 }
 
-void Page::thumbnailFinished()
+void Page::onThumbnailFinished()
 {
     auto path = d->result_thumbnail.result();
     if (path != d->thumbnail_path) {
@@ -208,7 +206,7 @@ void Page::remove()
     QFile(d->thumbnail_path).remove();
 }
 
-void Page::generationFinished()
+void Page::onGenerationFinished()
 {
     try {
         (void)d->generating.result();
