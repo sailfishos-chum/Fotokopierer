@@ -17,6 +17,7 @@
 
 #include "Page.hxx"
 
+#include "ColorizeFilter.hxx"
 #include "Fotokopierer.hxx"
 #include "ScanImage.hxx"
 
@@ -99,7 +100,17 @@ Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent)
 
     auto original_path =
         dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
-    auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
+
+    auto ext = QStringLiteral("png");
+    switch (scanImage->colorizeFilter()->colorMode()) {
+        case ColorizeFilter::FullColor:
+        case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
+        default: break;
+    }
+    auto result_path =
+        dir.filePath(QStringLiteral("%1-result.%2")
+                         .arg(ctime.toString(FilenameFormat))
+                         .arg(ext));
 
     d->creation_time = ctime;
     d->original_path = original_path;
