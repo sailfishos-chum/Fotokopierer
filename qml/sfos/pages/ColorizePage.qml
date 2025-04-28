@@ -39,6 +39,8 @@ Dialog {
         title: qsTr("Colorize")
     }
 
+    onAccepted: colview.apply()
+
     ColorizeView {
         id: colview
 
@@ -139,5 +141,9 @@ Dialog {
                 onValueChanged: colview.details = value / 100
             }
         }
+    }
+
+    function apply() {
+        colview.apply()
     }
 }
