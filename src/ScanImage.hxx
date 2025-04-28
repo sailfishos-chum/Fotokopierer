@@ -163,8 +163,16 @@ signals:
     void detailsChanged();
     void colorModeChanged();
 
+    void startRotatedImageUpdate() const;
+    void finishRotatedImageUpdate();
     void rotatedImageChanged();
+
+    void startCutImageUpdate() const;
+    void finishCutImageUpdate();
     void cutImageChanged();
+
+    void startColorizedImageUpdate() const;
+    void finishColorizedImageUpdate();
     void colorizedImageChanged();
 
 private slots:
