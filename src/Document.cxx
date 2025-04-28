@@ -234,7 +234,7 @@ bool Document::save() const
 
     QFile file(d->filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << tr("Can't write document file %1").arg(d->filename);
+        qWarning() << tr("Can't write document file %1:%2").arg(d->filename, file.error());
         return false;
     }
     QJsonObject doc;
@@ -252,9 +252,10 @@ bool Document::save() const
 
     doc[QStringLiteral("pages")] = pages;
 
-    if (file.write(QJsonDocument(doc).toJson()) < 0) return false;
-
-    qWarning() << "Error writing document file";
+    if (file.write(QJsonDocument(doc).toJson()) < 0) {
+        qWarning() << tr("Error writing document file:%1").arg(file.error());
+        return false;
+    }
 
     return true;
 }
