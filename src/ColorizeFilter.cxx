@@ -105,6 +105,7 @@ void ColorizeFilter::reset()
     setContrast(0.5);
     setBrightness(0.5);
     setDetails(0.5);
+    setColorMode(ColorMode::BlackAndWhite);
 }
 
 QString ColorizeFilter::name() const
