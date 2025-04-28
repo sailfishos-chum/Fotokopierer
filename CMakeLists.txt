@@ -70,7 +70,9 @@ if (SAILFISH_FOUND)
     -DBUILD_opencv_videoio=OFF
     -DBUILD_opencv_videostab=OFF
     -DBUILD_opencv_world=OFF
-    -DWITH_CAROTENE=OFF)
+    -DWITH_CAROTENE=OFF
+    -DWITH_JASPER=OFF
+    -DWITH_OPENEXR=OFF)
 
   set(OpenCV_INCLUDE_DIRS
     ${OpenCV_PREFIX}/src/opencv-build
