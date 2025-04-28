@@ -10,6 +10,7 @@
 
 * Sun Jun 6 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.1-1
 - fix exporting jpg pictures to pdf (library version clash)
+- fix i486 build of OpenCV for 3.4 target
 
 * Sat Jun 5 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.0-1
 - improve paper detection
