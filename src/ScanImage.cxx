@@ -109,11 +109,16 @@ void ScanImage::saveAndClear(Document* doc)
     doc->addPage(d->original, image);
 
     // Clear the image.
-    d->original = QImage();
-    emit originalImageChanged();
+    clear();
 
     qDebug() << "Done saveAndClear";
     emit imageSaved();
+}
+
+void ScanImage::clear()
+{
+    d->original = QImage();
+    emit originalImageChanged();
 }
 
 QImage ScanImage::originalImage() const

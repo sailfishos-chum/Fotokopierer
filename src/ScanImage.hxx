@@ -56,6 +56,8 @@ public:
 
     Q_INVOKABLE void saveAndClear(Document* doc);
 
+    Q_INVOKABLE void clear();
+
     QImage originalImage() const;
 
     RotateFilter* rotateFilter() const;
