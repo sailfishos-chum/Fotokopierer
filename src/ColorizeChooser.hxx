@@ -20,12 +20,16 @@
 
 #include <QtQuick/QQuickPaintedItem>
 #include <memory>
+#include <opencv2/core.hpp>
+
+class ColorizeView;
 
 class ColorizeChooser : public QQuickPaintedItem
 {
     Q_OBJECT
 
     Q_PROPERTY(int lattice READ lattice WRITE setLattice NOTIFY latticeChanged);
+    Q_PROPERTY(int blackLevel READ blackLevel WRITE setBlackLevel NOTIFY blackLevelChanged);
 
 public:
     ColorizeChooser(QQuickItem* parent = nullptr);
@@ -36,10 +40,24 @@ public:
 
     void setLattice(int lattice);
 
+    int blackLevel() const;
+
+    void setBlackLevel(int blackLevel);
+
+    void updateImage(const cv::Mat& image, const cv::Mat& mask);
+
     void paint(QPainter* painter) override;
 
+    qreal colorAngle(int which) const;
+
+public slots:
+    void setColorAngle(int which, qreal angle);
+
 signals:
+    void colorizeViewChanged();
     void latticeChanged();
+    void blackLevelChanged();
+    void colorAnglesChanged();
 
 private:
     struct Data;
