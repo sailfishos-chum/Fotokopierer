@@ -128,7 +128,7 @@ if (SAILFISH_FOUND)
     -DBUILD_SHARED_LIBS:BOOL=false
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
 
-  link_directories(${FREETYPE_PREFIX}/lib)
+  link_directories(${FREETYPE_PREFIX}/lib64 ${FREETYPE_PREFIX}/lib)
 
   # configure PoDoFo
   find_package(PNG REQUIRED)
