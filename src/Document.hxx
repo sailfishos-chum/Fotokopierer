@@ -44,7 +44,7 @@ public:
 public:
     explicit Document(QObject *parent = nullptr);
 
-    Document(Document &&doc);
+    Document(Document &&doc) noexcept;
 
     ~Document();
 
