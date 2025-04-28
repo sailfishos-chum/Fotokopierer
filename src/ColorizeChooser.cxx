@@ -80,9 +80,7 @@ int ColorizeChooser::blackLevel() const
 
 int ColorizeChooser::maxBlackLevel() const
 {
-    auto val = d->lattice == 0 ? 255 : d->maxRadius * 255 / d->lattice;
-    qDebug() << "MAX BLACK LEVEL " << val;
-    return val;
+    return d->lattice == 0 ? 255 : d->maxRadius * 255 / d->lattice;
 }
 
 void ColorizeChooser::setColorAngles(const std::array<qreal, 6>& angles)
