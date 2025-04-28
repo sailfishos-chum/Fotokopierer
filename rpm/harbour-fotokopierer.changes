@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Wed Jun 9 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.2-1
+- replace some forbidden characters in pdf file name
+
 * Sun Jun 6 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.1-1
 - fix exporting jpg pictures to pdf (library version clash)
 - fix i486 build of OpenCV for 3.4 target

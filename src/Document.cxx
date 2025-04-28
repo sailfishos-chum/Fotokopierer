@@ -575,7 +575,12 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
 void Document::exportToPdf(bool overwrite)
 {
-    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"), overwrite);
+    QString filename = d->doc.title;
+    // replace some illegal characters in the filename
+    filename.replace(QLatin1Char(':'), QLatin1Char('_'));
+    filename.replace(QLatin1Char('/'), QLatin1Char('_'));
+    filename.replace(QLatin1Char('\\'), QLatin1Char('_'));
+    exportToPdf(getDocumentDirectory().filePath(filename) + QStringLiteral(".pdf"), overwrite);
 }
 
 void Document::onPdfExportFinished()
