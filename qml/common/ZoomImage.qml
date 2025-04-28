@@ -18,21 +18,38 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
-Rectangle {
+Item {
 	 id: zoom
 
 	 property real scaleFactor : 5
 	 property real imagex
 	 property real imagey
+	 property color color: "white"
 	 property color crossColor: "green"
 
 	 property Image image
 
-	 radius: 10
 	 width: 100
 	 height: 100
 
-	 color: "white"
+	 Rectangle {
+		  id: frame
+		  radius: width / 2
+		  anchors.fill: parent
+		  color: "black"
+		  border.width: 5
+		  border.color: zoom.color
+	 }
+
+	 DropShadow {
+	 	  anchors.fill: parent
+	 	  horizontalOffset: 3
+	 	  verticalOffset: 3
+	 	  radius: 8
+	 	  samples: 17
+	 	  color: "#80000000"
+	 	  source: frame
+	 }
 
 	 Item {
 		  id: zoombox
@@ -44,7 +61,7 @@ Rectangle {
 					 height: zoombox.height
 					 Rectangle {
 					 	  anchors.fill: parent
-					 	  radius: 5
+					 	  radius: width / 2
 					 }
 				}
 		  }
