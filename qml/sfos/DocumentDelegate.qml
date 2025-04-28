@@ -31,11 +31,6 @@ MouseArea {
     property bool isAddButton: false
     property bool zoom: false
 
-    signal addDocument()
-    signal openDocument()
-
-    onClicked: openDocument()
-
     Component {
         id: addButtonView
 
@@ -53,8 +48,6 @@ MouseArea {
                 border.width: 1
                 border.color: Theme.secondaryHighlightColor
             }
-
-            onClicked: addDocument()
         }
     }
 

@@ -48,11 +48,21 @@ Page {
 
             enabled: true
 
-            onAddDocument: {
+            onClicked: {
+                if (docpage.editing) {
+                    docpage.editing = false
+                } else if (isAddButton) {
+                    addDocument()
+                } else {
+                    openDocument()
+                }
+            }
+
+            function addDocument() {
                 console.log("add document")
             }
 
-            onOpenDocument: {
+            function openDocument() {
                 pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
 
@@ -106,7 +116,6 @@ Page {
 
         MouseArea {
             anchors.fill: grid
-            enabled: !docpage.deleting && !docpage.editing
 
             propagateComposedEvents: true
 
