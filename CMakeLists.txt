@@ -3,9 +3,6 @@ cmake_policy(SET CMP0048 NEW)
 cmake_minimum_required(VERSION 3.0)
 
 set(FOTOKOPIERER_VERSION 0.4.5)
-set(PODOFO_VERSION 0.9.7)
-set(OPENCV_VERSION 3.4.16)
-set(FREETYPE_VERSION 2.11.1)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
@@ -50,15 +47,6 @@ set(SOURCES
 
   src/init.cxx)
 
-set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
-  FOTOKOPIERER_AUTHOR="Frank Fischer"
-  FOTOKOPIERER_VERSION="${FOTOKOPIERER_VERSION}"
-  PODOFO_VERSION="${PODOFO_VERSION}"
-  OPENCV_VERSION="${OPENCV_VERSION}"
-  FREETYPE_VERSION="${FREETYPE_VERSION}"
-  )
-
-
 find_package(OpenCV REQUIRED core imgproc)
 
 find_path(PODOFO_INCLUDE_DIRS NAMES podofo/podofo.h)
@@ -70,16 +58,28 @@ find_library(PODOFO_LIBRARIES NAMES podofo)
 if (NOT PODOFO_LIBRARIES)
   message(FATAL_ERROR "Could not find the PoDoFo library")
 endif ()
-message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
+
+# Read the version from podofo_config.h
+file(READ "${PODOFO_INCLUDE_DIRS}/podofo/base/podofo_config.h" podofo_ver)
+
+string(REGEX MATCH "PODOFO_VERSION_MAJOR +([0-9]+)" _ ${podofo_ver})
+set(PODOFO_VERSION_MAJOR ${CMAKE_MATCH_1})
+string(REGEX MATCH "PODOFO_VERSION_MINOR +([0-9]+)" _ ${podofo_ver})
+set(PODOFO_VERSION_MINOR ${CMAKE_MATCH_1})
+string(REGEX MATCH "PODOFO_VERSION_PATCH +([0-9]+)" _ ${podofo_ver})
+set(PODOFO_VERSION_PATCH ${CMAKE_MATCH_1})
+set(PODOFO_VERSION "${PODOFO_VERSION_MAJOR}.${PODOFO_VERSION_MINOR}.${PODOFO_VERSION_PATCH}")
+
+message(STATUS "Found PoDoFo ${PODOFO_VERSION}: ${PODOFO_LIBRARIES}")
 
 if (SAILFISH_FOUND)
   find_package(PNG REQUIRED)
   find_package(JPEG REQUIRED)
   find_package(TIFF REQUIRED)
   find_package(OpenSSL REQUIRED)
+  find_package(Freetype REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
-  #set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff PNG::PNG freetype)
-  set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto PNG::PNG ${JPEG_LIBRARIES} TIFF::TIFF freetype)
+  set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto PNG::PNG ${JPEG_LIBRARIES} TIFF::TIFF Freetype::Freetype)
 endif()
 
 find_package(Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick)
@@ -100,6 +100,14 @@ else()
   qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
   target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 endif()
+
+set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
+  FOTOKOPIERER_AUTHOR="Frank Fischer"
+  FOTOKOPIERER_VERSION="${FOTOKOPIERER_VERSION}"
+  PODOFO_VERSION="${PODOFO_VERSION}"
+  OPENCV_VERSION="${OpenCV_VERSION}"
+  FREETYPE_VERSION="${FREETYPE_VERSION_STRING}"
+  )
 
 set_property(TARGET ${TARGET} PROPERTY
   INCLUDE_DIRECTORIES
