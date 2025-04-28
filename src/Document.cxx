@@ -101,14 +101,10 @@ QHash<int, QByteArray> Document::roleNames() const
 
 void Document::move(int from, int to)
 {
-    if (beginMoveRows({}, from, from, {}, to)) {
+    if (beginMoveRows({}, from, from, {}, to > from ? to + 1 : to)) {
         auto p = d->pages[from];
         d->pages.removeAt(from);
-        if (from < to) {
-            d->pages.insert(to - 1, p);
-        } else {
-            d->pages.insert(to, p);
-        }
+        d->pages.insert(to, p);
         endMoveRows();
         save();
     }
