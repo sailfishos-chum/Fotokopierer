@@ -29,15 +29,19 @@ class ScannedImage : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString original READ originalImage NOTIFY originalChanged)
-    Q_PROPERTY(QString cut READ cutImage NOTIFY cutChanged)
+    Q_PROPERTY(QString image READ image NOTIFY imageChanged)
 
 public:
     ScannedImage(QObject* parent = nullptr);
     ~ScannedImage();
 
+    /// Return the original, unscaled image.
     QString originalImage() const;
 
-    QString cutImage() const;
+    /// Return the original, possibly scaled image.
+    ///
+    /// This is the base address for all image manipulations.
+    QString image() const;
 
     Q_INVOKABLE QVariantList autoDetectCutRect();
 
@@ -50,7 +54,7 @@ public:
 
 signals:
     void originalChanged();
-    void cutChanged();
+    void imageChanged();
 
 private:
     struct Data;

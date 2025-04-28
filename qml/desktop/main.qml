@@ -118,7 +118,7 @@ ApplicationWindow {
 
             fillMode: Image.PreserveAspectFit
 
-            source: "image://Scanned/" + img.cut +
+            source: "image://Scanned/" + img.image + "/cut" +
                 "/" + colormode +
                 "/" + contrast.value +
                 "/" + brightness.value +

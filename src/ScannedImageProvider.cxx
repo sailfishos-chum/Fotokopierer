@@ -137,6 +137,8 @@ QImage ScannedImageProvider::requestImage(const QString& id,
     }
 
     if (toks[1] == QLatin1String("original")) {
+        return cvMatToQImage(img->original);
+    } else if (toks[1] == QLatin1String("scaled")) {
         auto angle = 0.0;
         if (toks.size() == 3) {
             angle = toks[2].toFloat();

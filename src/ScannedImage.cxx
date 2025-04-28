@@ -37,9 +37,9 @@ QString ScannedImage::originalImage() const
     return d->image + QLatin1String("/original");
 }
 
-QString ScannedImage::cutImage() const
+QString ScannedImage::image() const
 {
-    return d->image + QLatin1String("/cut");
+    return d->image;
 }
 
 void ScannedImage::set_angle(double angle)
