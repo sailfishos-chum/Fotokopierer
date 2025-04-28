@@ -81,6 +81,7 @@ This project uses
 - Conversion between Qt and OpenCV images by [Andy Maloney](https://github.com/asmaloney/asmOpenCV)
 - [OpenCV][OpenCV] for image processing
 - [Podofo][Podofo] for PDF-handling
+- [FreeType][FreeType] for font rendering in PDF files
 
 
 [CMake]: https://cmake.org
