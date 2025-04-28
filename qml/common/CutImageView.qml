@@ -152,8 +152,8 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     CornerMarker {
@@ -164,8 +164,8 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     CornerMarker {
@@ -176,8 +176,8 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     CornerMarker {
@@ -188,8 +188,8 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        onCenterChanged: pane.update(center)
+        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
     ZoomImage {
@@ -213,13 +213,13 @@ Item {
         visible: false
     }
 
-    function update(x, y) {
+    function update(zoompoint) {
         pane.valid = Fotokopierer.isConvex(
             mapPoint(topleft.center),
             mapPoint(topright.center),
             mapPoint(bottomright.center),
             mapPoint(bottomleft.center))
-        zoomimg.center = mapPoint(Qt.point(x + markerRadius, y + markerRadius))
+        zoomimg.center = mapPoint(zoompoint)
 
         if (x < image.width / 2) {
             zoomimg.anchors.left = undefined
