@@ -134,7 +134,7 @@ MouseArea {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
-                    text: qsTr("%1").arg(dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
+                    text: dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat)
                 }
             }
         }
