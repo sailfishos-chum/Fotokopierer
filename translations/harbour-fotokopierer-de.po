@@ -187,22 +187,22 @@ msgctxt "AboutPage|"
 msgid "A camera scanning application for SailfishOS by %1"
 msgstr "Eine Kamera-Scan Anwendung für SailfishOS von %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:92
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:115
 msgctxt "AboutPage|"
 msgid "Homepage"
 msgstr "Homepage"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:103
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:126
 msgctxt "AboutPage|"
 msgid "Find me on Freenode: "
 msgstr "Kontaktiere mich auf Freenode: "
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:122
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:145
 msgctxt "AboutPage|"
 msgid "This application uses"
 msgstr "Dieses Programm verwendet"
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:142
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:165
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
 msgstr "Lizensiert unter %1"
@@ -241,4 +241,9 @@ msgstr "Seite kann nicht erstellt werden: Fehler beim Speichern des Bildes"
 msgctxt "AboutPage|"
 msgid "Icons by %1"
 msgstr "Icons von %1"
+
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:100
+msgctxt "AboutPage|"
+msgid "Swedish"
+msgstr "Schwedisch"
 
