@@ -184,7 +184,7 @@ bool Document::load(const QString &filename, QObject *parent)
     auto json = doc.object();
 
     auto title = json[QStringLiteral("title")];
-    if (!title.isString()) return false;
+    if (!title.isString() && !title.isNull()) return false;
 
     auto creation_time = json[QStringLiteral("creationTime")];
     if (!creation_time.isString()) return false;
@@ -201,10 +201,12 @@ bool Document::load(const QString &filename, QObject *parent)
         docpages.push_back(p);
     }
 
-    d->title = title.toString();
+    d->title = title.isString() ? title.toString() : ctime.toString();
     d->filename = filename;
     d->creation_time = ctime;
     d->pages = docpages;
+
+    emit titleChanged();
 
     return true;
 }
