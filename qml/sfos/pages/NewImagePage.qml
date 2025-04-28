@@ -25,10 +25,10 @@ import Fotokopierer 1.0
 Page {
     id: page
 
-    property alias acceptDestination: colpage.acceptDestination
-    property alias acceptDestinationInstance: colpage.acceptDestinationInstance
-    property alias acceptDestinationAction: colpage.acceptDestinationAction
-    property alias acceptDestinationReplaceTarget: colpage.acceptDestinationReplaceTarget
+    property var acceptDestination
+    property var acceptDestinationAction
+    property Page acceptDestinationInstance
+    property Page acceptDestinationReplaceTarget
 
     property ScanImage scanImage
 
@@ -79,12 +79,20 @@ Page {
         }
     }
 
-    ColorizePage {
+    Component {
         id: colpage
+        ColorizePage {
+            scanImage: page.scanImage
+            onAccepted: addPage()
 
-        scanImage: page.scanImage
+            acceptDestination: page.acceptDestination
+            acceptDestinationAction: page.acceptDestinationAction
+            acceptDestinationReplaceTarget: page.acceptDestinationReplaceTarget
 
-        onAccepted: addPage()
+            onAcceptDestinationInstanceChanged: {
+                page.acceptDestinationInstance = acceptDestinationInstance
+            }
+        }
     }
 
     PageHeader {
