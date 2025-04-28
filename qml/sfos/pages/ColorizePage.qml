@@ -133,6 +133,7 @@ Page {
                 id: contrast_slider
                 anchors.left: parent.left
                 anchors.right: parent.right
+                value: 50
                 minimumValue: 0
                 maximumValue: 100
             }
@@ -141,6 +142,7 @@ Page {
                 id: brightness_slider
                 anchors.left: parent.left
                 anchors.right: parent.right
+                value: 50
                 minimumValue: 0
                 maximumValue: 100
             }
@@ -149,6 +151,7 @@ Page {
                 id: details_slider
                 anchors.left: parent.left
                 anchors.right: parent.right
+                value: 50
                 minimumValue: 0
                 maximumValue: 100
             }
