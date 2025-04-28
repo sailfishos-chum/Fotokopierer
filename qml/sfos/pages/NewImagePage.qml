@@ -21,25 +21,22 @@ import Sailfish.Pickers 1.0
 import Fotokopierer 1.0
 
 ImagePickerPage {
+    id: page
+
     property Page destination
+    property ScanImage scanImage
 
     signal addPage()
 
     // Note that this property might become unsupported in future
     popOnSelection: false
 
-    function savePage(doc) {
-        scanImage.saveAndClear(doc)
-    }
-
-    ScanImage { id: scanImage }
-
     CutPage { id: cutpage; image: scanImage }
 
     ColorizePage {
         id: colpage
 
-        scanImage: scanImage
+        scanImage: page.scanImage
 
         acceptDestination: destination
         acceptDestinationAction: PageStackAction.Pop

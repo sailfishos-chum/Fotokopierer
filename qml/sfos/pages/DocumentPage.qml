@@ -30,15 +30,19 @@ Page {
     property bool editing: false
     property bool dragging: false
 
+    ScanImage {
+        id: scanImage
+    }
+
     Loader {
-        id: imageLoader
+        id: newPage
     }
 
     onStatusChanged: {
-        // ensure the image pages are deleted if not needed because the need a
-        // lot of C++ memory
         if (status == PageStatus.Active) {
-            imageLoader.source = ""
+            // ensure that the C++ memory of ScanImage is freed
+            newPage.source = ""
+            scanImage.clear()
         }
     }
 
@@ -103,12 +107,13 @@ Page {
             onItemMoved: visualModel.model.move(from, to)
 
             function addPage() {
-                imageLoader.source = Qt.resolvedUrl("NewImagePage.qml")
-                imageLoader.item.destination = docpage
-                imageLoader.item.addPage.connect(function() { 
-                    imageLoader.item.savePage(document)
+                newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+                newPage.item.scanImage = scanImage
+                newPage.item.destination = docpage
+                newPage.item.addPage.connect(function() {
+                    scanImage.saveAndClear(document)
                 })
-                pageStack.push(imageLoader.item)
+                pageStack.push(newPage.item)
             }
 
             function openPage() {
