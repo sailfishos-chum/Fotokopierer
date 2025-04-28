@@ -488,20 +488,12 @@ void EdgeList::Data::find_best_match()
 
 auto EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const -> std::pair<qreal, Quadrangle>
 {
-    qreal alpha = NAN;
-    qreal beta = NAN;
+    QPointF tl, tr, br, bl;
 
-    distances_to_intersection(vlines[ileft], hlines[itop], alpha, beta);
-    QPointF tl(vlines[ileft].x1() + alpha * vlines[ileft].dx(), vlines[ileft].y1() + alpha * vlines[ileft].dy());
-
-    distances_to_intersection(vlines[iright], hlines[itop], alpha, beta);
-    QPointF tr(vlines[iright].x1() + alpha * vlines[iright].dx(), vlines[iright].y1() + alpha * vlines[iright].dy());
-
-    distances_to_intersection(vlines[ileft], hlines[ibottom], alpha, beta);
-    QPointF bl(vlines[ileft].x1() + alpha * vlines[ileft].dx(), vlines[ileft].y1() + alpha * vlines[ileft].dy());
-
-    distances_to_intersection(vlines[iright], hlines[ibottom], alpha, beta);
-    QPointF br(vlines[iright].x1() + alpha * vlines[iright].dx(), vlines[iright].y1() + alpha * vlines[iright].dy());
+    vlines[ileft].intersect(hlines[itop], &tl);
+    vlines[iright].intersect(hlines[itop], &tr);
+    vlines[iright].intersect(hlines[ibottom], &br);
+    vlines[ileft].intersect(hlines[ibottom], &bl);
 
     auto e = (tl - br);
     auto f = tr - bl;
