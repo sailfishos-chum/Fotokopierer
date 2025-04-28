@@ -34,6 +34,7 @@ class Page : public QObject
     Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
+    Q_PROPERTY(QUrl resultUrl READ resultUrl NOTIFY resultChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
@@ -66,6 +67,8 @@ public:
     QString originalImagePath() const;
 
     QString result() const;
+
+    QUrl resultUrl() const;
 
     Status status() const;
 

@@ -29,6 +29,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QJsonObject>
+#include <QtCore/QUrl>
 #include <QtGui/QImage>
 
 namespace
@@ -183,6 +184,11 @@ void Page::onThumbnailFinished()
         emit thumbnailChanged();
     }
     setStatus(Ready);
+}
+
+QUrl Page::resultUrl() const
+{
+    return QUrl::fromLocalFile(result());
 }
 
 QString Page::originalImagePath() const
