@@ -72,10 +72,10 @@ QVariant DocumentList::data(const QModelIndex &index, int role) const
         case NumPagesRole: return d->docs.size();
         case DocumentRole: return QVariant::fromValue(d->docs[index.row()].data());
         case ThumbnailsRole: {
-            QVariantList thumbs;
+            QStringList thumbs;
             auto &doc = d->docs[index.row()];
             for (int i = 0, n = std::min(doc->numPages(), 3); i < n; i++) {
-                thumbs.push_back(QUrl::fromLocalFile(doc->page(i).thumbnail()));
+                thumbs.push_back(QUrl::fromLocalFile(doc->page(i).thumbnail()).toString());
             }
             return thumbs;
         }
