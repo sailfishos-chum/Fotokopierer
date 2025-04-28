@@ -322,6 +322,7 @@ void Document::deletePage(int pageIndex)
     auto page = d->doc.pages.takeAt(pageIndex);
     page->remove();
     endRemoveRows();
+    emit pagesChanged();
     save();
 }
 
