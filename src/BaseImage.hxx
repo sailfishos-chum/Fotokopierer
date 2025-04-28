@@ -73,6 +73,8 @@ signals:
 
     void paintedSizeChanged();
 
+    void startTransform(const QImage& image);
+
 protected:
     /// Called to apply this image's transformation to `image`.
     ///
@@ -83,9 +85,31 @@ protected slots:
     /// Called to trigger a new transformation when the source image had been changed.
     void updateImage();
 
+private slots:
+    void finishTransform(const QImage& image);
+
 private:
     struct Data;
     QScopedPointer<Data> d;
+
+    friend class BaseImageTransformWorker;
+};
+
+class BaseImageTransformWorker : public QObject
+{
+    Q_OBJECT
+
+public:
+    BaseImageTransformWorker(BaseImage* base_image);
+
+public slots:
+    void doTransform(const QImage& image);
+
+signals:
+    void resultReady(const QImage& image);
+
+private:
+    BaseImage* base_image_;
 };
 
 #endif

@@ -17,6 +17,7 @@
 
 #include "BaseImage.hxx"
 
+#include <QtCore/QThread>
 #include <QtGui/QPainter>
 
 struct BaseImage::Data {
@@ -25,11 +26,28 @@ struct BaseImage::Data {
     QImage source_image;              ///< cache the original image before the transformation
     QImage image;                     ///< the transformed image
     BaseImage* base_image = nullptr;  ///< pointer to the source image producer
+
+    QThread thread;
+    bool thread_running = false;
+    bool restart_thread = true;
+
+    ~Data()
+    {
+        thread.quit();
+        thread.wait();
+    }
 };
 
 BaseImage::BaseImage() : d(new Data)
 {
     connect(this, &BaseImage::imageChanged, [this]() { this->update(); });
+
+    auto worker = new BaseImageTransformWorker(this);
+    worker->moveToThread(&d->thread);
+    connect(&d->thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(this, &BaseImage::startTransform, worker, &BaseImageTransformWorker::doTransform);
+    connect(worker, &BaseImageTransformWorker::resultReady, this, &BaseImage::finishTransform);
+    d->thread.start();
 }
 
 BaseImage::~BaseImage() {}
@@ -102,7 +120,33 @@ void BaseImage::updateImage()
 {
     emit imageChanging();
     if (d->base_image) d->source_image = d->base_image->image();
-    d->image = transform(d->source_image);
+    if (!d->thread_running) {
+        d->restart_thread = false;
+        d->thread_running = true;
+        emit startTransform(d->source_image);
+    } else {
+        d->restart_thread = true;
+    }
+}
+
+void BaseImage::finishTransform(const QImage& image)
+{
+    d->image = image;
     emit imageChanged();
     update();
+    if (d->restart_thread) {
+        d->restart_thread = false;
+        emit startTransform(d->source_image);
+    } else {
+        d->thread_running = false;
+    }
+}
+
+BaseImageTransformWorker::BaseImageTransformWorker(BaseImage* base_image) : base_image_(base_image)
+{
+}
+
+void BaseImageTransformWorker::doTransform(const QImage& image)
+{
+    emit resultReady(base_image_->transform(image));
 }
