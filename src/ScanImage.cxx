@@ -292,7 +292,7 @@ QImage ScanImage::rotatedImage(bool wait) const
             return original.transformed(transform);
         }));
 
-        if (wait) d->rotated.waitForFinished();
+        if (wait) return d->rotated.result();
     }
 
     if (d->rotatedReady) {
@@ -315,7 +315,7 @@ QImage ScanImage::cutImage(bool wait) const
             return d->computeCutImage(rotatedImage(true));
         }));
 
-        if (wait) d->cut.waitForFinished();
+        if (wait) d->cut.result();
     }
 
     if (d->cutReady) {
@@ -338,7 +338,7 @@ QImage ScanImage::colorizedImage(bool wait) const
             return d->computeColorizedImage(cutImage(true));
         }));
 
-        if (wait) d->colorized.waitForFinished();
+        if (wait) return d->colorized.result();
     }
 
     if (d->colorizedReady) {
