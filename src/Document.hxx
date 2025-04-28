@@ -19,7 +19,6 @@
 #define __FOTOKOPIERER_DOCUMENT_HXX__
 
 #include <QtCore/QAbstractListModel>
-#include <QtCore/QScopedPointer>
 
 #include <memory>
 
