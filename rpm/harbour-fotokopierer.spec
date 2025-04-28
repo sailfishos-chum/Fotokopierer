@@ -47,6 +47,27 @@ BuildRequires:  desktop-file-utils
 %description
 A camera-scanning application for Sailfish OS.
 
+%if "%{?vendor}" == "chum"
+PackageName: Fotokopierer
+Type: desktop-application
+DeveloperName: Frank Fischer
+Categories:
+  - Graphics
+  - Office
+Custom:
+  Repo: https://chiselapp.com/user/fifr/repository/fotokopierer
+  Icon: https://chiselapp.com/user/fifr/repository/fotokopierer/doc/release/icons/harbour-fotokopierer.svg
+Screenshots:
+  - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot1.png
+  - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot2.png
+  - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot3.png
+  - https://chiselapp.com/user/fifr/repository/fotokopierer/uv/screenshot4.png
+Url:
+  Homepage: https://chiselapp.com/user/fifr/repository/fotokopierer
+  Help: https://chiselapp.com/user/fifr/repository/fotokopierer/forum
+  Bugtracker: https://chiselapp.com/user/fifr/repository/fotokopierer/ticket
+%endif
+
 
 # >> macros2
 %global opencv_version 3.4.16
@@ -54,7 +75,11 @@ A camera-scanning application for Sailfish OS.
 %global freetype_version 2.11.1
 # Local: {_builddir}
 # OBS: srcpath {_builddir}/{name}-{version}
+%if "%{?vendor}" == "chum"
+%global srcpath %{_builddir}/%{name}-%{version}
+%else
 %global srcpath %{_builddir}
+%endif
 # << macros2
 
 %prep
