@@ -28,7 +28,7 @@ class Page : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QDateTime creationTime READ creationTime)
+    Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
 
