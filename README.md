@@ -8,6 +8,10 @@ Fotokopierer is a document scanning application for [Sailfish OS](https://sailfi
 
 Frank Fischer <frank-fischer@shadow-soft.de>
 
+## Contact
+
+Talk with the developers in [#fotokopierer][IRC] on [Freenode](http://freenode.net)
+
 ## License
 
 Licensed under GNU GPLv3
@@ -72,3 +76,4 @@ This project uses
 [Podofo]: http://podofo.sourceforge.net
 [SFOS]: https://sailfishos.org
 [harbour]: https://harbour.jolla.com/
+[IRC]: https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer
