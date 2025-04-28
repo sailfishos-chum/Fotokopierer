@@ -2,56 +2,52 @@ target = harbour-fotokopierer
 
 arch := i486
 #arch := armv7hl
+sfos_version := 3.0.2.8
 
 sdk_dir := $(HOME)/SailfishOS
-sfos_version := SailfishOS-3.0.2.8-$(arch)
 projects_root := $(HOME)/JollaProjekte
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 mer_root_dir := $(subst $(HOME)/JollaProjekte,/home/src1,$(current_dir))
 
+mersdk_target := SailfishOS-$(sfos_version)-$(arch)
+mersdk_device := Sailfish OS Emulator $(sfos_version)
+mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost
+mersdk_mb2 := cd $(mer_root_dir) && mb2 -t $(mersdk_target)
+mersdk_sb2 := cd $(mer_root_dir)/rpmbuilddir-arm && sb2 -t $(mersdk_target)
+
 
 .PHONY: all build buildall clean install rpm run
 all: build
 
-buildall:
-	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir) && mb2 -t $(sfos_version) build'
+installdeps:
+	$(mersdk_ssh) '$(mersdk_mb2) installdeps'
 
 build:
-	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir)/rpmbuilddir && mb2 -t $(sfos_version) make'
+	$(mersdk_ssh) '$(mersdk_mb2) build'
 
-clean:
-	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir)/rpmbuilddir && mb2 -t $(sfos_version) make clean'
+compile:
+	$(mersdk_ssh) '$(mersdk_sb2) make'
 
-rpm:
-	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir) && mb2 -t $(sfos_version) rpm'
+make:
+	$(mersdk_ssh) '$(mersdk_mb2) make'
 
 install:
-	#ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	#'cd $(mer_root_dir) && mb2 -t $(sfos_version) rpm'
-	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator 3.0.2.8" deploy --sdk'
+	$(mersdk_ssh) '$(mersdk_mb2) install'
 
-installdeps:
-	#ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	#'cd $(mer_root_dir) && mb2 -t $(sfos_version) rpm'
-	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
-	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator 3.0.2.8" installdeps'
+rpm:
+	$(mersdk_ssh) '$(mersdk_mb2) rpm'
 
-run:
-	ssh -tt -p 2223 -i $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest/nemo nemo@localhost 'sh -c "env LD_LIBRARY_PATH=/usr/local/lib $(target) ${ARGS}"'
+deploy:
+	$(mersdk_ssh) '$(mersdk_mb2) --device "$(mersdk_device)" deploy --pkcon'
 
 .PHONY: install-jolla copy-jolla run-jolla
-install-jolla: rpm
+rpm-jolla: rpm
 	scp RPMS/harbour-fotokopierer*.armv7hl.rpm jolla:
 
-copy-jolla:
-	scp rpmbuilddir/harbour-fotokopierer jolla:
+install-jolla: make
+	scp rpmbuilddir-arm/harbour-fotokopierer jolla:
 
-run-jolla: copy-jolla
+run-jolla:
 	ssh -tt jolla './harbour-fotokopierer'
