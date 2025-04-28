@@ -3,7 +3,7 @@ cmake_policy(SET CMP0048 NEW)
 cmake_minimum_required(VERSION 3.0)
 
 set(FOTOKOPIERER_VERSION 0.2.4)
-set(PODOFO_VERSION 0.9.6)
+set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.0)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
@@ -139,7 +139,7 @@ if (SAILFISH_FOUND)
   ExternalProject_Add(podofo-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
     URL "https://downloads.sourceforge.net/project/podofo/podofo/${PODOFO_VERSION}/podofo-${PODOFO_VERSION}.tar.gz"
-    URL_HASH SHA256=e9163650955ab8e4b9532e7aa43b841bac45701f7b0f9b793a98c8ca3ef14072
+    URL_HASH SHA256=7cf2e716daaef89647c54ffcd08940492fd40c385ef040ce7529396bfadc1eb8
     SOURCE_DIR ${PODOFO_SOURCE_DIR}
     PREFIX ${PODOFO_PREFIX}
     DEPENDS freetype-3rdparty opencv
