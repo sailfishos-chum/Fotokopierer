@@ -25,10 +25,12 @@ Item {
     property real _radius: Math.min(width, height) / 2
 
     signal updateTouchPoints()
+    signal changed()
 
     ColorizeChooser {
         id: colorizer
         anchors.fill: parent
+        onBlackLevelChanged: changed()
     }
 
     Repeater {
@@ -41,6 +43,10 @@ Item {
             maxY: root.height
 
             onDragged: colorizer.setColorAngle(index, pos2angle(markerPos))
+
+            onDragActiveChanged: {
+                if (!dragActive) changed()
+            }
 
             Connections {
                 target: colorizer
