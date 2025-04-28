@@ -17,77 +17,44 @@
 
 #include "AsyncImage.hxx"
 
-#include <QtCore/QThread>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QFutureWatcher>
 #include <QtGui/QImage>
 
-class AsyncImageTask : public QObject
-{
-    Q_OBJECT
-
-public:
-    AsyncImageTask(AsyncImage* image) : image_(image) {}
-
-public slots:
-    void run(const QImage& source) { emit resultReady(image_->transform(source)); }
-
-signals:
-    void resultReady(const QImage& image);
-
-private:
-    AsyncImage* image_;
-};
-
-static QThread* transformThread()
-{
-    static QThread thread;
-    static bool started = false;
-    if (!started) {
-        started = true;
-        thread.start();
-    }
-    return &thread;
-}
+#include <functional>
 
 struct AsyncImage::Data {
-    AsyncImageTask* task = nullptr;
     bool thread_running = false;
     bool restart_thread = true;
+    QFutureWatcher<QImage> result_image;
 };
 
 AsyncImage::AsyncImage() : d(new Data)
 {
-    d->task = new AsyncImageTask(this);
-    d->task->moveToThread(transformThread());
-    connect(this, &AsyncImage::startTransform, d->task, &AsyncImageTask::run);
-    connect(d->task, &AsyncImageTask::resultReady, this, &AsyncImage::finishTransform);
+    connect(
+        &d->result_image, &QFutureWatcher<QImage>::finished, this, &AsyncImage::finishTransform);
 }
 
-AsyncImage::~AsyncImage()
-{
-    d->task->deleteLater();
-}
+AsyncImage::~AsyncImage() = default;
 
 void AsyncImage::updateImage()
 {
     emit imageChanging();
-    if (!d->thread_running) {
+    if (!d->result_image.isRunning()) {
         d->restart_thread = false;
-        d->thread_running = true;
-        emit startTransform(sourceImage());
+        d->result_image.setFuture(
+            QtConcurrent::run(std::mem_fn(&AsyncImage::transform), this, sourceImage()));
     } else {
         d->restart_thread = true;
     }
 }
 
-void AsyncImage::finishTransform(const QImage& image)
+void AsyncImage::finishTransform()
 {
-    setImage(image);
+    setImage(d->result_image.result());
     if (d->restart_thread) {
         d->restart_thread = false;
-        emit startTransform(sourceImage());
-    } else {
-        d->thread_running = false;
+        d->result_image.setFuture(
+            QtConcurrent::run(std::mem_fn(&AsyncImage::transform), this, sourceImage()));
     }
 }
-
-#include "AsyncImage.moc"

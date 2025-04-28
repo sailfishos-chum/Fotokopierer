@@ -20,8 +20,6 @@
 
 #include "BaseImage.hxx"
 
-class AsyncImageTask;
-
 /// A base image with asynchronous transformation.
 class AsyncImage : public BaseImage
 {
@@ -41,7 +39,7 @@ protected:
     void updateImage() override;
 
 private slots:
-    void finishTransform(const QImage& image);
+    void finishTransform();
 
 private:
     struct Data;
