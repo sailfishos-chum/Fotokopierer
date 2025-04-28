@@ -200,6 +200,15 @@ void Document::deletePage(int pageIndex)
     save();
 }
 
+void Document::remove()
+{
+    QFileInfo finfo(d->filename);
+    if (finfo.exists()) {
+        finfo.dir().removeRecursively();
+        d.reset(new Data);
+    }
+}
+
 bool Document::save() const
 {
     QFileInfo finfo(d->filename);

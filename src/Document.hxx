@@ -75,6 +75,11 @@ public:
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
 
+    /// Delete this document.
+    ///
+    /// Calling this function removes all files associated with this document.
+    void remove();
+
     Q_INVOKABLE bool save() const;
 
     Q_INVOKABLE bool load(const QString &filename, QObject *parent = nullptr);
