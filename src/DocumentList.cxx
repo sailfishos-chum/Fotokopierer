@@ -49,6 +49,15 @@ DocumentList::DocumentList(QObject* parent)
 
 DocumentList::~DocumentList() = default;
 
+Document* DocumentList::latestDocument() const
+{
+    if (!d->docs.isEmpty()) {
+        return d->docs.last().data();
+    } else {
+        return nullptr;
+    }
+}
+
 void DocumentList::addDocument(const QSharedPointer<Document>& doc)
 {
     connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
@@ -59,6 +68,8 @@ void DocumentList::addDocument(const QSharedPointer<Document>& doc)
     beginInsertRows({}, d->docs.size(), d->docs.size());
     d->docs.push_back(doc);
     endInsertRows();
+
+    emit latestDocumentChanged();
 }
 
 Document* DocumentList::newDocument()
@@ -76,6 +87,8 @@ void DocumentList::deleteDocument(int docIndex)
     auto doc = d->docs.takeAt(docIndex);
     doc->remove();
     endRemoveRows();
+
+    emit latestDocumentChanged();
 }
 
 void DocumentList::documentChanged()

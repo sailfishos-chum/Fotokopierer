@@ -29,6 +29,8 @@ class DocumentList : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(Document* latestDocument READ latestDocument NOTIFY latestDocumentChanged)
+
     enum DocumentRoles {
         TitleRole = Qt::UserRole + 1,
         CreationTimeRole,
@@ -54,6 +56,12 @@ public:
 
     /// Delete a document from the document list.
     Q_INVOKABLE void deleteDocument(int docIndex);
+
+    /// Return the latest (newest) document or nullptr.
+    Document* latestDocument() const;
+
+signals:
+    void latestDocumentChanged();
 
 private:
     void addDocument(const QSharedPointer<Document>& document);

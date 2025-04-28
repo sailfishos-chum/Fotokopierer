@@ -37,6 +37,8 @@ class Document : public QAbstractListModel
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString defaultTitle READ defaultTitle NOTIFY defaultTitleChanged)
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
+    Q_PROPERTY(QStringList thumbnails READ thumbnails NOTIFY pagesChanged)
+    Q_PROPERTY(int numPages READ numPages NOTIFY pagesChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
@@ -88,6 +90,12 @@ public:
 
     /// Return the i-th page.
     const Page &page(int i) const;
+
+    /// Return the thumbnails of this Document.
+    ///
+    /// This is the same as returned by the `ThumbnailRole` model role but
+    /// accessibly as a property.
+    QStringList thumbnails() const;
 
     /// Add a newly scanned page to the document.
     ///

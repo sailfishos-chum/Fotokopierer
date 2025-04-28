@@ -21,5 +21,20 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { DocumentsPage { } }
+    id: app
+
+    DocumentsPage {
+        id: docs
+    }
+
+    initialPage: docs
+
+    cover: Component {
+        CoverPage {
+            onNewPicture: {
+                app.activate()
+                docs.addDocument()
+            }
+        }
+    }
 }
