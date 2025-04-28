@@ -51,7 +51,7 @@ struct CutView::Data {
     QImage image;
 
     QMetaObject::Connection orientationChangedConnection = {};
-    int doRotate = 0;
+    bool updatePaintedSize = false;
 
     QPointF getPoint(int which) const
     {
@@ -302,7 +302,7 @@ void CutView::rotateLeft()
 {
     if (d->scanImage != nullptr) {
         d->scanImage->setOrientation(d->scanImage->orientation() - 1);
-        d->doRotate = 1;
+        d->updatePaintedSize = true;
     }
 }
 
@@ -310,7 +310,7 @@ void CutView::rotateRight()
 {
     if (d->scanImage != nullptr) {
         d->scanImage->setOrientation(d->scanImage->orientation() + 1);
-        d->doRotate = 1;
+        d->updatePaintedSize = true;
     }
 }
 
@@ -394,9 +394,15 @@ void CutView::paint(QPainter* painter)
         painter->restore();
     }
 
-    if (d->doRotate == 1) {
-        // We need to postpone the rotation until the repaint is complete because
-        // otherwise paintedWidth and paintedHeight will not be up-to-date
+    if (d->updatePaintedSize) {
+        d->updatePaintedSize = false;
+
+        // We need to postpone the rotation until the repaint is
+        // complete because otherwise paintedWidth and paintedHeight
+        // will not be up-to-date. The problem is that we do not know
+        // `width` and `height` until we actually repaint the widget,
+        // hence we do not now `paintedWidth` and `paintedHeight`
+        // either.
 
         emit topLeftChanged();
         emit topRightChanged();
