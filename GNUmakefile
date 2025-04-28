@@ -23,8 +23,6 @@ mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 mer_root_dir := $(current_dir)
 
-mersdk_ssh := ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost
-
 ifeq ($(arch),i486)
   build_dir := rpmbuilddir-i386
 else
@@ -34,9 +32,6 @@ else
   build_dir := rpmbuilddir-$(arch)
 endif
 endif
-
-emu_ssh := ssh -p 2223 -i $(emu_dir)/nemo nemo@localhost
-emu_ssh_root := ssh -p 2223 -i $(emu_dir)/root root@localhost
 
 TRANSLATIONS = de sv
 
