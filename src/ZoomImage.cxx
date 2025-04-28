@@ -120,8 +120,9 @@ Scanner* ZoomImage::scanner() const
 void ZoomImage::paint(QPainter* p)
 {
     auto scanImage = d->scanner->currentImage();
-    auto image = scanImage->rotatedImage();
+    if (scanImage == nullptr) return;
 
+    auto image = scanImage->rotatedImage();
     if (image.isNull()) return;
 
     auto w = width();
