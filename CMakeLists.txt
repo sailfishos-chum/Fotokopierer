@@ -124,6 +124,8 @@ if (SAILFISH_FOUND)
     add_custom_target(opencv-3rdparty)
   endif ()
 
+  link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+
   # We must use our own freetype library
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
