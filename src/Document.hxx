@@ -44,7 +44,12 @@ public:
 public:
     Document(QObject *parent = nullptr);
 
+    Document(Document &&doc);
+
     ~Document();
+
+    /// Create a new document with the current time.
+    static Document create(QObject *parent = nullptr);
 
     /// Return the document title.
     QString title() const;

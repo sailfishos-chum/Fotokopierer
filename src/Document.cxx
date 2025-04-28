@@ -31,6 +31,7 @@
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QList>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 
 #include <memory>
@@ -48,7 +49,28 @@ struct Document::Data {
 
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
 
+Document::Document(Document &&doc) : QAbstractListModel(doc.parent()), d(std::move(doc.d)) {}
+
 Document::~Document() = default;
+
+Document Document::create(QObject *parent)
+{
+    Document doc(parent);
+
+    doc.d->creation_time = QDateTime::currentDateTime();
+    doc.d->title = doc.d->creation_time.toString();
+    auto dir = QStandardPaths::locate(QStandardPaths::HomeLocation,
+                                      QStringLiteral("fotokopierer"),
+                                      QStandardPaths::LocateDirectory);
+
+    if (!dir.isEmpty()) {
+        doc.d->filename = QStringLiteral("%1/%2/doc.json")
+                              .arg(dir)
+                              .arg(doc.d->creation_time.toString(FilenameFormat));
+    }
+
+    return doc;
+}
 
 QString Document::title() const
 {
