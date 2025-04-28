@@ -67,17 +67,17 @@ Dialog {
             Button {
                 text: "B/W"
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeImage.BlackAndWhite }
+                onClicked: { image.filter.colorMode = ColorizeFilter.BlackAndWhite }
             }
             Button {
                 text: "Gray"
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeImage.Gray }
+                onClicked: { image.filter.colorMode = ColorizeFilter.Gray }
             }
             Button {
                 text: "Magic"
                 Layout.fillWidth: true
-                onClicked: { image.filter.colorMode = ColorizeImage.Colored }
+                onClicked: { image.filter.colorMode = ColorizeFilter.Colored }
             }
             Button {
                 text: "Ctrl"
