@@ -50,6 +50,7 @@ void ScanImageView::setScanner(Scanner* scanner)
         d->scanner = scanner;
         if (d->scanner != nullptr) {
             connect(d->scanner, &Scanner::currentImageChanged, this, &ScanImageView::onNewImage);
+            onNewImage();
         }
         emit scannerChanged();
     }
