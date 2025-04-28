@@ -9,7 +9,8 @@ arch := i486
 #arch := aarch64
 
 # Select the latest available target for the given architecture
-target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+#target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+target := SailfishOS-3.4.0.24-$(arch)
 
 device := jolla
 
