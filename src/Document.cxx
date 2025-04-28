@@ -123,6 +123,12 @@ QVariant Document::data(const QModelIndex &index, int role) const
             }
             break;
         }
+        case ResultRole: {
+            if (index.column() == 0 && index.row() < d->pages.size()) {
+                return QUrl::fromLocalFile(d->pages[index.row()]->result());
+            }
+            break;
+        }
     }
 
     return {};
@@ -131,6 +137,7 @@ QVariant Document::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> Document::roleNames() const
 {
     static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
+                                                 {ResultRole, "role_result"},
                                                  {CreationTimeRole, "role_creationTime"}};
     return roles;
 }
