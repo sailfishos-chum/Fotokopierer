@@ -295,7 +295,7 @@ bool Document::load(const QString &filename, QObject *parent)
 
 void Document::updateThumbnail()
 {
-    Page *page = dynamic_cast<Page *>(sender());
+    Page *page = qobject_cast<Page *>(sender());
 
     for (int i = 0; i < d->pages.size(); i++) {
         if (page == d->pages[i]) {
