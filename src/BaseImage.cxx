@@ -29,7 +29,7 @@ struct BaseImage::Data {
 
 BaseImage::BaseImage() : d(new Data)
 {
-    connect(this, &BaseImage::imageChanged, [this]() { this->update(); });
+    connect(this, &BaseImage::sourceChanged, [this]() { this->updateImage(); });
 }
 
 BaseImage::~BaseImage() {}
@@ -72,9 +72,7 @@ void BaseImage::setSource(BaseImage* base_image)
     d->base_image = base_image;
 
     if (d->base_image) {
-        qDebug() << "Connect " << (void*)d->base_image << " " << (void*)this;
         connect(d->base_image, &BaseImage::imageChanged, this, &BaseImage::updateImage);
-        updateImage();
     }
 
     emit sourceChanged();
