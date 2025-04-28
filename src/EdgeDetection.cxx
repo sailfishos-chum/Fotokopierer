@@ -474,6 +474,13 @@ void EdgeList::Data::find_best_match()
     for (auto ls : top_lines) std::sort(ls.begin(), ls.end());
     for (auto ls : bottom_lines) std::sort(ls.begin(), ls.end());
 
+    // By default we simply select everything. This is a fallback in case we can't
+    // detect proper points.
+    topLeft = {0, 0};
+    topRight = {width, 0};
+    bottomRight = {width, height};
+    bottomLeft = {0, height};
+
     qreal max_area = 0;
     for (auto i : indices(hlines)) {
         if (left_lines[i].empty() || right_lines[i].empty()) continue;
