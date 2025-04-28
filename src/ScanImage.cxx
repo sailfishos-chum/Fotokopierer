@@ -26,6 +26,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFile>
 #include <QtCore/QFutureWatcher>
+#include <QtCore/QJsonArray>
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
@@ -103,11 +104,15 @@ QJsonObject ScanImage::saveJson() const
         {QStringLiteral("bottomright"), fromPoint(d->bottomRight)},
     };
 
+    QJsonArray angles;
+    for (auto a : d->params.angles) angles << a;
     settings[QStringLiteral("colorize")] = QJsonObject{
         {QStringLiteral("contrast"), d->params.contrast},
         {QStringLiteral("brightness"), d->params.brightness},
         {QStringLiteral("threshold"), d->params.threshold_c},
         {QStringLiteral("blocksize"), d->params.blocksize},
+        {QStringLiteral("angles"), angles},
+        {QStringLiteral("blackLevel"), d->params.blackLevel},
         {QStringLiteral("mode"), d->colorMode},
     };
 
@@ -141,6 +146,13 @@ void ScanImage::loadJson(const QJsonObject& settings)
         default:
             setColorMode(ColorMode::BlackAndWhite);
             break;
+    }
+
+    d->params.blackLevel = col[QStringLiteral("blackLevel")].toInt();
+
+    auto angles = col[QStringLiteral("angles")].toArray();
+    for (auto i : range(std::min(d->params.angles.size(), static_cast<std::size_t>(angles.size())))) {
+        d->params.angles[i] = angles[i].toDouble();
     }
 }
 
