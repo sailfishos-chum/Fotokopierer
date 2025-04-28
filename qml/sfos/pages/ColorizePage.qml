@@ -172,14 +172,14 @@ Dialog {
 
             ValueSlider {
                 id: threshold_slider
-                icon: Qt.resolvedUrl("image://theme/icon-m-search")
+                icon: Qt.resolvedUrl("/icons/threshold.svg")
                 visible: !contrast_slider.visible
                 onValueChanged: colview.threshold = value / 100
             }
 
             ValueSlider {
                 id: blocksize_slider
-                icon: Qt.resolvedUrl("image://theme/icon-m-search")
+                icon: Qt.resolvedUrl("/icons/blocksize.svg")
                 visible: !contrast_slider.visible
                 onValueChanged: colview.blockSize = value / 100
             }

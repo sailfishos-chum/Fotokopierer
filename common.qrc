@@ -5,6 +5,8 @@
 	 <file>qml/common/DragDelegate.qml</file>
 	 <file>icons/brightness.svg</file>
 	 <file>icons/contrast.svg</file>
+	 <file>icons/threshold.svg</file>
+	 <file>icons/blocksize.svg</file>
 	 <file>icons/harbour-fotokopierer.svg</file>
 	 <file>icons/icon-m-special.svg</file>
 	 <file>icons/icon-m-bw.svg</file>
