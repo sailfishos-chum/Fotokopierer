@@ -20,10 +20,10 @@
 
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QDateTime>
+#include <QtGui/QImage>
 
 #include <memory>
 
-class BaseImage;
 class Page;
 
 /// A scanned document
@@ -66,12 +66,6 @@ public:
     /// Return the i-th page.
     const Page &page(int i) const;
 
-    /// Add a newly scanned page to the document.
-    ///
-    /// The new page will be created with the given original and result image
-    /// and the current time. It will be the last page of the current document.
-    Q_INVOKABLE void addPage(BaseImage *original, BaseImage *result);
-
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
 
@@ -90,6 +84,12 @@ public slots:
 
     /// Move a page `from` to position `to`.
     void move(int from, int to);
+
+    /// Add a newly scanned page to the document.
+    ///
+    /// The new page will be created with the given original and result image
+    /// and the current time. It will be the last page of the current document.
+    void addPage(QImage original, QImage result);
 
 signals:
     void titleChanged();

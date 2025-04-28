@@ -26,12 +26,7 @@ import "../../common"
 Dialog {
     id: page
 
-    property alias source : colimg.source
-    property alias colorMode: colimg.colorMode
-    property alias contrast: contrast_slider.value
-    property alias brightness: brightness_slider.value
-    property alias details: details_slider.value
-    property alias image: colimg
+    property ScanImage scanImage
 
     MouseArea {
         anchors.fill: parent
@@ -46,18 +41,16 @@ Dialog {
         title: qsTr("Colorize")
     }
 
-    ColorizeImage {
-        id: colimg
+    FilterImage {
+        id: image
+
+        image: scanImage
+        filterType: ScanImage.Colorize
 
         anchors.top: header.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: buttons.top
-
-        contrast: contrast_slider.value / 100.0
-        brightness: brightness_slider.value / 100.0
-        details: details_slider.value / 100.0
-        colorMode: ColorizeImage.BlackAndWhite
     }
 
     DockedPanel {
@@ -74,17 +67,17 @@ Dialog {
             Button {
                 text: "B/W"
                 Layout.fillWidth: true
-                onClicked: { colimg.colorMode = ColorizeImage.BlackAndWhite }
+                onClicked: { image.filter.colorMode = ColorizeFilter.BlackAndWhite }
             }
             Button {
                 text: "Gray"
                 Layout.fillWidth: true
-                onClicked: { colimg.colorMode = ColorizeImage.Gray }
+                onClicked: { image.filter.colorMode = ColorizeFilter.Gray }
             }
             Button {
                 text: "Magic"
                 Layout.fillWidth: true
-                onClicked: { colimg.colorMode = ColorizeImage.Colored }
+                onClicked: { image.filter.colorMode = ColorizeFilter.Colored }
             }
             Button {
                 text: "Ctrl"
@@ -115,16 +108,19 @@ Dialog {
             ValueSlider {
                 id: contrast_slider
                 icon: Qt.resolvedUrl("/icons/contrast.svg")
+                onValueChanged: image.filter.contrast = value / 100
             }
 
             ValueSlider {
                 id: brightness_slider
                 icon: Qt.resolvedUrl("/icons/brightness.svg")
+                onValueChanged: image.filter.brightness = value / 100
             }
 
             ValueSlider {
                 id: details_slider
                 icon: Qt.resolvedUrl("image://theme/icon-m-search")
+                onValueChanged: image.filter.details = value / 100
             }
         }
     }

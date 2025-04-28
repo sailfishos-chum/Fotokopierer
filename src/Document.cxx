@@ -17,7 +17,6 @@
 
 #include "Document.hxx"
 
-#include "BaseImage.hxx"
 #include "Page.hxx"
 
 #include <QtCore/QDateTime>
@@ -33,6 +32,8 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
+
+#include <QtDebug>
 
 #include <memory>
 
@@ -155,17 +156,15 @@ void Document::move(int from, int to)
     }
 }
 
-void Document::addPage(BaseImage *original, BaseImage *result)
+void Document::addPage(QImage original, QImage result)
 {
-    QImage original_img = original->image();
-    if (original_img.isNull()) {
+    if (original.isNull()) {
         qWarning() << "Page could not be created: no original image";
         emit error(QStringLiteral("Page could not be created: no original image"));
         return;
     }
 
-    QImage result_img = result->image();
-    if (result_img.isNull()) {
+    if (result.isNull()) {
         qWarning() << "Page could not be created: no result image";
         emit error(QStringLiteral("Page could not be created: no result image"));
         return;
@@ -179,13 +178,13 @@ void Document::addPage(BaseImage *original, BaseImage *result)
         dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
     auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
 
-    if (!original_img.save(original_path)) {
+    if (!original.save(original_path)) {
         qWarning() << "Page could not be created: error saving original image";
         emit error(QStringLiteral("Page could not be created: error saving original image"));
         return;
     };
 
-    if (!result_img.save(result_path)) {
+    if (!result.save(result_path)) {
         qWarning() << "Page could not be created: error saving result image";
         emit error(QStringLiteral("Page could not be created: error saving result image"));
         return;
@@ -226,12 +225,15 @@ bool Document::save() const
     QFileInfo finfo(d->filename);
 
     if (!finfo.dir().exists()) {
-        finfo.dir().mkpath(QStringLiteral("."));
+        if (!finfo.dir().mkpath(QStringLiteral("."))) {
+            qWarning() << tr("Cannot create path %1").arg(finfo.dir().path());
+            return false;
+        }
     }
 
     QFile file(d->filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << tr("Can't write document file %1").arg(d->filename);
+        qWarning() << tr("Can't write document file %1:%2").arg(d->filename, file.error());
         return false;
     }
     QJsonObject doc;
@@ -249,9 +251,10 @@ bool Document::save() const
 
     doc[QStringLiteral("pages")] = pages;
 
-    if (file.write(QJsonDocument(doc).toJson()) < 0) return false;
-
-    qWarning() << "Error writing document file";
+    if (file.write(QJsonDocument(doc).toJson()) < 0) {
+        qWarning() << tr("Error writing document file:%1").arg(file.error());
+        return false;
+    }
 
     return true;
 }

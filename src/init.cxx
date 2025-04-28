@@ -22,10 +22,11 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QtQml>
 
-#include "ColorizeImage.hxx"
-#include "CutImage.hxx"
-#include "PlainImage.hxx"
-#include "RotImage.hxx"
+#include "ColorizeFilter.hxx"
+#include "CutFilter.hxx"
+#include "FilterImage.hxx"
+#include "RotateFilter.hxx"
+#include "ScanImage.hxx"
 #include "ZoomImage.hxx"
 
 #include "Document.hxx"
@@ -44,17 +45,34 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
             return new DocumentList;
         });
 
-    qmlRegisterType<ColorizeImage>("Fotokopierer", 1, 0, "ColorizeImage");
-    qmlRegisterType<CutImage>("Fotokopierer", 1, 0, "CutImage");
-    qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
-    qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
+    qmlRegisterType<FilterImage>("Fotokopierer", 1, 0, "FilterImage");
+    qmlRegisterType<ScanImage>("Fotokopierer", 1, 0, "ScanImage");
     qmlRegisterUncreatableType<Document>(
         "Fotokopierer",
         1,
         0,
         "Document",
         QStringLiteral("Document cannot be used as QML component"));
+
+    qmlRegisterUncreatableType<RotateFilter>(
+        "Fotokopierer",
+        1,
+        0,
+        "RotateFilter",
+        QStringLiteral("RotateFilter cannot be used as QML component"));
+    qmlRegisterUncreatableType<CutFilter>(
+        "Fotokopierer",
+        1,
+        0,
+        "CutFilter",
+        QStringLiteral("RotateFilter cannot be used as QML component"));
+    qmlRegisterUncreatableType<ColorizeFilter>(
+        "Fotokopierer",
+        1,
+        0,
+        "ColorizeFilter",
+        QStringLiteral("RotateFilter cannot be used as QML component"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QStringLiteral(QT_VERSION_STR));

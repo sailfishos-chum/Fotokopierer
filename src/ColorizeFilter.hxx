@@ -15,13 +15,12 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_COLORIZEIMAGE_HXX__
-#define __FOTOKOPIERER_COLORIZEIMAGE_HXX__
+#ifndef __FOTOKOPIERER_COLORIZEFILTER_HXX__
+#define __FOTOKOPIERER_COLORIZEFILTER_HXX__
 
-#include "AsyncImage.hxx"
+#include "Filter.hxx"
 
-/// This class can be used to modify the colors of an image.
-class ColorizeImage : public AsyncImage
+class ColorizeFilter : public Filter
 {
     Q_OBJECT
 
@@ -40,9 +39,17 @@ public:
     Q_ENUM(ColorMode)
 
 public:
-    explicit ColorizeImage(QQuickItem* parent = nullptr);
+    explicit ColorizeFilter(ScanImage* image);
 
-    ~ColorizeImage() override;
+    ColorizeFilter(ScanImage* image, Filter* previous_filter);
+
+    ~ColorizeFilter() override;
+
+    QJsonObject saveJson() const override;
+
+    void loadJson(QJsonObject& object) override;
+
+    QImage apply(QImage&& image) override;
 
     /// Return the contrast level.
     double contrast() const;
@@ -67,7 +74,7 @@ public slots:
     void setDetails(double details);
 
     /// Set the color mode.
-    void setColorMode(ColorizeImage::ColorMode colormode);
+    void setColorMode(ColorizeFilter::ColorMode colormode);
 
 signals:
     void contrastChanged();
@@ -75,12 +82,9 @@ signals:
     void detailsChanged();
     void colorModeChanged();
 
-protected:
-    QImage transform(const QImage& image) override;
-
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

@@ -15,18 +15,21 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include "CutImage.hxx"
+#include "CutFilter.hxx"
 
+#include "Convert.hxx"
+#include "Global.hxx"
+#include "ScanImage.hxx"
+
+#include <QtCore/QJsonObject>
+#include <QtCore/QVariant>
 #include <QtGui/QImage>
 
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <cmath>
 
-#include "Convert.hxx"
-#include "Global.hxx"
-
-struct CutImage::Data {
+struct CutFilter::Data {
     QPointF topleft;
     QPointF topright;
     QPointF bottomleft;
@@ -35,11 +38,19 @@ struct CutImage::Data {
     double getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl);
 };
 
-CutImage::CutImage(QQuickItem* parent) : AsyncImage(parent), d(new Data) {}
+CutFilter::CutFilter(ScanImage* image) : CutFilter(image, nullptr) {}
 
-CutImage::~CutImage() = default;
+CutFilter::CutFilter(ScanImage* image, Filter* previous_filter)
+    : Filter(image, previous_filter), d(new Data)
+{
+}
 
-bool CutImage::setCutBox(QPointF topleft, QPointF topright, QPointF bottomright, QPointF bottomleft)
+CutFilter::~CutFilter() = default;
+
+bool CutFilter::setCutBox(QPointF topleft,
+                          QPointF topright,
+                          QPointF bottomright,
+                          QPointF bottomleft)
 {
     static Fotokopierer util;
 
@@ -50,61 +61,30 @@ bool CutImage::setCutBox(QPointF topleft, QPointF topright, QPointF bottomright,
     d->topright = topright;
     d->bottomright = bottomright;
     d->bottomleft = bottomleft;
-    updateImage();
+    emit filterChanged();
     return true;
 }
 
-QImage CutImage::transform(const QImage& image)
+QVariantList CutFilter::autoDetectCutRect()
 {
-    if (image.isNull()) return image;
-
-    auto rotated = QImageToCvMat(image);
-
-    float w = rotated.cols;
-    float h = rotated.rows;
-
-    cv::Point2f tl(d->topleft.x() * w, d->topleft.y() * h);
-    cv::Point2f tr(d->topright.x() * w, d->topright.y() * h);
-    cv::Point2f br(d->bottomright.x() * w, d->bottomright.y() * h);
-    cv::Point2f bl(d->bottomleft.x() * w, d->bottomleft.y() * h);
-
-    auto ratio = d->getAspectRatio(QPointF{tl.x - w / 2, tl.y - h / 2} / 100,
-                                   QPointF{tr.x - w / 2, tr.y - h / 2} / 100,
-                                   QPointF{br.x - w / 2, br.y - h / 2} / 100,
-                                   QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
-
-    if (qIsNaN(ratio)) return {};
-
-    float height = std::max(cv::norm(tr - tl), cv::norm(br - bl));
-    float width = height * ratio;
-
-    qDebug() << "Approximate aspect ratio: " << ratio;
-
-    cv::Point2f src[4] = {tl, tr, br, bl};
-    cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
-
-    auto M = cv::getPerspectiveTransform(src, dst);
-    cv::Mat cut;
-    cv::warpPerspective(rotated, cut, M, {(int)width, (int)height});
-
-    return cvMatToQImage(cut).copy();
-}
-
-QVariantList CutImage::autoDetectCutRect()
-{
-    auto img_cut = QImageToCvMat(sourceImage());
+    QImage img =
+        previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+    auto img_cut = QImageToCvMat(img, false);
     auto width = img_cut.cols;
     auto height = img_cut.rows;
 
     cv::Mat img_gray;
     cv::cvtColor(img_cut, img_gray, cv::COLOR_BGR2GRAY);
+    img_cut.release();
 
     cv::blur(img_gray, img_gray, {3, 3});
     cv::Mat img_edges;
     cv::Canny(img_gray, img_edges, 10, 40);
+    img_gray.release();
 
     std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(img_edges, lines, 1, CV_PI / 180, 80, 30, img_gray.cols / 10);
+    cv::HoughLinesP(img_edges, lines, 1, CV_PI / 180, 80, 30, width / 10);
+    img_edges.release();
 
     // partition the lines according to their angles into horizontal
     // and vertical ones
@@ -177,48 +157,50 @@ QVariantList CutImage::autoDetectCutRect()
     project(bottomleft);
     project(bottomright);
 
-    // img->rotated = img_cut.clone();
-    // for (auto line : lines) {
-    //     std::cout << line << std::endl;
-    //     cv::line(img->rotated,
-    //              {line[0], line[1]},
-    //              {line[2], line[3]},
-    //              CV_RGB(255, 0, 0),
-    //              5,
-    //              cv::LINE_8);
-    // }
-
-    // cv::line(img->rotated,
-    //          {top_line[0], top_line[1]},
-    //          {top_line[2], top_line[3]},
-    //          CV_RGB(0, 255, 0),
-    //          10,
-    //          cv::LINE_8);
-
-    // cv::line(img->rotated,
-    //          {bottom_line[0], bottom_line[1]},
-    //          {bottom_line[2], bottom_line[3]},
-    //          CV_RGB(0, 255, 0),
-    //          10,
-    //          cv::LINE_8);
-
-    // cv::line(img->rotated,
-    //          {left_line[0], left_line[1]},
-    //          {left_line[2], left_line[3]},
-    //          CV_RGB(0, 255, 0),
-    //          10,
-    //          cv::LINE_8);
-
-    // cv::line(img->rotated,
-    //          {right_line[0], right_line[1]},
-    //          {right_line[2], right_line[3]},
-    //          CV_RGB(0, 255, 0),
-    //          10,
-    //          cv::LINE_8);
-
     QVariantList lst;
     lst << topleft << topright << bottomright << bottomleft;
     return lst;
+}
+
+QJsonObject CutFilter::saveJson() const
+{
+    return {};
+}
+
+void CutFilter::loadJson(QJsonObject& object) {}
+
+QImage CutFilter::apply(QImage&& image)
+{
+    if (image.isNull()) return image;
+
+    auto rotated = QImageToCvMat(image);
+
+    float w = rotated.cols;
+    float h = rotated.rows;
+
+    cv::Point2f tl(d->topleft.x() * w, d->topleft.y() * h);
+    cv::Point2f tr(d->topright.x() * w, d->topright.y() * h);
+    cv::Point2f br(d->bottomright.x() * w, d->bottomright.y() * h);
+    cv::Point2f bl(d->bottomleft.x() * w, d->bottomleft.y() * h);
+
+    auto ratio = d->getAspectRatio(QPointF{tl.x - w / 2, tl.y - h / 2} / 100,
+                                   QPointF{tr.x - w / 2, tr.y - h / 2} / 100,
+                                   QPointF{br.x - w / 2, br.y - h / 2} / 100,
+                                   QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
+
+    if (qIsNaN(ratio)) return {};
+
+    float height = std::max(cv::norm(tr - tl), cv::norm(br - bl));
+    float width = height * ratio;
+
+    cv::Point2f src[4] = {tl, tr, br, bl};
+    cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
+
+    auto M = cv::getPerspectiveTransform(src, dst);
+    cv::Mat cut;
+    cv::warpPerspective(rotated, cut, M, {(int)width, (int)height});
+
+    return cvMatToQImage(cut).copy();
 }
 
 /// Return the aspect ratio of the original image.
@@ -236,7 +218,7 @@ QVariantList CutImage::autoDetectCutRect()
 /// aspect ratio can then be computed as \f$ \frac{\|q_{tr} -
 /// q_{tl}\|}{\|q_{bl} - q_{tl}\|} \f$, which is the value returned by
 /// this function.
-double CutImage::Data::getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl)
+double CutFilter::Data::getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl)
 {
     double a_tl = (br.x() - tl.x());
     double a_tr = (tr.x() - br.x());

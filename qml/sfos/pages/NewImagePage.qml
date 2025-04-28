@@ -21,30 +21,31 @@ import Sailfish.Pickers 1.0
 import Fotokopierer 1.0
 
 ImagePickerPage {
-    property Page destination
+    id: page
 
-    signal addPage(PlainImage original, ColorizeImage result)
+    property Page destination
+    property ScanImage scanImage
+
+    signal addPage()
 
     // Note that this property might become unsupported in future
     popOnSelection: false
 
-    PlainImage { id: plain }
-
-    CutPage { id: cutpage; source: plain }
+    CutPage { id: cutpage; image: scanImage }
 
     ColorizePage {
         id: colpage
-        source: cutpage.image
+
+        scanImage: page.scanImage
+
         acceptDestination: destination
         acceptDestinationAction: PageStackAction.Pop
 
-        onAccepted: {
-            addPage(plain, colpage.image)
-        }
+        onAccepted: addPage()
     }
 
     onSelectedContentPropertiesChanged: {
-        plain.loadFile(selectedContentProperties.filePath)
+        scanImage.loadFile(selectedContentProperties.filePath)
         pageStack.push(cutpage)
         pageStack.pushAttached(colpage)
     }

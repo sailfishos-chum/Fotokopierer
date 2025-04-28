@@ -15,32 +15,41 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include "RotImage.hxx"
+#ifndef __FOTOKOPIERER_FILTER_HXX__
+#define __FOTOKOPIERER_FILTER_HXX__
 
-#include <QtGui/QImage>
+#include <QtCore/QObject>
 
-RotImage::RotImage(QQuickItem* parent) : BaseImage(parent), orientation_(0) {}
+#include <memory>
 
-RotImage::~RotImage() = default;
+class ScanImage;
 
-int RotImage::orientation() const
+class Filter : public QObject
 {
-    return orientation_;
-}
+    Q_OBJECT
 
-void RotImage::setOrientation(int orientation)
-{
-    orientation %= 4;
-    if (orientation != orientation_) {
-        orientation_ = orientation;
-        emit orientationChanged();
-        updateImage();
-    }
-}
+public:
+    explicit Filter(ScanImage* image);
 
-QImage RotImage::transform(const QImage& image)
-{
-    QTransform transform;
-    transform.rotate(orientation_ * 90.0);
-    return image.transformed(transform);
-}
+    Filter(ScanImage* image, Filter* previous_filter);
+
+    virtual ~Filter();
+
+    ScanImage* image();
+
+    QImage filteredImage();
+
+    virtual QJsonObject saveJson() const = 0;
+
+    virtual void loadJson(QJsonObject& object) = 0;
+
+    virtual QImage apply(QImage&& image) = 0;
+
+signals:
+    void filterChanged();
+
+protected:
+    Filter* previous_filter_;
+};
+
+#endif

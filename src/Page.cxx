@@ -18,7 +18,6 @@
 #include "Page.hxx"
 
 #include "Document.hxx"
-#include "PlainImage.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>

@@ -29,15 +29,19 @@ Page {
     property bool editing: false
     property bool deleting: false
 
+    ScanImage {
+        id: scanImage
+    }
+
     Loader {
-        id: imageLoader
+        id: newPage
     }
 
     onStatusChanged: {
-        // ensure the image pages are deleted if not needed because the need a
-        // lot of C++ memory
+        // ensure that the C++ memory of ScanImage is freed
         if (status == PageStatus.Active) {
-            imageLoader.source = ""
+            newPage.source = ""
+            scanImage.clear()
         }
     }
 
@@ -71,16 +75,16 @@ Page {
             }
 
             function addDocument() {
-                imageLoader.source = Qt.resolvedUrl("NewImagePage.qml")
-                imageLoader.item.destination = docpage
-                imageLoader.item.addPage.connect(function(original, result) {
-                    var doc = DocumentList.newDocument();
+                newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+                newPage.item.scanImage = scanImage
+                newPage.item.destination = docpage
+                newPage.item.addPage.connect(function() {
+                    var doc = DocumentList.newDocument()
                     if (doc != null) {
-                        doc.addPage(original, result)
-                        //pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": doc})
+                        scanImage.saveAndClear(doc)
                     }
                 })
-                pageStack.push(imageLoader.item)
+                pageStack.push(newPage.item)
             }
 
             function openDocument() {

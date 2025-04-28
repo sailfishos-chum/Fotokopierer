@@ -15,22 +15,31 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_CUTIMAGE_HXX__
-#define __FOTOKOPIERER_CUTIMAGE_HXX__
+#ifndef __FOTOKOPIERER_CUTFILTER_HXX__
+#define __FOTOKOPIERER_CUTFILTER_HXX__
 
-#include "AsyncImage.hxx"
+#include "Filter.hxx"
 
-#include <QtCore/QScopedPointer>
+#include <QtCore/QPointF>
 
-/// An image from which an quadrangle can be cut.
-class CutImage : public AsyncImage
+#include <memory>
+
+class CutFilter : public Filter
 {
     Q_OBJECT
 
 public:
-    explicit CutImage(QQuickItem* parent = nullptr);
+    explicit CutFilter(ScanImage* image);
 
-    ~CutImage() override;
+    CutFilter(ScanImage* image, Filter* previous_filter);
+
+    ~CutFilter() override;
+
+    QJsonObject saveJson() const override;
+
+    void loadJson(QJsonObject& object) override;
+
+    QImage apply(QImage&& image) override;
 
     /// Set the corner points of the cut box.
     ///
@@ -47,12 +56,9 @@ public:
     /// bottomright, bottomleft).
     Q_INVOKABLE QVariantList autoDetectCutRect();
 
-protected:
-    QImage transform(const QImage& image) override;
-
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

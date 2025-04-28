@@ -17,7 +17,7 @@
 
 #include "ZoomImage.hxx"
 
-#include "BaseImage.hxx"
+#include "Filter.hxx"
 
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
@@ -27,7 +27,10 @@ struct ZoomImage::Data {
     QPointF center;
     QColor cross_color = Qt::red;
     QColor border_color = Qt::white;
-    BaseImage* source = nullptr;
+
+    ScanImage* image = nullptr;
+    ScanImage::FilterType filter_type = ScanImage::FilterType::None;
+    Filter* filter = nullptr;
 };
 
 ZoomImage::ZoomImage(QQuickItem* parent) : QQuickPaintedItem(parent), d(new Data) {}
@@ -93,38 +96,62 @@ void ZoomImage::setCrossColor(const QColor& color)
     }
 }
 
-void ZoomImage::setSource(BaseImage* source)
+void ZoomImage::setImage(ScanImage* image)
 {
-    if (source == d->source) return;
-
-    if (d->source) {
-        disconnect(d->source, &BaseImage::imageChanged, this, &ZoomImage::updateImage);
-    }
-
-    d->source = source;
-
-    if (d->source) {
-        connect(d->source, &BaseImage::imageChanged, this, &ZoomImage::updateImage);
-        update();
-    }
-
-    emit sourceChanged();
+    if (image == d->image) return;
+    d->image = image;
+    updateFilter();
+    emit imageChanged();
+    update();
 }
 
-BaseImage* ZoomImage::source()
+ScanImage* ZoomImage::image() const
 {
-    return d->source;
+    return d->image;
+}
+
+void ZoomImage::setFilterType(ScanImage::FilterType filter_type)
+{
+    if (filter_type != d->filter_type) {
+        d->filter_type = filter_type;
+        updateFilter();
+        emit filterTypeChanged();
+    }
+}
+
+ScanImage::FilterType ZoomImage::filterType() const
+{
+    return d->filter_type;
+}
+
+void ZoomImage::updateFilter()
+{
+    if (d->filter != nullptr) {
+        disconnect(d->filter, &Filter::filterChanged, this, &ZoomImage::updateImage);
+    }
+
+    if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
+        d->filter = d->image->filter(d->filter_type);
+        connect(d->filter, &Filter::filterChanged, this, &ZoomImage::updateImage);
+    }
+    update();
 }
 
 void ZoomImage::paint(QPainter* p)
 {
-    if (!d->source) return;
+    QImage image;
+
+    if (d->filter != nullptr)
+        image = d->filter->filteredImage();
+    else if (d->image != nullptr)
+        image = d->image->originalImage();
+
+    if (image.isNull()) return;
 
     auto w = width();
     auto h = height();
 
     // get the source image
-    QImage image = d->source->image();
     auto iw = image.width();
     auto ih = image.height();
 

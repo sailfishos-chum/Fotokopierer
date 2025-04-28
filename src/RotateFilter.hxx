@@ -15,35 +15,40 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_ASYNCIMAGE_HXX__
-#define __FOTOKOPIERER_ASYNCIMAGE_HXX__
+#ifndef __FOTOKOPIERER_ROTATEFILTER_HXX__
+#define __FOTOKOPIERER_ROTATEFILTER_HXX__
 
-#include "BaseImage.hxx"
+#include "Filter.hxx"
 
-/// A base image with asynchronous transformation.
-class AsyncImage : public BaseImage
+class RotateFilter : public Filter
 {
     Q_OBJECT
 
-    friend class AsyncImageTask;
+    Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 public:
-    explicit AsyncImage(QQuickItem* parent = nullptr);
+    explicit RotateFilter(ScanImage* image);
 
-    ~AsyncImage() override;
+    explicit RotateFilter(ScanImage* image, Filter* previous_filter);
+
+    ~RotateFilter() override;
+
+    QJsonObject saveJson() const override;
+
+    void loadJson(QJsonObject& object) override;
+
+    QImage apply(QImage&& image) override;
+
+    int orientation() const;
+
+public slots:
+    void setOrientation(int orientation);
 
 signals:
-    void startTransform(const QImage& image);
-
-protected:
-    void updateImage() override;
-
-private slots:
-    void finishTransform();
+    void orientationChanged();
 
 private:
-    struct Data;
-    QScopedPointer<Data> d;
+    int orientation_;
 };
 
 #endif
