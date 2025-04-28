@@ -42,7 +42,7 @@ FilterImage::FilterImage(QQuickItem* parent)
     connect(&d->filteredImage,
             &QFutureWatcher<QImage>::finished,
             this,
-            &FilterImage::filteredImageReady);
+            &FilterImage::onFilteredImageReady);
 }
 
 FilterImage::~FilterImage() = default;
@@ -119,7 +119,7 @@ void FilterImage::update()
     }
 }
 
-void FilterImage::filteredImageReady()
+void FilterImage::onFilteredImageReady()
 {
     QQuickPaintedItem::update();
     if (d->restart) {

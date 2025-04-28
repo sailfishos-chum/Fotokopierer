@@ -70,7 +70,7 @@ private:
 private slots:
     void update();
 
-    void filteredImageReady();
+    void onFilteredImageReady();
 
 signals:
     void paintedSizeChanged();
