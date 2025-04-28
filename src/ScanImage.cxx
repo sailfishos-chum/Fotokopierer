@@ -17,12 +17,6 @@
 
 #include "ScanImage.hxx"
 
-#include "Convert.hxx"
-#include "Document.hxx"
-#include "Page.hxx"
-
-#include "fifr/util/Range.hxx"
-
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFile>
 #include <QtCore/QFutureWatcher>
@@ -30,11 +24,14 @@
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
-
-#include <opencv2/imgproc/imgproc.hpp>
-
 #include <algorithm>
 #include <cassert>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include "Convert.hxx"
+#include "Document.hxx"
+#include "Page.hxx"
+#include "fifr/util/Range.hxx"
 
 using namespace fifr::util;
 

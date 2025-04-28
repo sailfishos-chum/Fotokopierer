@@ -19,10 +19,8 @@
 
 #include <QDebug>
 #include <QtGui/QPainter>
-
 #include <algorithm>
 #include <cmath>
-
 #include <opencv2/imgproc.hpp>
 
 #include "fifr/util/Range.hxx"

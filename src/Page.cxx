@@ -17,12 +17,6 @@
 
 #include "Page.hxx"
 
-#include "Document.hxx"
-
-#include "Convert.hxx"
-#include "Fotokopierer.hxx"
-#include "ScanImage.hxx"
-
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
@@ -33,6 +27,11 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QUrl>
 #include <QtGui/QImage>
+
+#include "Convert.hxx"
+#include "Document.hxx"
+#include "Fotokopierer.hxx"
+#include "ScanImage.hxx"
 
 namespace
 {

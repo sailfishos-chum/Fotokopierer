@@ -5,14 +5,13 @@ sfdk := $(sdk_dir)/bin/sfdk
 
 arch := i486
 #arch := armv7hl
-arch := i486
 #arch := aarch64
 
 # Select the latest available target for the given architecture
-target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+target := $(shell $(sfdk) tools list | sed -n '/$(arch)/p' |  sed -n 's/^.*\(SailfishOS[[:alnum:].-]*\).*$$/\1/p' | head -n1)
 
 # Select the emulator device '#0'
-emulator := $(shell $(sfdk) emulator list | awk -F'"' '/\#0/ { print $$2 }')
+emulator := $(shell $(sfdk) device list | awk -F'"' '/#0/ { print $$2 }')
 
 device := jolla
 
@@ -33,7 +32,7 @@ else
 endif
 endif
 
-TRANSLATIONS = de sv sk
+TRANSLATIONS = bg de fr sk sv
 
 .PHONY: all
 all: compile
@@ -73,20 +72,20 @@ $(rpm_file): $(build_dir)/$(program) rpm/$(program).yaml rpm/$(program).changes
 
 .PHONY: deploy-emu
 deploy-emu: $(rpm_file)
-	$(sfdk) -c "device=$(emulator)" deploy --rsync
+	$(sfdk) -c "device=$(emulator)" deploy --sdk
 
 .PHONY: run-emu
 run-emu:
 	$(sfdk) emulator exec /opt/sdk/$(program)/usr/bin/$(program)
 
 # Translations
-$(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po
+$(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.ts
 	lrelease $<
 
 .PHONY: lupdate lrelease
 lupdate:
-	lupdate -locations relative src qml -ts translations/harbour-fotokopierer.pot $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
-	sed -i -e "s!^#: ${current_dir}!#: !" translations/harbour-fotokopierer.pot $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.po)
+	lupdate -locations relative src qml -ts translations/harbour-fotokopierer.ts $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.ts)
+	sed -i -e "s!^#: ${current_dir}!#: !" translations/harbour-fotokopierer.ts $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.ts)
 
 lrelease: translations.qrc
 

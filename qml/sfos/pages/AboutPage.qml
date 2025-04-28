@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019, 2020, 2021, 2022 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -100,7 +100,17 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: "Åke Engelbrektson (%1)".arg(qsTr("Swedish"))
+                text: "G. Yavorov, Standjata (%1)".arg(qsTr("Bulgarian"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "pherjung (%1)".arg(qsTr("French"))
             }
 
             Label {
@@ -111,6 +121,16 @@ Page {
                 wrapMode: Text.WordWrap
 
                 text: "holask (%1)".arg(qsTr("Slovak"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "Åke Engelbrektson (%1)".arg(qsTr("Swedish"))
             }
 
             Separator {

@@ -17,17 +17,16 @@
 
 #include "ColorizeView.hxx"
 
-#include "ColorizeChooser.hxx"
-#include "Convert.hxx"
-#include "ScanImage.hxx"
-#include "Scanner.hxx"
-
 #include <QDebug>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFutureWatcher>
 #include <QtGui/QImage>
-
 #include <opencv2/imgproc.hpp>
+
+#include "ColorizeChooser.hxx"
+#include "Convert.hxx"
+#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 struct ColorizeView::Data {
     ScanImage::Parameters params;

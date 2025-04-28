@@ -19,7 +19,6 @@
 #define __FOTOKOPIERER_SCANIMAGE_HXX__
 
 #include <QtCore/QObject>
-
 #include <memory>
 #include <opencv2/core.hpp>
 

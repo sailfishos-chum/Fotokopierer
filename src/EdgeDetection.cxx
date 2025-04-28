@@ -17,18 +17,14 @@
 
 #include "EdgeDetection.hxx"
 
-#include "Convert.hxx"
-
 #include <QDebug>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QLineF>
 #include <QtGui/QImage>
-
+#include <algorithm>
 #include <iostream>
 #include <opencv2/imgproc/imgproc.hpp>
-
-#include <algorithm>
 
 #include "Convert.hxx"
 #include "fifr/util/Range.hxx"

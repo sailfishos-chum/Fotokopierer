@@ -17,18 +17,17 @@
 
 #include "Scanner.hxx"
 
-#include "Document.hxx"
-#include "Page.hxx"
-#include "ScanImage.hxx"
-
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFile>
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QVector>
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
-
 #include <cassert>
+
+#include "Document.hxx"
+#include "Page.hxx"
+#include "ScanImage.hxx"
 
 struct Scanner::Data {
     QString originalPath;

@@ -17,11 +17,11 @@
 
 #include "ZoomImage.hxx"
 
-#include "Convert.hxx"
-#include "ScanImage.hxx"
-
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
+
+#include "Convert.hxx"
+#include "ScanImage.hxx"
 
 struct ZoomImage::Data {
     QPointF viewSize = {0.1, 0.1};

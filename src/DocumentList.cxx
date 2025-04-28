@@ -17,16 +17,16 @@
 
 #include "DocumentList.hxx"
 
-#include "Document.hxx"
-#include "Fotokopierer.hxx"
-#include "Page.hxx"
-
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 #include <QtQml/QQmlEngine>
+
+#include "Document.hxx"
+#include "Fotokopierer.hxx"
+#include "Page.hxx"
 
 struct DocumentList::Data {
     QVector<QSharedPointer<Document>> docs;

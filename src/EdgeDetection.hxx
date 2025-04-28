@@ -18,13 +18,11 @@
 #ifndef __FOTOKOPIERER_EDGEDETECTION_HXX__
 #define __FOTOKOPIERER_EDGEDETECTION_HXX__
 
-#include <memory>
-#include <vector>
-
 #include <Qt>
 #include <QtCore/QObject>
-
+#include <memory>
 #include <opencv2/core.hpp>
+#include <vector>
 
 class QImage;
 class QLineF;

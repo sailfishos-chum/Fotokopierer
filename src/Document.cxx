@@ -17,9 +17,7 @@
 
 #include "Document.hxx"
 
-#include "Clipboard.hxx"
-#include "Fotokopierer.hxx"
-#include "Page.hxx"
+#include <podofo/podofo.h>
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QCoreApplication>
@@ -39,10 +37,11 @@
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
 #include <QtQml/QQmlEngine>
-
-#include <podofo/podofo.h>
-
 #include <memory>
+
+#include "Clipboard.hxx"
+#include "Fotokopierer.hxx"
+#include "Page.hxx"
 
 namespace
 {

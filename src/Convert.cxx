@@ -20,7 +20,6 @@
 #include <QtCore/QDebug>
 #include <QtGui/QImage>
 #include <QtGui/QPixmap>
-
 #include <opencv2/imgproc/imgproc.hpp>
 
 // NOTE: This does not cover all cases - it should be easy to add new ones as
