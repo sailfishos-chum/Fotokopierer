@@ -4,18 +4,19 @@
 
 Fotokopierer is a document scanning application for [Sailfish OS](https://sailfishos.org) and the Desktop.
 
-## Author
+## Authors
 
 Frank Fischer <frank-fischer@shadow-soft.de>
 
 planetos (Icons)
 
 Åke Engelbrektson (Swedish translation)
+
 holask (Slovak translation)
 
 ## Contact
 
-Talk with the developers on [#fotokopierer][IRC] on [libera.chat](https://libera.chat)
+Talk with the developers in [#fotokopierer][IRC] on [libera.chat](https://libera.chat)
 
 ## License
 
