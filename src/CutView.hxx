@@ -18,9 +18,9 @@
 #ifndef __FOTOKOPIERER_CUTVIEW_HXX__
 #define __FOTOKOPIERER_CUTVIEW_HXX__
 
-#include "ScanImageView.hxx"
-
 #include <memory>
+
+#include "ScanImageView.hxx"
 
 class Scanner;
 

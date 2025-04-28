@@ -18,9 +18,9 @@
 #ifndef __FOTOKOPIERER_COLORIZEVIEW_HXX__
 #define __FOTOKOPIERER_COLORIZEVIEW_HXX__
 
-#include "ScanImageView.hxx"
-
 #include <opencv2/core.hpp>
+
+#include "ScanImageView.hxx"
 
 class ColorizeChooser;
 

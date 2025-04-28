@@ -19,7 +19,6 @@
 #define __FOTOKOPIERER_SCANNER_HXX__
 
 #include <QtCore/QObject>
-
 #include <memory>
 
 class Document;

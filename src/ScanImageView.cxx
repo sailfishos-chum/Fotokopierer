@@ -17,10 +17,10 @@
 
 #include "ScanImageView.hxx"
 
-#include "Scanner.hxx"
-
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
+
+#include "Scanner.hxx"
 
 struct ScanImageView::Data {
     Scanner* scanner = nullptr;

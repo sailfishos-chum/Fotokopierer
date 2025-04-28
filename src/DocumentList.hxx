@@ -19,7 +19,6 @@
 #define __FOTOKOPIERER_DOCUMENTLIST_HXX__
 
 #include <QtCore/QAbstractListModel>
-
 #include <memory>
 
 class Document;

@@ -24,7 +24,7 @@ Licensed under GNU GPLv3
 
 ## Build
 
-Fotokopierer needs the [OpenCV][OpenCV] 3.4.14, [Podofo][Podofo] 0.9.7
+Fotokopierer needs the [OpenCV][OpenCV] 3.4.16, [Podofo][Podofo] 0.9.7
 and [FreeType][FreeType] libraries. These libraries can be either used
 as shared libraries installed on your system or can be compiled and
 statically linked. In order to build Fotokopierer for the official
@@ -48,18 +48,18 @@ Note that the OS version and target might differ for you.
 
 You need to download the sources of OpenCV, Podofo and FreeType (the CMake file will automatically download them):
 
-- [https://github.com/opencv/opencv/archive/3.4.14.zip](https://github.com/opencv/opencv/archive/3.4.14.zip)
+- [https://github.com/opencv/opencv/archive/3.4.16.zip](https://github.com/opencv/opencv/archive/3.4.16.zip)
 - [http://sourceforge.net/projects/podofo/files/podofo/0.9.7/podofo-0.9.7.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.9.7/podofo-0.9.7.tar.gz/download)
-- [https://download.savannah.gnu.org/releases/freetype/freetype-2.10.4.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.10.4.tar.gz)
+- [https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.11.1.tar.gz)
 
 Extract both archives to the `3rdparty` subdirectory.
 
     cd path/to/fotokopierer
 	mkdir 3rdparty
 	cd 3rdparty
-	unzip path/to/opencv-3.4.14.zip
+	unzip path/to/opencv-3.4.16.zip
 	tar -xzf path/to/podofo-0.9.7.tar.gz
-	tar -xzf path/to/freetype-2.10.4.tar.gz
+	tar -xzf path/to/freetype-2.11.1.tar.gz
 
 Finally, build the project as with shared libraries. The CMake build
 script will automatically compile all 3rd-party libraries

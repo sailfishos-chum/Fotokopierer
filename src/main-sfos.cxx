@@ -15,12 +15,11 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
+#include <sailfishapp.h>
+
 #include <QtCore/QTranslator>
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickView>
-
-#include <sailfishapp.h>
-
 #include <memory>
 
 #include "init.hxx"

@@ -19,7 +19,6 @@
 #define __FOTOKOPIERER_SCANIMAGEVIEW_HXX__
 
 #include <QtQuick/QQuickPaintedItem>
-
 #include <memory>
 
 class Scanner;

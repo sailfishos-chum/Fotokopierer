@@ -17,14 +17,14 @@
 
 #include "CutView.hxx"
 
+#include <QDebug>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
+
 #include "Convert.hxx"
 #include "EdgeDetection.hxx"
 #include "ScanImage.hxx"
 #include "Scanner.hxx"
-
-#include <QDebug>
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
 
 static QPointF scale(const QPointF& p, int width, int height)
 {

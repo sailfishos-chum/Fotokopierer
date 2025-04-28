@@ -15,12 +15,6 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include "Convert.hxx"
-#include "EdgeDetection.hxx"
-
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-
 #include <QDebug>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QImage>
@@ -32,6 +26,11 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QSlider>
 #include <iostream>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+
+#include "Convert.hxx"
+#include "EdgeDetection.hxx"
 
 using namespace cv;
 using namespace std;

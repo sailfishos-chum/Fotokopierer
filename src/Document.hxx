@@ -21,7 +21,6 @@
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QDateTime>
 #include <QtGui/QImage>
-
 #include <memory>
 
 class Page;
