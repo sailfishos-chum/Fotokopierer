@@ -9,8 +9,12 @@ URL: https://chiselapp.com/user/fifr/repository/fotokopierer
 License: GPLv3+
 # This must be generated before uploading a package to a remote build service.
 # Usually this line does not need to be modified.
+
 Sources:
 - '%{name}-%{version}.tar.gz'
+- '%{opencv_version}.zip'
+- 'podofo-%{podofo_version}.tar.gz'
+- 'freetype-%{freetype_version}.tar.gz'
 Description: |
   A camera-scanning application for Sailfish OS.
 Configure: none
