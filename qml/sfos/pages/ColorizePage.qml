@@ -16,6 +16,7 @@
  */
 
 import QtQuick 2.2
+import QtQuick.Layouts 1.0
 import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
@@ -25,15 +26,14 @@ Dialog {
     id: page
 
     property alias source : colimg.source
-    property string colormode: "bw"
-    property int contrast: contrast_slider.value
-    property int brightness: brightness_slider.value
-    property int details: details_slider.value
+    property alias colorMode: colimg.colorMode
+    property alias contrast: contrast_slider.value
+    property alias brightness: brightness_slider.value
+    property alias details: details_slider.value
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            console.log("BLAAA")
             sliders.open = false
             buttons.open = true
         }
@@ -55,6 +55,7 @@ Dialog {
         contrast: contrast_slider.value / 100.0
         brightness: brightness_slider.value / 100.0
         details: details_slider.value / 100.0
+        colorMode: ColorizeImage.BlackAndWhite
     }
 
     DockedPanel {
@@ -65,55 +66,28 @@ Dialog {
         height: Theme.iconSizeLarge
         dock: Dock.Bottom
 
-        SilicaGridView {
-            id: grid
-
-            anchors.fill: parent
-
-            ListModel {
-                id: listModel
-
-                ListElement {
-                    text: "B/W"
-                    name: "bw"
-                }
-
-                ListElement {
-                    text: "Gray"
-                    name: "gray"
-                }
-
-                ListElement {
-                    text: "Magic"
-                    name: "col"
-                }
-
-                ListElement {
-                    text: "Ctrl"
-                    name: "ctrl"
-                }
-
-                property var actions : {
-                    "bw": function () { colormode = "bw" },
-                    "gray": function () { colormode = "gray" },
-                    "col": function () { colormode = "colored" },
-                    "ctrl": function () {
-                        sliders.open = !sliders.open
-                        buttons.open = !buttons.open
-                    },
-                }
+        RowLayout {
+            id: buttonRow
+            anchors { left: parent.left; right: parent.right }
+            Button {
+                text: "B/W"
+                Layout.fillWidth: true
+                onClicked: { colimg.colorMode = ColorizeImage.BlackAndWhite }
             }
-
-            model: listModel
-
-            cellWidth: grid.width / 4
-            cellHeight: grid.height
-
-            delegate: Button {
-                width: grid.cellWidth
-                height: grid.cellHeight
-                text: model.text
-                onClicked: listModel.actions[name]()
+            Button {
+                text: "Gray"
+                Layout.fillWidth: true
+                onClicked: { colimg.colorMode = ColorizeImage.Gray }
+            }
+            Button {
+                text: "Magic"
+                Layout.fillWidth: true
+                onClicked: { colimg.colorMode = ColorizeImage.Colored }
+            }
+            Button {
+                text: "Ctrl"
+                Layout.fillWidth: true
+                onClicked: { sliders.open = !sliders.open; buttons.open = !buttons.open }
             }
         }
     }
