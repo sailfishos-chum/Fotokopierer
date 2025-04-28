@@ -276,6 +276,11 @@ bool Page::read(const QJsonObject& json)
         return false;
     }
 
+    // Verify that the result file exist.
+    if (!QFileInfo(page_result_path.toString()).exists()) {
+        return false;
+    }
+
     d->creation_time = page_ctime;
     d->original_path = page_original_path.toString();
     d->result_path = page_result_path.toString();
