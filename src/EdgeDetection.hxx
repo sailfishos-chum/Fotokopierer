@@ -22,24 +22,29 @@
 #include <vector>
 
 #include <Qt>
+#include <QtCore/QObject>
 
 class QImage;
 class QLineF;
 class QPointF;
 
-class EdgeDetection
+class EdgeDetection : public QObject
 {
+    Q_OBJECT
+
 public:
+    EdgeDetection(QObject* parent = nullptr);
+
     /// Initialize edge detection for the given image.
-    EdgeDetection(const QImage& image);
+    EdgeDetection(const QImage& image, QObject* parent = nullptr);
 
     EdgeDetection(const EdgeDetection&) = delete;
 
-    EdgeDetection(EdgeDetection&&) noexcept;
+    EdgeDetection(EdgeDetection&&) noexcept = delete;
 
     EdgeDetection& operator=(const EdgeDetection&) = delete;
 
-    EdgeDetection& operator=(EdgeDetection&&) noexcept;
+    EdgeDetection& operator=(EdgeDetection&&) noexcept = delete;
 
     ~EdgeDetection();
 
@@ -163,7 +168,7 @@ public:
     QPointF rightPoint() const;
 
     /// Return a new edge list for the given image.
-    static EdgeDetection detect_in_image(const QImage& image);
+    static EdgeDetection* detect_in_image(const QImage& image, QObject* parent = nullptr);
 
 private:
     struct Data;

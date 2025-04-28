@@ -124,18 +124,20 @@ struct EdgeDetection::Data {
     std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const;
 };
 
-EdgeDetection::EdgeDetection(const QImage& image)
-    : d(std::make_unique<Data>())
+EdgeDetection::EdgeDetection(QObject* parent)
+    : QObject(parent),
+      d(std::make_unique<Data>())
+{
+}
+
+EdgeDetection::EdgeDetection(const QImage& image, QObject* parent)
+    : QObject(parent), d(std::make_unique<Data>())
 {
     d->image = image;
 }
 
 EdgeDetection::EdgeDetection(std::unique_ptr<Data>&& d)
     : d(std::move(d)) {}
-
-EdgeDetection::EdgeDetection(EdgeDetection&&) noexcept = default;
-
-EdgeDetection& EdgeDetection::operator=(EdgeDetection&&) noexcept = default;
 
 EdgeDetection::~EdgeDetection() = default;
 
@@ -463,10 +465,10 @@ void EdgeDetection::selectAll()
     d->project_quadrangle();
 }
 
-EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
+EdgeDetection* EdgeDetection::detect_in_image(const QImage& image, QObject* parent)
 {
-    auto edges = EdgeDetection(image);
-    edges.d->doAutoDetect();
+    auto edges = new EdgeDetection(image, parent);
+    edges->d->doAutoDetect();
     return edges;
 }
 
