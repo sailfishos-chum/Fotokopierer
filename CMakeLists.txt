@@ -27,10 +27,6 @@ else()
   set(TARGET fotokopierer)
 endif()
 
-# My own libs
-add_subdirectory(src/fifr/util)
-link_libraries(Fifr::Util)
-
 set(SOURCES
   src/ColorizeFilter.cxx
   src/Convert.cxx

@@ -26,7 +26,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <algorithm>
-#include <fifr/util/Range.hxx>
+#include "fifr/util/Range.hxx"
 
 using namespace fifr::util;
 
