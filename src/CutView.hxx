@@ -132,7 +132,7 @@ protected slots:
     void onNewImage() override;
 
 private slots:
-    void onRotatedImageChanged();
+    void onOrientationChanged();
 
 private:
     struct Data;
