@@ -9,7 +9,7 @@ Name:       harbour-fotokopierer
 # << macros
 
 Summary:    Document Scanner
-Version:    0.1.0
+Version:    0.2
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3+

@@ -8,11 +8,13 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Wed May 22 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.0-1
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-1
 - Selection is rotated when the image is rotated
 - Add mode for using full colors
 - Full color and gray pictures are stored as jpg to save memory
 - Open document page after capturing the first new picture
+- Allow to re-edit scanned images later
+- Fix camera problem on Jolla 1
 - UI improvements
 - General code improvements
 
