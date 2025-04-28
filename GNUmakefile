@@ -3,9 +3,9 @@ target = harbour-fotokopierer
 sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
 
+arch := i486
 #arch := armv7hl
 #arch := aarch64
-arch := aarch64
 
 # Select the latest available target for the given architecture
 target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
