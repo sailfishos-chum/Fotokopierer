@@ -31,11 +31,15 @@
 
 #include "Document.hxx"
 #include "DocumentList.hxx"
+#include "Fotokopierer.hxx"
 #include "Global.hxx"
 #include "Page.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
+    app.setApplicationName(ApplicationName);
+    app.setApplicationVersion(ApplicationVersion);
+
     qmlRegisterSingletonType<Fotokopierer>(
         "Fotokopierer", 1, 0, "Fotokopierer", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new Fotokopierer();
