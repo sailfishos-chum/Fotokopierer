@@ -19,7 +19,7 @@
 
 #include "Convert.hxx"
 #include "Fotokopierer.hxx"
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 #include <QtCore/QJsonObject>
 #include <QtCore/QVariant>
@@ -38,10 +38,10 @@ struct CutFilter::Data {
     double getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl);
 };
 
-CutFilter::CutFilter(ScanImage* image)
+CutFilter::CutFilter(Scanner* image)
     : CutFilter(image, nullptr) {}
 
-CutFilter::CutFilter(ScanImage* image, Filter* previous_filter)
+CutFilter::CutFilter(Scanner* image, Filter* previous_filter)
     : Filter(image, previous_filter), d(new Data)
 {
 }

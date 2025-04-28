@@ -30,19 +30,15 @@ Page {
     property bool editing: false
     property bool dragging: false
 
-    ScanImage {
-        id: scanImage
-    }
-
     Loader {
         id: newPage
     }
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            // ensure that the C++ memory of ScanImage is freed
+            // ensure that the C++ memory of Scanner is freed
             newPage.source = ""
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
@@ -327,11 +323,10 @@ Page {
             return
         }
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-        newPage.item.scanImage = scanImage
         newPage.item.acceptDestination = docpage
         newPage.item.acceptDestinationAction = PageStackAction.Pop
         newPage.item.addPage.connect(function() {
-            document.addScannedPage(scanImage)
+            document.addScannedPage(Scanner)
         })
         pageStack.push(newPage.item)
     }

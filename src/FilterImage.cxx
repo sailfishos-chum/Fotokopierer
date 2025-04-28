@@ -18,7 +18,7 @@
 #include "FilterImage.hxx"
 
 #include "Filter.hxx"
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFutureWatcher>
@@ -29,8 +29,8 @@ struct FilterImage::Data {
     qreal painted_width = 0;
     qreal painted_height = 0;
 
-    ScanImage::FilterType filter_type = ScanImage::FilterType::None;
-    ScanImage* image = nullptr;
+    Scanner::FilterType filter_type = Scanner::FilterType::None;
+    Scanner* image = nullptr;
 
     bool restart = false;
     QFutureWatcher<QImage> filteredImage;
@@ -57,12 +57,12 @@ qreal FilterImage::paintedHeight() const
     return d->painted_height;
 }
 
-ScanImage::FilterType FilterImage::filterType() const
+Scanner::FilterType FilterImage::filterType() const
 {
     return d->filter_type;
 }
 
-void FilterImage::setFilterType(ScanImage::FilterType type)
+void FilterImage::setFilterType(Scanner::FilterType type)
 {
     if (d->filter_type != type) {
         d->filter_type = type;
@@ -71,12 +71,12 @@ void FilterImage::setFilterType(ScanImage::FilterType type)
     }
 }
 
-ScanImage* FilterImage::image() const
+Scanner* FilterImage::image() const
 {
     return d->image;
 }
 
-void FilterImage::setImage(ScanImage* image)
+void FilterImage::setImage(Scanner* image)
 {
     if (d->image != image) {
         d->image = image;
@@ -96,7 +96,7 @@ void FilterImage::updateFilter()
         disconnect(d->filter, &Filter::filterChanged, this, &FilterImage::update);
     }
 
-    if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
+    if (d->image != nullptr && d->filter_type != Scanner::FilterType::None) {
         d->filter = d->image->filter(d->filter_type);
         connect(d->filter, &Filter::filterChanged, this, &FilterImage::update);
     } else {

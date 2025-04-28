@@ -40,9 +40,9 @@ public:
     Q_ENUM(ColorMode)
 
 public:
-    explicit ColorizeFilter(ScanImage* image);
+    explicit ColorizeFilter(Scanner* image);
 
-    ColorizeFilter(ScanImage* image, Filter* previous_filter);
+    ColorizeFilter(Scanner* image, Filter* previous_filter);
 
     ColorizeFilter(const ColorizeFilter&) = delete;
     ColorizeFilter(ColorizeFilter&&) = delete;

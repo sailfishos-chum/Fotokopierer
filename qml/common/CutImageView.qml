@@ -21,8 +21,6 @@ import Fotokopierer 1.0
 Item {
     id: pane
 
-    property ScanImage scanImage
-
     property real markerRadius: Math.min(width, height) / 25
     property color markerColor: "white"
 
@@ -43,8 +41,8 @@ Item {
     FilterImage {
         id: image
 
-        image: scanImage
-        filterType: ScanImage.Rotate
+        image: Scanner
+        filterType: Scanner.Rotate
 
         anchors.fill: parent
 
@@ -99,7 +97,7 @@ Item {
     }
 
     function selectAuto() {
-        var points = scanImage.cutFilter.autoDetectCutRect()
+        var points = Scanner.cutFilter.autoDetectCutRect()
         _selectPoints(points[0], points[1], points[2], points[3])
     }
 
@@ -119,7 +117,7 @@ Item {
     }
 
     function cutImage() {
-        scanImage.cutFilter.setCutBox(
+        Scanner.cutFilter.setCutBox(
             mapPoint(topleft.center),
             mapPoint(topright.center),
             mapPoint(bottomright.center),

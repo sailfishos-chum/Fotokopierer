@@ -27,9 +27,9 @@ class RotateFilter : public Filter
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 public:
-    explicit RotateFilter(ScanImage* image);
+    explicit RotateFilter(Scanner* image);
 
-    explicit RotateFilter(ScanImage* image, Filter* previous_filter);
+    explicit RotateFilter(Scanner* image, Filter* previous_filter);
 
     RotateFilter(const RotateFilter&) = delete;
     RotateFilter(RotateFilter&&) = delete;

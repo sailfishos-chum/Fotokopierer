@@ -24,7 +24,7 @@
 #include <QtCore/QScopedPointer>
 #include <QtGui/QImage>
 
-class ScanImage;
+class Scanner;
 
 /// A single scanned page.
 class Page : public QObject
@@ -61,7 +61,7 @@ public:
     /// Create a new page from a scanned image.
     ///
     /// The document is placed in the given directory.
-    Page(const QDir& dir, const ScanImage* scanImage, QObject* parent);
+    Page(const QDir& dir, const Scanner* scanner, QObject* parent);
 
     Page(const Page&) = delete;
     Page(Page&&) = delete;

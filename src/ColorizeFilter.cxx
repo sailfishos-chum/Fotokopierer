@@ -31,10 +31,10 @@ struct ColorizeFilter::Data {
     ColorMode colormode = ColorMode::BlackAndWhite;
 };
 
-ColorizeFilter::ColorizeFilter(ScanImage* image)
+ColorizeFilter::ColorizeFilter(Scanner* image)
     : ColorizeFilter(image, nullptr) {}
 
-ColorizeFilter::ColorizeFilter(ScanImage* image, Filter* previous_filter)
+ColorizeFilter::ColorizeFilter(Scanner* image, Filter* previous_filter)
     : Filter(image, previous_filter), d(new Data)
 {
     connect(this, &ColorizeFilter::contrastChanged, this, &Filter::filterChanged);

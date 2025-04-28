@@ -15,8 +15,8 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#ifndef __FOTOKOPIERER_SCANIMAGE_HXX__
-#define __FOTOKOPIERER_SCANIMAGE_HXX__
+#ifndef __FOTOKOPIERER_SCANNER_HXX__
+#define __FOTOKOPIERER_SCANNER_HXX__
 
 #include <QtCore/QObject>
 
@@ -27,7 +27,7 @@ class RotateFilter;
 class CutFilter;
 class ColorizeFilter;
 
-class ScanImage : public QObject
+class Scanner : public QObject
 {
     Q_OBJECT
 
@@ -47,14 +47,14 @@ public:
     Q_ENUM(FilterType);
 
 public:
-    ScanImage(QObject* parent = nullptr);
+    Scanner(QObject* parent = nullptr);
 
-    ScanImage(const ScanImage&) = delete;
-    ScanImage(ScanImage&&) = delete;
-    ScanImage& operator=(const ScanImage&) = delete;
-    ScanImage& operator=(ScanImage&&) = delete;
+    Scanner(const Scanner&) = delete;
+    Scanner(Scanner&&) = delete;
+    Scanner& operator=(const Scanner&) = delete;
+    Scanner& operator=(Scanner&&) = delete;
 
-    ~ScanImage() override;
+    ~Scanner() override;
 
     /// Return the original image.
     QImage original() const;

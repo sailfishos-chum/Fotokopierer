@@ -22,16 +22,16 @@
 
 #include <memory>
 
-class ScanImage;
+class Scanner;
 
 class Filter : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Filter(ScanImage* image);
+    explicit Filter(Scanner* image);
 
-    Filter(ScanImage* image, Filter* previous_filter);
+    Filter(Scanner* image, Filter* previous_filter);
 
     Filter(const Filter&) = delete;
     Filter(Filter&&) = delete;
@@ -40,7 +40,7 @@ public:
 
     ~Filter() override;
 
-    ScanImage* image();
+    Scanner* image();
 
     QImage filteredImage();
 

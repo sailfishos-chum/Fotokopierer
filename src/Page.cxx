@@ -19,7 +19,7 @@
 
 #include "ColorizeFilter.hxx"
 #include "Fotokopierer.hxx"
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>
@@ -89,7 +89,7 @@ Page::Page(const QDateTime& creation_time,
     d->thumbnail_path = thumbnail_path;
 }
 
-Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent)
+Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
     : Page(parent)
 {
     setStatus(Generating);
@@ -100,7 +100,7 @@ Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent)
         dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
 
     auto ext = QStringLiteral("png");
-    switch (scanImage->colorizeFilter()->colorMode()) {
+    switch (scanner->colorizeFilter()->colorMode()) {
         case ColorizeFilter::FullColor:
         case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
         default: break;
@@ -114,9 +114,9 @@ Page::Page(const QDir& dir, const ScanImage* scanImage, QObject* parent)
     d->original_path = original_path;
     d->result_path = result_path;
 
-    d->generating.setFuture(QtConcurrent::run([scanImage, original_path, result_path]() {
-        QImage original = scanImage->original();
-        QImage result = scanImage->computeFilteredImage();
+    d->generating.setFuture(QtConcurrent::run([scanner, original_path, result_path]() {
+        QImage original = scanner->original();
+        QImage result = scanner->computeFilteredImage();
 
         if (!original.save(original_path)) {
             qWarning() << "Page could not be created: error saving original image";

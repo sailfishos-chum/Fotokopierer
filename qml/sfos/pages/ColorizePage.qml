@@ -26,8 +26,6 @@ import "../../common"
 Dialog {
     id: page
 
-    property ScanImage scanImage
-
     MouseArea {
         anchors.fill: parent
         onClicked: {
@@ -44,8 +42,8 @@ Dialog {
     FilterImage {
         id: image
 
-        image: scanImage
-        filterType: ScanImage.Colorize
+        image: Scanner
+        filterType: Scanner.Colorize
 
         anchors.top: header.bottom
         anchors.bottom: buttons.top
