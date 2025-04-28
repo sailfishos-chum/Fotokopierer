@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -28,7 +28,7 @@ Page {
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            cutview.selectionFromFilter()
+            cutview.initSelection()
         }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
