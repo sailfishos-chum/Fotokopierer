@@ -24,9 +24,12 @@
 
 #include "ScannedImage.hxx"
 #include "ScannedImageProvider.hxx"
+#include "Util.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
+    qmlRegisterSingletonType<Util>("Fotokopierer", 1, 0, "Util",
+                                   [](QQmlEngine*, QJSEngine*) -> QObject* { return new Util(); });
     qmlRegisterType<ScannedImage>("Fotokopierer", 1, 0, "ScannedImage");
 
     auto imgprovider = new ScannedImageProvider();
