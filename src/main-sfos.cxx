@@ -29,10 +29,12 @@ int main(int argc, char* argv[])
 {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
 
-    init_app(*app);
-
     QScopedPointer<QQuickView> view(SailfishApp::createView());
     view->setSource(QUrl(QStringLiteral("qrc:///qml/fotokopierer.qml")));
+
+    init_app(*app, *view->engine());
+
     view->show();
+
     return app->exec();
 }

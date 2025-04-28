@@ -19,7 +19,8 @@
 #define __FOTOKOPIERER_INIT_HXX__
 
 class QGuiApplication;
+class QQmlEngine;
 
-void init_app(QGuiApplication& app);
+void init_app(QGuiApplication& app, QQmlEngine& engine);
 
 #endif

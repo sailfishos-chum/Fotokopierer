@@ -26,10 +26,10 @@ int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
 
-    init_app(app);
-
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:///qml-desktop/main.qml")));
+
+    init_app(app, engine);
 
     return app.exec();
 }

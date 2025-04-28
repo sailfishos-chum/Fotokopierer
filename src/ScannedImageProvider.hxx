@@ -30,6 +30,10 @@ public:
 
     QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize);
 
+public:
+    /// A global instance used throughout the app.
+    static ScannedImageProvider* instance;
+
 private:
     struct Data;
     QScopedPointer<Data> d;

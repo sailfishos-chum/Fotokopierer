@@ -29,6 +29,8 @@ struct ImageSet {
 };
 }
 
+ScannedImageProvider* ScannedImageProvider::instance = nullptr;
+
 struct ScannedImageProvider::Data {
     QMap<QString, ImageSet> images;
 };

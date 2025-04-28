@@ -20,12 +20,18 @@
 
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlEngine>
+#include <QtQml/QtQml>
 
 #include "ScannedImage.hxx"
+#include "ScannedImageProvider.hxx"
 
-void init_app(QGuiApplication& app)
+void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
     qmlRegisterType<ScannedImage>("de.shadow-soft.fotokopierer", 1, 0, "ScannedImage");
+
+    auto imgprovider = new ScannedImageProvider();
+    ScannedImageProvider::instance = imgprovider;
+    engine.addImageProvider(QLatin1String("Scanned"), imgprovider);
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
