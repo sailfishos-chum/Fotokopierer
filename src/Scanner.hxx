@@ -22,6 +22,7 @@
 
 #include <memory>
 
+class Document;
 class Filter;
 class RotateFilter;
 class CutFilter;
@@ -79,6 +80,9 @@ public:
     void setDeleteOriginalOnClear(bool enabled);
 
     bool deleteOriginalOnClear() const;
+
+    /// Add this scanned page to the given `Document`.
+    Q_INVOKABLE void addPage(Document* doc);
 
 signals:
     void originalImageChanged();
