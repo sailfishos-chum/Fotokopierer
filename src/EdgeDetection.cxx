@@ -29,6 +29,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <algorithm>
+
+#include "Convert.hxx"
 #include "fifr/util/Range.hxx"
 
 using namespace fifr::util;
@@ -97,10 +99,13 @@ struct EdgeDetection::Data {
     Quadrangle autoquad;  ///< The automatically detected quadrangle.
     Quadrangle quad;      ///< The currently selected quadrangle.
 
-    QImage image;
+    int width;
+    int height;
+
+    cv::Mat image;
 #ifndef NDEBUG
-    QImage gray_image;
-    QImage bw_image;
+    cv::Mat gray_image;
+    cv::Mat bw_image;
 #endif
 
     bool auto_detect_running = false;
@@ -140,10 +145,12 @@ EdgeDetection::EdgeDetection(QObject* parent)
     connect(&d->auto_detection, &QFutureWatcher<bool>::finished, this, &EdgeDetection::onAutoDetectFinished);
 }
 
-EdgeDetection::EdgeDetection(const QImage& image, QObject* parent)
+EdgeDetection::EdgeDetection(const cv::Mat& image, QObject* parent)
     : EdgeDetection(parent)
 {
     d->image = image;
+    d->width = image.cols;
+    d->height = image.rows;
 }
 
 EdgeDetection::~EdgeDetection() = default;
@@ -208,28 +215,28 @@ void EdgeDetection::fixNonSnappyEdges()
 
 int EdgeDetection::width() const
 {
-    return d->image.width();
+    return d->width;
 }
 
 int EdgeDetection::height() const
 {
-    return d->image.height();
-}
-
-QImage EdgeDetection::image() const
-{
-    return d->image;
+    return d->height;
 }
 
 #ifndef NDEBUG
+QImage EdgeDetection::image() const
+{
+    return cvMatToQImage(d->image).copy();
+}
+
 QImage EdgeDetection::gray_image() const
 {
-    return d->gray_image;
+    return cvMatToQImage(d->gray_image).copy();
 }
 
 QImage EdgeDetection::bw_image() const
 {
-    return d->bw_image;
+    return cvMatToQImage(d->bw_image).copy();
 }
 #endif
 
@@ -375,11 +382,7 @@ std::vector<QLineF> EdgeDetection::horizontal_lines() const
 void EdgeDetection::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
 {
     // the original image
-    auto img_cut = QImageToCvMat(image, false);
-
-    // determine the size
-    auto width = img_cut.cols;
-    auto height = img_cut.rows;
+    auto img_cut = image;
 
     // convert to grayscale
     cv::Mat img_gray;
@@ -391,17 +394,17 @@ void EdgeDetection::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
 
     img_gray *= contrastFactor;
 
-    QImage gray_image = cvMatToQImage(img_gray).copy();
+#ifndef NDEBUG
+    this->gray_image = img_gray;
+#endif
 
     // canny edge detection
     cv::Mat img_edges;
     cv::Canny(img_gray, img_edges, cannyMinVal, cannyMaxVal, 3);
-    QImage bw_image = cvMatToQImage(img_edges).copy();
     img_gray.release();
 
 #ifndef NDEBUG
-    this->gray_image = gray_image;
-    this->bw_image = bw_image;
+    this->bw_image = img_edges;
 #endif
 
     // find raw lines
@@ -511,9 +514,9 @@ void EdgeDetection::Data::doAutoDetect()
 void EdgeDetection::selectAll()
 {
     d->quad.tl = QPointF{0.0, 0.0};
-    d->quad.tr = QPointF{static_cast<qreal>(d->image.width()), 0.0};
-    d->quad.br = QPointF{static_cast<qreal>(d->image.width()), static_cast<qreal>(d->image.height())};
-    d->quad.bl = QPointF{0.0, static_cast<qreal>(d->image.height())};
+    d->quad.tr = QPointF{static_cast<qreal>(d->width), 0.0};
+    d->quad.br = QPointF{static_cast<qreal>(d->width), static_cast<qreal>(d->height)};
+    d->quad.bl = QPointF{0.0, static_cast<qreal>(d->height)};
 
     fixNonSnappyEdges();
     d->project_quadrangle();
@@ -559,8 +562,6 @@ void EdgeDetection::Data::filter_by_length(std::vector<QLineF>& edges)
 
 void EdgeDetection::Data::cluster_edges()
 {
-    auto width = image.width();
-    auto height = image.height();
     cluster_edges(hlines, width, height);
 
     for (auto& e : vlines) transpose(e);
@@ -674,9 +675,9 @@ void EdgeDetection::Data::find_best_match()
     // By default we simply select everything. This is a fallback in case we can't
     // detect proper points.
     autoquad.tl = {0, 0};
-    autoquad.tr = {static_cast<qreal>(image.width()), 0};
-    autoquad.br = {static_cast<qreal>(image.width()), static_cast<qreal>(image.height())};
-    autoquad.bl = {0, static_cast<qreal>(image.height())};
+    autoquad.tr = {static_cast<qreal>(width), 0};
+    autoquad.br = {static_cast<qreal>(width), static_cast<qreal>(height)};
+    autoquad.bl = {0, static_cast<qreal>(height)};
 
     qreal max_area = 0;
     for (auto i : indices(hlines)) {
@@ -715,11 +716,11 @@ void EdgeDetection::Data::find_snappy_edges()
 {
     auto s = std::max(snappy_size, static_cast<std::size_t>(1));
 
-    std::vector<std::vector<qreal>> hdists(image.width() / s, std::vector(image.height() / s, std::numeric_limits<qreal>::infinity()));
-    std::vector<std::vector<qreal>> vdists(image.width() / s, std::vector(image.height() / s, std::numeric_limits<qreal>::infinity()));
+    std::vector<std::vector<qreal>> hdists(width / s, std::vector(height / s, std::numeric_limits<qreal>::infinity()));
+    std::vector<std::vector<qreal>> vdists(width / s, std::vector(height / s, std::numeric_limits<qreal>::infinity()));
 
-    hsnappy.assign(image.width() / s, std::vector(image.height() / s, std::numeric_limits<std::size_t>::max()));
-    vsnappy.assign(image.width() / s, std::vector(image.height() / s, std::numeric_limits<std::size_t>::max()));
+    hsnappy.assign(width / s, std::vector(height / s, std::numeric_limits<std::size_t>::max()));
+    vsnappy.assign(width / s, std::vector(height / s, std::numeric_limits<std::size_t>::max()));
 
     for (auto i : indices(hlines)) {
         auto normal = hlines[i].normalVector().unitVector();
@@ -758,8 +759,8 @@ void EdgeDetection::Data::find_snappy_edges()
 
 QPointF EdgeDetection::Data::project(const QPointF& p) const
 {
-    return {qBound(static_cast<qreal>(0), p.x(), static_cast<qreal>(image.width())),
-            qBound(static_cast<qreal>(0), p.y(), static_cast<qreal>(image.height()))};
+    return {qBound(static_cast<qreal>(0), p.x(), static_cast<qreal>(width)),
+            qBound(static_cast<qreal>(0), p.y(), static_cast<qreal>(height))};
 }
 
 void EdgeDetection::Data::project_quadrangle()

@@ -17,6 +17,7 @@
 
 #include "CutView.hxx"
 
+#include "Convert.hxx"
 #include "EdgeDetection.hxx"
 #include "ScanImage.hxx"
 #include "Scanner.hxx"
@@ -358,7 +359,8 @@ void CutView::selectAuto()
 
 void CutView::paint(QPainter* painter)
 {
-    QImage image = d->scanImage->original();
+    auto cv_image = d->scanImage->original();
+    auto image = cvMatToQImage(cv_image);
 
     auto orien = orientation();
     auto imgw = image.width();
@@ -459,7 +461,7 @@ void CutView::onNewImage()
 
 QImage CutView::image() const
 {
-    return d->scanImage->original();
+    return cvMatToQImage(d->scanImage->original()).copy();
 }
 
 void CutView::onOrientationChanged()

@@ -17,6 +17,7 @@
 
 #include "ZoomImage.hxx"
 
+#include "Convert.hxx"
 #include "ScanImage.hxx"
 
 #include <QtGui/QImage>
@@ -122,19 +123,19 @@ void ZoomImage::paint(QPainter* p)
     auto scanImage = d->scanner->currentImage();
     if (scanImage == nullptr) return;
 
-    auto image = scanImage->rotatedImage();
-    if (image.isNull()) return;
+    auto image = scanImage->original();
+    if (image.empty()) return;
 
     auto w = width();
     auto h = height();
 
     // get the source image
-    auto iw = image.width();
-    auto ih = image.height();
+    auto iw = image.cols;
+    auto ih = image.rows;
 
     // prepare the clipping path (a circle) so that the picture is only shown
     // within the preview area.
-    auto linewidth = std::min(width(), height()) / 20;
+    auto linewidth = std::min(w, h) / 20;
     QPainterPath clip;
     clip.addEllipse(0, 0, width(), height());
 
@@ -144,12 +145,45 @@ void ZoomImage::paint(QPainter* p)
     // fill background with black
     p->fillRect(0, 0, w, h, Qt::black);
 
-    p->drawImage(QRectF{0, 0, w, h},
-                 image,
-                 QRectF(iw * (d->center.x() - d->viewSize.x() / 2),
-                        ih * (d->center.y() - d->viewSize.y() / 2),
-                        iw * d->viewSize.x(),
-                        ih * d->viewSize.y()));
+    // copy the part of the image to be shown
+    QPointF pnt;
+    double angle = 0;
+    auto sizex = d->viewSize.x();
+    auto sizey = d->viewSize.y();
+    switch (scanImage->orientation()) {
+        case 0:
+            pnt = {d->center.x(), d->center.y()};
+            angle = 0;
+            break;
+        case 1:
+            pnt = {d->center.y(), 1 - d->center.x()};
+            angle = 90;
+            std::swap(sizex, sizey);
+            break;
+        case 2:
+            pnt = {1 - d->center.x(), 1 - d->center.y()};
+            angle = 180;
+            break;
+        case 3:
+            pnt = {1 - d->center.y(), d->center.x()};
+            angle = 270;
+            std::swap(sizex, sizey);
+            break;
+    }
+
+    auto zoom = cvMatToQImage(image)
+                    .copy(QRect{qRound(iw * (pnt.x() - sizex / 2)),
+                                qRound(ih * (pnt.y() - sizey / 2)),
+                                qRound(iw * sizex),
+                                qRound(ih * sizey)});
+
+    if (angle != 0) {
+        QTransform tr;
+        tr.rotate(angle);
+        zoom = zoom.transformed(tr);
+    }
+
+    p->drawImage(QRectF{0, 0, w, h}, zoom);
 
     // disable clipping for drawing the boundary
     p->setClipping(false);

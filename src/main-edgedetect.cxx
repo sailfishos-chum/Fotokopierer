@@ -80,7 +80,7 @@ public:
 
     void updateEdges()
     {
-        edges = std::make_unique<EdgeDetection>(img_orig_);
+        edges = std::make_unique<EdgeDetection>(QImageToCvMat(img_orig_));
         connect(edges.get(), &EdgeDetection::edgeDetectionFinished, this, &Images::onAutoDetectionFinished);
 
         edges->setCannyMinValue(minValue_);

@@ -24,6 +24,8 @@
 #include <Qt>
 #include <QtCore/QObject>
 
+#include <opencv2/core.hpp>
+
 class QImage;
 class QLineF;
 class QPointF;
@@ -36,7 +38,7 @@ public:
     EdgeDetection(QObject* parent = nullptr);
 
     /// Initialize edge detection for the given image.
-    EdgeDetection(const QImage& image, QObject* parent = nullptr);
+    EdgeDetection(const cv::Mat& image, QObject* parent = nullptr);
 
     EdgeDetection(const EdgeDetection&) = delete;
 
@@ -115,10 +117,10 @@ public:
     /// Return the height in pixels of the current image.
     int height() const;
 
+#ifndef NDEBUG
     /// Return the original image.
     QImage image() const;
 
-#ifndef NDEBUG
     /// Return the gray image.
     QImage gray_image() const;
 
