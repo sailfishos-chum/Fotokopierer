@@ -186,6 +186,10 @@ if (SAILFISH_FOUND)
 else()
   qt5_add_resources(RESOURCES desktop.qrc)
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
+
+  add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
+  qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
+  target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 endif()
 
 set_property(TARGET ${TARGET} PROPERTY
@@ -206,11 +210,6 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
 
 qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
-
-add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
-
-qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
-target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
 
