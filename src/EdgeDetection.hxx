@@ -72,6 +72,12 @@ public:
     /// Must be called after changing a parameter.
     void autoDetect();
 
+    /// Return the width in pixels of the current image.
+    int width() const;
+
+    /// Return the height in pixels of the current image.
+    int height() const;
+
     /// Return the original image.
     QImage image() const;
 

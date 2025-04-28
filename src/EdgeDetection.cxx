@@ -142,6 +142,16 @@ qreal EdgeDetection::contrastFactor() const
     return d->contrastFactor;
 }
 
+int EdgeDetection::width() const
+{
+    return d->image.width();
+}
+
+int EdgeDetection::height() const
+{
+    return d->image.height();
+}
+
 QImage EdgeDetection::image() const
 {
     return d->image;
