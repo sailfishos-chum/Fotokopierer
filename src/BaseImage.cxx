@@ -20,6 +20,8 @@
 #include <QtCore/QThread>
 #include <QtGui/QPainter>
 
+#include "BaseImageTransformWorker.hxx"
+
 struct BaseImage::Data {
     qreal painted_width = 0;          ///< width of the painted image (after scaling)
     qreal painted_height = 0;         ///< height of the painted image (after scaling)
@@ -140,13 +142,4 @@ void BaseImage::finishTransform(const QImage& image)
     } else {
         d->thread_running = false;
     }
-}
-
-BaseImageTransformWorker::BaseImageTransformWorker(BaseImage* base_image) : base_image_(base_image)
-{
-}
-
-void BaseImageTransformWorker::doTransform(const QImage& image)
-{
-    emit resultReady(base_image_->transform(image));
 }

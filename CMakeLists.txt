@@ -135,6 +135,7 @@ endif()
 
 set(SOURCES
   src/BaseImage.cxx
+  src/BaseImageTransformWorker.cxx
   src/ColorizeImage.cxx
   src/Convert.cxx
   src/CutImage.cxx

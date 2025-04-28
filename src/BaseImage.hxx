@@ -95,21 +95,4 @@ private:
     friend class BaseImageTransformWorker;
 };
 
-class BaseImageTransformWorker : public QObject
-{
-    Q_OBJECT
-
-public:
-    BaseImageTransformWorker(BaseImage* base_image);
-
-public slots:
-    void doTransform(const QImage& image);
-
-signals:
-    void resultReady(const QImage& image);
-
-private:
-    BaseImage* base_image_;
-};
-
 #endif
