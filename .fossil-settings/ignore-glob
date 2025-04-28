@@ -8,3 +8,4 @@ translations/*.qm
 *.qmlc
 *.list
 *~
+compile_commands.json
