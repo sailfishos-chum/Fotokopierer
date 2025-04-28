@@ -96,7 +96,6 @@ void FilterImage::updateFilter()
     }
 
     if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
-        qDebug() << "FilterImage: set filter type = " << d->filter_type;
         d->filter = d->image->filter(d->filter_type);
         connect(d->filter, &Filter::filterChanged, this, &FilterImage::update);
     } else {
@@ -108,7 +107,6 @@ void FilterImage::updateFilter()
 
 void FilterImage::update()
 {
-    qDebug() << "FilterImage::update";
     if (d->filteredImage.isRunning()) {
         d->restart = true;
     } else if (d->filter != nullptr) {
@@ -116,7 +114,6 @@ void FilterImage::update()
         d->filteredImage.setFuture(
             QtConcurrent::run(std::mem_fn(&Filter::filteredImage), d->filter));
     } else {
-        qDebug() << "FilterImage::update direct";
         QQuickPaintedItem::update();
     }
 }
