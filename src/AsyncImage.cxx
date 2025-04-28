@@ -37,29 +37,35 @@ private:
     AsyncImage* image_;
 };
 
+static QThread* transformThread()
+{
+    static QThread thread;
+    static bool started = false;
+    if (!started) {
+        started = true;
+        thread.start();
+    }
+    return &thread;
+}
+
 struct AsyncImage::Data {
-    QThread thread;
+    AsyncImageTask* task = nullptr;
     bool thread_running = false;
     bool restart_thread = true;
-
-    ~Data()
-    {
-        thread.quit();
-        thread.wait();
-    }
 };
 
 AsyncImage::AsyncImage() : d(new Data)
 {
-    auto task = new AsyncImageTask(this);
-    task->moveToThread(&d->thread);
-    connect(&d->thread, &QThread::finished, task, &QObject::deleteLater);
-    connect(this, &AsyncImage::startTransform, task, &AsyncImageTask::run);
-    connect(task, &AsyncImageTask::resultReady, this, &AsyncImage::finishTransform);
-    d->thread.start();
+    d->task = new AsyncImageTask(this);
+    d->task->moveToThread(transformThread());
+    connect(this, &AsyncImage::startTransform, d->task, &AsyncImageTask::run);
+    connect(d->task, &AsyncImageTask::resultReady, this, &AsyncImage::finishTransform);
 }
 
-AsyncImage::~AsyncImage() = default;
+AsyncImage::~AsyncImage()
+{
+    d->task->deleteLater();
+}
 
 void AsyncImage::updateImage()
 {
