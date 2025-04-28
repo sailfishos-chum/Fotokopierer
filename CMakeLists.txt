@@ -6,11 +6,6 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(Qt5 COMPONENTS Core Gui Quick)
-
-include(FindPkgConfig)
-pkg_search_module(SAILFISH sailfishapp)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -19,28 +14,47 @@ if (POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-find_package(PNG REQUIRED)
+include(FindPkgConfig)
+pkg_search_module(SAILFISH sailfishapp)
 
 if (SAILFISH_FOUND)
   set(TARGET harbour-fotokopierer)
+else()
+  set(TARGET fotokopierer)
+endif()
+
+set(SOURCES
+  src/AsyncImage.cxx
+  src/BaseImage.cxx
+  src/ColorizeImage.cxx
+  src/Convert.cxx
+  src/CutImage.cxx
+  src/PlainImage.cxx
+  src/RotImage.cxx
+  src/TransformWorker.cxx
+  src/Util.cxx
+  src/ZoomImage.cxx
+  src/init.cxx)
+
+# We need to set this directory here ... luckily we know exactly where it goes.
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/podofo/lib)
+add_executable(${TARGET} ${SOURCES})
+
+if (SAILFISH_FOUND)
   set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-3.4.0)
   set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.6)
 
   include(ExternalProject)
 
   # configure OpenCV
-  find_package(Threads REQUIRED)
-  find_package(ZLIB REQUIRED)
-
   set(OpenCV_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/opencv)
+
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     # URL "https://github.com/opencv/opencv/archive/3.4.0.zip"
     PREFIX ${OpenCV_PREFIX}
-    UPDATE_COMMAND ""
-    INSTALL_COMMAND ""
     CMAKE_ARGS
-    -DBUILD_CUDA=OFF
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DBUILD_DOCS=OFF
     -DBUILD_EXAMPLES=OFF
     -DBUILD_FAT_JAVA_LIB=OFF
@@ -70,45 +84,18 @@ if (SAILFISH_FOUND)
     -DBUILD_opencv_videoio=OFF
     -DBUILD_opencv_videostab=OFF
     -DBUILD_opencv_world=OFF
-    -DWITH_CAROTENE=OFF
     -DWITH_JASPER=OFF
-    -DWITH_OPENEXR=OFF)
+    -DWITH_OPENEXR=OFF
+    -DWITH_WEBP=OFF)
 
-  set(OpenCV_INCLUDE_DIRS
-    ${OpenCV_PREFIX}/src/opencv-build
-    ${OpenCV_SOURCE_DIR}/include
-    ${OpenCV_SOURCE_DIR}/modules/core/include
-    ${OpenCV_SOURCE_DIR}/modules/imgproc/include)
-  link_directories(${OpenCV_PREFIX}/src/opencv-build/lib)
+  list(INSERT CMAKE_PREFIX_PATH 0 ${OpenCV_PREFIX})
+  find_package(OpenCV QUIET COMPONENTS core imgproc)
 
-  set(LIBS opencv_imgproc opencv_core #tegra_hal
-           dl Threads::Threads ZLIB::ZLIB)
-
-  # configure PoDoFo
-  find_package(OpenSSL REQUIRED)
-  pkg_search_module(FONTCONFIG REQUIRED fontconfig)
-
-  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff)
-  set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
-  link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
-
-  set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
-  ExternalProject_Add(podofo-3rdparty
-    SOURCE_DIR ${PODOFO_SOURCE_DIR}
-    PREFIX ${PODOFO_PREFIX}
-    UPDATE_COMMAND ""
-    INSTALL_COMMAND ""
-    LIST_SEPARATOR ,
-    CMAKE_ARGS
-    -DPODOFO_BUILD_LIB_ONLY:BOOL=true
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
-    -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
-    -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
-    -DCMAKE_LIBRARY_PATH=${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
-  set(PODOFO_INCLUDE_DIRS ${PODOFO_SOURCE_DIR} ${PODOFO_SOURCE_DIR}/src ${PODOFO_PREFIX}/src/podofo-3rdparty-build)
-  link_directories(${PODOFO_PREFIX}/src/podofo-3rdparty-build/src)
-
-  list(APPEND LIBS podofo ${FONTCONFIG_LIBRARIES} libjpeg OpenSSL::Crypto)
+  if (NOT OpenCV_FOUND)
+    add_custom_target(Rescan ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR} DEPENDS opencv)
+  else()
+    add_custom_target(Rescan)
+  endif ()
 
   # We must use our own freetype library
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1)
@@ -116,61 +103,65 @@ if (SAILFISH_FOUND)
   ExternalProject_Add(freetype-3rdparty
     SOURCE_DIR ${FREETYPE_SOURCE_DIR}
     PREFIX ${FREETYPE_PREFIX}
-    UPDATE_COMMAND ""
-    INSTALL_COMMAND ""
     LIST_SEPARATOR ,
     CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DBUILD_SHARED_LIBS:BOOL=false
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
-  link_directories(${FREETYPE_PREFIX}/src/freetype-3rdparty-build)
 
-  list(APPEND LIBS freetype)
+  # configure PoDoFo
+  find_package(OpenSSL REQUIRED)
+  pkg_search_module(FONTCONFIG REQUIRED fontconfig)
+
+  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include)
+  set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
+
+  set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
+  ExternalProject_Add(podofo-3rdparty
+    SOURCE_DIR ${PODOFO_SOURCE_DIR}
+    PREFIX ${PODOFO_PREFIX}
+    DEPENDS freetype-3rdparty opencv
+    LIST_SEPARATOR ,
+    CMAKE_ARGS
+    -DPODOFO_BUILD_LIB_ONLY:BOOL=true
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
+    -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
+    -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
+    -DCMAKE_LIBRARY_PATH=${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+
+  set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} libjpeg OpenSSL::Crypto freetype)
+
+  add_dependencies(${TARGET} Rescan podofo-3rdparty)
 else()
   set(TARGET fotokopierer)
-  find_package(OpenCV REQUIRED imgproc)
+
+  find_package(OpenCV REQUIRED core imgproc)
 
   find_path(PODOFO_INCLUDE_DIRS NAMES podofo/podofo.h)
   if (NOT PODOFO_INCLUDE_DIRS)
-    message(FATAL_ERROR "Could not find podofo include directory")
+    message(FATAL_ERROR "Could not find the PoDoFo include directory")
   endif ()
-  find_library(PODOFO_LIBRARY NAMES podofo)
-  if (NOT PODOFO_LIBRARY)
-    message(FATAL_ERROR "Could not find podofo library")
+  find_library(PODOFO_LIBRARIES NAMES podofo)
+  if (NOT PODOFO_LIBRARIES)
+    message(FATAL_ERROR "Could not find the PoDoFo library")
   endif ()
-  list(APPEND LIBS ${OpenCV_LIBS} ${PODOFO_LIBRARY})
+  message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 endif()
 
-# find_package(Threads REQUIRED)
-# find_package(ZLIB REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Quick)
 
-set(SOURCES
-  src/AsyncImage.cxx
-  src/BaseImage.cxx
-  src/ColorizeImage.cxx
-  src/Convert.cxx
-  src/CutImage.cxx
-  src/PlainImage.cxx
-  src/RotImage.cxx
-  src/TransformWorker.cxx
-  src/Util.cxx
-  src/ZoomImage.cxx
-  src/init.cxx)
+qt5_add_resources(RESOURCES common.qrc translations.qrc)
 
 if (SAILFISH_FOUND)
-  qt5_add_resources(RESOURCES sfos.qrc common.qrc translations.qrc)
-  set(TARGET harbour-fotokopierer)
-  add_executable(${TARGET} src/main-sfos.cxx ${SOURCES} ${RESOURCES})
-
-  add_dependencies(podofo-3rdparty opencv)
-  add_dependencies(${TARGET} opencv)
-  add_dependencies(${TARGET} podofo-3rdparty)
-  add_dependencies(${TARGET} freetype-3rdparty)
-else ()
-  qt5_add_resources(RESOURCES desktop.qrc common.qrc translations.qrc)
-  add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
+  qt5_add_resources(RESOURCES sfos.qrc)
+  set_property(TARGET ${TARGET} APPEND PROPERTY SOURCES src/main-sfos.cxx ${RESOURCES})
+else()
+  qt5_add_resources(RESOURCES desktop.qrc)
+  set_property(TARGET ${TARGET} APPEND PROPERTY SOURCES src/main-desktop.cxx ${RESOURCES})
 endif()
 
-qt5_use_modules(${TARGET} Core Gui Quick)
 
 set_property(TARGET ${TARGET} PROPERTY
   INCLUDE_DIRECTORIES
@@ -188,7 +179,8 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
   QT_USE_FAST_OPERATOR_PLUS
   )
 
-target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${LIBS} PNG::PNG)
+qt5_use_modules(${TARGET} Core Gui Quick)
+target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
 # install(DIRECTORY qml DESTINATION share/${TARGET})
