@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -62,28 +62,43 @@ Dialog {
         RowLayout {
             id: buttonRow
             anchors { left: parent.left; right: parent.right }
-            Button {
-                text: "B/W"
+            IconButton {
+                icon.source: Qt.resolvedUrl("/icons/icon-m-bw.svg")
+                icon.width: Theme.iconSizeMedium
+                icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.BlackAndWhite }
             }
-            Button {
-                text: "Gray"
+            IconButton {
+                icon.source: Qt.resolvedUrl("/icons/icon-m-gray.svg")
+                icon.width: Theme.iconSizeMedium
+                icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.Gray }
             }
-            Button {
-                text: "Color"
+            IconButton {
+                icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
+                icon.width: Theme.iconSizeMedium
+                icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.FullColor }
             }
-            Button {
-                text: "Magic"
+            IconButton {
+                icon.source: Qt.resolvedUrl("/icons/a-icon-m-special.svg")
+                icon.width: Theme.iconSizeMedium
+                icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { image.filter.colorMode = ColorizeFilter.Colored }
             }
-            Button {
-                text: "Ctrl"
+            IconButton {
+                icon.source: Qt.resolvedUrl("/icons/icon-m-ctrl.svg")
+                icon.width: Theme.iconSizeMedium
+                icon.height: Theme.iconSizeMedium
+                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { sliders.open = !sliders.open; buttons.open = !buttons.open }
             }

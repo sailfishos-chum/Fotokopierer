@@ -3,7 +3,7 @@ Type=Application
 X-Nemo-Application-Type=silica-qt5
 Icon=harbour-fotokopierer
 Exec=harbour-fotokopierer
-Name=fotokopierer
+Name=Fotokopierer
 # translation example:
 # your app name in German locale (de)
 #
