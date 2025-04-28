@@ -164,6 +164,14 @@ ApplicationWindow {
             }
         }
 
+        ColorizeChooser {
+            id: colorizer
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: thresholdRow.top
+            height: width
+        }
+
         Row {
             id: thresholdRow
             anchors.left: parent.left
