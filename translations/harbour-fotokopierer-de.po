@@ -259,6 +259,10 @@ msgstr ""
 #~ "Copy-Icon von %2 (www.flaticon.com)\n"
 #~ "Cut-Icon von %3 (www.flaticon.com)"
 
+#~ msgctxt "AboutPage~|"
+#~ msgid "Slovak"
+#~ msgstr "Slowakisch"
+
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/CoverPage.qml:45
 #, fuzzy
 msgctxt "CoverPage|"
@@ -320,9 +324,10 @@ msgid "Swedish"
 msgstr "Schwedisch"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:113
+#, fuzzy
 msgctxt "AboutPage|"
 msgid "Slovak"
-msgstr ""
+msgstr "Slowakisch"
 
 #: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:128
 #, fuzzy
