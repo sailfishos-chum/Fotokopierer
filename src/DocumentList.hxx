@@ -40,6 +40,11 @@ public:
 public:
     explicit DocumentList(QObject* parent = nullptr);
 
+    DocumentList(const DocumentList&) = delete;
+    DocumentList(DocumentList&&) = delete;
+    DocumentList& operator=(const DocumentList&) = delete;
+    DocumentList& operator=(DocumentList&&) = delete;
+
     ~DocumentList() override;
 
     /// Create and return a new document.
