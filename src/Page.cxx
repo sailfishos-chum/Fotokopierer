@@ -17,6 +17,8 @@
 
 #include "Page.hxx"
 
+#include "Document.hxx"
+
 #include "Convert.hxx"
 #include "Fotokopierer.hxx"
 #include "ScanImage.hxx"
@@ -190,7 +192,7 @@ QString findUniqueFilename(const QString& original_path)
     return {};
 }
 
-void Page::initCopy(const QDir& dir, const Page* source)
+void Page::initCopy(const QDir& dir, Document* sourceDoc, Page* source, bool move)
 {
     setStatus(Generating);
 
@@ -206,7 +208,7 @@ void Page::initCopy(const QDir& dir, const Page* source)
     auto result_pth = dir.filePath(QFileInfo(src_result_path).fileName());
 
     d->generating.setFuture(QtConcurrent::run(
-        [this, src_original_path, src_result_path, original_pth, result_pth]() {
+        [this, src_original_path, src_result_path, original_pth, result_pth, sourceDoc, source, move]() {
             auto original_path = findUniqueFilename(original_pth);
             auto result_path = findUniqueFilename(result_pth);
 
@@ -221,6 +223,10 @@ void Page::initCopy(const QDir& dir, const Page* source)
             if (!QFile::copy(src_result_path, result_path)) {
                 QFile::remove(original_path);
                 return false;
+            }
+
+            if (move && sourceDoc != nullptr) {
+                sourceDoc->deletePage(source);
             }
 
             emit generationFinished(original_path, result_path);

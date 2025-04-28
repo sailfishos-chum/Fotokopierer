@@ -113,7 +113,7 @@ public:
     void deletePage(Page *page);
 
     /// Create and return a new page which is a copy of the given page.
-    Page *newCopiedPage(const Page *source);
+    Page *newCopiedPage(Document *sourceDoc, Page *source, bool move = false);
 
     /// Delete this document.
     ///

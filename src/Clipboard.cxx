@@ -75,13 +75,10 @@ void Clipboard::paste(Document* target)
     if (target == nullptr) return;
 
     for (auto& p : d->pages) {
-        target->newCopiedPage(p);
+        target->newCopiedPage(d->doc, p, d->cut);
     }
 
     if (d->cut) {
-        for (auto& p : d->pages) {
-            d->doc->deletePage(p);
-        }
         clear();
     }
 }

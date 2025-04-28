@@ -392,7 +392,7 @@ Page* Document::newPage()
     return page.data();
 }
 
-Page* Document::newCopiedPage(const Page* source)
+Page* Document::newCopiedPage(Document* sourceDoc, Page* source, bool move)
 {
     if (source == nullptr) {
         return nullptr;
@@ -400,7 +400,7 @@ Page* Document::newCopiedPage(const Page* source)
 
     auto page = newPage();
     if (page != nullptr) {
-        page->initCopy(directory(), source);
+        page->initCopy(directory(), sourceDoc, source, move);
     }
 
     return page;

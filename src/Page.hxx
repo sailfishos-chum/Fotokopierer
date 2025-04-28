@@ -25,6 +25,7 @@
 
 #include <memory>
 
+class Document;
 class ScanImage;
 
 /// A single scanned page.
@@ -87,7 +88,7 @@ public:
     /// Make this page a copy of another page.
     ///
     /// The page is copied to directory `dir`.
-    void initCopy(const QDir& dir, const Page* source);
+    void initCopy(const QDir& dir, Document* sourceDoc, Page* source, bool move = false);
 
     bool write(QJsonObject& json, const QDir& docpath) const;
 
