@@ -139,6 +139,12 @@ void ColorizeView::setColorizeChooser(ColorizeChooser* colorizeChooser)
         d->colorizeChooser = colorizeChooser;
         emit colorizeChooserChanged();
         d->hasImage = false;
+
+        if (d->colorizeChooser != nullptr) {
+            d->colorizeChooser->setColorAngles(d->params.angles);
+            d->colorizeChooser->setBlackLevel(d->params.blackLevel);
+        }
+
         updateView();
     }
 }
@@ -150,6 +156,10 @@ void ColorizeView::updateView()
         if (d->image.isRunning()) {
             d->need_restart = true;
         } else {
+            if (d->colorizeChooser != nullptr) {
+                d->params.angles = d->colorizeChooser->colorAngles();
+                d->params.blackLevel = d->colorizeChooser->blackLevel();
+            }
             d->image.setFuture(QtConcurrent::run([this]() {
                 return computeColorizedImage(d->scaled, d->params, d->colorMode, &d->hsv, &d->mask);
             }));
