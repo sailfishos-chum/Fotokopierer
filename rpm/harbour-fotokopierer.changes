@@ -8,6 +8,11 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Tue Jun 1 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.6-1
+- use relative paths in document files
+- add workaround for absolute paths in old document files
+- add tribute to freetype
+
 * Mon May 31 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.5-1
 - fix some camera issues on Xperia 10 II
 - first build for aarch64
