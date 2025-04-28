@@ -42,4 +42,18 @@ extern const QString DocumentRoot;
 /// the document files is checked.
 QDir getDocumentDirectory(bool check_nomedia = false);
 
+/// General utilities exported to QML.
+class Fotokopierer : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit Fotokopierer(QObject* parent = nullptr)
+        : QObject(parent) {}
+
+    Q_INVOKABLE bool isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4);
+
+    Q_INVOKABLE QString newImagePath();
+};
+
 #endif

@@ -33,7 +33,6 @@ set(SOURCES
   src/ColorizeFilter.cxx
   src/FilterImage.cxx
   src/Fotokopierer.cxx
-  src/Global.cxx
   src/Page.cxx
   src/ScanImage.cxx
   src/ZoomImage.cxx

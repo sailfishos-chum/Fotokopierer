@@ -32,7 +32,6 @@
 #include "Document.hxx"
 #include "DocumentList.hxx"
 #include "Fotokopierer.hxx"
-#include "Global.hxx"
 #include "Page.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)

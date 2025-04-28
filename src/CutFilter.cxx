@@ -18,7 +18,7 @@
 #include "CutFilter.hxx"
 
 #include "Convert.hxx"
-#include "Global.hxx"
+#include "Fotokopierer.hxx"
 #include "ScanImage.hxx"
 
 #include <QtCore/QJsonObject>
