@@ -352,6 +352,13 @@ Item {
         return Qt.point(x, y)
     }
 
+    Timer {
+        id: initTimer
+        interval: 1
+        repeat: false
+        onTriggered: selectAuto()
+    }
+
     Component.onCompleted: {
         Scanner.cutFilter.topLeftChanged.connect(function() {
             topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
@@ -383,6 +390,10 @@ Item {
 
         Scanner.cutFilter.rightChanged.connect(function() {
             right.setCenter(unmapPoint(Scanner.cutFilter.right))
+        })
+
+        Scanner.originalImageChanged.connect(function() {
+            initTimer.start()
         })
     }
 }
