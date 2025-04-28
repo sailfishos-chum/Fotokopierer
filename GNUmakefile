@@ -1,4 +1,4 @@
-target = harbour-fotokopierer
+program = harbour-fotokopierer
 
 sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
@@ -10,6 +10,9 @@ arch := i486
 
 # Select the latest available target for the given architecture
 target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
+
+# Select the emulator device '#0'
+emulator := $(shell $(sfdk) emulator list | awk -F'"' '/\#0/ { print $$2 }')
 
 device := jolla
 
@@ -62,19 +65,13 @@ rpm: lrelease
 	touch rpm/*.yaml
 	$(sfdk) -c "target=$(target)" package
 
-deploy-emu: all rpm
-	scp -P 2223 -i $(emu_dir)/nemo RPMS/* nemo@localhost:
-	$(emu_ssh_root) 'rpm --reinstall /home/nemo/$(target)-*.i486.rpm'
+.PHONY: deploy-emu
+deploy-emu:
+	$(sfdk) -c "device=$(emulator)" deploy --rsync
 
-.PHONY: install-jolla copy-jolla run-jolla
-rpm-jolla: rpm
-	scp RPMS/harbour-fotokopierer*.armv7hl.rpm $(device):
-
-install-jolla:
-	scp rpmbuilddir-arm/harbour-fotokopierer $(device):
-
-run-jolla:
-	ssh -tt $(device) './harbour-fotokopierer'
+.PHONY: run-emu
+run-emu:
+	$(sfdk) emulator exec /opt/sdk/$(program)/usr/bin/$(program)
 
 # Translations
 $(TRANSLATIONS:%=translations/harbour-fotokopierer-%.qm): %.qm: %.po
