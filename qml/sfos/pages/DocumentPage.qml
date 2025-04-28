@@ -119,13 +119,9 @@ Page {
         }
 
         Component.onCompleted: {
+            visualModel.model = document
             visualModel.items.insert({"role_thumbnail": null})
         }
-    }
-
-    Component.onCompleted: {
-        visualModel.model = document
-        visualModel.items.insert({"role_thumbnail": null})
     }
 
     SilicaGridView {
