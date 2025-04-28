@@ -35,9 +35,17 @@ class Document : public QAbstractListModel
 
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole };
+
+    enum Status {
+        Ready, ///< Document is ready,
+        Loading, ///< Document is being loaded
+        Adding ///< A page is being added.
+    };
+    Q_ENUM(Status)
 
     static const QString FilenameFormat;
 
@@ -78,6 +86,9 @@ public:
 
     Q_INVOKABLE bool load(const QString &filename);
 
+    /// Return the current status.
+    Status status() const;
+
 public slots:
     /// Set the document title.
     void setTitle(const QString &title);
@@ -91,6 +102,10 @@ public slots:
     /// and the current time. It will be the last page of the current document.
     void addPage(QImage original, QImage result);
 
+private slots:
+    /// Change the current status.
+    void setStatus(Status status);
+
 signals:
     void titleChanged();
 
@@ -100,6 +115,9 @@ signals:
     ///
     /// This could be a new thumbnail, creation time or the order of the pages.
     void pagesChanged();
+
+    /// Status changed.
+    void statusChanged();
 
     void error(const QString &msg);
 

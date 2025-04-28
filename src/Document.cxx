@@ -44,6 +44,7 @@ struct Document::Data {
     QString filename;                     ///< filename of the document data
     QDateTime creation_time;              ///< time when the document has been created
     QVector<QSharedPointer<Page>> pages;  ///< page of the document
+    Status status = Ready;                ///< the current status
 };
 
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
@@ -53,6 +54,19 @@ Document::Document(Document &&doc) noexcept : QAbstractListModel(doc.parent()), 
 }
 
 Document::~Document() = default;
+
+void Document::setStatus(Status status)
+{
+    if (status != d->status) {
+        d->status = status;
+        emit statusChanged();
+    }
+}
+
+Document::Status Document::status() const
+{
+    return d->status;
+}
 
 Document Document::create(QObject *parent)
 {
