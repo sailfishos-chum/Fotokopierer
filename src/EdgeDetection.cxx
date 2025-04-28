@@ -42,6 +42,11 @@ void transpose(QLineF& l)
     l.setLine(l.y1(), l.x1(), l.y2(), l.x2());
 }
 
+QPointF center(const QLineF& line)
+{
+    return {0.5 * (line.x1() + line.x2()), 0.5 * (line.y1() + line.y2())};
+}
+
 }  // namespace
 
 struct EdgeDetection::Data {
@@ -207,7 +212,7 @@ void EdgeDetection::setTopPoint(const QPointF& p)
     QLineF left(d->quad.tl, d->quad.bl);
     QLineF right(d->quad.tr, d->quad.br);
     QLineF top(d->quad.tl, d->quad.tr);
-    top.translate(p - top.center());
+    top.translate(p - center(top));
     top.intersect(left, &d->quad.tl);
     top.intersect(right, &d->quad.tr);
 }
@@ -222,7 +227,7 @@ void EdgeDetection::setBottomPoint(const QPointF& p)
     QLineF left(d->quad.tl, d->quad.bl);
     QLineF right(d->quad.tr, d->quad.br);
     QLineF bottom(d->quad.bl, d->quad.br);
-    bottom.translate(p - bottom.center());
+    bottom.translate(p - center(bottom));
     bottom.intersect(left, &d->quad.bl);
     bottom.intersect(right, &d->quad.br);
 }
@@ -237,7 +242,7 @@ void EdgeDetection::setLeftPoint(const QPointF& p)
     QLineF left(d->quad.tl, d->quad.bl);
     QLineF top(d->quad.tl, d->quad.tr);
     QLineF bottom(d->quad.bl, d->quad.br);
-    left.translate(p - left.center());
+    left.translate(p - center(left));
     left.intersect(top, &d->quad.tl);
     left.intersect(bottom, &d->quad.bl);
 }
@@ -252,7 +257,7 @@ void EdgeDetection::setRightPoint(const QPointF& p)
     QLineF right(d->quad.tr, d->quad.br);
     QLineF top(d->quad.tl, d->quad.tr);
     QLineF bottom(d->quad.bl, d->quad.br);
-    right.translate(p - right.center());
+    right.translate(p - center(right));
     right.intersect(top, &d->quad.tr);
     right.intersect(bottom, &d->quad.br);
 }
