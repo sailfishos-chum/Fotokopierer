@@ -67,13 +67,7 @@ struct EdgeDetection::Data {
     std::vector<QLineF> hlines;
     std::vector<QLineF> vlines;
 
-    std::vector<std::vector<std::size_t>> left_lines, right_lines;
-    std::vector<std::vector<std::size_t>> top_lines, bottom_lines;
-
     Quadrangle quad;  ///< The currently selected quadrangle.
-
-    int width = 0;
-    int height = 0;
 
     QImage image;
     QImage gray_image;
@@ -303,8 +297,8 @@ void EdgeDetection::Data::find_edge_candidates(std::vector<QLineF>& all_lines)
     auto img_cut = QImageToCvMat(image, false);
 
     // determine the size
-    width = img_cut.cols;
-    height = img_cut.rows;
+    auto width = img_cut.cols;
+    auto height = img_cut.rows;
 
     // convert to grayscale
     cv::Mat img_gray;
@@ -423,6 +417,8 @@ void EdgeDetection::Data::filter_by_length(std::vector<QLineF>& edges)
 
 void EdgeDetection::Data::cluster_edges()
 {
+    auto width = image.width();
+    auto height = image.height();
     cluster_edges(hlines, width, height);
 
     for (auto& e : vlines) transpose(e);
@@ -504,10 +500,10 @@ void EdgeDetection::Data::cluster_edges(std::vector<QLineF>& hlines, qreal w, qr
 void EdgeDetection::Data::find_best_match()
 {
     // find possible matches for each line
-    left_lines.assign(hlines.size(), {});
-    right_lines.assign(hlines.size(), {});
-    top_lines.assign(vlines.size(), {});
-    bottom_lines.assign(vlines.size(), {});
+    std::vector<std::vector<std::size_t>> left_lines(hlines.size());
+    std::vector<std::vector<std::size_t>> right_lines(hlines.size());
+    std::vector<std::vector<std::size_t>> top_lines(vlines.size());
+    std::vector<std::vector<std::size_t>> bottom_lines(vlines.size());
 
     qreal alpha, beta;
     for (auto i : indices(hlines)) {
@@ -536,9 +532,9 @@ void EdgeDetection::Data::find_best_match()
     // By default we simply select everything. This is a fallback in case we can't
     // detect proper points.
     quad.tl = {0, 0};
-    quad.tr = {static_cast<qreal>(width), 0};
-    quad.br = {static_cast<qreal>(width), static_cast<qreal>(height)};
-    quad.bl = {0, static_cast<qreal>(height)};
+    quad.tr = {static_cast<qreal>(image.width()), 0};
+    quad.br = {static_cast<qreal>(image.width()), static_cast<qreal>(image.height())};
+    quad.bl = {0, static_cast<qreal>(image.height())};
 
     qreal max_area = 0;
     for (auto i : indices(hlines)) {
