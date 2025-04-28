@@ -171,6 +171,8 @@ ApplicationWindow {
             anchors.right: parent.right
             anchors.bottom: thresholdRow.top
             height: width
+
+            onChanged: colview.refreshColorization()
         }
 
         Row {
