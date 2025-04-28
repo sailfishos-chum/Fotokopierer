@@ -91,17 +91,10 @@ bool ScanImage::loadFile(const QString& file_name)
 
 void ScanImage::saveAndClear(Document* doc)
 {
-    qDebug() << "SaveAndClear " << (void*)doc;
     assert(doc != nullptr);
 
-    qDebug() << "SaveAndClear #2";
-
     // Compute the result image.
-    qDebug() << "SaveAndClear #3";
     auto f = filter(static_cast<FilterType>(d->filter.size() - 1));
-    qDebug() << "SaveAndClear #4";
-
-    qDebug() << "SaveAndClear #5";
 
     assert(f != nullptr);
     QImage image = f->apply(QImage(d->original));
@@ -113,7 +106,6 @@ void ScanImage::saveAndClear(Document* doc)
     // Clear the image.
     clear();
 
-    qDebug() << "Done saveAndClear";
     emit imageSaved();
 }
 
