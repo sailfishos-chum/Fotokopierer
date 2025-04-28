@@ -73,7 +73,10 @@ Item {
 		  anchors.fill: parent
 		  onPaint: {
 				var ctx = getContext("2d")
-				ctx.clearRect(0, 0, width, height)
+				ctx.fillStyle = Qt.rgba(0, 0, 0, 0.2);
+				ctx.fillRect(0, 0, width, height)
+				ctx.fillStyle = Qt.rgba(0, 0, 0, 0);
+				ctx.globalCompositeOperation = "copy"
 				ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
 				ctx.beginPath()
 				ctx.moveTo(topleft.center.x, topleft.center.y)
@@ -81,6 +84,7 @@ Item {
 				ctx.lineTo(bottomright.center.x, bottomright.center.y)
 				ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
 				ctx.closePath()
+				ctx.fill()
 				ctx.stroke()
 		  }
 	 }
