@@ -73,10 +73,11 @@ Page {
             function addDocument() {
                 imageLoader.source = Qt.resolvedUrl("NewImagePage.qml")
                 imageLoader.item.destination = docpage
-                imageLoader.item.addPage.connect(function(original, result) {
+                imageLoader.item.addPage.connect(function() {
                     var doc = DocumentList.newDocument();
                     if (doc != null) {
-                        doc.addPage(original, result)
+                        console.log("save item")
+                        imageLoader.item.savePage(doc)
                         //pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": doc})
                     }
                 })

@@ -105,8 +105,8 @@ Page {
             function addPage() {
                 imageLoader.source = Qt.resolvedUrl("NewImagePage.qml")
                 imageLoader.item.destination = docpage
-                imageLoader.item.addPage.connect(function(original, result) { 
-                        document.addPage(original, result)
+                imageLoader.item.addPage.connect(function() { 
+                    imageLoader.item.savePage(document)
                 })
                 pageStack.push(imageLoader.item)
             }

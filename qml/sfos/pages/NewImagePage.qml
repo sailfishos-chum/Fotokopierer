@@ -28,6 +28,10 @@ ImagePickerPage {
     // Note that this property might become unsupported in future
     popOnSelection: false
 
+    function savePage(doc) {
+        scanImage.saveAndClear(doc)
+    }
+
     ScanImage { id: scanImage }
 
     CutPage { id: cutpage; image: scanImage }
