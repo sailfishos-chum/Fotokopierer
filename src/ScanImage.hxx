@@ -66,15 +66,6 @@ public:
     /// Return the original image.
     cv::Mat original() const;
 
-    /// Return the rotated image.
-    ///
-    /// If the image has changed in the meantime it could be recomputed
-    /// and a `rotatedImageChanged` signal will be emitted later.
-    ///
-    /// If `wait` is `true` the function will not return before the
-    /// image is ready.
-    cv::Mat rotatedImage(bool wait = false) const;
-
     /// Return the cut image.
     ///
     /// If the image has changed in the meantime it could be recomputed
@@ -164,10 +155,6 @@ signals:
     void detailsChanged();
     void colorModeChanged();
 
-    void startRotatedImageUpdate() const;
-    void finishRotatedImageUpdate();
-    void rotatedImageChanged();
-
     void startCutImageUpdate() const;
     void finishCutImageUpdate();
     void cutImageChanged();
@@ -177,7 +164,6 @@ signals:
     void colorizedImageChanged();
 
 private slots:
-    void onRotatedReady();
     void onCutReady();
     void onColorizedReady();
 

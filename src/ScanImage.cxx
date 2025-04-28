@@ -49,11 +49,9 @@ static QJsonValue fromPoint(QPointF p)
 struct ScanImage::Data {
     cv::Mat original;
 
-    QFutureWatcher<cv::Mat> rotated = QFutureWatcher<cv::Mat>();
     QFutureWatcher<cv::Mat> cut = QFutureWatcher<cv::Mat>();
     QFutureWatcher<cv::Mat> colorized = QFutureWatcher<cv::Mat>();
 
-    bool rotatedReady = false;
     bool cutReady = false;
     bool colorizedReady = false;
 
@@ -78,7 +76,6 @@ struct ScanImage::Data {
 ScanImage::ScanImage(const QImage& original, QObject* parent)
     : QObject(parent), d(new Data{QImageToCvMat(original)})
 {
-    connect(&d->rotated, &QFutureWatcher<cv::Mat>::finished, this, &ScanImage::onRotatedReady);
     connect(&d->cut, &QFutureWatcher<cv::Mat>::finished, this, &ScanImage::onCutReady);
     connect(&d->colorized, &QFutureWatcher<cv::Mat>::finished, this, &ScanImage::onColorizedReady);
 }
@@ -152,7 +149,6 @@ void ScanImage::setOrientation(int orientation)
     orientation = (orientation + 4) % 4;
     if (orientation != d->orientation) {
         d->orientation = orientation;
-        d->rotatedReady = false;
         d->cutReady = false;
         d->colorizedReady = false;
         emit orientationChanged();
@@ -285,49 +281,13 @@ void ScanImage::applyColorize()
     emit colorizedImageChanged();
 }
 
-cv::Mat ScanImage::rotatedImage(bool wait) const
-{
-    if (!d->original.empty() && !d->rotatedReady) {
-        if (!d->rotated.isRunning()) {
-            auto orientation = d->orientation;
-            auto original = d->original;
-            emit startRotatedImageUpdate();
-            d->rotated.setFuture(QtConcurrent::run([orientation, original]() {
-                cv::Mat rotated;
-                switch (orientation % 4) {
-                    case 0: rotated = original; break;
-                    case 1: cv::rotate(original, rotated, cv::ROTATE_90_CLOCKWISE); break;
-                    case 2: cv::rotate(original, rotated, cv::ROTATE_180); break;
-                    case 3: cv::rotate(original, rotated, cv::ROTATE_90_COUNTERCLOCKWISE); break;
-                };
-                return rotated;
-            }));
-        }
-
-        if (wait) return d->rotated.result();
-    }
-
-    if (d->rotatedReady) {
-        return d->rotated.result();
-    } else {
-        return {};
-    }
-}
-
-void ScanImage::onRotatedReady()
-{
-    d->rotatedReady = true;
-    emit rotatedImageChanged();
-    emit finishRotatedImageUpdate();
-}
-
 cv::Mat ScanImage::cutImage(bool wait) const
 {
     if (!d->original.empty() && !d->cutReady) {
         if (!d->cut.isRunning()) {
             emit startCutImageUpdate();
             d->cut.setFuture(QtConcurrent::run([this]() {
-                return d->computeCutImage(rotatedImage(true));
+                return d->computeCutImage(d->original);
             }));
         }
 
@@ -377,7 +337,13 @@ void ScanImage::onColorizedReady()
 
 cv::Mat ScanImage::Data::computeCutImage(const cv::Mat& image) const
 {
-    auto rotated = image;
+    cv::Mat rotated;
+    switch (orientation % 4) {
+        case 0: rotated = image; break;
+        case 1: cv::rotate(image, rotated, cv::ROTATE_90_CLOCKWISE); break;
+        case 2: cv::rotate(image, rotated, cv::ROTATE_180); break;
+        case 3: cv::rotate(image, rotated, cv::ROTATE_90_COUNTERCLOCKWISE); break;
+    };
 
     auto w = static_cast<float>(rotated.cols);
     auto h = static_cast<float>(rotated.rows);
