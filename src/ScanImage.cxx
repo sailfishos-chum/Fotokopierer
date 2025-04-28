@@ -49,6 +49,21 @@ std::shared_ptr<Filter> ScanImage::filter(FilterType type)
         return d->filter[static_cast<int>(type)];
 }
 
+RotateFilter* ScanImage::rotateFilter() const
+{
+    return qobject_cast<RotateFilter*>(d->filter[static_cast<int>(FilterType::Rotate)].get());
+}
+
+CutFilter* ScanImage::cutFilter() const
+{
+    return qobject_cast<CutFilter*>(d->filter[static_cast<int>(FilterType::Cut)].get());
+}
+
+ColorizeFilter* ScanImage::colorizeFilter() const
+{
+    return qobject_cast<ColorizeFilter*>(d->filter[static_cast<int>(FilterType::Colorize)].get());
+}
+
 bool ScanImage::loadFile(const QString& file_name)
 {
     QImage image(file_name);

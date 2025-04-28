@@ -24,10 +24,17 @@
 
 class Document;
 class Filter;
+class RotateFilter;
+class CutFilter;
+class ColorizeFilter;
 
 class ScanImage : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(RotateFilter* rotateFilter READ rotateFilter CONSTANT);
+    Q_PROPERTY(CutFilter* cutFilter READ cutFilter CONSTANT);
+    Q_PROPERTY(ColorizeFilter* ColorizeFilter READ colorizeFilter CONSTANT);
 
 public:
     enum class FilterType {
@@ -50,6 +57,12 @@ public:
     Q_INVOKABLE void saveAndClear(Document* doc);
 
     QImage originalImage() const;
+
+    RotateFilter* rotateFilter() const;
+
+    CutFilter* cutFilter() const;
+
+    ColorizeFilter* colorizeFilter() const;
 
 signals:
     void originalImageChanged();
