@@ -60,7 +60,7 @@ void ScanImage::saveAndClear(Document* doc)
     for (int i = 0; i < d->filter.size(); i++) d->filter[i] = nullptr;
 
     // Add a new page.
-    // doc->addPage(d->original, image);
+    doc->addPage(d->original, image);
 }
 
 QImage ScanImage::originalImage() const
