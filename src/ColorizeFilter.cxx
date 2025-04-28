@@ -110,13 +110,14 @@ QImage ColorizeFilter::apply(QImage&& image)
 {
     if (image.isNull()) return image;
 
-    auto img_cut = QImageToCvMat(image);
+    auto img_cut = QImageToCvMat(image, false);
 
     // Apply contrast and brightness transform.
     auto contrast = std::pow(4.0, d->contrast * 2 - 1);
     auto brightness = 128 - contrast * 128 + (2 * d->brightness - 1) * 128;
     cv::Mat img_bright;
     img_cut.convertTo(img_bright, -1, contrast, brightness);
+    img_cut.release();
 
     // Compute a gray-scale image.
     cv::Mat img_gray;
@@ -135,6 +136,7 @@ QImage ColorizeFilter::apply(QImage&& image)
         cv::adaptiveThreshold(
             img_gray, bg_mask, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, details, 5);
     }
+    img_gray.release();
 
     if (d->colormode == BlackAndWhite) {
         return cvMatToQImage(bg_mask).copy();
@@ -143,6 +145,7 @@ QImage ColorizeFilter::apply(QImage&& image)
     /// Set background to white
     cv::Mat img_col;
     img_bright.convertTo(img_col, CV_32F);
+    img_bright.release();
     img_col.setTo(cv::Scalar(255, 255, 255), bg_mask);
 
     std::vector<cv::Point3f> points;
@@ -167,6 +170,7 @@ QImage ColorizeFilter::apply(QImage&& image)
                    3,
                    cv::KMEANS_PP_CENTERS,
                    centers);
+        points.clear();
 
         // stretch colors
         auto min = *std::min_element(centers.begin<float>(), centers.end<float>());
@@ -175,6 +179,7 @@ QImage ColorizeFilter::apply(QImage&& image)
         centers = 255 * (centers - min) / (max - min);
         cv::Mat ucenters;
         centers.convertTo(ucenters, CV_8U);
+        centers.release();
 
         auto itimg = img_col.begin<cv::Vec3b>();
         auto itimgend = img_col.end<cv::Vec3b>();
@@ -190,5 +195,6 @@ QImage ColorizeFilter::apply(QImage&& image)
 
     cv::Mat colorized;
     img_col.convertTo(colorized, CV_8U);
+    img_col.release();
     return cvMatToQImage(colorized).copy();
 }
