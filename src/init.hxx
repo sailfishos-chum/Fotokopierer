@@ -15,21 +15,11 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include <QtGui/QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
+#ifndef __FOTOKOPIERER_INIT_HXX__
+#define __FOTOKOPIERER_INIT_HXX__
 
-#include <opencv2/imgproc/imgproc.hpp>
+class QGuiApplication;
 
-#include "init.hxx"
+void init_app(QGuiApplication& app);
 
-int main(int argc, char* argv[])
-{
-    QGuiApplication app(argc, argv);
-
-    init_app(app);
-
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:///qml-desktop/main.qml")));
-
-    return app.exec();
-}
+#endif

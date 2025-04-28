@@ -15,21 +15,24 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include <QtGui/QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
+#ifndef __FOTOKOPIERER_SCANNEDIMAGEPROVIDER_HXX__
+#define __FOTOKOPIERER_SCANNEDIMAGEPROVIDER_HXX__
 
-#include <opencv2/imgproc/imgproc.hpp>
+#include <QtCore/QScopedPointer>
+#include <QtQuick/QQuickImageProvider>
 
-#include "init.hxx"
-
-int main(int argc, char* argv[])
+class ScannedImageProvider : public QQuickImageProvider
 {
-    QGuiApplication app(argc, argv);
+public:
+    ScannedImageProvider();
 
-    init_app(app);
+    ~ScannedImageProvider();
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:///qml-desktop/main.qml")));
+    QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize);
 
-    return app.exec();
-}
+private:
+    struct Data;
+    QScopedPointer<Data> d;
+};
+
+#endif

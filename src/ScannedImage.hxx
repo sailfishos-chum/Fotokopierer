@@ -15,21 +15,32 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include <QtGui/QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
+#ifndef __FOTOKOPIERER_SCANNEDIMAGE_HXX__
+#define __FOTOKOPIERER_SCANNEDIMAGE_HXX__
 
-#include <opencv2/imgproc/imgproc.hpp>
+#include <QtCore/QObject>
+#include <QtCore/QScopedPointer>
 
-#include "init.hxx"
+#include <QtGui/QPixmap>
 
-int main(int argc, char* argv[])
+class ScannedImage : public QObject
 {
-    QGuiApplication app(argc, argv);
+	Q_OBJECT
 
-    init_app(app);
+	Q_PROPERTY(QPixmap original READ originalImage NOTIFY originalChanged)
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:///qml-desktop/main.qml")));
+public:
+	ScannedImage(QObject* parent = nullptr);
+	~ScannedImage();
 
-    return app.exec();
-}
+	QPixmap originalImage() const;
+
+signals:
+	void originalChanged();
+
+private:
+	struct Data;
+	QScopedPointer<Data> d;
+};
+
+#endif

@@ -15,17 +15,13 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include <QtCore/QCommandLineParser>
-#include <QtCore/QTranslator>
-
 #include <QtGui/QGuiApplication>
 
 #include <QtQuick/QQuickView>
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <podofo.h>
-
 #include <sailfishapp.h>
+
+#include "init.hxx"
 
 // #include <opencv2/highgui/highgui.hpp>
 
@@ -33,25 +29,9 @@ int main(int argc, char* argv[])
 {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
 
-    app->setApplicationName(QStringLiteral("Fotokopierer"));
-    app->setApplicationVersion(QLatin1String(QT_VERSION_STR));
-
-    QTranslator qtTranslator;
-    qtTranslator.load(QLatin1String("harbour-fotokopierer-") +
-                      QLocale::system().name(),
-                      QLatin1String(":/translations/"));
-    app->installTranslator(&qtTranslator);
-
-    QCommandLineParser parser;
-    parser.setApplicationDescription(QStringLiteral("Document Scanner"));
-    parser.addHelpOption();
-    parser.addVersionOption();
-    parser.addPositionalArgument(QStringLiteral("file"),
-                                 QStringLiteral("The image file to show"));
-    parser.process(*app);
+    init_app(*app);
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
-    //view->setSource(SailfishApp::pathTo("qml/fotokopierer.qml"));
     view->setSource(QUrl(QStringLiteral("qrc:///qml/fotokopierer.qml")));
     view->show();
     return app->exec();

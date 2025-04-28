@@ -15,21 +15,19 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-#include <QtGui/QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
+#include "ScannedImage.hxx"
 
-#include <opencv2/imgproc/imgproc.hpp>
+#include <QtGui/QPixmap>
 
-#include "init.hxx"
+struct ScannedImage::Data {
+    QPixmap original;
+};
 
-int main(int argc, char* argv[])
+ScannedImage::ScannedImage(QObject* parent) : QObject(parent), d(new Data) {}
+
+ScannedImage::~ScannedImage() {}
+
+QPixmap ScannedImage::originalImage() const
 {
-    QGuiApplication app(argc, argv);
-
-    init_app(app);
-
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:///qml-desktop/main.qml")));
-
-    return app.exec();
+    return d->original;
 }
