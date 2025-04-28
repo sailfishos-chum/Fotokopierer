@@ -11,7 +11,7 @@ arch := i486
 target := $(shell $(sfdk) tools list | sed -n '/$(arch)/p' |  sed -n 's/^.*\(SailfishOS[[:alnum:].-]*\).*$$/\1/p' | head -n1)
 
 # Select the emulator device '#0'
-emulator := $(shell $(sfdk) emulator list | cut -f1 -d' ')
+emulator := $(shell $(sfdk) device list | awk -F'"' '/#0/ { print $$2 }')
 
 device := jolla
 
@@ -72,7 +72,7 @@ $(rpm_file): $(build_dir)/$(program) rpm/$(program).yaml rpm/$(program).changes
 
 .PHONY: deploy-emu
 deploy-emu: $(rpm_file)
-	$(sfdk) -c "device=$(emulator)" deploy --rsync
+	$(sfdk) -c "device=$(emulator)" deploy --sdk
 
 .PHONY: run-emu
 run-emu:
