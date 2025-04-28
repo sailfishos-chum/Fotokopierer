@@ -170,7 +170,7 @@ cmake %{_sourcedir}/../3rdparty/podofo-%{podofo_version} \
 -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;%{_sourcedir}/../3rdparty/freetype-%{freetype_version}/include/freetype2" \
 -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/3rdparty/freetype/lib;%{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib" \
 -DCMAKE_CXX_FLAGS="-isystem %{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/libtiff" \
--DLIBJPEG_LIBRARY_NAMES=jpeg
+-DLIBJPEG_LIBRARY_NAMES="jpeg,libjpeg"
 
 make VERBOSE=1 %{?_smp_mflags}
 make VERBOSE=1 install
