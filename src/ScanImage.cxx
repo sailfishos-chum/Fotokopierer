@@ -21,6 +21,8 @@
 #include "Document.hxx"
 #include "Page.hxx"
 
+#include "fifr/util/Range.hxx"
+
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QFile>
 #include <QtCore/QFutureWatcher>
@@ -30,7 +32,10 @@
 
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <algorithm>
 #include <cassert>
+
+using namespace fifr::util;
 
 static QPointF toPoint(const QJsonValue& value)
 {
@@ -539,14 +544,38 @@ cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params
 
     // colorize by hue
     cv::Mat img_this_color;
-    for (int i = 15; i < 180; i += 30) {
-        cv::inRange(img_hsv, cv::Scalar(std::max(i, 15) - 15, 50, 50), cv::Scalar(i + 15, 255, 255), img_this_color);
-        img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
-        if (i < 15) {
-            cv::inRange(img_hsv, cv::Scalar(180 - (15 - i), 50, 50), cv::Scalar(180, 255, 255), img_this_color);
-            img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
+
+    auto angles = params.angles;
+    std::sort(angles.begin(), angles.end());
+
+    for (auto i : indices(angles)) {
+        if (i > 0) {
+            auto h = (angles[i - 1] + angles[i]) / 4;
+            cv::inRange(img_hsv,
+                        cv::Scalar(angles[i - 1] / 2, params.blackLevel, params.blackLevel),
+                        cv::Scalar(angles[i] / 2, 255, 255),
+                        img_this_color);
+
+            img_result.setTo(cv::Scalar(h, 255, 255), img_this_color);
+        } else {
+            auto h = (angles[0] + 360 + angles.back()) / 2;
+            if (h >= 360) h -= 360;
+            h /= 2;
+
+            cv::inRange(img_hsv,
+                        cv::Scalar(angles.back() / 2, params.blackLevel, params.blackLevel),
+                        cv::Scalar(180, 255, 255),
+                        img_this_color);
+            img_result.setTo(cv::Scalar(h, 255, 255), img_this_color);
+
+            cv::inRange(img_hsv,
+                        cv::Scalar(0, params.blackLevel, params.blackLevel),
+                        cv::Scalar(angles[0] / 2, 255, 255),
+                        img_this_color);
+            img_result.setTo(cv::Scalar(h, 255, 255), img_this_color);
         }
     }
+
     img_hsv.release();
     img_this_color.release();
 

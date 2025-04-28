@@ -60,6 +60,9 @@ public:
 
         double threshold_c = 0.8;  ///< Value between [0,1] mapped to [-15,15]
         double blocksize = 0.1;    ///< Relative block size
+
+        std::array<qreal, 6> angles = {30, 90, 150, 210, 270, 330};
+        int blackLevel = 50;
     };
 
 public:
