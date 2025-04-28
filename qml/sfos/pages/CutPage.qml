@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -78,14 +78,12 @@ Page {
                 }
 
                 ListElement {
-                    // icon: "image://theme/icon-m-crop"
-                    text: "auto"
+                    icon: "/icons/icon-m-size-auto.svg"
                     name: "auto"
                 }
 
                 ListElement {
-                    // icon: "image://theme/icon-m-display"
-                    text: "max"
+                    icon: "/icons/icon-m-size-max.svg"
                     name: "all"
                 }
 
@@ -116,7 +114,9 @@ Page {
                 IconButton {
                     visible: model.icon ? true : false
                     anchors.fill: parent
-                    icon.source: model.icon || ""
+                    icon.source: Qt.resolvedUrl(model.icon) || ""
+                    icon.width: Theme.iconSizeMedium
+                    icon.height: Theme.iconSizeMedium
                     onClicked: listModel.actions[name]()
                 }
             }

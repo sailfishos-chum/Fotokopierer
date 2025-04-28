@@ -6,5 +6,12 @@
 	 <file>icons/brightness.svg</file>
 	 <file>icons/contrast.svg</file>
 	 <file>icons/harbour-fotokopierer.svg</file>
+	 <file>icons/a-icon-m-special.svg</file>
+	 <file>icons/icon-m-bw.svg</file>
+	 <file>icons/icon-m-color.svg</file>
+	 <file>icons/icon-m-ctrl.svg</file>
+	 <file>icons/icon-m-gray.svg</file>
+	 <file>icons/icon-m-size-auto.svg</file>
+	 <file>icons/icon-m-size-max.svg</file>
   </qresource>
 </RCC>
