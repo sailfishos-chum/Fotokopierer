@@ -41,8 +41,7 @@ class ZoomImage : public QQuickPaintedItem
     Q_PROPERTY(QColor crossColor READ crossColor WRITE setCrossColor NOTIFY crossColorChanged);
 
     Q_PROPERTY(ScanImage* image READ image WRITE setImage NOTIFY imageChanged)
-    Q_PROPERTY(
-        ScanImage::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
+    Q_PROPERTY(ScanImage::FilterType filter READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
 
 public:
     explicit ZoomImage(QQuickItem* parent = nullptr);
