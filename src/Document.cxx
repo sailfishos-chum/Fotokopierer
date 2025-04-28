@@ -17,7 +17,6 @@
 
 #include "Document.hxx"
 
-#include "BaseImage.hxx"
 #include "Page.hxx"
 
 #include <QtCore/QDateTime>
@@ -153,11 +152,6 @@ void Document::move(int from, int to)
         save();
         emit pagesChanged();
     }
-}
-
-void Document::addPage(BaseImage *original, BaseImage *result)
-{
-    addPage(original->image(), result->image());
 }
 
 void Document::addPage(QImage original, QImage result)
