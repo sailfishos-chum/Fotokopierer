@@ -87,11 +87,14 @@ struct EdgeDetection::Data {
     QLineF left_non_snappy;
     QLineF right_non_snappy;
 
-    Quadrangle quad;  ///< The currently selected quadrangle.
+    Quadrangle autoquad;  ///< The automatically detected quadrangle.
+    Quadrangle quad;      ///< The currently selected quadrangle.
 
     QImage image;
     QImage gray_image;
     QImage bw_image;
+
+    void doAutoDetect();
 
     void find_edge_candidates(std::vector<QLineF>& all_lines);
     static void filter_by_length(std::vector<QLineF>& edges);
@@ -420,22 +423,28 @@ void EdgeDetection::Data::filter_by_angle(const std::vector<QLineF>& all_lines, 
 
 void EdgeDetection::autoDetect()
 {
+    d->quad = d->autoquad;
+    fixNonSnappyEdges();
+}
+
+void EdgeDetection::Data::doAutoDetect()
+{
     // find candidate lines
     std::vector<QLineF> all_lines;
-    d->find_edge_candidates(all_lines);
+    find_edge_candidates(all_lines);
 
     // filter lines by angle
-    d->filter_by_angle(all_lines, d->hlines, d->vlines);
+    filter_by_angle(all_lines, hlines, vlines);
 
-    d->cluster_edges();
+    cluster_edges();
 
-    d->find_best_match();
+    find_best_match();
 
-    d->find_snappy_edges();
+    find_snappy_edges();
 
-    fixNonSnappyEdges();
+    project_quadrangle();
 
-    d->project_quadrangle();
+    autoquad = quad;
 }
 
 void EdgeDetection::selectAll()
@@ -452,7 +461,7 @@ void EdgeDetection::selectAll()
 EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
 {
     auto edges = EdgeDetection(image);
-    edges.autoDetect();
+    edges.d->doAutoDetect();
     return edges;
 }
 
