@@ -404,6 +404,8 @@ bool Document::save() const
         return false;
     }
 
+    ensureNoMedia(QFileInfo(d->doc.filename).absolutePath());
+
     return true;
 }
 
@@ -434,7 +436,9 @@ void Document::loadAsync(const QString& filename)
 
     setStatus(Loading);
     d->pendingDoc.setFuture(
-        QtConcurrent::run([this, filename]() { return DocData::fromFile(filename); }));
+        QtConcurrent::run([this, filename]() {
+            return DocData::fromFile(filename);
+        }));
 }
 
 Document::DocData Document::DocData::fromFile(const QString& filename)
@@ -479,6 +483,8 @@ Document::DocData Document::DocData::fromFile(const QString& filename)
         docpages.push_back(p);
     }
 
+    ensureNoMedia(QFileInfo(file).absolutePath());
+
     DocData document;
     document.title = title.isString() ? title.toString() : ctime.toString();
     document.filename = filename;
@@ -499,5 +505,14 @@ void Document::updateThumbnail()
             emit pagesChanged();
             return;
         }
+    }
+}
+
+void Document::ensureNoMedia(const QString& path)
+{
+    auto dir = QDir(path);
+    if (!dir.exists(QStringLiteral(".nomedia"))) {
+        QFile nomedia(dir.absoluteFilePath(QStringLiteral(".nomedia")));
+        nomedia.open(QIODevice::WriteOnly);
     }
 }

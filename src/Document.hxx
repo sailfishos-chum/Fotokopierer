@@ -174,6 +174,9 @@ private:
 
     QHash<int, QByteArray> roleNames() const override;
 
+    /// Ensures the ".nomedia" file exists in the given directory.
+    static void ensureNoMedia(const QString &path);
+
 private slots:
     void updateThumbnail();
 

@@ -22,7 +22,6 @@
 
 #include <memory>
 
-class Document;
 class Filter;
 class RotateFilter;
 class CutFilter;
@@ -66,8 +65,6 @@ public:
     Filter* filter(FilterType type);
 
     Q_INVOKABLE bool loadFile(const QString& file_name);
-
-    Q_INVOKABLE void saveAndClear(Document* doc);
 
     Q_INVOKABLE void clear();
 
