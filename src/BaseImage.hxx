@@ -40,9 +40,9 @@ public:
     /// The default constructor.
     explicit BaseImage(QQuickItem* parent = nullptr);
 
-    ~BaseImage();
+    ~BaseImage() override;
 
-    void paint(QPainter* painter);
+    void paint(QPainter* painter) override;
 
     /// Return the current image source.
     BaseImage* source();
