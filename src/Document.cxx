@@ -63,8 +63,7 @@ Document Document::create(QObject *parent)
 
     if (!dir.isEmpty()) {
         doc.d->filename = QStringLiteral("%1/%2/doc.json")
-                              .arg(dir)
-                              .arg(doc.d->creation_time.toString(FilenameFormat));
+                              .arg(dir, doc.d->creation_time.toString(FilenameFormat));
     }
 
     return doc;
