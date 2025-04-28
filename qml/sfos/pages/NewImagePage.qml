@@ -179,8 +179,8 @@ Page {
             anchors.fill: parent
 
             visible: camera.cameraStatus == Camera.ActiveStatus && _haveResolution
-            fillMode: VideoOutput.Stretch
-            orientation: camera.orientation
+            fillMode: VideoOutput.PreserveAspectCrop
+            orientation: 0
             focus: visible
             source: camera
         }
