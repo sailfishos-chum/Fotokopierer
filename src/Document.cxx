@@ -88,8 +88,7 @@ QVariant Document::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> Document::roleNames() const
 {
-    QHash<int, QByteArray> roles;
-    roles[PageRole] = "role_page";
+    static const QHash<int, QByteArray> roles = {{PageRole, "role_page"}};
     return roles;
 }
 
