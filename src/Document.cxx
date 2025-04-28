@@ -158,12 +158,14 @@ void Document::addPage(BaseImage *original, BaseImage *result)
 {
     QImage original_img = original->image();
     if (original_img.isNull()) {
+        qWarning() << "Page could not be created: no original image";
         emit error(QStringLiteral("Page could not be created: no original image"));
         return;
     }
 
     QImage result_img = result->image();
     if (result_img.isNull()) {
+        qWarning() << "Page could not be created: no result image";
         emit error(QStringLiteral("Page could not be created: no result image"));
         return;
     }
@@ -177,11 +179,13 @@ void Document::addPage(BaseImage *original, BaseImage *result)
     auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
 
     if (!original_img.save(original_path)) {
+        qWarning() << "Page could not be created: error saving original image";
         emit error(QStringLiteral("Page could not be created: error saving original image"));
         return;
     };
 
     if (!result_img.save(result_path)) {
+        qWarning() << "Page could not be created: error saving result image";
         emit error(QStringLiteral("Page could not be created: error saving result image"));
         return;
     };

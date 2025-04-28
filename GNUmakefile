@@ -1,6 +1,7 @@
 target = harbour-fotokopierer
 
-arch := i486
+#arch := i486
+arch := armv7hl
 
 sdk_dir := $(HOME)/SailfishOS
 sfos_version := SailfishOS-2.2.1.18-$(arch)
@@ -41,6 +42,9 @@ installdeps:
 	#'cd $(mer_root_dir) && mb2 -t $(sfos_version) rpm'
 	ssh -p 2222 -i $(sdk_dir)/vmshare/ssh/private_keys/engine/mersdk mersdk@localhost \
 	'cd $(mer_root_dir) && mb2 --device "Sailfish OS Emulator" installdeps'
+
+install-jolla: rpm
+	scp RPMS/harbour-fotokopierer*.armv7hl.rpm jolla:
 
 run:
 	ssh -p 2223 -i $(sdk_dir)/vmshare/ssh/private_keys/SailfishOS_Emulator/nemo nemo@localhost 'sh -c "env LD_LIBRARY_PATH=/usr/local/lib $(target) ${ARGS}"'
