@@ -30,6 +30,52 @@
 
 using namespace fifr::util;
 
+namespace
+{
+/// A quadrangle represented by its corner points.
+struct Quadrangle {
+    QPointF tl, tr, br, bl;
+};
+
+/// A single edge/line represented by its endpoints.
+class Edge
+{
+public:
+    Edge(qreal x1, qreal y1, qreal x2, qreal y2)
+        : Edge(QLineF{x1, y1, x2, y2})
+    {
+    }
+
+    Edge(const QLineF& line)
+        : line_(line)
+    {
+        auto n = line.normalVector().unitVector();
+        norm_ = {n.dx(), n.dy()};
+    }
+
+    [[nodiscard]] const QLineF& line() const { return line_; }
+
+    [[nodiscard]] qreal length() const { return line_.length(); }
+
+    [[nodiscard]] qreal x1() const { return line_.x1(); }
+    [[nodiscard]] qreal y1() const { return line_.y1(); }
+    [[nodiscard]] qreal x2() const { return line_.x2(); }
+    [[nodiscard]] qreal y2() const { return line_.y2(); }
+    [[nodiscard]] qreal dx() const { return line_.dx(); }
+    [[nodiscard]] qreal dy() const { return line_.dy(); }
+
+    void swap()
+    {
+        line_.setLine(line_.y1(), line_.x1(), line_.y2(), line_.x2());
+    }
+
+private:
+    QLineF line_;
+    QPointF norm_;
+};
+
+}  // namespace
+
 struct EdgeList::Data {
     // The default lower threshold value for canny edge detection
     const int DefaultCannyMin = 10;
@@ -39,42 +85,6 @@ struct EdgeList::Data {
     const int DefaultBlurRadius = 10;
     // The default contrast factor
     const qreal DefaultContractFactor = 1.5;
-
-    class Edge
-    {
-    public:
-        Edge(qreal x1, qreal y1, qreal x2, qreal y2)
-            : Edge(QLineF{x1, y1, x2, y2})
-        {
-        }
-
-        Edge(const QLineF& line)
-            : line_(line)
-        {
-            auto n = line.normalVector().unitVector();
-            norm_ = {n.dx(), n.dy()};
-        }
-
-        [[nodiscard]] const QLineF& line() const { return line_; }
-
-        [[nodiscard]] qreal length() const { return line_.length(); }
-
-        [[nodiscard]] qreal x1() const { return line_.x1(); }
-        [[nodiscard]] qreal y1() const { return line_.y1(); }
-        [[nodiscard]] qreal x2() const { return line_.x2(); }
-        [[nodiscard]] qreal y2() const { return line_.y2(); }
-        [[nodiscard]] qreal dx() const { return line_.dx(); }
-        [[nodiscard]] qreal dy() const { return line_.dy(); }
-
-        void swap()
-        {
-            line_.setLine(line_.y1(), line_.x1(), line_.y2(), line_.x2());
-        }
-
-    private:
-        QLineF line_;
-        QPointF norm_;
-    };
 
     int cannyMinVal = DefaultCannyMin;
     int cannyMaxVal = DefaultCannyMax;
@@ -87,7 +97,7 @@ struct EdgeList::Data {
     std::vector<std::vector<std::size_t>> left_lines, right_lines;
     std::vector<std::vector<std::size_t>> top_lines, bottom_lines;
 
-    QPointF topLeft, topRight, bottomLeft, bottomRight;
+    Quadrangle quad;  ///< The currently selected quadrangle.
 
     int width = 0;
     int height = 0;
@@ -106,7 +116,7 @@ struct EdgeList::Data {
     void find_best_match();
 
     static bool distances_to_intersection(const Edge& l1, const Edge& l2, qreal& alpha, qreal& beta);
-    qreal compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, qreal max_area);
+    std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, qreal max_area) const;
 };
 
 EdgeList::EdgeList(std::unique_ptr<Data>&& d)
@@ -175,27 +185,27 @@ QImage EdgeList::bw_image() const
 
 std::vector<QPointF> EdgeList::points() const
 {
-    return {d->topLeft, d->topRight, d->bottomRight, d->bottomLeft};
+    return {topLeft(), topRight(), bottomRight(), bottomLeft()};
 }
 
 QPointF EdgeList::topLeft() const
 {
-    return d->topLeft;
+    return d->quad.tl;
 }
 
 QPointF EdgeList::topRight() const
 {
-    return d->topRight;
+    return d->quad.tr;
 }
 
 QPointF EdgeList::bottomLeft() const
 {
-    return d->bottomLeft;
+    return d->quad.bl;
 }
 
 QPointF EdgeList::bottomRight() const
 {
-    return d->bottomRight;
+    return d->quad.br;
 }
 
 std::vector<QLineF> EdgeList::vertical_lines() const
@@ -286,7 +296,7 @@ void EdgeList::Data::filter_by_angle(const std::vector<Edge>& all_lines, std::ve
 void EdgeList::update()
 {
     // find candidate lines
-    std::vector<EdgeList::Data::Edge> all_lines;
+    std::vector<Edge> all_lines;
     d->find_edge_candidates(all_lines);
 
     // filter lines by angle
@@ -475,10 +485,10 @@ void EdgeList::Data::find_best_match()
 
     // By default we simply select everything. This is a fallback in case we can't
     // detect proper points.
-    topLeft = {0, 0};
-    topRight = {width, 0};
-    bottomRight = {width, height};
-    bottomLeft = {0, height};
+    quad.tl = {0, 0};
+    quad.tr = {static_cast<qreal>(width), 0};
+    quad.br = {static_cast<qreal>(width), static_cast<qreal>(height)};
+    quad.bl = {0, static_cast<qreal>(height)};
 
     qreal max_area = 0;
     for (auto i : indices(hlines)) {
@@ -490,8 +500,11 @@ void EdgeList::Data::find_best_match()
                 auto a = 0, b = 0;
                 while (a < bottom_lines[l].size() && b < bottom_lines[r].size()) {
                     if (bottom_lines[l][a] == bottom_lines[r][b]) {
-                        auto area = compute_area(l, r, i, bottom_lines[l][a], max_area);
-                        if (area > max_area) max_area = area;
+                        auto [area, q] = compute_area(l, r, i, bottom_lines[l][a], max_area);
+                        if (area > max_area) {
+                            max_area = area;
+                            quad = q;
+                        }
                         ++a;
                         ++b;
                     } else if (bottom_lines[l][a] < bottom_lines[r][b]) {
@@ -505,7 +518,7 @@ void EdgeList::Data::find_best_match()
     }
 }
 
-qreal EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, double max_area)
+auto EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom, double max_area) const -> std::pair<qreal, Quadrangle>
 {
     qreal alpha = NAN;
     qreal beta = NAN;
@@ -538,12 +551,5 @@ qreal EdgeList::Data::compute_area(std::size_t ileft, std::size_t iright, std::s
     auto f2 = QPointF::dotProduct(f, f);
 
     auto area = std::sqrt(4 * e2 * f2 - std::pow(b2 + d2 - a2 - c2, 2)) / 4;
-    if (area > max_area) {
-        topLeft = QPoint(int(tl.x()), int(tl.y()));
-        topRight = QPoint(int(tr.x()), int(tr.y()));
-        bottomLeft = QPoint(int(bl.x()), int(bl.y()));
-        bottomRight = QPoint(int(br.x()), int(br.y()));
-    }
-
-    return area;
+    return {area, {tl, tr, br, bl}};
 }

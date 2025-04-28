@@ -4,8 +4,8 @@ sdk_dir := $(HOME)/SailfishOS
 sfdk := $(sdk_dir)/bin/sfdk
 
 #arch := armv7hl
+arch := i486
 #arch := aarch64
-arch := aarch64
 
 # Select the latest available target for the given architecture
 target := $(shell $(sfdk) tools list | awk -F' ' '/$(arch)/ { print $$2 }' | tail -n1)
