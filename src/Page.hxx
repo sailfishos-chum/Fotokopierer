@@ -30,6 +30,7 @@ class Page : public QObject
 
     Q_PROPERTY(QDateTime creationTime READ creationTime)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
+    Q_PROPERTY(QString result READ result NOTIFY resultChanged)
 
 public:
     static const int ThumbnailSize = 300;
@@ -51,7 +52,7 @@ public:
 
     QString getOriginalImagePath() const;
 
-    QString getResultImagePath() const;
+    QString result() const;
 
     bool write(QJsonObject& json) const;
 
@@ -69,6 +70,8 @@ private slots:
 
 signals:
     void thumbnailChanged();
+
+    void resultChanged();
 
 private:
     struct Data;

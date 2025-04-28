@@ -104,7 +104,7 @@ QString Page::getOriginalImagePath() const
     return d->original_path;
 }
 
-QString Page::getResultImagePath() const
+QString Page::result() const
 {
     return d->result_path;
 }
