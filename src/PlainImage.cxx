@@ -65,7 +65,7 @@ void PlainImage::loadFile(const QString& file_name)
 
 QImage PlainImage::transform(const QImage& image)
 {
-    if (d->scale) {
+    if (d->scale && std::max(image.width(), image.height()) > 1000) {
         if (image.width() > image.height()) {
             return image.scaledToWidth(1000);
         } else {
