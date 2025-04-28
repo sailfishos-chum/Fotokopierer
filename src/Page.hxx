@@ -63,7 +63,7 @@ public:
 
     QString thumbnail();
 
-    QString getOriginalImagePath() const;
+    QString originalImagePath() const;
 
     QString result() const;
 

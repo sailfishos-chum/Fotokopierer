@@ -175,7 +175,7 @@ void Page::onThumbnailFinished()
     setStatus(Ready);
 }
 
-QString Page::getOriginalImagePath() const
+QString Page::originalImagePath() const
 {
     return d->original_path;
 }
