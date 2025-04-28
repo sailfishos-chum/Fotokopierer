@@ -93,7 +93,7 @@ CutFilter* ScanImage::cutFilter() const
 
 ColorizeFilter* ScanImage::colorizeFilter() const
 {
-    return qobject_cast<ColorizeFilter*>(d->filter[static_cast<int>(FilterType::Colorize)]);
+    return qobject_cast<ColorizeFilter*>(d->filter.at(static_cast<int>(FilterType::Colorize)));
 }
 
 void ScanImage::setDeleteOriginalOnClear(bool enabled)
