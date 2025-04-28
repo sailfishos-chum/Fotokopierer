@@ -20,6 +20,7 @@ import QtQml.Models 2.2
 import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
+import ".."
 import "../../common"
 
 Page {
@@ -28,38 +29,18 @@ Page {
     DelegateModel {
         id: visualModel
         model: DocumentList
-        delegate: MouseArea {
+        delegate: DocumentDelegate {
             width: grid.cellWidth
             height: grid.cellHeight
 
-            Rectangle {
-                border.width: 1
-                border.color: Theme.highlightColor
-                color: "transparent"
+            title: role_title
+            pagecount: role_numPages
+            creationTime: role_creationTime
+            thumbnails: role_thumbnails
 
-                anchors.fill: parent
+            enabled: true
 
-                Column {
-                    width: parent.width
-
-                    Text {
-                        text: role_title
-                        color: Theme.highlightColor
-                    }
-
-                    Text {
-                        text: role_creationTime
-                        color: Theme.highlightColor
-                    }
-
-                    Text {
-                        text: role_numPages
-                        color: Theme.highlightColor
-                    }
-                }
-            }
-
-            onClicked: {
+            onOpenDocument: {
                 pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
         }
