@@ -35,6 +35,8 @@ struct ColorizeChooser::Data {
     int maxRadius = 0;  // the maximal radius in the histogram of a pixel to be drawn
 
     std::vector<qreal> angles = {30, 90, 150, 210, 270, 330};
+    std::vector<qreal> anglesSorted = {};
+    bool needSort = true;
     int blackLevel = 50;
 
     QImage gradient = {};
@@ -120,8 +122,14 @@ void ColorizeChooser::paint(QPainter* painter)
     painter->drawImage(QPointF{(width() - size) / 2, (height() - size) / 2}, d->gradient);
     painter->setBrush(Qt::black);
 
+    if (d->needSort) {
+        d->anglesSorted = d->angles;
+        std::sort(d->anglesSorted.begin(), d->anglesSorted.end());
+        d->needSort = false;
+    }
+
     int cur_segment = 0;
-    int cur_angle = (d->angles.front() + d->angles.back()) / 2 - 180;
+    int cur_angle = (d->anglesSorted.front() + d->anglesSorted.back()) / 2 - 180;
     if (cur_angle < 0) cur_angle += 360;
     auto cur_color = QColor::fromHsvF(cur_angle / 360.0, 1, 1);
 
@@ -129,13 +137,14 @@ void ColorizeChooser::paint(QPainter* painter)
     for (auto i : range(d->hist.rows)) {
         auto deg = static_cast<double>(i) / d->hist.rows * 360;
 
-        if (cur_segment < d->angles.size() && deg >= d->angles[cur_segment]) {
-            if (cur_segment + 1 < d->angles.size()) {
-                cur_angle = (d->angles[cur_segment] + d->angles[cur_segment + 1]) / 2;
+        if (cur_segment < d->anglesSorted.size() && deg >= d->anglesSorted[cur_segment]) {
+            if (cur_segment + 1 < d->anglesSorted.size()) {
+                cur_angle = (d->anglesSorted[cur_segment] + d->anglesSorted[cur_segment + 1]) / 2;
             } else {
-                cur_angle = (d->angles[cur_segment] + d->angles[0] + 360) / 2;
+                cur_angle = (d->anglesSorted[cur_segment] + d->anglesSorted[0] + 360) / 2;
             }
-            if (cur_angle < 0) cur_angle += 360;
+            while (cur_angle < 0) cur_angle += 360;
+            while (cur_angle >= 360) cur_angle -= 360;
             cur_segment += 1;
             cur_color = QColor::fromHsvF(cur_angle / 360.0, 1, 1);
         }
@@ -161,7 +170,7 @@ void ColorizeChooser::paint(QPainter* painter)
     painter->setBrush({});
     auto r = d->blackLevel * d->lattice * size / (d->maxRadius * 512);
     painter->drawEllipse(QPointF{width() / 2, height() / 2}, r, r);
-    for (auto angle : d->angles) {
+    for (auto angle : d->anglesSorted) {
         auto x = std::cos(angle / 180.0 * M_PI) * size / 2 + width() / 2;
         auto y = -std::sin(angle / 180.0 * M_PI) * size / 2 + height() / 2;
         painter->drawLine(width() / 2, height() / 2, x, y);
@@ -174,7 +183,7 @@ void ColorizeChooser::setColorAngle(int which, qreal angle)
     if (which < 0) which += d->angles.size();
     if (d->angles[which] != angle) {
         d->angles[which] = angle;
-        std::sort(d->angles.begin(), d->angles.end());
+        d->needSort = true;
         emit colorAnglesChanged();
         update();
     }
