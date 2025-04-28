@@ -42,6 +42,12 @@ Page {
             // ensure that the C++ memory of Scanner is freed
             newPage.source = ""
             Scanner.clear()
+        } else if (status == PageStatus.Activating) {
+            state = "Normal"
+        } else if (status == PageStatus.Deactivating) {
+            if (document) {
+                document.clearSelection()
+            }
         }
     }
 
