@@ -31,21 +31,20 @@ ApplicationWindow
 
     CutPage {
         id: cutpage
+        source: image
         onStatusChanged: {
-            if (status == PageStatus.Active) {
+            if (status == PageStatus.Activating) {
+                if (Qt.application.arguments.length > 1) {
+                    console.log("FILE: " + Qt.application.arguments[1])
+                    image.loadFile(Qt.application.arguments[1])
+                }
+            } else if (status == PageStatus.Active) {
                 pageContainer.pushAttached(Qt.resolvedUrl("pages/ColorizePage.qml"), {source: cutpage.image})
             }
         }
     }
 
     Component.onCompleted: {
-        console.log(Qt.application.arguments)
-        if (Qt.application.arguments.length > 1) {
-            console.log("FILE: " + Qt.application.arguments[1])
-            image.loadFile(Qt.application.arguments[1])
-            cutpage.source = image
-        }
-        //pageStack.pushAttached(Qt.resolvedUrl("pages/Documents.qml"))
         pageStack.pushAttached(cutpage)
     }
 }
