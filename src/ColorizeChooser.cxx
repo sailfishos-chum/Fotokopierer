@@ -32,11 +32,12 @@ using namespace fifr::util;
 struct ColorizeChooser::Data {
     int lattice = 100;
     cv::Mat hist = {};
-    double minHist = 0;
-    double maxHist = 0;
+    int maxRadius = 0;  // the maximal radius in the histogram of a pixel to be drawn
 
     std::vector<qreal> angles = {30, 90, 150, 210, 270, 330};
     int blackLevel = 50;
+
+    QImage gradient = {};
 };
 
 ColorizeChooser::ColorizeChooser(QQuickItem* parent)
@@ -87,7 +88,14 @@ void ColorizeChooser::updateImage(const cv::Mat& image, const cv::Mat& mask)
     cv::calcHist(&image, 1, channels, mask, d->hist, 2, histSize, ranges, true, false);
     cv::normalize(d->hist, d->hist, 0, 255, cv::NORM_MINMAX);
 
-    cv::minMaxLoc(d->hist, &d->minHist, &d->maxHist);
+    d->maxRadius = 0;
+    for (auto i : range(d->hist.rows)) {
+        for (auto j : range(d->hist.cols)) {
+            if (d->hist.at<float>(i, j) < 10) continue;
+            d->maxRadius = std::max(j, d->maxRadius);
+        }
+    }
+
     update();
 }
 
@@ -95,30 +103,29 @@ void ColorizeChooser::paint(QPainter* painter)
 {
     auto size = std::min(width(), height());
 
-    QConicalGradient gradient(width() / 2, height() / 2, 0);
+    if (size != d->gradient.width()) {
+        d->gradient = QImage(QSize{qRound(size), qRound(size)}, QImage::Format_ARGB32);
+        d->gradient.fill(Qt::transparent);
 
-    for (auto deg : range(360)) {
-        gradient.setColorAt(deg / 360.0, QColor::fromHsvF(deg / 360.0, 0.75, 1));
-    }
-
-    painter->setBrush(gradient);
-    painter->drawEllipse(QPointF{width() / 2, height() / 2}, size / 2, size / 2);
-
-    painter->setBrush(Qt::black);
-
-    int maxradius = 0;
-    for (auto i : range(d->hist.rows)) {
-        for (auto j : range(d->hist.cols)) {
-            if (d->hist.at<float>(i, j) < 10) continue;
-            maxradius = std::max(j, maxradius);
+        QConicalGradient gradient(width() / 2, height() / 2, 0);
+        for (auto deg : range(360)) {
+            gradient.setColorAt(deg / 360.0, QColor::fromHsvF(deg / 360.0, 0.75, 1));
         }
+
+        QPainter p(&d->gradient);
+        p.setBrush(gradient);
+        p.drawEllipse(QPointF{size / 2, size / 2}, size / 2, size / 2);
     }
+
+    painter->drawImage(QPointF{(width() - size) / 2, (height() - size) / 2}, d->gradient);
+    painter->setBrush(Qt::black);
 
     int cur_segment = 0;
     int cur_angle = (d->angles.front() + d->angles.back()) / 2 - 180;
     if (cur_angle < 0) cur_angle += 360;
     auto cur_color = QColor::fromHsvF(cur_angle / 360.0, 1, 1);
 
+    // the colored pixels
     for (auto i : range(d->hist.rows)) {
         auto deg = static_cast<double>(i) / d->hist.rows * 360;
 
@@ -136,22 +143,23 @@ void ColorizeChooser::paint(QPainter* painter)
         auto black = (d->blackLevel * d->lattice + 255) / 256;
         painter->setBrush(Qt::black);
 
-        for (auto j : range(maxradius)) {
+        for (auto j : range(d->maxRadius)) {
             if (j == black) painter->setBrush(cur_color);
             if (d->hist.at<float>(i, j) < 1) continue;
             auto r = size / d->lattice / 2;
 
             auto angle = deg / 180 * M_PI;  // angle in radiant
-            auto radius = static_cast<double>(j) / maxradius * size / 2;
+            auto radius = static_cast<double>(j) / d->maxRadius * size / 2;
             auto x = std::cos(angle) * radius + width() / 2;
             auto y = -std::sin(angle) * radius + height() / 2;
             painter->drawEllipse(QPointF{x, y}, r, r);
         }
     }
 
+    // the angle lines
     painter->setPen(Qt::black);
     painter->setBrush({});
-    auto r = d->blackLevel * d->lattice * size / (maxradius * 512);
+    auto r = d->blackLevel * d->lattice * size / (d->maxRadius * 512);
     painter->drawEllipse(QPointF{width() / 2, height() / 2}, r, r);
     for (auto angle : d->angles) {
         auto x = std::cos(angle / 180.0 * M_PI) * size / 2 + width() / 2;
