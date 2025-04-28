@@ -30,19 +30,15 @@ Page {
     property bool deleting: false
     property var lastDocument: DocumentList.latestDocument
 
-    ScanImage {
-        id: scanImage
-    }
-
     Loader {
         id: newPage
     }
 
     onStatusChanged: {
-        // ensure that the C++ memory of ScanImage is freed
+        // ensure that the C++ memory of Scanner is freed
         if (status == PageStatus.Active) {
             newPage.source = ""
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
@@ -165,14 +161,13 @@ Page {
         pageStack.pop(docpage, PageStackAction.Immediate)
 
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-        newPage.item.scanImage = scanImage
         newPage.item.acceptDestination = Qt.resolvedUrl("DocumentPage.qml")
         newPage.item.acceptDestinationAction = PageStackAction.Replace
         newPage.item.acceptDestinationReplaceTarget = docpage
         newPage.item.addPage.connect(function() {
             var doc = DocumentList.newDocument()
             if (doc != null) {
-                doc.addScannedPage(scanImage)
+                doc.addScannedPage(Scanner)
                 newPage.item.acceptDestinationInstance.document = doc
             }
         })

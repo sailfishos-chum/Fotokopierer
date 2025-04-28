@@ -30,14 +30,12 @@ Page {
     property Page acceptDestinationInstance
     property Page acceptDestinationReplaceTarget
 
-    property ScanImage scanImage
-
     signal addPage()
 
     onStatusChanged: {
         if (status == PageStatus.Activating) {
             // Remove possibly old image
-            scanImage.clear()
+            Scanner.clear()
         }
         if (status == PageStatus.Active) {
             camera.cameraState = Camera.ActiveState
@@ -47,13 +45,13 @@ Page {
     onPageContainerChanged: {
         if (pageContainer == null) {
             console.log("NewImagePage closed")
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
     function processImage(imagePath, deleteOnCancel) {
-        scanImage.loadFile(imagePath)
-        scanImage.deleteOriginalOnClear = deleteOnCancel
+        Scanner.loadFile(imagePath)
+        Scanner.deleteOriginalOnClear = deleteOnCancel
         pageStack.push(cutpage)
         pageStack.pushAttached(colpage)
     }
@@ -84,15 +82,12 @@ Page {
 
     Component {
         id: cutpage
-        CutPage {
-            image: page.scanImage
-        }
+        CutPage {}
     }
 
     Component {
         id: colpage
         ColorizePage {
-            scanImage: page.scanImage
             onAccepted: addPage()
 
             acceptDestination: page.acceptDestination
