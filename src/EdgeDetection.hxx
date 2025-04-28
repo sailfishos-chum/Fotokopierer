@@ -85,14 +85,26 @@ public:
     /// Return a list of potential candidate points.
     std::vector<QPointF> points() const;
 
+    /// Set the top left point of the rectangle.
+    void setTopLeft(const QPointF& tl);
+
     /// Return the top left point of the detected rectangle.
     QPointF topLeft() const;
+
+    /// Set the top right point of the rectangle.
+    void setTopRight(const QPointF& tr);
 
     /// Return the top right point of the detected rectangle.
     QPointF topRight() const;
 
+    /// Set the bottom left point of the rectangle.
+    void setBottomLeft(const QPointF& bl);
+
     /// Return the bottom left point of the detected rectangle.
     QPointF bottomLeft() const;
+
+    /// Set the bottom right point of the rectangle.
+    void setBottomRight(const QPointF& br);
 
     /// Return the bottom right point of the detected rectangle.
     QPointF bottomRight() const;
