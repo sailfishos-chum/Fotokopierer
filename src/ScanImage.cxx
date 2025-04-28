@@ -28,6 +28,7 @@
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QVector>
 #include <QtGui/QImage>
+#include <QtGui/QImageReader>
 
 #include <cassert>
 
@@ -109,7 +110,9 @@ bool ScanImage::deleteOriginalOnClear() const
 
 bool ScanImage::loadFile(const QString& file_name)
 {
-    QImage image(file_name);
+    QImageReader imageReader(file_name);
+    imageReader.setAutoTransform(true);
+    auto image = imageReader.read();
     if (image.isNull()) {
         return false;
     } else {
