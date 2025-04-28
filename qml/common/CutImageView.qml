@@ -50,74 +50,29 @@ Item {
 
         onPaintedSizeChanged: {
             // update the selection after a rotation has been completed
-            if (_next_tl) {
-                _selectPoints(_next_tl, _next_tr, _next_br, _next_bl)
-                _next_tl = null
-            }
         }
     }
 
     function rotateLeft() {
-        var tl = mapPoint(topleft.markerPos)
-        var tr = mapPoint(topright.markerPos)
-        var br = mapPoint(bottomright.markerPos)
-        var bl = mapPoint(bottomleft.markerPos)
-
-        // compute and store the points of the rotated selection
-        _next_tl = Qt.point(tr.y, 1-tr.x)
-        _next_tr = Qt.point(br.y, 1-br.x)
-        _next_br = Qt.point(bl.y, 1-bl.x)
-        _next_bl = Qt.point(tl.y, 1-tl.x)
-
         image.filter.orientation -= 1
+        Scanner.cutFilter.rotateLeft()
+        frame.requestPaint()
     }
 
     function rotateRight() {
-        var tl = mapPoint(topleft.markerPos)
-        var tr = mapPoint(topright.markerPos)
-        var br = mapPoint(bottomright.markerPos)
-        var bl = mapPoint(bottomleft.markerPos)
-
-        // compute and store the points of the rotated selection
-        _next_tl = Qt.point(1-bl.y, bl.x)
-        _next_tr = Qt.point(1-tl.y, tl.x)
-        _next_br = Qt.point(1-tr.y, tr.x)
-        _next_bl = Qt.point(1-br.y, br.x)
-
         image.filter.orientation += 1
+        Scanner.cutFilter.rotateRight()
+        frame.requestPaint()
     }
 
     function selectAll() {
         var points = Scanner.cutFilter.selectAll()
-        _selectPoints(points[0], points[1], points[2], points[3])
+        Scanner.cutFilter.fixSnappyEdges()
+        frame.requestPaint()
     }
 
     function selectAuto() {
         var points = Scanner.cutFilter.autoDetectCutRect()
-        _selectPoints(points[0], points[1], points[2], points[3])
-    }
-
-    function _selectPoints(tl, tr, br, bl) {
-        var w = image.paintedWidth
-        var h = image.paintedHeight
-        var offx = (pane.width - w) / 2
-        var offy = (pane.height - h) / 2
-
-        var tl = Qt.point(tl.x * w + offx, tl.y * h + offy)
-        var tr = Qt.point(tr.x * w + offx, tr.y * h + offy)
-        var br = Qt.point(br.x * w + offx, br.y * h + offy)
-        var bl = Qt.point(bl.x * w + offx, bl.y * h + offy)
-
-        topleft.setCenter(tl)
-        topright.setCenter(tr)
-        bottomright.setCenter(br)
-        bottomleft.setCenter(bl)
-
-        top.setCenter(unmapPoint(Scanner.cutFilter.top))
-        bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-        left.setCenter(unmapPoint(Scanner.cutFilter.left))
-        right.setCenter(unmapPoint(Scanner.cutFilter.right))
-
         Scanner.cutFilter.fixSnappyEdges()
         frame.requestPaint()
     }
@@ -171,8 +126,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.topLeft = mapPoint(markerPos)
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -194,8 +147,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.topRight = mapPoint(markerPos)
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -217,8 +168,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.bottomLeft = mapPoint(markerPos)
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -240,8 +189,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.bottomRight = mapPoint(markerPos)
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -263,10 +210,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.top = mapPoint(markerPos)
-            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
-            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -290,10 +233,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.bottom = mapPoint(markerPos)
-            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
-            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -317,10 +256,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.left = mapPoint(markerPos)
-            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
-            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -344,10 +279,6 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2
         onDragged: {
             Scanner.cutFilter.right = mapPoint(markerPos)
-            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
-            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
             pane.update(markerPos)
         }
         onDragActiveChanged: {
@@ -421,11 +352,37 @@ Item {
         return Qt.point(x, y)
     }
 
-    function selectionFromFilter() {
-        _selectPoints(Scanner.cutFilter.topLeft,
-                      Scanner.cutFilter.topRight,
-                      Scanner.cutFilter.bottomRight,
-                      Scanner.cutFilter.bottomLeft)
+    Component.onCompleted: {
+        Scanner.cutFilter.topLeftChanged.connect(function() {
+            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+        })
 
+        Scanner.cutFilter.topRightChanged.connect(function() {
+            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+        })
+
+        Scanner.cutFilter.bottomRightChanged.connect(function() {
+            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+        })
+
+        Scanner.cutFilter.bottomLeftChanged.connect(function() {
+            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+        })
+
+        Scanner.cutFilter.topChanged.connect(function() {
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+        })
+
+        Scanner.cutFilter.bottomChanged.connect(function() {
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+        })
+
+        Scanner.cutFilter.leftChanged.connect(function() {
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+        })
+
+        Scanner.cutFilter.rightChanged.connect(function() {
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+        })
     }
 }

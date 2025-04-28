@@ -92,6 +92,12 @@ public:
 
     QPointF right() const;
 
+    /// Rotate the selection counterclockwise.
+    Q_INVOKABLE void rotateLeft();
+
+    /// Rotate the selection clockwise.
+    Q_INVOKABLE void rotateRight();
+
     /// Fix the current selection as new state for snappy edges.
     Q_INVOKABLE void fixSnappyEdges();
 

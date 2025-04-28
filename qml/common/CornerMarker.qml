@@ -91,10 +91,11 @@ Item {
         }
     }
 
-    /// Set the visible position of the marker. If no drag is active also set the position
-    /// of the drag area.
+    /// Set the visible position of the marker unless a drag is active.
     function setCenter(point) {
-        dragArea.x = point.x - root.radius
-        dragArea.y = point.y - root.radius
+        if (!dragActive) {
+            dragArea.x = point.x - root.radius
+            dragArea.y = point.y - root.radius
+        }
     }
 }

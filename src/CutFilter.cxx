@@ -290,6 +290,62 @@ QPointF CutFilter::right() const
     }
 }
 
+void CutFilter::rotateLeft()
+{
+    if (d->edges == nullptr) return;
+
+    auto tl = d->edges->topLeft();
+    auto tr = d->edges->topRight();
+    auto br = d->edges->bottomRight();
+    auto bl = d->edges->bottomLeft();
+
+    QImage img =
+        previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+    d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+    d->edges->setTopLeft({tr.y(), img.height() - tr.x()});
+    d->edges->setTopRight({br.y(), img.height() - br.x()});
+    d->edges->setBottomRight({bl.y(), img.height() - bl.x()});
+    d->edges->setBottomLeft({tl.y(), img.height() - tl.x()});
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+}
+
+void CutFilter::rotateRight()
+{
+    if (d->edges == nullptr) return;
+
+    auto tl = d->edges->topLeft();
+    auto tr = d->edges->topRight();
+    auto br = d->edges->bottomRight();
+    auto bl = d->edges->bottomLeft();
+
+    QImage img =
+        previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+    d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+    d->edges->setTopLeft({img.width() - bl.y(), bl.x()});
+    d->edges->setTopRight({img.width() - tl.y(), tl.x()});
+    d->edges->setBottomRight({img.width() - tr.y(), tr.x()});
+    d->edges->setBottomLeft({img.width() - br.y(), br.x()});
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+}
+
 QVariantList CutFilter::selectAll()
 {
     if (d->edges == nullptr) {
@@ -309,6 +365,15 @@ QVariantList CutFilter::selectAll()
     QVariantList lst;
     lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
 
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+
     return lst;
 }
 
@@ -326,6 +391,15 @@ QVariantList CutFilter::autoDetectCutRect()
 
     QVariantList lst;
     lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
 
     return lst;
 }
