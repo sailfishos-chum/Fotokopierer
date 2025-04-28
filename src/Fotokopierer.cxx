@@ -32,6 +32,9 @@ const QString FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 const QString DocumentRoot = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
                              QStringLiteral("/Fotokopierer");
 
+static const int MaxResolutionWidth = 4000;
+static const int MaxResolutionHeight = 3000;
+
 QDir getDocumentDirectory()
 {
     auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
@@ -125,7 +128,8 @@ QSize Fotokopierer::defaultResolution(QObject* capture) const
     if (captures.count() > 0) {
         QSize resolution;
         for (auto&& r : captures[0]->supportedResolutions()) {
-            if (r.width() * 3 == r.height() * 4 && r.width() > resolution.width()) {
+            if (r.width() * 3 == r.height() * 4 && r.width() > resolution.width() &&
+                r.width() <= MaxResolutionWidth && r.height() <= MaxResolutionHeight) {
                 resolution = r;
             }
         }
