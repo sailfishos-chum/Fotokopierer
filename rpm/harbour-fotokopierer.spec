@@ -9,8 +9,8 @@ Name:       harbour-fotokopierer
 # << macros
 
 Summary:    Document Scanner
-Version:    0.4.7
-Release:    2%{?dist}
+Version:    0.4.8
+Release:    1%{?dist}
 Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://chiselapp.com/user/fifr/repository/fotokopierer
