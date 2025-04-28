@@ -291,32 +291,6 @@ Page* Document::newPage()
     return page.data();
 }
 
-void Document::addScannedPage(Scanner* scanner)
-{
-    if (d->status != Ready) {
-        emit error(tr("Cannot add page, document is not ready"));
-        return;
-    }
-
-    setStatus(Adding);
-
-    auto dir = directory();
-    if (!dir.exists()) {
-        dir.mkpath(QStringLiteral("."));
-    }
-
-    QSharedPointer<Page> page(new Page(dir, scanner, this));
-    connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
-    connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
-    connect(page.data(), &Page::error, this, &Document::error);
-
-    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(page);
-    endInsertRows();
-
-    emit pagesChanged();
-}
-
 void Document::onPageUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
