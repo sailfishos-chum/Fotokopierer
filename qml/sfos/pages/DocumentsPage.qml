@@ -91,8 +91,7 @@ Page {
                 docpage.editing = false
                 docpage.deleting = true
                 remorse.execute(docDelegate, qsTr("Delete document"), function () {
-                    console.log("delete document")
-                    //document.deletePage(docDelegate.DelegateModel.itemsIndex)
+                    DocumentList.deleteDocument(docDelegate.DelegateModel.itemsIndex)
                 })
             }
 
