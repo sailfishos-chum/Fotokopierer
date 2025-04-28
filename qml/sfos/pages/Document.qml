@@ -67,13 +67,10 @@ Page {
             id: pageDelegate
             width: grid.cellWidth
             height: grid.cellHeight
-            factor: docpage.editing || docpage.dragging ? 0.8 : 0.9
+            dragEnabled: docpage.editing || docpage.dragging
             thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
             isAddButton: role_thumbnail == null
-
-            Behavior on factor {
-                NumberAnimation { duration: 100 }
-            }
+            visible: !isAddButton || (!docpage.editing && !docpage.dragging)
 
             onDraggingStarted: {
                 docpage.editing = false
@@ -138,8 +135,10 @@ Page {
         VerticalScrollDecorator {}
 
         MouseArea {
-            anchors.fill: parent
-            visible: !docpage.dragging && !docpage.deleting && !docpage.editing
+            anchors.fill: grid
+            enabled: !docpage.dragging && !docpage.deleting && !docpage.editing
+
+            propagateComposedEvents: true
 
             onPressAndHold: {
                 docpage.editing = true

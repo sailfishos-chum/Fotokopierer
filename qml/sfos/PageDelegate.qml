@@ -27,9 +27,8 @@ DragDelegate {
 
     property string thumbnail
     property bool isAddButton: false
-    property double factor: 0.9
 
-    dragEnabled: !isAddButton
+    canBeDragged: !isAddButton
 
     signal addPage()
 
@@ -65,8 +64,17 @@ DragDelegate {
     Loader {
         id: loader
 
-        width: parent.width * dragDelegate.factor
-        height: parent.height * dragDelegate.factor
+        width: parent.width * 0.9 * (dragDelegate.dragEnabled ? 0.9 : 1.0)
+        height: parent.height * 0.9 * (dragDelegate.dragEnabled ? 0.9 : 1.0)
+
+        Behavior on width {
+            NumberAnimation { duration: 100 }
+        }
+
+        Behavior on height {
+            NumberAnimation { duration: 100 }
+        }
+
         anchors {
             horizontalCenter: parent.horizontalCenter
             verticalCenter: parent.verticalCenter

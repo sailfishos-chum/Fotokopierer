@@ -22,7 +22,9 @@ import Sailfish.Silica 1.0
 MouseArea {
     id: dragArea
 
-    property bool dragEnabled: true
+    property bool canBeDragged: true
+    property bool dragEnabled: false
+
     property bool held: false
     property int sourceIndex: 0
 
@@ -31,6 +33,8 @@ MouseArea {
     signal itemMoved(int from, int to)
     signal draggingStarted()
     signal draggingFinished()
+
+    enabled: dragEnabled
 
     drag.target: held ? content : undefined
     drag.axis: Drag.XAndYAxis
@@ -64,7 +68,7 @@ MouseArea {
         onEntered: {
             dragArea.DelegateModel.model.items.move(drag.source.DelegateModel.itemsIndex, dragArea.DelegateModel.itemsIndex)
         }
-        enabled: dragArea.dragEnabled
+        enabled: dragArea.canBeDragged
     }
 
     Item {
