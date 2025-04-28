@@ -79,10 +79,11 @@ struct Document::Data {
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
 {
     connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, [this]() {
-        setStatus(Ready);
         try {
             setDocData(d->pendingDoc.result());
+            setStatus(Ready);
         } catch (ReadError &e) {
+            setStatus(Invalid);
             emit error(e.message());
         }
     });
@@ -329,7 +330,9 @@ bool Document::load(const QString &filename)
 
     try {
         setDocData(DocData::fromFile(filename));
+        setStatus(Ready);
     } catch (ReadError &e) {
+        setStatus(Invalid);
         emit error(e.message());
         qWarning() << "Error reading file: " << e.message();
         return false;

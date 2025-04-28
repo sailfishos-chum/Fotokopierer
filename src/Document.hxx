@@ -41,9 +41,10 @@ public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole };
 
     enum Status {
-        Ready,    ///< Document is ready,
+        Ready,    ///< Document is ready
+        Invalid,  ///< Document has become invalid (e.g. error during loading)
         Loading,  ///< Document is being loaded
-        Adding    ///< A page is being added.
+        Adding,   ///< A page is being added.
     };
     Q_ENUM(Status)
 
