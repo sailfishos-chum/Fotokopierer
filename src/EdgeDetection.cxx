@@ -106,6 +106,12 @@ struct EdgeDetection::Data {
 
     bool get_snappy_line(const QPointF& p, bool horizontal, QLineF& sline) const;
 
+    /// Project the selected quadrangle to the image boundaries
+    void project_quadrangle();
+
+    /// Project point to image boundaries.
+    QPointF project(const QPointF& p) const;
+
     static bool distances_to_intersection(const QLineF& l1, const QLineF& l2, qreal& alpha, qreal& beta);
     std::pair<qreal, Quadrangle> compute_area(std::size_t ileft, std::size_t iright, std::size_t itop, std::size_t ibottom) const;
 };
@@ -215,7 +221,7 @@ std::vector<QPointF> EdgeDetection::points() const
 
 void EdgeDetection::setTopLeft(const QPointF& tl)
 {
-    d->quad.tl = tl;
+    d->quad.tl = d->project(tl);
 }
 
 QPointF EdgeDetection::topLeft() const
@@ -225,7 +231,7 @@ QPointF EdgeDetection::topLeft() const
 
 void EdgeDetection::setTopRight(const QPointF& tr)
 {
-    d->quad.tr = tr;
+    d->quad.tr = d->project(tr);
 }
 
 QPointF EdgeDetection::topRight() const
@@ -235,12 +241,22 @@ QPointF EdgeDetection::topRight() const
 
 void EdgeDetection::setBottomLeft(const QPointF& bl)
 {
-    d->quad.bl = bl;
+    d->quad.bl = d->project(bl);
 }
 
 QPointF EdgeDetection::bottomLeft() const
 {
     return d->quad.bl;
+}
+
+void EdgeDetection::setBottomRight(const QPointF& br)
+{
+    d->quad.br = d->project(br);
+}
+
+QPointF EdgeDetection::bottomRight() const
+{
+    return d->quad.br;
 }
 
 void EdgeDetection::setTopPoint(const QPointF& p)
@@ -255,6 +271,7 @@ void EdgeDetection::setTopPoint(const QPointF& p)
     QLineF right(d->quad.tr, d->quad.br);
     top.intersect(left, &d->quad.tl);
     top.intersect(right, &d->quad.tr);
+    d->project_quadrangle();
 }
 
 QPointF EdgeDetection::topPoint() const
@@ -274,6 +291,7 @@ void EdgeDetection::setBottomPoint(const QPointF& p)
     QLineF right(d->quad.tr, d->quad.br);
     bottom.intersect(left, &d->quad.bl);
     bottom.intersect(right, &d->quad.br);
+    d->project_quadrangle();
 }
 
 QPointF EdgeDetection::bottomPoint() const
@@ -294,6 +312,7 @@ void EdgeDetection::setLeftPoint(const QPointF& p)
     left.translate(p - center(left));
     left.intersect(top, &d->quad.tl);
     left.intersect(bottom, &d->quad.bl);
+    d->project_quadrangle();
 }
 
 QPointF EdgeDetection::leftPoint() const
@@ -314,21 +333,12 @@ void EdgeDetection::setRightPoint(const QPointF& p)
     right.translate(p - center(right));
     right.intersect(top, &d->quad.tr);
     right.intersect(bottom, &d->quad.br);
+    d->project_quadrangle();
 }
 
 QPointF EdgeDetection::rightPoint() const
 {
     return center(QLineF(d->quad.tr, d->quad.br));
-}
-
-void EdgeDetection::setBottomRight(const QPointF& br)
-{
-    d->quad.br = br;
-}
-
-QPointF EdgeDetection::bottomRight() const
-{
-    return d->quad.br;
 }
 
 std::vector<QLineF> EdgeDetection::vertical_lines() const
@@ -432,6 +442,8 @@ void EdgeDetection::autoDetect()
     d->find_snappy_edges();
 
     fixNonSnappyEdges();
+
+    d->project_quadrangle();
 }
 
 EdgeDetection EdgeDetection::detect_in_image(const QImage& image)
@@ -670,6 +682,20 @@ void EdgeDetection::Data::find_snappy_edges()
             }
         }
     }
+}
+
+QPointF EdgeDetection::Data::project(const QPointF& p) const
+{
+    return {qBound(static_cast<qreal>(0), p.x(), static_cast<qreal>(image.width())),
+            qBound(static_cast<qreal>(0), p.y(), static_cast<qreal>(image.height()))};
+}
+
+void EdgeDetection::Data::project_quadrangle()
+{
+    quad.tl = project(quad.tl);
+    quad.tr = project(quad.tr);
+    quad.br = project(quad.br);
+    quad.bl = project(quad.bl);
 }
 
 bool EdgeDetection::Data::get_snappy_line(const QPointF& p, bool horizontal, QLineF& sline) const
