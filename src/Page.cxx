@@ -36,12 +36,18 @@ namespace
 class GeneratingError : public QException
 {
 public:
-    GeneratingError(const QString& message)
+    explicit GeneratingError(const QString& message)
         : message_(message) {}
-    GeneratingError(const GeneratingError&) = default;
 
-    void raise() const { throw *this; }
-    GeneratingError* clone() const { return new GeneratingError(*this); }
+    GeneratingError(const GeneratingError&) = default;
+    GeneratingError(GeneratingError&&) = default;
+    GeneratingError& operator=(const GeneratingError&) = default;
+    GeneratingError& operator=(GeneratingError&&) = default;
+
+    ~GeneratingError() override = default;
+
+    void raise() const override { throw *this; }
+    GeneratingError* clone() const override { return new GeneratingError(*this); }
 
     QString message() const { return message_; }
 
