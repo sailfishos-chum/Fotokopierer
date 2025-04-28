@@ -18,7 +18,6 @@
 import QtQuick 2.0
 import QtQml.Models 2.2
 import Sailfish.Silica 1.0
-import Sailfish.Pickers 1.0
 import Fotokopierer 1.0
 
 import ".."
@@ -31,44 +30,10 @@ Page {
     property bool editing: false
     property bool dragging: false
 
-    Component {
-        id: imagePickerPage
-        ImagePickerPage {
-            // Note that this property might become unsupported in future
-            popOnSelection: false
-
-            onSelectedContentPropertiesChanged: {
-                var plain = Fotokopierer.loadPlainImage(selectedContentProperties.filePath)
-
-                var CutPage = Qt.createComponent(Qt.resolvedUrl("CutPage.qml"))
-                var cutpage = CutPage.createObject(docpage, {"source": plain})
-                pageStack.push(cutpage)
-
-                var ColorizePage = Qt.createComponent(Qt.resolvedUrl("ColorizePage.qml"))
-                var colpage = ColorizePage.createObject(docpage,
-                                                        {
-                                                            "source": cutpage.image,
-                                                            "acceptDestination": docpage,
-                                                            "acceptDestinationAction": PageStackAction.Pop,
-                                                        })
-                pageContainer.pushAttached(colpage)
-                colpage.accepted.connect(function() {
-                    document.addPage(plain, colpage.image)
-                })
-
-                // Ensure the pages are destroyed once they are dropped from the
-                // page stack. This is necessary so that the memory allocated by
-                // the image classes is freed (the memory is allocated on the
-                // C++ side and possibly not visible for the QML garbage
-                // collector).
-                cutpage.pageContainerChanged.connect(function() {
-                    if (cutpage.pageContainer == null) {
-                        colpage.destroy()
-                        cutpage.destroy()
-                        plain.destroy()
-                    }
-                })
-            }
+    NewImagePage {
+        id: newImagePage
+        onAddPage: {
+            document.addPage(original, result)
         }
     }
 
@@ -133,7 +98,7 @@ Page {
             onItemMoved: visualModel.model.move(from, to)
 
             function addPage() {
-                pageStack.push(imagePickerPage)
+                pageStack.push(newImagePage)
             }
 
             function openPage() {

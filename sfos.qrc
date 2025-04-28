@@ -9,5 +9,6 @@
 	 <file>qml/sfos/pages/ColorizePage.qml</file>
 	 <file>qml/sfos/pages/DocumentPage.qml</file>
 	 <file>qml/sfos/pages/DocumentsPage.qml</file>
+	 <file>qml/sfos/pages/NewImagePage.qml</file>
   </qresource>
 </RCC>
