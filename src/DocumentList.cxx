@@ -36,7 +36,7 @@ DocumentList::DocumentList(QObject *parent)
     : QAbstractListModel(parent), d(new Data)
 {
     auto dir = getDocumentDirectory();
-    for (auto path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
+    for (auto &path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
         QDir docdir = dir;
         docdir.cd(path);
         if (docdir.exists(QStringLiteral("doc.json"))) {
