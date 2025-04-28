@@ -2,7 +2,7 @@ target = harbour-fotokopierer
 
 arch := i486
 #arch := armv7hl
-sfos_version := 3.0.3.9
+sfos_version := 3.0.2.8
 device := jolla
 
 sdk_dir := $(HOME)/SailfishOS

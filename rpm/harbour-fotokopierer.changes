@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-3
+- Build against SailfishOS 3.0.2.8
+
 * Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
 - Update translation
 

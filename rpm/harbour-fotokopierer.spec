@@ -10,7 +10,7 @@ Name:       harbour-fotokopierer
 
 Summary:    Document Scanner
 Version:    0.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://fifr.spdns.de/fossils/harbour-fotokopierer
