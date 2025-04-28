@@ -52,17 +52,6 @@ public:
 public:
     explicit Page(QObject* parent = nullptr);
 
-    Page(const QDateTime& creation_time,
-         const QString& original_path,
-         const QString& result_path,
-         const QString& thumbnail_path,
-         QObject* parent);
-
-    /// Create a new page from a scanned image.
-    ///
-    /// The document is placed in the given directory.
-    Page(const QDir& dir, const Scanner* scanner, QObject* parent);
-
     Page(const Page&) = delete;
     Page(Page&&) = delete;
     Page& operator=(const Page&) = delete;

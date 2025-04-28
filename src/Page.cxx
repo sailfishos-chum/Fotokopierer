@@ -76,25 +76,6 @@ Page::Page(QObject* parent)
     connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
 }
 
-Page::Page(const QDateTime& creation_time,
-           const QString& original_path,
-           const QString& result_path,
-           const QString& thumbnail_path,
-           QObject* parent)
-    : Page(parent)
-{
-    d->creation_time = creation_time;
-    d->original_path = original_path;
-    d->result_path = result_path;
-    d->thumbnail_path = thumbnail_path;
-}
-
-Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
-    : Page(parent)
-{
-    loadFromScanner(dir, scanner);
-}
-
 Page::~Page() = default;
 
 void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
