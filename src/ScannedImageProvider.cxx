@@ -116,11 +116,11 @@ QImage ScannedImageProvider::requestImage(const QString& id,
 
     if (toks[1] == QLatin1String("original")) {
         auto angle = 0.0;
-        if (toks.size() == 4 && toks[2] == QLatin1String("rotate")) {
-            angle = toks[3].toFloat();
+        if (toks.size() == 3) {
+            angle = toks[2].toFloat();
         }
         set_angle(toks[0], angle);
-        return cvMatToQImage(img->original);
+        return cvMatToQImage(getRotatedImage(*img));
     } else if (toks[1] == QLatin1String("cut")) {
         auto colormode = Colored;
 
@@ -175,6 +175,9 @@ void ScannedImageProvider::set_angle(const QString& image, double angle)
     auto img = d->images.find(image);
     if (img != d->images.end()) {
         auto rotAngle = (int)angle % 360;
+        if (rotAngle < 0) {
+            rotAngle += 360;
+        }
         if (rotAngle != img->rotAngle) {
             img->rotAngle = rotAngle;
             img->state = (ImageState)std::min((int)img->state, Rotated - 1);
@@ -277,8 +280,6 @@ const cv::Mat& getRotatedImage(ImageSet& img)
                    factor,
                    factor,
                    cv::INTER_AREA);
-        qDebug() << "FACTOR " << factor << " " << img.rotated.cols << " "
-                 << img.rotated.rows;
         switch ((int)img.rotAngle % 360) {
             case 90:
                 cv::rotate(img.rotated, img.rotated, cv::ROTATE_90_CLOCKWISE);

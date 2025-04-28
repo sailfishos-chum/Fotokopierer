@@ -54,7 +54,7 @@ Item {
 		  id: image
 		  anchors.fill: parent
 		  fillMode: Image.PreserveAspectFit
-		  source: "image://Scanned/" + img.original + "/rotate/" + angle
+		  source: "image://Scanned/" + img.original + "/" + angle
 	 }
 
 	 Canvas {
