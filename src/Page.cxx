@@ -20,90 +20,38 @@
 #include "Document.hxx"
 #include "PlainImage.hxx"
 
+#include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QFutureWatcher>
 #include <QtCore/QJsonObject>
-#include <QtCore/QThread>
 #include <QtGui/QImage>
 
-namespace
-{
-/// Task to load and scale an image asynchronously.
-///
-/// This thread loads the original file, scales it down, stores the thumbnail in
-/// a file and the sends the resulting image as its signal.
-class ThumbnailTask : public QObject
-{
-    Q_OBJECT
-
-public slots:
-    void run(const QString& filename)
-    {
-        // compute the resulting filename by attaching "-thumb" to the file name
-        QFileInfo f(filename);
-        QString scaled_filename = f.path() + QStringLiteral("/") + f.baseName() +
-                                  QStringLiteral("-thumb.") + f.completeSuffix();
-
-        // load original file
-        QImage img(filename);
-
-        if (img.isNull()) {
-            emit resultReady({});
-            return;
-        }
-
-        // scale down
-        QImage scaled;
-        if (img.width() > img.height()) {
-            scaled = img.scaledToWidth(Page::ThumbnailSize);
-        } else {
-            scaled = img.scaledToHeight(Page::ThumbnailSize);
-        }
-
-        // write thumbnail to file
-        scaled.save(scaled_filename);
-
-        // send result
-        emit resultReady(scaled_filename);
-    }
-
-signals:
-    void resultReady(const QString& path);
-};
-
-static QThread* thumbnailThread()
-{
-    static QThread thread;
-    static bool started = false;
-    if (!started) {
-        started = true;
-        thread.start();
-    }
-    return &thread;
-}
-
-}  // namespace
-
 struct Page::Data {
-    ThumbnailTask* task = nullptr;
     QDateTime creation_time;
     QString original_path;
     QString result_path;
     QString thumbnail_path;
 
+    QFutureWatcher<QString> result_thumbnail;
+
     bool loading = false;
 };
 
-Page::Page(QObject* parent) : QObject(parent), d(new Data) {}
+Page::Page(QObject* parent) : QObject(parent), d(new Data)
+{
+    connect(
+        &d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::thumbnailFinished);
+}
 
 Page::Page(const QDateTime& creation_time,
            const QString& original_path,
            const QString& result_path,
            const QString& thumbnail_path,
            QObject* parent)
-    : QObject(parent), d(new Data)
+    : Page(parent)
 {
     d->creation_time = creation_time;
     d->original_path = original_path;
@@ -111,10 +59,7 @@ Page::Page(const QDateTime& creation_time,
     d->thumbnail_path = thumbnail_path;
 }
 
-Page::~Page()
-{
-    if (d->task) d->task->deleteLater();
-}
+Page::~Page() = default;
 
 QDateTime Page::creationTime() const
 {
@@ -135,34 +80,23 @@ QString Page::thumbnail()
     if (!d->loading) {
         d->loading = true;
         // thumbnail does not exist, try to create it from the result image
-        if (!d->thumbnail_path.isEmpty()) {
-            d->thumbnail_path = QString();
-        }
+        if (!d->thumbnail_path.isEmpty()) d->thumbnail_path.clear();
 
-        if (!d->task) {
-            auto task = new ThumbnailTask();
-            task->moveToThread(thumbnailThread());
-            connect(task, &ThumbnailTask::resultReady, this, &Page::setThumbnail);
-            connect(this, &Page::refreshThumbnail, task, &ThumbnailTask::run);
-            d->task = task;
-        }
-
-        emit refreshThumbnail(d->result_path);
+        d->result_thumbnail.setFuture(
+            QtConcurrent::run(this, &Page::updateThumbnail, d->result_path));
     }
 
     return {};
 }
 
-void Page::setThumbnail(const QString& path)
+void Page::thumbnailFinished()
 {
+    auto path = d->result_thumbnail.result();
     if (path != d->thumbnail_path) {
         d->thumbnail_path = path;
         emit thumbnailChanged();
     }
-
     d->loading = false;
-    d->task->deleteLater();
-    d->task = nullptr;
 }
 
 QString Page::getOriginalImagePath() const
@@ -180,6 +114,32 @@ void Page::remove()
     QFile(d->original_path).remove();
     QFile(d->result_path).remove();
     QFile(d->thumbnail_path).remove();
+}
+
+QString Page::updateThumbnail(const QString& filename) const
+{
+    // compute the resulting filename by attaching "-thumb" to the file name
+    QFileInfo f(filename);
+    QString scaled_filename = f.path() + QStringLiteral("/") + f.baseName() +
+                              QStringLiteral("-thumb.") + f.completeSuffix();
+
+    // load original file
+    QImage img(filename);
+
+    if (img.isNull()) return {};
+
+    // scale down
+    QImage scaled;
+    if (img.width() > img.height()) {
+        scaled = img.scaledToWidth(Page::ThumbnailSize);
+    } else {
+        scaled = img.scaledToHeight(Page::ThumbnailSize);
+    }
+
+    // write thumbnail to file
+    scaled.save(scaled_filename);
+
+    return scaled_filename;
 }
 
 bool Page::write(QJsonObject& json) const
@@ -218,5 +178,3 @@ bool Page::read(const QJsonObject& json)
 
     return true;
 }
-
-#include "Page.moc"

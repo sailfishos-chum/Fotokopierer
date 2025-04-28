@@ -61,11 +61,13 @@ public slots:
     /// Delete all files associated with this page.
     void remove();
 
+private:
+    QString updateThumbnail(const QString& filename) const;
+
 private slots:
-    void setThumbnail(const QString& path);
+    void thumbnailFinished();
 
 signals:
-    void refreshThumbnail(const QString& filename);
     void thumbnailChanged();
 
 private:
