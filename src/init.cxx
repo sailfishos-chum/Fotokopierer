@@ -50,7 +50,11 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
     qmlRegisterUncreatableType<Document>(
-        "Fotokopierer", 1, 0, "Doc", QStringLiteral("Document cannot be used as QML component"));
+        "Fotokopierer",
+        1,
+        0,
+        "Document",
+        QStringLiteral("Document cannot be used as QML component"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
