@@ -30,7 +30,6 @@ Page {
     property var document
     property bool editing: false
     property bool dragging: false
-    property bool deleting: false
 
     Component {
         id: imagePickerPage
@@ -85,17 +84,44 @@ Page {
             pagenumber: DelegateModel.itemsIndex + 1
             creationTime: role_creationTime || new Date()
 
-            dragEnabled: docpage.editing || docpage.dragging
             isAddButton: role_thumbnail == null
             visible: !isAddButton || (!docpage.editing && !docpage.dragging)
+            zoom: docpage.editing
 
-            onDraggingStarted: {
-                docpage.editing = false
-                docpage.dragging = true
+            onPressed: {
+                if (docpage.editing) {
+                    docpage.editing = false
+                    docpage.dragging = true
+                    startDragging()
+                }
             }
-            onDraggingFinished: docpage.dragging = false
+
+            onReleased: {
+                if (docpage.dragging) {
+                    docpage.dragging = false
+                    stopDragging()
+                }
+            }
+
+            onClicked: {
+                if (docpage.editing) {
+                    docpage.editing = false
+                } else if (isAddButton) {
+                    addPage()
+                } else {
+                    openPage()
+                }
+            }
+
             onItemMoved: visualModel.model.move(from, to)
-            onAddPage: pageStack.push(imagePickerPage)
+
+            function addPage() {
+                pageStack.push(imagePickerPage)
+            }
+
+            function openPage() {
+                console.log("open page")
+            }
 
             IconButton {
                 visible: docpage.editing && !isAddButton
@@ -104,7 +130,6 @@ Page {
                 onClicked: {
                     docpage.dragging = false
                     docpage.editing = false
-                    docpage.deleting = true
                     remorse.execute(pageDelegate, qsTr("Delete page"), function () {
                         document.deletePage(pageDelegate.DelegateModel.itemsIndex)
                     })
@@ -113,8 +138,6 @@ Page {
 
             RemorseItem {
                 id: remorse
-                onCanceled: docpage.deleting = false
-                onTriggered: docpage.deleting = false
             }
         }
 
@@ -147,12 +170,26 @@ Page {
 
         MouseArea {
             anchors.fill: grid
-            enabled: !docpage.dragging && !docpage.deleting && !docpage.editing
 
             propagateComposedEvents: true
 
+            onClicked: {
+                if (docpage.editing) {
+                    var index = grid.indexAt(grid.contentX + mouse.x, grid.contentY + mouse.y)
+                    if (index == -1 || index == visualModel.count - 1) {
+                        docpage.editing = false
+                    } else {
+                        mouse.accepted = false
+                    }
+                } else {
+                    mouse.accepted = false
+                }
+            }
+
             onPressAndHold: {
-                docpage.editing = true
+                if (visualModel.count > 1) {
+                    docpage.editing = true
+                }
             }
         }
 

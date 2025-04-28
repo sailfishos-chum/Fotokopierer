@@ -23,7 +23,6 @@ MouseArea {
     id: dragArea
 
     property bool canBeDragged: true
-    property bool dragEnabled: false
 
     property bool held: false
     property int sourceIndex: 0
@@ -31,10 +30,6 @@ MouseArea {
     default property alias data: content.data
 
     signal itemMoved(int from, int to)
-    signal draggingStarted()
-    signal draggingFinished()
-
-    enabled: dragEnabled
 
     drag.target: held ? content : undefined
     drag.axis: Drag.XAndYAxis
@@ -42,13 +37,11 @@ MouseArea {
     function startDragging() {
         held = true
         sourceIndex = DelegateModel.itemsIndex
-        draggingStarted()
     }
 
     function endDragging() {
         held = false
         itemMoved(sourceIndex, DelegateModel.itemsIndex)
-        draggingFinished()
     }
 
     states: State {

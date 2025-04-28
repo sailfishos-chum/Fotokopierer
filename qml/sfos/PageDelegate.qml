@@ -27,13 +27,9 @@ DragDelegate {
     property int pagenumber
     property date creationTime
     property bool isAddButton: false
+    property bool zoom: false
 
     canBeDragged: !isAddButton
-
-    signal addPage()
-
-    onPressed: startDragging()
-    onReleased: endDragging()
 
     Component {
         id: addButtonView
@@ -52,8 +48,6 @@ DragDelegate {
                 border.width: 1
                 border.color: Theme.secondaryHighlightColor
             }
-
-            onClicked: addPage()
         }
     }
 
@@ -99,8 +93,8 @@ DragDelegate {
     Loader {
         id: loader
 
-        width: parent.width * 0.9 * (dragDelegate.dragEnabled ? 0.9 : 1.0)
-        height: parent.height * 0.9 * (dragDelegate.dragEnabled ? 0.9 : 1.0)
+        width: parent.width * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
+        height: parent.height * 0.9 * (dragDelegate.zoom ? 0.9 : 1.0)
 
         Behavior on width {
             NumberAnimation { duration: 100 }
