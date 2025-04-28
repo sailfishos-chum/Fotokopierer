@@ -38,6 +38,8 @@ Item {
     property var _next_br
     property var _next_bl
 
+    property bool dontchange: false
+
     FilterImage {
         id: image
 
@@ -164,10 +166,14 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: {
-            Scanner.cutFilter.topLeft = mapPoint(center)
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
-            pane.update(center)
+            if (!pane.dontchange) {
+                pane.dontchange = true;
+                Scanner.cutFilter.topLeft = mapPoint(center)
+                top.setCenter(unmapPoint(Scanner.cutFilter.top))
+                left.setCenter(unmapPoint(Scanner.cutFilter.left))
+                pane.update(center)
+                pane.dontchange = false;
+            }
         }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
@@ -181,10 +187,14 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: {
-            Scanner.cutFilter.topRight = mapPoint(center)
-            top.setCenter(unmapPoint(Scanner.cutFilter.top))
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
-            pane.update(center)
+            if (!pane.dontchange) {
+                pane.dontchange = true;
+                Scanner.cutFilter.topRight = mapPoint(center)
+                top.setCenter(unmapPoint(Scanner.cutFilter.top))
+                right.setCenter(unmapPoint(Scanner.cutFilter.right))
+                pane.update(center)
+                pane.dontchange = false;
+            }
         }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
@@ -198,10 +208,14 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: {
-            Scanner.cutFilter.bottomLeft = mapPoint(center)
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-            left.setCenter(unmapPoint(Scanner.cutFilter.left))
-            pane.update(center)
+            if (!pane.dontchange) {
+                pane.dontchange = true;
+                Scanner.cutFilter.bottomLeft = mapPoint(center)
+                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+                left.setCenter(unmapPoint(Scanner.cutFilter.left))
+                pane.update(center)
+                pane.dontchange = false;
+            }
         }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
@@ -215,10 +229,14 @@ Item {
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: {
-            Scanner.cutFilter.bottomRight = mapPoint(center)
-            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
-            right.setCenter(unmapPoint(Scanner.cutFilter.right))
-            pane.update(center)
+            if (!pane.dontchange) {
+                pane.dontchange = true;
+                Scanner.cutFilter.bottomRight = mapPoint(center)
+                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+                right.setCenter(unmapPoint(Scanner.cutFilter.right))
+                pane.update(center)
+                pane.dontchange = false;
+            }
         }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
@@ -231,7 +249,16 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            if (!pane.dontchange) {
+                Scanner.cutFilter.top = mapPoint(center)
+                pane.dontchange = true
+                topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+                topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+                pane.dontchange = false
+                pane.update(center)
+            }
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -243,7 +270,16 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            if (!pane.dontchange) {
+                Scanner.cutFilter.bottom = mapPoint(center)
+                pane.dontchange = true
+                bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+                bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+                pane.dontchange = false
+                pane.update(center)
+            }
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -255,7 +291,16 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            if (!pane.dontchange) {
+                Scanner.cutFilter.left = mapPoint(center)
+                pane.dontchange = true
+                topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+                bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+                pane.dontchange = false
+                pane.update(center)
+            }
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
@@ -267,7 +312,16 @@ Item {
         minY: (pane.height - image.paintedHeight) / 2 - markerRadius
         maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(center)
+        onCenterChanged: {
+            if (!pane.dontchange) {
+                Scanner.cutFilter.right = mapPoint(center)
+                pane.dontchange = true
+                topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+                bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+                pane.dontchange = false
+                pane.update(center)
+            }
+        }
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(center) }
     }
 
