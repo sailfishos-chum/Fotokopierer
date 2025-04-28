@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -334,11 +334,12 @@ void Document::remove()
 
 bool Document::save() const
 {
-    QFileInfo finfo(d->doc.filename);
+    QFileInfo doc_fileinfo(d->doc.filename);
+    QDir docpath = doc_fileinfo.absoluteDir();
 
-    if (!finfo.dir().exists()) {
-        if (!finfo.dir().mkpath(QStringLiteral("."))) {
-            qWarning() << tr("Cannot create path %1").arg(finfo.dir().path());
+    if (!docpath.exists()) {
+        if (!docpath.mkpath(QStringLiteral("."))) {
+            qWarning() << tr("Cannot create path %1").arg(docpath.path());
             return false;
         }
     }
@@ -351,13 +352,13 @@ bool Document::save() const
     QJsonObject doc;
 
     doc[QStringLiteral("title")] = d->doc.title;
-    doc[QStringLiteral("filename")] = d->doc.filename;
+    doc[QStringLiteral("filename")] = doc_fileinfo.fileName();
     doc[QStringLiteral("creationTime")] = d->doc.creation_time.toString(FilenameFormat);
 
     QJsonArray pages;
     for (auto& page : d->doc.pages) {
         QJsonObject p;
-        if (!page->write(p)) {
+        if (!page->write(p, docpath)) {
             return false;
         }
         pages << p;
@@ -370,7 +371,7 @@ bool Document::save() const
         return false;
     }
 
-    ensureNoMedia(QFileInfo(d->doc.filename).absolutePath());
+    ensureNoMedia(doc_fileinfo.absolutePath());
 
     return true;
 }
@@ -411,10 +412,19 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
 {
     auto tr = [](const char* source) { return QCoreApplication::translate("Document", source); };
 
+    qDebug() << "Load document " << filename;
+
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         throw ReadError(tr("Can't open document file %1").arg(filename));
     }
+
+    auto doc_fileinfo = QFileInfo(file);
+    auto docpath = doc_fileinfo.absolutePath();
+    auto docfile = doc_fileinfo.absoluteFilePath();
+
+    qDebug() << "Document directory: " << docpath;
+    qDebug() << "Document file: " << docfile;
 
     auto docdata = file.readAll();
     auto doc = QJsonDocument::fromJson(docdata);
@@ -422,23 +432,27 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
 
     auto title = json[QStringLiteral("title")];
     if (!title.isString() && !title.isNull()) {
+        qDebug() << QStringLiteral("Could not read document title from document file %1").arg(filename);
         throw ReadError(tr("Could not read document title from document file %1").arg(filename));
     }
 
     auto creation_time = json[QStringLiteral("creationTime")];
     if (!creation_time.isString()) {
+        qDebug() << QStringLiteral("Could not read creation time from document file %1").arg(filename);
         throw ReadError(tr("Could not read creation time from document file %1").arg(filename));
     }
     auto ctime = QDateTime::fromString(creation_time.toString(), FilenameFormat);
 
     auto pages = json[QStringLiteral("pages")];
     if (!pages.isArray()) {
+        qDebug() << QStringLiteral("Could not read pages from document file %1").arg(filename);
         throw ReadError(tr("Could not read pages from document file %1").arg(filename));
     }
 
     QVector<QSharedPointer<Page>> docpages;
     for (auto&& page : pages.toArray()) {
         if (!page.isObject()) {
+            qDebug() << QStringLiteral("Could not read page from document file %1").arg(filename);
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
         }
         QSharedPointer<Page> p(new Page);
@@ -447,18 +461,19 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
         connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
         connect(p.data(), &Page::error, document, &Document::error);
 
-        if (!p->read(page.toObject())) {
+        if (!p->read(page.toObject(), docpath)) {
+            qDebug() << QStringLiteral("Error reading page from document file %1").arg(filename);
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
         p->moveToThread(QCoreApplication::instance()->thread());
         docpages.push_back(p);
     }
 
-    ensureNoMedia(QFileInfo(file).absolutePath());
+    ensureNoMedia(docpath);
 
     DocData d;
     d.title = title.isString() ? title.toString() : ctime.toString();
-    d.filename = filename;
+    d.filename = docfile;
     d.creation_time = ctime;
     d.pages = docpages;
     return d;
