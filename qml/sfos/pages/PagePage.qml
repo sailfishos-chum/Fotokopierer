@@ -38,6 +38,7 @@ Page {
         onHeightChanged: if (imageView.status === Image.Ready) imageView.fitToScreen();
 
         PageHeader {
+            id: header
             title: thepage.title
         }
 
@@ -53,7 +54,7 @@ Page {
                 property real prevScale
 
                 width: flick.width
-                height: flick.height
+                height: flick.height - header.height - buttons.height
 
                 function fitToScreen() {
                     scale = Math.min(flick.width / width, flick.height / height, 1)
