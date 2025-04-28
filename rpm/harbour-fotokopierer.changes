@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun May 1 2022 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.6-1
+- move build of 3rd-party packages from CMakeLists.txt to rpm (for obs)
+
 * Mon Mar 21 2022 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.5-1
 - update OpenCV to 3.4.16
 - update FreeType to 2.11.1
