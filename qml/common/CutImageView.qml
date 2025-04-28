@@ -325,6 +325,18 @@ Item {
         frame.requestPaint()
     }
 
+    function initSelection() {
+        topleft.setCenter(unmapPoint(cutview.topLeft))
+        topright.setCenter(unmapPoint(cutview.topRight))
+        bottomright.setCenter(unmapPoint(cutview.bottomRight))
+        bottomleft.setCenter(unmapPoint(cutview.bottomLeft))
+        top.setCenter(unmapPoint(cutview.top))
+        bottom.setCenter(unmapPoint(cutview.bottom))
+        left.setCenter(unmapPoint(cutview.left))
+        right.setCenter(unmapPoint(cutview.right))
+        frame.requestPaint()
+    }
+
     function mapPoint(p) {
         var x = (p.x - (pane.width - cutview.paintedWidth) / 2) / cutview.paintedWidth
         var y = (p.y - (pane.height - cutview.paintedHeight) / 2) / cutview.paintedHeight
