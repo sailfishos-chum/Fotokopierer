@@ -23,6 +23,26 @@ msgctxt "CutPage|"
 msgid "Cut & Rotate"
 msgstr ""
 
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:232
+msgctxt "Document|"
+msgid "Page could not be created: no original image"
+msgstr ""
+
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:238
+msgctxt "Document|"
+msgid "Page could not be created: no result image"
+msgstr ""
+
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:252
+msgctxt "Document|"
+msgid "Page could not be created: error saving original image"
+msgstr ""
+
+#: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:258
+msgctxt "Document|"
+msgid "Page could not be created: error saving result image"
+msgstr ""
+
 #: /home/fifr/JollaProjekte/fotokopierer/src/Document.cxx:278
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
