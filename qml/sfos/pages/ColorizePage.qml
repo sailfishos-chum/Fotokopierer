@@ -51,6 +51,13 @@ Dialog {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
 
+        onScannerChanged: {
+            contrast_slider.value = colview.contrast * 100
+            brightness_slider.value = colview.brightness * 100
+            threshold_slider.value = colview.threshold * 100
+            blocksize_slider.value = colview.blockSize * 100
+        }
+
         BusyIndicator {
             size: BusyIndicatorSize.Small
             anchors.top: parent.top
