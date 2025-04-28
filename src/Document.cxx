@@ -251,10 +251,11 @@ void Document::addPage(const QImage& original, const QImage& result)
 
     auto ctime = QDateTime::currentDateTime();
     auto dir = QFileInfo(d->doc.filename).dir();
-    if (!dir.exists()) dir.mkpath(QStringLiteral("."));
+    if (!dir.exists()) {
+        dir.mkpath(QStringLiteral("."));
+    }
 
-    auto original_path =
-        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
+    auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
     auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
 
     if (!original.save(original_path)) {
@@ -292,7 +293,9 @@ void Document::addScannedPage(ScanImage* image)
     setStatus(Adding);
 
     auto dir = QFileInfo(d->doc.filename).dir();
-    if (!dir.exists()) dir.mkpath(QStringLiteral("."));
+    if (!dir.exists()) {
+        dir.mkpath(QStringLiteral("."));
+    }
 
     QSharedPointer<Page> page(new Page(dir, image, this));
     connect(page.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
@@ -368,7 +371,9 @@ bool Document::save() const
     QJsonArray pages;
     for (auto& page : d->doc.pages) {
         QJsonObject p;
-        if (!page->write(p)) return false;
+        if (!page->write(p)) {
+            return false;
+        }
         pages << p;
     }
 
