@@ -4,6 +4,10 @@
 # 
 
 Name:       harbour-fotokopierer
+
+# >> macros
+# << macros
+
 Summary:    Document Scanner
 Version:    0.1
 Release:    1
@@ -15,6 +19,7 @@ Source100:  harbour-fotokopierer.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)

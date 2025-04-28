@@ -159,7 +159,7 @@ else()
   message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 endif()
 
-find_package(Qt5 COMPONENTS Core Gui Quick)
+find_package(Qt5 COMPONENTS Core Concurrent Gui Quick)
 
 # We need to set these directories here ... luckily we know exactly where it goes.
 

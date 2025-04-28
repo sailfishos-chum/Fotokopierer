@@ -24,6 +24,7 @@ PkgBR:
 PkgConfigBR:
   - sailfishapp >= 1.0.2
   - Qt5Core
+  - Qt5Concurrent
   - Qt5Gui
   - Qt5Qml
   - Qt5Quick
