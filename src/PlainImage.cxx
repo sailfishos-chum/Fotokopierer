@@ -51,6 +51,7 @@ void PlainImage::setScale(bool enabled)
     if (enabled != d->scale) {
         d->scale = enabled;
         emit scaleChanged();
+        updateImage();
     }
 }
 
@@ -60,6 +61,7 @@ void PlainImage::setMaxSize(int maxSize)
     if (maxSize != d->maxSize) {
         d->maxSize = maxSize;
         emit maxSizeChanged();
+        updateImage();
     }
 }
 
