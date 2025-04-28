@@ -47,12 +47,12 @@ Item {
 
     function rotateLeft() {
         console.log("rotateLeft")
-        scanImage.rotateFilter.orientation -= 1
+        image.filter.orientation -= 1
     }
 
     function rotateRight() {
         console.log("rotateRight")
-        scanImage.rotateFilter.orientation += 1
+        image.filter.orientation += 1
     }
 
     function selectAll() {
