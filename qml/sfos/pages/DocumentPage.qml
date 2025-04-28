@@ -107,10 +107,17 @@ Page {
             onItemMoved: visualModel.model.move(from, to)
 
             function addPage() {
-                newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+                // newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+                // newPage.item.scanImage = scanImage
+                // newPage.item.destination = docpage
+                // newPage.item.addPage.connect(function() {
+                //     scanImage.saveAndClear(document)
+                // })
+                // pageStack.push(newPage.item)
+                newPage.source = Qt.resolvedUrl("CameraPage.qml")
                 newPage.item.scanImage = scanImage
                 newPage.item.destination = docpage
-                newPage.item.addPage.connect(function() {
+                newPage.item.addPage.connect(function () {
                     scanImage.saveAndClear(document)
                 })
                 pageStack.push(newPage.item)
