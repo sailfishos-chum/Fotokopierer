@@ -28,6 +28,7 @@ class ColorizeImage : public AsyncImage
     Q_PROPERTY(double contrast READ contrast WRITE setContrast NOTIFY contrastChanged)
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged)
     Q_PROPERTY(double details READ details WRITE setDetails NOTIFY detailsChanged)
+    Q_PROPERTY(ColorMode colorMode READ colorMode WRITE setColorMode NOTIFY colorModeChanged)
 
 public:
     /// The color mode to be used.
@@ -36,6 +37,7 @@ public:
         BlackAndWhite,
         Colored,
     };
+    Q_ENUMS(ColorMode)
 
 public:
     ColorizeImage();
