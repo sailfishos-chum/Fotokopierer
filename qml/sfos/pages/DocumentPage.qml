@@ -283,4 +283,18 @@ Page {
             pageStack.push(overwritedlg, { filename: filename })
         })
     }
+
+    Rectangle {
+        anchors.fill: parent
+        color: Theme.secondaryHighlightColor
+        opacity: 0.5
+        visible: busy.running
+    }
+
+    BusyIndicator {
+        id: busy
+        size: BusyIndicatorSize.Large
+        anchors.centerIn: parent
+        running: document.status == Document.Exporting
+    }
 }
