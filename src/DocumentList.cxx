@@ -68,6 +68,14 @@ Document *DocumentList::newDocument()
     return doc.data();
 }
 
+void DocumentList::deleteDocument(int docIndex)
+{
+    beginRemoveRows({}, docIndex, docIndex);
+    auto doc = d->docs.takeAt(docIndex);
+    doc->remove();
+    endRemoveRows();
+}
+
 void DocumentList::documentChanged()
 {
     auto sender = QObject::sender();

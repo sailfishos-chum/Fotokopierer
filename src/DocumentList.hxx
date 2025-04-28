@@ -47,6 +47,9 @@ public:
     /// On error return NULL.
     Q_INVOKABLE Document *newDocument();
 
+    /// Delete a document from the document list.
+    Q_INVOKABLE void deleteDocument(int docIndex);
+
 private:
     void addDocument(const QSharedPointer<Document> &document);
 
