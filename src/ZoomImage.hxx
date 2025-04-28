@@ -92,7 +92,7 @@ private:
     void updateFilter();
 
 private slots:
-    void updateImage();
+    void onFilterChanged();
 
 signals:
     void viewSizeChanged();

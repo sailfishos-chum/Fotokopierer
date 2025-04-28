@@ -128,12 +128,12 @@ ScanImage::FilterType ZoomImage::filterType() const
 void ZoomImage::updateFilter()
 {
     if (d->filter != nullptr) {
-        disconnect(d->filter, &Filter::filterChanged, this, &ZoomImage::updateImage);
+        disconnect(d->filter, &Filter::filterChanged, this, &ZoomImage::onFilterChanged);
     }
 
     if (d->image != nullptr && d->filter_type != ScanImage::FilterType::None) {
         d->filter = d->image->filter(d->filter_type);
-        connect(d->filter, &Filter::filterChanged, this, &ZoomImage::updateImage);
+        connect(d->filter, &Filter::filterChanged, this, &ZoomImage::onFilterChanged);
     }
     update();
 }
@@ -190,7 +190,7 @@ void ZoomImage::paint(QPainter* p)
     p->drawLine(w / 2 - w / 6, h / 2, w / 2 + w / 6, h / 2);
 }
 
-void ZoomImage::updateImage()
+void ZoomImage::onFilterChanged()
 {
     update();
 }
