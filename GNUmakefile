@@ -72,7 +72,7 @@ $(rpm_file): $(build_dir)/$(program) rpm/$(program).yaml rpm/$(program).changes
 	$(sfdk) -c "target=$(target)" package
 
 .PHONY: deploy-emu
-deploy-emu:
+deploy-emu: $(rpm_file)
 	$(sfdk) -c "device=$(emulator)" deploy --rsync
 
 .PHONY: run-emu
