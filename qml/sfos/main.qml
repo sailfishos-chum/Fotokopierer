@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,9 +17,49 @@
 
 import QtQuick 2.2
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { DocumentsPage { } }
+    id: app
+
+    DocumentsPage {
+        id: docs
+    }
+
+    initialPage: docs
+
+    cover: Component {
+        CoverPage {
+            document: docs.lastDocument
+            onNewPicture: {
+                app.activate()
+                if (document) {
+                    if (pageStack.currentPage != docs) {
+                        pageStack.pop(docs, PageStackAction.Immediate)
+                    }
+                    docs.openDocument(document)
+                    pageStack.completeAnimation()
+                    pageStack.currentPage.addPage()
+                } else {
+                    docs.addDocument()
+                }
+            }
+        }
+    }
+
+    ErrorOverlay {
+        id: error
+
+        anchors.centerIn: parent
+        width: parent.width * 0.9
+    }
+
+    Component.onCompleted: {
+        DocumentList.error.connect(function (errorMessage) {
+            error.show(errorMessage)
+        })
+        DocumentList.load()
+    }
 }

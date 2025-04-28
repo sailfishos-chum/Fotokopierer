@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +29,8 @@ class DocumentList : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(Document* latestDocument READ latestDocument NOTIFY latestDocumentChanged)
+
     enum DocumentRoles {
         TitleRole = Qt::UserRole + 1,
         CreationTimeRole,
@@ -38,29 +40,47 @@ public:
     };
 
 public:
-    explicit DocumentList(QObject *parent = nullptr);
+    explicit DocumentList(QObject* parent = nullptr);
+
+    DocumentList(const DocumentList&) = delete;
+    DocumentList(DocumentList&&) = delete;
+    DocumentList& operator=(const DocumentList&) = delete;
+    DocumentList& operator=(DocumentList&&) = delete;
 
     ~DocumentList() override;
+
+    /// Load documents from file.
+    Q_INVOKABLE void load();
 
     /// Create and return a new document.
     ///
     /// On error return NULL.
-    Q_INVOKABLE Document *newDocument();
+    Q_INVOKABLE Document* newDocument();
 
     /// Delete a document from the document list.
     Q_INVOKABLE void deleteDocument(int docIndex);
 
+    /// Return the latest (newest) document or nullptr.
+    Document* latestDocument() const;
+
+signals:
+    void latestDocumentChanged();
+
+    void error(const QString& errorMessage);
+
 private:
-    void addDocument(const QSharedPointer<Document> &document);
+    void addDocument(const QSharedPointer<Document>& document);
 
-    int rowCount(const QModelIndex &parent) const override;
+    int rowCount(const QModelIndex& parent) const override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
 
     QHash<int, QByteArray> roleNames() const override;
 
 private slots:
-    void documentChanged();
+    void onDocumentChanged();
+
+    void onDocumentStatusChanged();
 
 private:
     struct Data;

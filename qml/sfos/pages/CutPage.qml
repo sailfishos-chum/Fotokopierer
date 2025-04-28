@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,11 +24,12 @@ import "../../common"
 Page {
     id: page
 
-    property alias image: cutview.scanImage
-
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
+        if (status == PageStatus.Active) {
+            cutview.selectionFromFilter()
+        }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
         }
@@ -43,10 +44,10 @@ Page {
         id: cutview
 
         anchors.top: header.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
         anchors.bottom: buttons.top
-        markerColor: Theme.primaryColor
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width - 2 * Theme.iconSizeSmall
+        markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
     }
 
@@ -77,12 +78,12 @@ Page {
                 }
 
                 ListElement {
-                    icon: "image://theme/icon-m-crop"
+                    icon: "/icons/icon-m-size-auto.svg"
                     name: "auto"
                 }
 
                 ListElement {
-                    icon: "image://theme/icon-m-display"
+                    icon: "/icons/icon-m-size-max.svg"
                     name: "all"
                 }
 
@@ -99,11 +100,25 @@ Page {
             cellWidth: grid.width / 4
             cellHeight: grid.height
 
-            delegate: IconButton {
+            delegate: Item {
                 width: grid.cellWidth
                 height: grid.cellHeight
-                icon.source: model.icon
-                onClicked: listModel.actions[name]()
+
+                Button {
+                    visible: model.text ? true : false
+                    anchors.fill: parent
+                    text: model.text || ""
+                    onClicked: listModel.actions[name]()
+                }
+
+                IconButton {
+                    visible: model.icon ? true : false
+                    anchors.fill: parent
+                    icon.source: Qt.resolvedUrl(model.icon) || ""
+                    icon.width: Theme.iconSizeMedium
+                    icon.height: Theme.iconSizeMedium
+                    onClicked: listModel.actions[name]()
+                }
             }
         }
     }

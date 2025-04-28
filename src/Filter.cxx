@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,27 +17,28 @@
 
 #include "Filter.hxx"
 
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 #include <QtGui/QImage>
 
-Filter::Filter(ScanImage* image) : Filter(image, nullptr) {}
+Filter::Filter(Scanner* image)
+    : Filter(image, nullptr) {}
 
-Filter::Filter(ScanImage* image, Filter* previous_filter)
+Filter::Filter(Scanner* image, Filter* previous_filter)
     : QObject(image), previous_filter_(previous_filter)
 {
     if (previous_filter_ != nullptr) {
         connect(previous_filter_, &Filter::filterChanged, this, &Filter::filterChanged);
     } else {
-        connect(image, &ScanImage::originalImageChanged, this, &Filter::filterChanged);
+        connect(image, &Scanner::originalImageChanged, this, &Filter::filterChanged);
     }
 }
 
 Filter::~Filter() = default;
 
-ScanImage* Filter::image()
+Scanner* Filter::image()
 {
-    return qobject_cast<ScanImage*>(parent());
+    return qobject_cast<Scanner*>(parent());
 }
 
 QImage Filter::filteredImage()

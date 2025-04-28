@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -25,7 +25,8 @@
 #include <memory>
 
 class Page;
-class ScanImage;
+
+class QDir;
 
 /// A scanned document
 ///
@@ -35,21 +36,26 @@ class Document : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString defaultTitle READ defaultTitle NOTIFY defaultTitleChanged)
     Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
+    Q_PROPERTY(QStringList thumbnails READ thumbnails NOTIFY pagesChanged)
+    Q_PROPERTY(int numPages READ numPages NOTIFY pagesChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
-    enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole, PageRole };
+    enum PageRoles { ThumbnailRole = Qt::UserRole + 1,
+                     ResultRole,
+                     CreationTimeRole,
+                     PageRole };
 
     enum Status {
-        Ready,    ///< Document is ready
-        Invalid,  ///< Document has become invalid (e.g. error during loading)
-        Loading,  ///< Document is being loaded
-        Adding,   ///< A page is being added.
+        Ready,      ///< Document is ready
+        Invalid,    ///< Document has become invalid (e.g. error during loading)
+        Loading,    ///< Document is being loaded
+        Adding,     ///< A page is being added.
+        Exporting,  ///< The document is being exported to pdf
     };
     Q_ENUM(Status)
-
-    static const QString FilenameFormat;
 
     struct DocData;
 
@@ -58,7 +64,13 @@ public:
 
     Document(Document &&doc) noexcept;
 
+    Document(const Document &) = delete;
+
     ~Document() override;
+
+    Document &operator=(Document &&) = delete;
+
+    Document &operator=(const Document &) = delete;
 
     /// Create a new document with the current time.
     static Document create(QObject *parent = nullptr);
@@ -69,6 +81,9 @@ public:
     /// Return the document creation time.
     QDateTime creationTime() const;
 
+    /// Return the default title of the document.
+    QString defaultTitle() const;
+
     /// Return the number of pages.
     int numPages() const;
 
@@ -78,11 +93,16 @@ public:
     /// Return the i-th page.
     const Page &page(int i) const;
 
-    /// Add a newly scanned page to the document.
+    /// Return the thumbnails of this Document.
     ///
-    /// The new page will be created with the given original and result image
-    /// and the current time. It will be the last page of the current document.
-    Q_INVOKABLE void addScannedPage(ScanImage *image);
+    /// This is the same as returned by the `ThumbnailRole` model role but
+    /// accessibly as a property.
+    QStringList thumbnails() const;
+
+    /// Create and return a new empty page.
+    ///
+    /// Return nullptr if the document is not Ready.
+    Page *newPage();
 
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
@@ -104,6 +124,9 @@ public:
     /// Return the current status.
     Status status() const;
 
+    /// Return the document's directory.
+    QDir directory() const;
+
 public slots:
     /// Set the document title.
     void setTitle(const QString &title);
@@ -111,11 +134,17 @@ public slots:
     /// Move a page `from` to position `to`.
     void move(int from, int to);
 
-    /// Add a newly scanned page to the document.
+    /// Export document as PDF to a file with the given name.
     ///
-    /// The new page will be created with the given original and result image
-    /// and the current time. It will be the last page of the current document.
-    void addPage(QImage original, QImage result);
+    /// If the file exists and `overwrite` is `true` the file will be replaced.
+    /// If `overwrite` is false the signal `errorPdfExists` is raised.
+    void exportToPdf(const QString &filename, bool overwrite = false);
+
+    /// Export document as PDF to a file with the default file name.
+    ///
+    /// If the file exists and `overwrite` is `true` the file will be replaced.
+    /// If `overwrite` is false the signal `errorPdfExists` is raised.
+    void exportToPdf(bool overwrite = false);
 
 private:
     /// Set the document data.
@@ -123,13 +152,21 @@ private:
 
 private slots:
     /// Change the current status.
-    void setStatus(Status status);
+    void setStatus(Document::Status status);
+
+    /// The asynchronously loaded document data is ready.
+    void onPendingDocFinished();
 
     /// The status of a page has changed.
-    void updatePage();
+    void onPageUpdated();
+
+    /// Called when the pdf export has been completed.
+    void onPdfExportFinished();
 
 signals:
     void titleChanged();
+
+    void defaultTitleChanged();
 
     void creationTimeChanged();
 
@@ -141,8 +178,14 @@ signals:
     /// Status changed.
     void statusChanged();
 
+    /// The document has been exported to a pdf.
+    void exportToPdfFinished(const QUrl &path);
+
+    /// Error raised when the exported file already exists.
+    void errorPdfExists(const QString &filename);
+
     /// An error has been raised.
-    void error(const QString &msg);
+    void error(const QString &errorMessage);
 
 private:
     int rowCount(const QModelIndex &parent) const override;
@@ -151,8 +194,11 @@ private:
 
     QHash<int, QByteArray> roleNames() const override;
 
+    /// Ensures the ".nomedia" file exists in the given directory.
+    static void ensureNoMedia(const QString &path);
+
 private slots:
-    void updateThumbnail();
+    void onThumbnailUpdated();
 
 private:
     struct Data;

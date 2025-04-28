@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,19 +35,29 @@ public:
         Gray,
         BlackAndWhite,
         Colored,
+        FullColor,
     };
     Q_ENUM(ColorMode)
 
 public:
-    explicit ColorizeFilter(ScanImage* image);
+    explicit ColorizeFilter(Scanner* image);
 
-    ColorizeFilter(ScanImage* image, Filter* previous_filter);
+    ColorizeFilter(Scanner* image, Filter* previous_filter);
+
+    ColorizeFilter(const ColorizeFilter&) = delete;
+    ColorizeFilter(ColorizeFilter&&) = delete;
+    ColorizeFilter& operator=(const ColorizeFilter&) = delete;
+    ColorizeFilter& operator=(ColorizeFilter&&) = delete;
 
     ~ColorizeFilter() override;
 
+    void reset() override;
+
+    QString name() const override;
+
     QJsonObject saveJson() const override;
 
-    void loadJson(QJsonObject& object) override;
+    void loadJson(const QJsonObject& object) override;
 
     QImage apply(QImage&& image) override;
 

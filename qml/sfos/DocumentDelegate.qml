@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,6 +31,8 @@ MouseArea {
 
     property bool isAddButton: false
 
+    // This property is true if the Item can be deleted.
+    // It will be shrunk and a delete button will be shown.
     property alias deleting: deletable.deleting
 
     signal deleteDocument()
@@ -92,6 +94,7 @@ MouseArea {
 
                     delegate: Image {
                         source: dragDelegate.thumbnails[thumbnails.length - index - 1]
+                        cache: false
 
                         anchors.fill: parent
                         anchors.leftMargin: (thumbnails.length - index - 1) * 0.05 * parent.width
@@ -111,17 +114,30 @@ MouseArea {
                 }
             }
 
-            Text {
+            Column {
                 id: info
+
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                color: Theme.highlightColor
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+                Text {
+                    width: parent.width
+                    color: Theme.highlightColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    text: qsTr("Pages: %1").arg(dragDelegate.pagecount)
+                }
 
-                text: qsTr("Pages: %1\n%2").arg(dragDelegate.pagecount).arg(dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
+                Text {
+                    width: parent.width
+                    color: Theme.highlightColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    text: dragDelegate.creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat)
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,9 +20,10 @@
 #include <QtCore/QJsonObject>
 #include <QtGui/QImage>
 
-RotateFilter::RotateFilter(ScanImage* image) : RotateFilter(image, nullptr) {}
+RotateFilter::RotateFilter(Scanner* image)
+    : RotateFilter(image, nullptr) {}
 
-RotateFilter::RotateFilter(ScanImage* image, Filter* previous_filter)
+RotateFilter::RotateFilter(Scanner* image, Filter* previous_filter)
     : Filter(image, previous_filter), orientation_(0)
 {
     connect(this, &RotateFilter::orientationChanged, this, &Filter::filterChanged);
@@ -44,12 +45,25 @@ void RotateFilter::setOrientation(int orientation)
     }
 }
 
-QJsonObject RotateFilter::saveJson() const
+void RotateFilter::reset()
 {
-    return {};
+    setOrientation(0);
 }
 
-void RotateFilter::loadJson(QJsonObject& object) {}
+QString RotateFilter::name() const
+{
+    return QStringLiteral("rotate");
+}
+
+QJsonObject RotateFilter::saveJson() const
+{
+    return {{QStringLiteral("orientation"), orientation_}};
+}
+
+void RotateFilter::loadJson(const QJsonObject& object)
+{
+    setOrientation(object[QStringLiteral("orientation")].toInt(0));
+}
 
 QImage RotateFilter::apply(QImage&& image)
 {

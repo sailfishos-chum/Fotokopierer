@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 
 class Filter;
 
@@ -33,13 +33,17 @@ class FilterImage : public QQuickPaintedItem
     Q_PROPERTY(qreal paintedWidth READ paintedWidth NOTIFY paintedSizeChanged)
     Q_PROPERTY(qreal paintedHeight READ paintedHeight NOTIFY paintedSizeChanged)
 
-    Q_PROPERTY(ScanImage::FilterType filterType READ filterType WRITE setFilterType NOTIFY
-                   filterTypeChanged)
-    Q_PROPERTY(ScanImage* image READ image WRITE setImage NOTIFY imageChanged)
+    Q_PROPERTY(Scanner::FilterType filterType READ filterType WRITE setFilterType NOTIFY filterTypeChanged)
+    Q_PROPERTY(Scanner* image READ image WRITE setImage NOTIFY imageChanged)
     Q_PROPERTY(QVariant filter READ filter NOTIFY filterTypeChanged)
 
 public:
     FilterImage(QQuickItem* parent = nullptr);
+
+    FilterImage(const FilterImage&) = delete;
+    FilterImage(FilterImage&&) = delete;
+    FilterImage& operator=(const FilterImage&) = delete;
+    FilterImage& operator=(FilterImage&&) = delete;
 
     ~FilterImage() override;
 
@@ -47,18 +51,18 @@ public:
 
     qreal paintedHeight() const;
 
-    ScanImage::FilterType filterType() const;
+    Scanner::FilterType filterType() const;
 
-    ScanImage* image() const;
+    Scanner* image() const;
 
     void paint(QPainter* painter) override;
 
     QVariant filter() const;
 
 public slots:
-    void setFilterType(ScanImage::FilterType type);
+    void setFilterType(Scanner::FilterType type);
 
-    void setImage(ScanImage* image);
+    void setImage(Scanner* image);
 
 private:
     void updateFilter();
@@ -66,7 +70,7 @@ private:
 private slots:
     void update();
 
-    void filteredImageReady();
+    void onFilteredImageReady();
 
 signals:
     void paintedSizeChanged();

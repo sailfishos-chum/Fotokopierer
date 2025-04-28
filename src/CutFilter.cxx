@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2020, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -18,16 +18,35 @@
 #include "CutFilter.hxx"
 
 #include "Convert.hxx"
-#include "Global.hxx"
-#include "ScanImage.hxx"
+#include "EdgeDetection.hxx"
+#include "Fotokopierer.hxx"
+#include "Scanner.hxx"
 
+#include <QDebug>
 #include <QtCore/QJsonObject>
+#include <QtCore/QPointF>
 #include <QtCore/QVariant>
 #include <QtGui/QImage>
+#include <QtGui/QPainter>
 
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <cmath>
+
+static QPointF scale(const QPointF& p, int width, int height)
+{
+    return {p.x() / width, p.y() / height};
+}
+
+static QPointF scale(const QPointF& p, const QImage& img)
+{
+    return scale(p, img.width(), img.height());
+}
+
+static QPointF unscale(const QPointF& p, int width, int height)
+{
+    return {p.x() * width, p.y() * height};
+}
 
 struct CutFilter::Data {
     QPointF topleft;
@@ -35,148 +54,395 @@ struct CutFilter::Data {
     QPointF bottomleft;
     QPointF bottomright;
 
+    std::unique_ptr<EdgeDetection> edges = nullptr;
+
     double getAspectRatio(QPointF tl, QPointF tr, QPointF br, QPointF bl);
 };
 
-CutFilter::CutFilter(ScanImage* image) : CutFilter(image, nullptr) {}
+CutFilter::CutFilter(Scanner* image)
+    : CutFilter(image, nullptr) {}
 
-CutFilter::CutFilter(ScanImage* image, Filter* previous_filter)
+CutFilter::CutFilter(Scanner* image, Filter* previous_filter)
     : Filter(image, previous_filter), d(new Data)
 {
 }
 
 CutFilter::~CutFilter() = default;
 
-bool CutFilter::setCutBox(QPointF topleft,
-                          QPointF topright,
-                          QPointF bottomright,
-                          QPointF bottomleft)
+void CutFilter::reset()
+{
+    setTopLeft({0, 0});
+    setTopRight({1, 0});
+    setBottomRight({1, 1});
+    setBottomLeft({0, 1});
+}
+
+bool CutFilter::updateCut()
 {
     static Fotokopierer util;
 
-    if (!util.isConvex(topleft, topright, bottomright, bottomleft)) {
+    if (!util.isConvex(d->topleft, d->topright, d->bottomright, d->bottomleft)) {
         return false;
     }
-    d->topleft = topleft;
-    d->topright = topright;
-    d->bottomright = bottomright;
-    d->bottomleft = bottomleft;
+
+    /// Emitting this signal will cause the filtered image to be updated.
     emit filterChanged();
     return true;
+}
+
+void CutFilter::setTopLeft(QPointF topleft)
+{
+    if (d->topleft != topleft) {
+        d->topleft = topleft;
+        emit topLeftChanged();
+        if (d->edges != nullptr) {
+            d->edges->setTopLeft(unscale(topleft, d->edges->width(), d->edges->height()));
+            emit topChanged();
+            emit leftChanged();
+        }
+    }
+}
+
+QPointF CutFilter::topLeft() const
+{
+    return d->topleft;
+}
+
+void CutFilter::setTopRight(QPointF topright)
+{
+    if (d->topright != topright) {
+        d->topright = topright;
+        emit topRightChanged();
+        if (d->edges != nullptr) {
+            d->edges->setTopRight(unscale(topright, d->edges->width(), d->edges->height()));
+            emit topChanged();
+            emit rightChanged();
+        }
+    }
+}
+
+QPointF CutFilter::topRight() const
+{
+    return d->topright;
+}
+
+void CutFilter::setBottomLeft(QPointF bottomleft)
+{
+    if (d->bottomleft != bottomleft) {
+        d->bottomleft = bottomleft;
+        emit bottomLeftChanged();
+        if (d->edges != nullptr) {
+            d->edges->setBottomLeft(unscale(bottomleft, d->edges->width(), d->edges->height()));
+            emit bottomChanged();
+            emit leftChanged();
+        }
+    }
+}
+
+QPointF CutFilter::bottomLeft() const
+{
+    return d->bottomleft;
+}
+
+void CutFilter::setBottomRight(QPointF bottomright)
+{
+    if (d->bottomright != bottomright) {
+        d->bottomright = bottomright;
+        emit bottomRightChanged();
+        if (d->edges != nullptr) {
+            d->edges->setBottomRight(unscale(bottomright, d->edges->width(), d->edges->height()));
+            emit bottomChanged();
+            emit rightChanged();
+        }
+    }
+}
+
+QPointF CutFilter::bottomRight() const
+{
+    return d->bottomright;
+}
+
+void CutFilter::setTop(QPointF top)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(top, d->edges->width(), d->edges->height());
+    if (p != d->edges->topPoint()) {
+        d->edges->setTopPoint(p);
+        d->topleft = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+        d->topright = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+        emit topChanged();
+        emit topLeftChanged();
+        emit topRightChanged();
+        emit leftChanged();
+        emit rightChanged();
+    }
+}
+
+QPointF CutFilter::top() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->topPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::setBottom(QPointF bottom)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(bottom, d->edges->width(), d->edges->height());
+    if (p != d->edges->bottomPoint()) {
+        d->edges->setBottomPoint(p);
+        d->bottomleft = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+        d->bottomright = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
+        emit bottomChanged();
+        emit bottomLeftChanged();
+        emit bottomRightChanged();
+        emit leftChanged();
+        emit rightChanged();
+    }
+}
+
+QPointF CutFilter::bottom() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->bottomPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::setLeft(QPointF left)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(left, d->edges->width(), d->edges->height());
+    if (p != d->edges->leftPoint()) {
+        d->edges->setLeftPoint(p);
+        d->topleft = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+        d->bottomleft = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+        emit leftChanged();
+        emit topLeftChanged();
+        emit bottomLeftChanged();
+        emit topChanged();
+        emit bottomChanged();
+    }
+}
+
+QPointF CutFilter::left() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->leftPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::setRight(QPointF right)
+{
+    if (d->edges == nullptr) return;
+
+    auto p = unscale(right, d->edges->width(), d->edges->height());
+    if (p != d->edges->rightPoint()) {
+        d->edges->setRightPoint(p);
+        d->topright = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+        d->bottomright = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
+        emit rightChanged();
+        emit topRightChanged();
+        emit bottomRightChanged();
+        emit topChanged();
+        emit bottomChanged();
+    }
+}
+
+QPointF CutFilter::right() const
+{
+    if (d->edges != nullptr) {
+        return scale(d->edges->rightPoint(), d->edges->width(), d->edges->height());
+    } else {
+        return {};
+    }
+}
+
+void CutFilter::rotateLeft()
+{
+    if (d->edges == nullptr) return;
+
+    auto tl = d->edges->topLeft();
+    auto tr = d->edges->topRight();
+    auto br = d->edges->bottomRight();
+    auto bl = d->edges->bottomLeft();
+
+    QImage img =
+        previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+    d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+    d->edges->setTopLeft({tr.y(), img.height() - tr.x()});
+    d->edges->setTopRight({br.y(), img.height() - br.x()});
+    d->edges->setBottomRight({bl.y(), img.height() - bl.x()});
+    d->edges->setBottomLeft({tl.y(), img.height() - tl.x()});
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+}
+
+void CutFilter::rotateRight()
+{
+    if (d->edges == nullptr) return;
+
+    auto tl = d->edges->topLeft();
+    auto tr = d->edges->topRight();
+    auto br = d->edges->bottomRight();
+    auto bl = d->edges->bottomLeft();
+
+    QImage img =
+        previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+    d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+    d->edges->setTopLeft({img.width() - bl.y(), bl.x()});
+    d->edges->setTopRight({img.width() - tl.y(), tl.x()});
+    d->edges->setBottomRight({img.width() - tr.y(), tr.x()});
+    d->edges->setBottomLeft({img.width() - br.y(), br.x()});
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+}
+
+QVariantList CutFilter::selectAll()
+{
+    if (d->edges == nullptr) {
+        QImage img =
+            previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+        d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+    }
+
+    d->edges->selectAll();
+
+    d->topleft = scale(d->edges->topLeft(), d->edges->width(), d->edges->height());
+    d->topright = scale(d->edges->topRight(), d->edges->width(), d->edges->height());
+    d->bottomright = scale(d->edges->bottomRight(), d->edges->width(), d->edges->height());
+    d->bottomleft = scale(d->edges->bottomLeft(), d->edges->width(), d->edges->height());
+
+    QVariantList lst;
+    lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+
+    return lst;
 }
 
 QVariantList CutFilter::autoDetectCutRect()
 {
     QImage img =
         previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
-    auto img_cut = QImageToCvMat(img, false);
-    auto width = img_cut.cols;
-    auto height = img_cut.rows;
 
-    cv::Mat img_gray;
-    cv::cvtColor(img_cut, img_gray, cv::COLOR_BGR2GRAY);
-    img_cut.release();
+    d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
 
-    cv::blur(img_gray, img_gray, {3, 3});
-    cv::Mat img_edges;
-    cv::Canny(img_gray, img_edges, 10, 40);
-    img_gray.release();
-
-    std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(img_edges, lines, 1, CV_PI / 180, 80, 30, width / 10);
-    img_edges.release();
-
-    // partition the lines according to their angles into horizontal
-    // and vertical ones
-    auto mid = std::partition(lines.begin(), lines.end(), [](cv::Vec4i& line) {
-        return std::abs(line[0] - line[2]) > std::abs(line[1] - line[3]);
-    });
-
-    // horizontal scores
-    auto h_score = [height](const cv::Vec4i& l) {
-        auto len = std::sqrt(std::pow(l[0] - l[2], 2) + std::pow(l[1] - l[3], 2));
-        auto pos = (l[1] + l[3] - height) / 2.0;
-        return len * pos;
-    };
-
-    // vertical scores
-    auto v_score = [width](const cv::Vec4i& l) {
-        auto len = std::sqrt(std::pow(l[0] - l[2], 2) + std::pow(l[1] - l[3], 2));
-        auto pos = (l[0] + l[2] - width) / 2.0;
-        return len * pos;
-    };
-
-    std::sort(lines.begin(), mid, [&](const cv::Vec4i& l1, const cv::Vec4i& l2) {
-        return h_score(l1) < h_score(l2);
-    });
-
-    std::sort(mid, lines.end(), [&](const cv::Vec4i& l1, const cv::Vec4i& l2) {
-        return v_score(l1) < v_score(l2);
-    });
-
-    QLineF top_line, bottom_line, left_line, right_line;
-
-    if (mid != lines.begin()) {
-        top_line.setLine(lines[0][0], lines[0][1], lines[0][2], lines[0][3]);
-        bottom_line.setLine(mid[-1][0], mid[-1][1], mid[-1][2], mid[-1][3]);
-    } else {
-        top_line.setLine(0, 0, width, 0);
-        bottom_line.setLine(0, height, width, height);
-    }
-
-    if (mid != lines.end()) {
-        left_line.setLine((*mid)[0], (*mid)[1], (*mid)[2], (*mid)[3]);
-        right_line.setLine(
-            lines.end()[-1][0], lines.end()[-1][1], lines.end()[-1][2], lines.end()[-1][3]);
-    } else {
-        left_line.setLine(0, 0, 0, height);
-        right_line.setLine(width, 0, width, height);
-    }
-
-    QPointF topleft, topright, bottomright, bottomleft;
-    if (!top_line.intersect(left_line, &topleft)) {
-        topleft = {0, 0};
-    }
-    if (!top_line.intersect(right_line, &topright)) {
-        topright = {(qreal)width, 0};
-    }
-    if (!bottom_line.intersect(left_line, &bottomleft)) {
-        bottomleft = {0, (qreal)height};
-    }
-    if (!bottom_line.intersect(right_line, &bottomright)) {
-        bottomright = {(qreal)width, (qreal)height};
-    }
-
-    auto project = [width, height](QPointF& p) {
-        p.setX(std::max((qreal)0.0, std::min((qreal)1.0, p.x() / width)));
-        p.setY(std::max((qreal)0.0, std::min((qreal)1.0, p.y() / height)));
-    };
-
-    project(topleft);
-    project(topright);
-    project(bottomleft);
-    project(bottomright);
+    d->topleft = scale(d->edges->topLeft(), img);
+    d->topright = scale(d->edges->topRight(), img);
+    d->bottomright = scale(d->edges->bottomRight(), img);
+    d->bottomleft = scale(d->edges->bottomLeft(), img);
 
     QVariantList lst;
-    lst << topleft << topright << bottomright << bottomleft;
+    lst << d->topleft << d->topright << d->bottomright << d->bottomleft;
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+
     return lst;
+}
+
+void CutFilter::fixSnappyEdges()
+{
+    if (d->edges == nullptr) {
+        QImage img =
+            previous_filter_ != nullptr ? previous_filter_->filteredImage() : image()->originalImage();
+
+        d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(img));
+        emit topChanged();
+        emit bottomChanged();
+        emit leftChanged();
+        emit rightChanged();
+    }
+
+    if (d->edges != nullptr) d->edges->fixNonSnappyEdges();
+}
+
+QString CutFilter::name() const
+{
+    return QStringLiteral("cut");
+}
+
+static QJsonValue fromPoint(QPointF p)
+{
+    return QJsonObject{{QStringLiteral("x"), p.x()}, {QStringLiteral("y"), p.y()}};
 }
 
 QJsonObject CutFilter::saveJson() const
 {
-    return {};
+    return {
+        {QStringLiteral("topleft"), fromPoint(d->topleft)},
+        {QStringLiteral("topright"), fromPoint(d->topright)},
+        {QStringLiteral("bottomleft"), fromPoint(d->bottomleft)},
+        {QStringLiteral("bottomright"), fromPoint(d->bottomright)},
+    };
 }
 
-void CutFilter::loadJson(QJsonObject& object) {}
+static QPointF toPoint(const QJsonValue& value)
+{
+    auto p = value.toObject();
+    return {
+        static_cast<qreal>(p[QStringLiteral("x")].toDouble(0)),
+        static_cast<qreal>(p[QStringLiteral("y")].toDouble(0)),
+    };
+}
+
+void CutFilter::loadJson(const QJsonObject& object)
+{
+    setTopLeft(toPoint(object[QStringLiteral("topleft")]));
+    setTopRight(toPoint(object[QStringLiteral("topright")]));
+    setBottomRight(toPoint(object[QStringLiteral("bottomright")]));
+    setBottomLeft(toPoint(object[QStringLiteral("bottomleft")]));
+}
 
 QImage CutFilter::apply(QImage&& image)
 {
-    if (image.isNull()) return image;
+    if (image.isNull()) {
+        return image;
+    }
 
     auto rotated = QImageToCvMat(image);
 
-    float w = rotated.cols;
-    float h = rotated.rows;
+    auto w = static_cast<float>(rotated.cols);
+    auto h = static_cast<float>(rotated.rows);
 
     cv::Point2f tl(d->topleft.x() * w, d->topleft.y() * h);
     cv::Point2f tr(d->topright.x() * w, d->topright.y() * h);
@@ -188,10 +454,12 @@ QImage CutFilter::apply(QImage&& image)
                                    QPointF{br.x - w / 2, br.y - h / 2} / 100,
                                    QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
 
-    if (qIsNaN(ratio)) return {};
+    if (qIsNaN(ratio)) {
+        return {};
+    }
 
-    float height = std::max(cv::norm(tr - tl), cv::norm(br - bl));
-    float width = height * ratio;
+    auto height = static_cast<float>(std::max(cv::norm(tr - tl), cv::norm(br - bl)));
+    auto width = static_cast<float>(height * ratio);
 
     cv::Point2f src[4] = {tl, tr, br, bl};
     cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};

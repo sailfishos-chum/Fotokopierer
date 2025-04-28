@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -22,26 +22,39 @@
 
 #include <memory>
 
-class ScanImage;
+class Scanner;
 
 class Filter : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Filter(ScanImage* image);
+    explicit Filter(Scanner* image);
 
-    Filter(ScanImage* image, Filter* previous_filter);
+    Filter(Scanner* image, Filter* previous_filter);
 
-    virtual ~Filter();
+    Filter(const Filter&) = delete;
+    Filter(Filter&&) = delete;
+    Filter& operator=(const Filter&) = delete;
+    Filter& operator=(Filter&&) = delete;
 
-    ScanImage* image();
+    ~Filter() override;
+
+    Scanner* image();
 
     QImage filteredImage();
 
+    /// Reset filter to default settings.
+    virtual void reset() = 0;
+
+    /// Return the name of this filter.
+    ///
+    /// The name should be unique among all filter types.
+    virtual QString name() const = 0;
+
     virtual QJsonObject saveJson() const = 0;
 
-    virtual void loadJson(QJsonObject& object) = 0;
+    virtual void loadJson(const QJsonObject& object) = 0;
 
     virtual QImage apply(QImage&& image) = 0;
 

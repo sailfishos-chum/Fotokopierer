@@ -1,7 +1,7 @@
 Name: harbour-fotokopierer
 Summary: Document Scanner
-Version: 0.1
-Release: 1
+Version: 0.2.6
+Release: 1%{?dist}
 # The contents of the Group field should be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
 Group: Qt/Qt
@@ -20,6 +20,18 @@ Builder: none
 
 PkgBR:
   - cmake
+  - qt5-qtmultimedia-plugin-audio-alsa
+  - qt5-qtmultimedia-plugin-audio-pulseaudio
+  - qt5-qtmultimedia-plugin-mediaservice-gstaudiodecoder
+  - qt5-qtmultimedia-plugin-mediaservice-gstcamerabin
+  - qt5-qtmultimedia-plugin-mediaservice-gstmediacapture
+  - qt5-qtmultimedia-plugin-mediaservice-gstmediaplayer
+  - qt5-qtmultimedia-plugin-mediaservice-irisradio
+  - qt5-qtmultimedia-plugin-mediaservice-irisradio
+  - qt5-qtmultimedia-plugin-playlistformats-m3u
+  - qt5-qtmultimedia-plugin-resourcepolicy-resourceqt
+  - qt5-qtmultimedia-plugin-video-eglvideonode
+
 # This section specifies build dependencies that are resolved using pkgconfig.
 PkgConfigBR:
   - sailfishapp >= 1.0.2
@@ -42,9 +54,8 @@ Requires:
 Files:
   - '%{_bindir}'
   - '%{_datadir}/applications/%{name}.desktop'
-  - '%{_datadir}/icons/hicolor/86x86/apps/%{name}.png'
+  - '%{_datadir}/icons/hicolor/*/apps/%{name}.png'
   #- '%{_datadir}/%{name}'
 
 # For more information about yaml and what's supported in Sailfish OS
 # build system, please see https://wiki.merproject.org/wiki/Spectacle
-

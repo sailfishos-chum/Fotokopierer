@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,22 +16,31 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 
 Page {
-    id: page
+    id: thepage
 
-    property string image
+    property string title
+    property var page
 
 
     Flickable {
         id: flick
+
         anchors.fill: parent
         contentWidth: imageView.width;
         contentHeight: imageView.height
         clip: true
 
         onHeightChanged: if (imageView.status === Image.Ready) imageView.fitToScreen();
+
+        PageHeader {
+            id: header
+            title: thepage.title
+        }
 
         Item {
             id: imageView
@@ -45,7 +54,7 @@ Page {
                 property real prevScale
 
                 width: flick.width
-                height: flick.height
+                height: flick.height - header.height - buttons.height
 
                 function fitToScreen() {
                     scale = Math.min(flick.width / width, flick.height / height, 1)
@@ -57,7 +66,7 @@ Page {
                 fillMode: Image.PreserveAspectFit
                 cache: false
                 asynchronous: true
-                source: image
+                source: page.resultUrl
                 smooth: !flick.moving
 
                 onStatusChanged: {
@@ -86,6 +95,12 @@ Page {
                         flick.contentY = yoff - flick.height / 2
                     }
                     prevScale = scale
+                }
+
+                BusyIndicator {
+                    size: BusyIndicatorSize.Large
+                    anchors.centerIn: parent
+                    running: img.status != Image.Ready
                 }
             }
         }
@@ -122,5 +137,48 @@ Page {
                 from: img.scale
             }
         }
+    }
+
+    DockedPanel {
+        id: buttons
+        open: true
+
+        width: parent.width
+        height: Theme.iconSizeLarge
+        dock: Dock.Bottom
+
+        RowLayout {
+            id: buttonRow
+            anchors { left: parent.left; right: parent.right }
+            IconButton {
+                icon.source: "image://theme/icon-m-edit"
+                Layout.fillWidth: true
+                onClicked: _editImage()
+            }
+        }
+    }
+
+    Component {
+        id: cutpage
+        CutPage {}
+    }
+
+    Component {
+        id: colpage
+        ColorizePage {
+            onAccepted: {
+                Scanner.updatePage(page)
+            }
+
+            acceptDestination: thepage
+            acceptDestinationAction: PageStackAction.Pop
+        }
+    }
+
+    function _editImage() {
+        Scanner.loadPage(page)
+        Scanner.deleteOriginalOnClear = false
+        pageStack.push(cutpage)
+        pageStack.pushAttached(colpage)
     }
 }

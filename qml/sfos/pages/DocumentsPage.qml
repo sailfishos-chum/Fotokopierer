@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -28,20 +28,17 @@ Page {
 
     property bool editing: false
     property bool deleting: false
-
-    ScanImage {
-        id: scanImage
-    }
+    property var lastDocument: DocumentList.latestDocument
 
     Loader {
         id: newPage
     }
 
     onStatusChanged: {
-        // ensure that the C++ memory of ScanImage is freed
+        // ensure that the C++ memory of Scanner is freed
         if (status == PageStatus.Active) {
             newPage.source = ""
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
@@ -70,32 +67,19 @@ Page {
                 } else if (isAddButton) {
                     addDocument()
                 } else {
-                    openDocument()
+                    openDocument(role_document)
                 }
-            }
-
-            function addDocument() {
-                newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-                newPage.item.scanImage = scanImage
-                newPage.item.destination = docpage
-                newPage.item.addPage.connect(function() {
-                    var doc = DocumentList.newDocument()
-                    if (doc != null) {
-                        doc.addScannedPage(scanImage)
-                    }
-                })
-                pageStack.push(newPage.item)
-            }
-
-            function openDocument() {
-                pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
 
             onDeleteDocument: {
                 docpage.editing = false
                 docpage.deleting = true
                 remorse.execute(docDelegate, qsTr("Delete document"), function () {
+                    var update_lastDocument = role_document == lastDocument
                     DocumentList.deleteDocument(docDelegate.DelegateModel.itemsIndex)
+                    if (update_lastDocument) {
+                        lastDocument = DocumentList.latestDocument
+                    }
                 })
             }
 
@@ -137,6 +121,14 @@ Page {
 
         model: visualModel
 
+        PullDownMenu {
+            MenuItem {
+                text: qsTr("About %1").arg(Fotokopierer.ApplicationName)
+                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
+            }
+        }
+
+
         VerticalScrollDecorator {}
 
         MouseArea {
@@ -163,5 +155,28 @@ Page {
                 }
             }
         }
+    }
+
+    function addDocument() {
+        pageStack.pop(docpage, PageStackAction.Immediate)
+
+        newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+        newPage.item.acceptDestination = Qt.resolvedUrl("DocumentPage.qml")
+        newPage.item.acceptDestinationAction = PageStackAction.Replace
+        newPage.item.acceptDestinationReplaceTarget = docpage
+        newPage.item.addPage.connect(function() {
+            var doc = DocumentList.newDocument()
+            if (doc != null) {
+                Scanner.addPage(doc)
+                newPage.item.acceptDestinationInstance.document = doc
+            }
+        })
+
+        pageStack.push(newPage.item)
+    }
+
+    function openDocument(document) {
+        lastDocument = document
+        pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": document})
     }
 }

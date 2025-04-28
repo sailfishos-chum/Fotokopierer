@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,8 +21,6 @@ import Fotokopierer 1.0
 Item {
     id: pane
 
-    property ScanImage scanImage
-
     property real markerRadius: Math.min(width, height) / 25
     property color markerColor: "white"
 
@@ -31,63 +29,61 @@ Item {
 
     property bool valid: true
 
-    property point tl : mapPoint(topleft.center)
-    property point tr : mapPoint(topright.center)
-    property point br : mapPoint(bottomright.center)
-    property point bl : mapPoint(bottomleft.center)
+    // The next properties are used to rotate the selection when the image has
+    // been rotated. Because the computation of the rotated image is done
+    // asynchronously, we must wait with the update until the rotation has been
+    // completed.
+    property var _next_tl
+    property var _next_tr
+    property var _next_br
+    property var _next_bl
+
+    property bool dontchange: false
 
     FilterImage {
         id: image
 
-        image: scanImage
-        filterType: ScanImage.Rotate
+        image: Scanner
+        filterType: Scanner.Rotate
 
         anchors.fill: parent
+
+        onPaintedSizeChanged: {
+            // update the selection after a rotation has been completed
+        }
     }
 
     function rotateLeft() {
-        console.log("rotateLeft")
         image.filter.orientation -= 1
+        Scanner.cutFilter.rotateLeft()
+        frame.requestPaint()
     }
 
     function rotateRight() {
-        console.log("rotateRight")
         image.filter.orientation += 1
+        Scanner.cutFilter.rotateRight()
+        frame.requestPaint()
     }
 
     function selectAll() {
-        topleft.x = (pane.width - image.paintedWidth) / 2 - markerRadius;
-        topleft.y = (pane.height - image.paintedHeight) / 2 - markerRadius;
-        bottomright.x = (pane.width + image.paintedWidth) / 2 - markerRadius;
-        bottomright.y = (pane.height + image.paintedHeight) / 2 - markerRadius;
-        topright.x = bottomright.x
-        topright.y = topleft.y
-        bottomleft.x = topleft.x
-        bottomleft.y = bottomright.y
+        var points = Scanner.cutFilter.selectAll()
+        Scanner.cutFilter.fixSnappyEdges()
+        frame.requestPaint()
     }
 
     function selectAuto() {
-        var points = scanImage.cutFilter.autoDetectCutRect()
-        var offx = (pane.width - image.paintedWidth) / 2 - markerRadius
-        var offy = (pane.height - image.paintedHeight) / 2 - markerRadius
-        var w = image.paintedWidth
-        var h = image.paintedHeight
-        topleft.x = points[0].x * w + offx
-        topleft.y = points[0].y * h + offy
-        topright.x = points[1].x * w + offx
-        topright.y = points[1].y * h + offy
-        bottomright.x = points[2].x * w + offx
-        bottomright.y = points[2].y * h + offy
-        bottomleft.x = points[3].x * w + offx
-        bottomleft.y = points[3].y * h + offy
+        var points = Scanner.cutFilter.autoDetectCutRect()
+        Scanner.cutFilter.fixSnappyEdges()
+        frame.requestPaint()
     }
 
     function cutImage() {
-        scanImage.cutFilter.setCutBox(
-            mapPoint(topleft.center),
-            mapPoint(topright.center),
-            mapPoint(bottomright.center),
-            mapPoint(bottomleft.center))
+        var f = Scanner.cutFilter
+        f.topLeft = mapPoint(topleft.markerPos)
+        f.topRight = mapPoint(topright.markerPos)
+        f.bottomRight = mapPoint(bottomright.markerPos)
+        f.bottomLeft = mapPoint(bottomleft.markerPos)
+        Scanner.cutFilter.updateCut()
     }
 
     Canvas {
@@ -101,10 +97,10 @@ Item {
             ctx.globalCompositeOperation = "copy"
             ctx.strokeStyle = pane.valid ? pane.lineColor : pane.invalidLineColor
             ctx.beginPath()
-            ctx.moveTo(topleft.center.x, topleft.center.y)
-            ctx.lineTo(topright.center.x, topright.center.y)
-            ctx.lineTo(bottomright.center.x, bottomright.center.y)
-            ctx.lineTo(bottomleft.center.x, bottomleft.center.y)
+            ctx.moveTo(topleft.markerPos.x, topleft.markerPos.y)
+            ctx.lineTo(topright.markerPos.x, topright.markerPos.y)
+            ctx.lineTo(bottomright.markerPos.x, bottomright.markerPos.y)
+            ctx.lineTo(bottomleft.markerPos.x, bottomleft.markerPos.y)
             ctx.closePath()
             ctx.fill()
             ctx.stroke()
@@ -123,57 +119,177 @@ Item {
     CornerMarker {
         id: topleft
         color: pane.markerColor
-        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.topLeft = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
         id: topright
         color: pane.markerColor
-        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.topRight = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
         id: bottomleft
         color: pane.markerColor
-        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.bottomLeft = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     CornerMarker {
         id: bottomright
         color: pane.markerColor
-        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
         radius: markerRadius
-        onCenterChanged: pane.update(x, y)
-        onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.bottomRight = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
+    }
+
+    CornerMarker {
+        id: top
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.top = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                top.setCenter(unmapPoint(Scanner.cutFilter.top))
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
+    }
+
+    CornerMarker {
+        id: bottom
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.bottom = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
+    }
+
+    CornerMarker {
+        id: left
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.left = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                left.setCenter(unmapPoint(Scanner.cutFilter.left))
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
+    }
+
+    CornerMarker {
+        id: right
+        color: pane.markerColor
+        radius: markerRadius
+        minX: (pane.width - image.paintedWidth) / 2
+        maxX: (pane.width + image.paintedWidth) / 2
+        minY: (pane.height - image.paintedHeight) / 2
+        maxY: (pane.height + image.paintedHeight) / 2
+        onDragged: {
+            Scanner.cutFilter.right = mapPoint(markerPos)
+            pane.update(markerPos)
+        }
+        onDragActiveChanged: {
+            zoomimg.visible = dragActive
+            pane.update(markerPos)
+            if (!dragActive) {
+                // end of dragging -> reset this point to the middle of the edge
+                right.setCenter(unmapPoint(Scanner.cutFilter.right))
+                Scanner.cutFilter.fixSnappyEdges()
+            }
+        }
     }
 
     ZoomImage {
@@ -197,15 +313,15 @@ Item {
         visible: false
     }
 
-    function update(x, y) {
+    function update(zoompoint) {
         pane.valid = Fotokopierer.isConvex(
-            mapPoint(topleft.center),
-            mapPoint(topright.center),
-            mapPoint(bottomright.center),
-            mapPoint(bottomleft.center))
-        zoomimg.center = mapPoint(Qt.point(x + markerRadius, y + markerRadius))
+            mapPoint(topleft.markerPos),
+            mapPoint(topright.markerPos),
+            mapPoint(bottomright.markerPos),
+            mapPoint(bottomleft.markerPos))
+        zoomimg.center = mapPoint(zoompoint)
 
-        if (x < image.width / 2) {
+        if (zoompoint.x < image.width / 2) {
             zoomimg.anchors.left = undefined
             zoomimg.anchors.right = pane.right
         } else {
@@ -213,7 +329,7 @@ Item {
             zoomimg.anchors.left = pane.left
         }
 
-        if (y < image.height / 2) {
+        if (zoompoint.y < image.height / 2) {
             zoomimg.anchors.top = undefined
             zoomimg.anchors.bottom = pane.bottom
         } else {
@@ -228,5 +344,45 @@ Item {
         var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
         var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
         return Qt.point(x, y)
+    }
+
+    function unmapPoint(p) {
+        var x = p.x * image.paintedWidth + (pane.width - image.paintedWidth) / 2
+        var y = p.y * image.paintedHeight + (pane.height - image.paintedHeight) / 2
+        return Qt.point(x, y)
+    }
+
+    Component.onCompleted: {
+        Scanner.cutFilter.topLeftChanged.connect(function() {
+            topleft.setCenter(unmapPoint(Scanner.cutFilter.topLeft))
+        })
+
+        Scanner.cutFilter.topRightChanged.connect(function() {
+            topright.setCenter(unmapPoint(Scanner.cutFilter.topRight))
+        })
+
+        Scanner.cutFilter.bottomRightChanged.connect(function() {
+            bottomright.setCenter(unmapPoint(Scanner.cutFilter.bottomRight))
+        })
+
+        Scanner.cutFilter.bottomLeftChanged.connect(function() {
+            bottomleft.setCenter(unmapPoint(Scanner.cutFilter.bottomLeft))
+        })
+
+        Scanner.cutFilter.topChanged.connect(function() {
+            top.setCenter(unmapPoint(Scanner.cutFilter.top))
+        })
+
+        Scanner.cutFilter.bottomChanged.connect(function() {
+            bottom.setCenter(unmapPoint(Scanner.cutFilter.bottom))
+        })
+
+        Scanner.cutFilter.leftChanged.connect(function() {
+            left.setCenter(unmapPoint(Scanner.cutFilter.left))
+        })
+
+        Scanner.cutFilter.rightChanged.connect(function() {
+            right.setCenter(unmapPoint(Scanner.cutFilter.right))
+        })
     }
 }

@@ -1,15 +1,19 @@
 <RCC>
   <qresource>
 	 <file>qml/sfos/main.qml</file>
+	 <file>qml/sfos/CoverPage.qml</file>
 	 <file>qml/sfos/DeletableItem.qml</file>
 	 <file>qml/sfos/DocumentDelegate.qml</file>
+	 <file>qml/sfos/ErrorOverlay.qml</file>
 	 <file>qml/sfos/PageDelegate.qml</file>
 	 <file>qml/sfos/ValueSlider.qml</file>
+	 <file>qml/sfos/pages/AboutPage.qml</file>
 	 <file>qml/sfos/pages/CutPage.qml</file>
 	 <file>qml/sfos/pages/ColorizePage.qml</file>
 	 <file>qml/sfos/pages/DocumentPage.qml</file>
 	 <file>qml/sfos/pages/DocumentsPage.qml</file>
 	 <file>qml/sfos/pages/NewImagePage.qml</file>
 	 <file>qml/sfos/pages/PagePage.qml</file>
+	 <file>qml/sfos/pages/RenamePage.qml</file>
   </qresource>
 </RCC>

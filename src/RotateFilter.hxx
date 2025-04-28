@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,15 +27,24 @@ class RotateFilter : public Filter
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 public:
-    explicit RotateFilter(ScanImage* image);
+    explicit RotateFilter(Scanner* image);
 
-    explicit RotateFilter(ScanImage* image, Filter* previous_filter);
+    explicit RotateFilter(Scanner* image, Filter* previous_filter);
+
+    RotateFilter(const RotateFilter&) = delete;
+    RotateFilter(RotateFilter&&) = delete;
+    RotateFilter& operator=(const RotateFilter&) = delete;
+    RotateFilter& operator=(RotateFilter&&) = delete;
 
     ~RotateFilter() override;
 
+    void reset() override;
+
+    QString name() const override;
+
     QJsonObject saveJson() const override;
 
-    void loadJson(QJsonObject& object) override;
+    void loadJson(const QJsonObject& object) override;
 
     QImage apply(QImage&& image) override;
 

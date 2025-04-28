@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,29 +26,38 @@
 #include "CutFilter.hxx"
 #include "FilterImage.hxx"
 #include "RotateFilter.hxx"
-#include "ScanImage.hxx"
+#include "Scanner.hxx"
 #include "ZoomImage.hxx"
 
 #include "Document.hxx"
 #include "DocumentList.hxx"
-#include "Global.hxx"
+#include "Fotokopierer.hxx"
 #include "Page.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
+    app.setApplicationName(ApplicationName);
+    app.setApplicationVersion(ApplicationVersion);
+
+    cleanupImageDirectory();
+
     qmlRegisterSingletonType<Fotokopierer>(
         "Fotokopierer", 1, 0, "Fotokopierer", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new Fotokopierer();
         });
 
-    qmlRegisterSingletonType<Document>(
+    qmlRegisterSingletonType<DocumentList>(
         "Fotokopierer", 1, 0, "DocumentList", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new DocumentList;
         });
 
+    qmlRegisterSingletonType<Scanner>(
+        "Fotokopierer", 1, 0, "Scanner", [](QQmlEngine*, QJSEngine*) -> QObject* {
+            return new Scanner();
+        });
+
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
     qmlRegisterType<FilterImage>("Fotokopierer", 1, 0, "FilterImage");
-    qmlRegisterType<ScanImage>("Fotokopierer", 1, 0, "ScanImage");
     qmlRegisterUncreatableType<Document>(
         "Fotokopierer",
         1,

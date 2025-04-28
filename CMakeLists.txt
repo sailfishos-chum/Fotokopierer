@@ -1,10 +1,15 @@
 cmake_policy(SET CMP0048 NEW)
 
-project (fotokopierer VERSION 0.1 LANGUAGES CXX)
-
 cmake_minimum_required(VERSION 3.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(FOTOKOPIERER_VERSION 0.2.6)
+set(PODOFO_VERSION 0.9.7)
+set(OPENCV_VERSION 3.4.14)
+set(FREETYPE_VERSION 2.10.4)
+
+project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -24,23 +29,32 @@ else()
 endif()
 
 set(SOURCES
+  src/ColorizeFilter.cxx
   src/Convert.cxx
+  src/CutFilter.cxx
   src/Document.cxx
   src/DocumentList.cxx
+  src/EdgeDetection.cxx
   src/Filter.cxx
-  src/RotateFilter.cxx
-  src/CutFilter.cxx
-  src/ColorizeFilter.cxx
   src/FilterImage.cxx
-  src/Global.cxx
+  src/Fotokopierer.cxx
   src/Page.cxx
-  src/ScanImage.cxx
+  src/RotateFilter.cxx
+  src/Scanner.cxx
   src/ZoomImage.cxx
   src/init.cxx)
 
+set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
+  FOTOKOPIERER_AUTHOR="Frank Fischer"
+  FOTOKOPIERER_VERSION="${FOTOKOPIERER_VERSION}"
+  PODOFO_VERSION="${PODOFO_VERSION}"
+  OPENCV_VERSION="${OPENCV_VERSION}"
+  FREETYPE_VERSION="${FREETYPE_VERSION}"
+  )
+
 if (SAILFISH_FOUND)
-  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-3.4.0)
-  set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.6)
+  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
+  set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-${PODOFO_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
 
   include(ExternalProject)
 
@@ -50,8 +64,8 @@ if (SAILFISH_FOUND)
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://github.com/opencv/opencv/archive/3.4.0.zip"
-    URL_HASH SHA256=ae8a9f468b7ee3822a62d20d356c69f2b32330a231e738ac2914f332766611b7
+    URL "https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip"
+    URL_HASH SHA256=302d3fe23b09d608d14b10212ed25649d9b6c7a2f817ccb1c8005172a479dedb
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -84,6 +98,7 @@ if (SAILFISH_FOUND)
     -DBUILD_opencv_videoio=OFF
     -DBUILD_opencv_videostab=OFF
     -DBUILD_opencv_world=OFF
+    -DENABLE_PRECOMPILED_HEADERS=OFF
     -DWITH_JASPER=OFF
     -DWITH_OPENEXR=OFF
     -DWITH_WEBP=OFF)
@@ -98,16 +113,17 @@ if (SAILFISH_FOUND)
   endif ()
 
   # We must use our own freetype library
-  set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1)
+  set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
   ExternalProject_Add(freetype-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://download.savannah.gnu.org/releases/freetype/freetype-2.9.1.tar.gz"
-    URL_HASH SHA256=ec391504e55498adceb30baceebd147a6e963f636eb617424bcfc47a169898ce
+    URL "https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
+    URL_HASH SHA256=5eab795ebb23ac77001cfb68b7d4d50b5d6c7469247b0b01b2c953269f658dac
     SOURCE_DIR ${FREETYPE_SOURCE_DIR}
     PREFIX ${FREETYPE_PREFIX}
     LIST_SEPARATOR ,
     CMAKE_ARGS
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DBUILD_SHARED_LIBS:BOOL=false
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
@@ -125,14 +141,15 @@ if (SAILFISH_FOUND)
   set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
   ExternalProject_Add(podofo-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://downloads.sourceforge.net/project/podofo/podofo/0.9.6/podofo-0.9.6.tar.gz"
-    URL_HASH SHA256=e9163650955ab8e4b9532e7aa43b841bac45701f7b0f9b793a98c8ca3ef14072
+    URL "https://downloads.sourceforge.net/project/podofo/podofo/${PODOFO_VERSION}/podofo-${PODOFO_VERSION}.tar.gz"
+    URL_HASH SHA256=7cf2e716daaef89647c54ffcd08940492fd40c385ef040ce7529396bfadc1eb8
     SOURCE_DIR ${PODOFO_SOURCE_DIR}
     PREFIX ${PODOFO_PREFIX}
     DEPENDS freetype-3rdparty opencv
     LIST_SEPARATOR ,
     CMAKE_ARGS
     -DPODOFO_BUILD_LIB_ONLY:BOOL=true
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
     -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
@@ -142,7 +159,7 @@ if (SAILFISH_FOUND)
   link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libjpeg PNG::PNG freetype)
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg-turbo PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 
@@ -159,7 +176,7 @@ else()
   message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 endif()
 
-find_package(Qt5 COMPONENTS Core Concurrent Gui Quick)
+find_package(Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick)
 
 # We need to set these directories here ... luckily we know exactly where it goes.
 
@@ -171,6 +188,10 @@ if (SAILFISH_FOUND)
 else()
   qt5_add_resources(RESOURCES desktop.qrc)
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
+
+  add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
+  qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
+  target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 endif()
 
 set_property(TARGET ${TARGET} PROPERTY
@@ -189,11 +210,16 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
   QT_USE_FAST_OPERATOR_PLUS
   )
 
-qt5_use_modules(${TARGET} Core Gui Quick)
+qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+
 # install(DIRECTORY qml DESTINATION share/${TARGET})
 # install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
+
 install(FILES ${TARGET}.desktop DESTINATION share/applications)
-install(FILES ${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
+install(FILES icons/86x86/${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
+install(FILES icons/108x108/${TARGET}.png DESTINATION share/icons/hicolor/108x108/apps)
+install(FILES icons/128x128/${TARGET}.png DESTINATION share/icons/hicolor/128x128/apps)
+install(FILES icons/172x172/${TARGET}.png DESTINATION share/icons/hicolor/172x172/apps)
