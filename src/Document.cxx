@@ -29,20 +29,20 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValue>
 #include <QtCore/QJsonValueRef>
-#include <QtCore/QList>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
+#include <QtCore/QVector>
 
 #include <memory>
 
 const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 struct Document::Data {
-    QString title;                      ///< document title
-    QString filename;                   ///< filename of the document data
-    QDateTime creation_time;            ///< time when the document has been created
-    QList<QSharedPointer<Page>> pages;  ///< page of the document
+    QString title;                        ///< document title
+    QString filename;                     ///< filename of the document data
+    QDateTime creation_time;              ///< time when the document has been created
+    QVector<QSharedPointer<Page>> pages;  ///< page of the document
 };
 
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
@@ -275,7 +275,7 @@ bool Document::load(const QString &filename, QObject *parent)
     auto pages = json[QStringLiteral("pages")];
     if (!pages.isArray()) return false;
 
-    QList<QSharedPointer<Page>> docpages;
+    QVector<QSharedPointer<Page>> docpages;
     for (auto page : pages.toArray()) {
         if (!page.isObject()) return false;
         QSharedPointer<Page> p(new Page);

@@ -27,7 +27,7 @@
 #include <QtCore/QUrl>
 
 struct DocumentList::Data {
-    QList<QSharedPointer<Document>> docs;
+    QVector<QSharedPointer<Document>> docs;
 };
 
 DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new Data)
