@@ -28,6 +28,7 @@ else()
 endif()
 
 set(SOURCES
+  src/Clipboard.cxx
   src/ColorizeFilter.cxx
   src/Convert.cxx
   src/CutFilter.cxx

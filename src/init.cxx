@@ -22,6 +22,7 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QtQml>
 
+#include "Clipboard.hxx"
 #include "ColorizeFilter.hxx"
 #include "CutFilter.hxx"
 #include "FilterImage.hxx"
@@ -44,6 +45,13 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterSingletonType<Fotokopierer>(
         "Fotokopierer", 1, 0, "Fotokopierer", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new Fotokopierer();
+        });
+
+    qmlRegisterSingletonType<Clipboard>(
+        "Clipboard", 1, 0, "Clipboard", [](QQmlEngine* engine, QJSEngine*) -> QObject* {
+            auto cb = Clipboard::instance();
+            engine->setObjectOwnership(cb, QQmlEngine::CppOwnership);
+            return cb;
         });
 
     qmlRegisterSingletonType<DocumentList>(
