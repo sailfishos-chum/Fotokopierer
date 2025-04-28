@@ -25,6 +25,13 @@ Page {
     id: page
 
     property alias source : cutview.source
+    property alias image : cutview.image
+
+    onStatusChanged: {
+        if (status == PageStatus.Deactivating) {
+            cutview.cutImage()
+        }
+    }
 
     PageHeader {
         title: qsTr("Cut & Rotate")

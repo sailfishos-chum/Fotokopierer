@@ -24,7 +24,7 @@ import "../../common"
 Page {
     id: page
 
-    property ScannedImage img
+    property alias source : colimg.source
     property string colormode: "bw"
     property int contrast: contrast_slider.value
     property int brightness: brightness_slider.value
@@ -43,21 +43,17 @@ Page {
         title: qsTr("Colorize")
     }
 
-    Image {
+    ColorizeImage {
         id: colimg
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.bottom: buttons.top
 
-        source: "image://Scanned/" + img.image + "/cut" +
-            "/" + colormode +
-            "/" + contrast +
-            "/" + brightness +
-            "/" + details
-
-        cache: false
+        contrast: contrast_slider.value / 100.0
+        brightness: brightness_slider.value / 100.0
+        details: details_slider.value / 100.0
     }
 
     DockedPanel {
