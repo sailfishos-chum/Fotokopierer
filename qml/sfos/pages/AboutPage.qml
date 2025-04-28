@@ -154,21 +154,8 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: ("<a href=\"http://chiselapp.com/user/fifr/repository/fotokopierer\">" +
+                text: ("<a href=\"http://codeberg.org/fifr/Fotokopierer\">" +
                        qsTr("Homepage") + "</a>")
-
-                onLinkActivated: Qt.openUrlExternally(link)
-            }
-
-            Label {
-                width: parent.width
-
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-
-                text: (qsTr("Find me on libera.chat: ") +
-                       "<a href=\"https://web.libera.chat/#fotokopierer\">" +
-                       "#fotokopierer")
 
                 onLinkActivated: Qt.openUrlExternally(link)
             }
