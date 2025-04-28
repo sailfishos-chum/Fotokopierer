@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.0)
 
 set(FOTOKOPIERER_VERSION 0.2.4)
 set(PODOFO_VERSION 0.9.7)
-set(OPENCV_VERSION 3.4.0)
+set(OPENCV_VERSION 3.4.14)
 set(FREETYPE_VERSION 2.10.4)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
@@ -63,7 +63,7 @@ if (SAILFISH_FOUND)
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
     URL "https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip"
-    URL_HASH SHA256=ae8a9f468b7ee3822a62d20d356c69f2b32330a231e738ac2914f332766611b7
+    URL_HASH SHA256=302d3fe23b09d608d14b10212ed25649d9b6c7a2f817ccb1c8005172a479dedb
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -157,7 +157,7 @@ if (SAILFISH_FOUND)
   link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg PNG::PNG freetype)
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg-turbo PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 
