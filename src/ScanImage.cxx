@@ -67,7 +67,7 @@ QImage ScanImage::original() const
 QImage ScanImage::computeFilteredImage() const
 {
     QImage image = d->original;
-    for (auto filter : d->filter) {
+    for (auto& filter : d->filter) {
         image = filter->apply(std::move(image));
     }
     return image;
@@ -142,7 +142,7 @@ void ScanImage::saveAndClear(Document* doc)
 
     d->saveFuture.setFuture(QtConcurrent::run([this, original] {
         QImage image = original;
-        for (auto filter : d->filter) {
+        for (auto& filter : d->filter) {
             image = filter->apply(std::move(image));
         }
 
