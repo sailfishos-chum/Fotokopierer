@@ -295,7 +295,8 @@ QHash<int, QByteArray> Document::roleNames() const
     static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
                                                  {ResultRole, "role_result"},
                                                  {CreationTimeRole, "role_creationTime"},
-                                                 {PageRole, "role_page"}};
+                                                 {PageRole, "role_page"},
+                                                 {SelectionRole, "role_selected"}};
     return roles;
 }
 
