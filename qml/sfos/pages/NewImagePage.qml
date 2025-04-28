@@ -39,6 +39,9 @@ Page {
             // Remove possibly old image
             scanImage.clear()
         }
+        if (status == PageStatus.Active) {
+            camera.cameraState = Camera.ActiveState
+        }
     }
 
     onPageContainerChanged: {
@@ -110,6 +113,8 @@ Page {
     Camera {
         id: camera
 
+        cameraState: Camera.UnloadedState
+
         viewfinder {
             resolution: Qt.size(640, 480)
         }
@@ -153,7 +158,7 @@ Page {
         metaData.orientation: orientation
     }
 
-    Rectangle {
+    Item {
         id: viewArea
 
         anchors.top: header.bottom
