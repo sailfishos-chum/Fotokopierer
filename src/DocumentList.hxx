@@ -62,6 +62,8 @@ private:
 private slots:
     void documentChanged();
 
+    void documentStatusChanged();
+
 private:
     struct Data;
     std::unique_ptr<Data> d;

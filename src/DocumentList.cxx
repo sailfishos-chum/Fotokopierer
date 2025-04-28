@@ -54,11 +54,7 @@ void DocumentList::addDocument(const QSharedPointer<Document> &doc)
     connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
-    connect(doc.data(), &Document::statusChanged, [this, doc]() {
-        if (doc->status() == Document::Invalid) {
-            deleteDocument(d->docs.indexOf(doc));
-        }
-    });
+    connect(doc.data(), &Document::statusChanged, this, &DocumentList::documentStatusChanged);
 
     beginInsertRows({}, d->docs.size(), d->docs.size());
     d->docs.push_back(doc);
@@ -90,6 +86,20 @@ void DocumentList::documentChanged()
         if (doc.data() == sender) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailsRole, TitleRole, CreationTimeRole, NumPagesRole});
+        }
+    }
+}
+
+void DocumentList::documentStatusChanged()
+{
+    Document *doc = qobject_cast<Document *>(sender());
+
+    if (doc->status() == Document::Invalid) {
+        for (int i = 0; i < d->docs.size(); i++) {
+            if (d->docs.at(i) == doc) {
+                deleteDocument(i);
+                break;
+            }
         }
     }
 }
