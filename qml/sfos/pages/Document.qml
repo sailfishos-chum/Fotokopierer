@@ -68,8 +68,8 @@ Page {
             width: grid.cellWidth
             height: grid.cellHeight
             factor: docpage.editing || docpage.dragging ? 0.8 : 0.9
-            page: role_page
-            isAddButton: role_page == null
+            thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
+            isAddButton: role_thumbnail == null
 
             Behavior on factor {
                 NumberAnimation { duration: 100 }
@@ -103,7 +103,7 @@ Page {
         }
 
         Component.onCompleted: {
-            visualModel.items.insert({"role_page": null})
+            visualModel.items.insert({"role_thumbnail": null})
         }
     }
 
@@ -112,7 +112,7 @@ Page {
             console.log("can't load document file")
         } else {
             visualModel.model = document
-            visualModel.items.insert({"role_page": null})
+            visualModel.items.insert({"role_thumbnail": null})
         }
     }
 

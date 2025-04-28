@@ -25,7 +25,7 @@ import "../common"
 DragDelegate {
     id: dragDelegate
 
-    property var page
+    property string thumbnail
     property bool isAddButton: false
     property double factor: 0.9
 
@@ -55,6 +55,13 @@ DragDelegate {
         }
     }
 
+    Component {
+        id: pageView
+        PageView {
+            thumbnail: dragDelegate.thumbnail
+        }
+    }
+
     Loader {
         id: loader
 
@@ -67,7 +74,7 @@ DragDelegate {
 
         Component.onCompleted: {
             if (!isAddButton) {
-                loader.setSource("qrc:///qml/sfos/PageView.qml", {"page": page})
+                loader.sourceComponent = pageView;
             } else {
                 loader.sourceComponent = addButtonView;
             }

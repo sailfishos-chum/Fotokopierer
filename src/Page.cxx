@@ -65,11 +65,11 @@ public:
         scaled.save(scaled_filename_);
 
         // send result
-        emit imageLoaded(scaled_filename_, scaled);
+        emit imageLoaded(scaled_filename_);
     }
 
 signals:
-    void imageLoaded(const QString& path, const QImage& image);
+    void imageLoaded(const QString& path);
 
 private:
     QString filename_;
@@ -83,7 +83,6 @@ struct Page::Data {
     QString original_path;
     QString result_path;
     QString thumbnail_path;
-    QImage thumbnail;
 };
 
 Page::Page(QObject* parent) : QObject(parent), d(new Data) {}
@@ -108,36 +107,32 @@ QDateTime Page::creationTime() const
     return d->creation_time;
 }
 
-QImage Page::thumbnail() const
+QString Page::thumbnail()
 {
-    if (d->thumbnail.isNull()) {
-        qDebug() << "Load thumbnail " << d->thumbnail_path;
-        if (!d->thumbnail_path.isNull()) d->thumbnail = QImage(d->thumbnail_path);
-        if (d->thumbnail.isNull() && !d->result_path.isNull()) {
-            qDebug() << "Create thumbnail from original image " << d->result_path;
-            LoadThread* thr = new LoadThread(d->result_path);
-            connect(thr, &LoadThread::imageLoaded, this, &Page::setThumbnailImage);
-            connect(thr, &LoadThread::finished, thr, &QObject::deleteLater);
-            thr->start();
+    // Check if thumbnail image exists.
+    if (!d->thumbnail_path.isNull()) {
+        QFileInfo finfo(d->thumbnail_path);
+        if (finfo.exists()) {
+            // thumbnail file exists, return the path
+            return d->thumbnail_path;
         }
     }
-    return d->thumbnail;
+
+    // thumbnail does not exist, try to create it from the result image
+    if (!d->thumbnail_path.isEmpty()) {
+        d->thumbnail_path = QString();
+    }
+    LoadThread* thr = new LoadThread(d->result_path);
+    connect(thr, &LoadThread::imageLoaded, this, &Page::setThumbnail);
+    connect(thr, &LoadThread::finished, thr, &QObject::deleteLater);
+    thr->start();
+
+    return {};
 }
 
-void Page::setThumbnailImage(const QString& path, const QImage& image)
+void Page::setThumbnail(const QString& path)
 {
-    if (image.isNull()) {
-        if (!d->thumbnail_path.isNull()) {
-            QFile(d->thumbnail_path).remove();
-            d->thumbnail_path.clear();
-        }
-
-        if (!d->thumbnail.isNull()) {
-            d->thumbnail = {};
-            emit thumbnailChanged();
-        }
-    } else {
-        d->thumbnail = image;
+    if (path != d->thumbnail_path) {
         d->thumbnail_path = path;
         emit thumbnailChanged();
     }

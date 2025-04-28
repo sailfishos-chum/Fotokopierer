@@ -31,6 +31,7 @@
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QList>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QUrl>
 
 #include <memory>
 
@@ -70,9 +71,9 @@ int Document::rowCount(const QModelIndex &parent) const
 QVariant Document::data(const QModelIndex &index, int role) const
 {
     switch (role) {
-        case PageRole: {
+        case ThumbnailRole: {
             if (index.column() == 0 && index.row() < d->pages.size()) {
-                return QVariant::fromValue(d->pages[index.row()].data());
+                return QUrl::fromLocalFile(d->pages[index.row()]->thumbnail());
             }
             break;
         }
@@ -83,7 +84,7 @@ QVariant Document::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> Document::roleNames() const
 {
-    static const QHash<int, QByteArray> roles = {{PageRole, "role_page"}};
+    static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"}};
     return roles;
 }
 
@@ -130,6 +131,8 @@ void Document::addPage(BaseImage *original, BaseImage *result)
     };
 
     QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
+
+    connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
 
     beginInsertRows({}, d->pages.size(), d->pages.size());
     d->pages.push_back(p);
@@ -217,6 +220,7 @@ bool Document::load(const QString &filename, QObject *parent)
         QSharedPointer<Page> p(new Page);
         if (!p->read(page.toObject())) return false;
         docpages.push_back(p);
+        connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
     }
 
     d->title = title.isString() ? title.toString() : ctime.toString();
@@ -227,4 +231,18 @@ bool Document::load(const QString &filename, QObject *parent)
     emit titleChanged();
 
     return true;
+}
+
+void Document::updateThumbnail()
+{
+    Page *page = dynamic_cast<Page *>(sender());
+
+    for (int i = 0; i < d->pages.size(); i++) {
+        if (page == d->pages[i]) {
+            auto idx = index(i);
+            emit dataChanged(idx, idx, {ThumbnailRole});
+            save();
+            return;
+        }
+    }
 }

@@ -22,7 +22,7 @@ import Fotokopierer 1.0
 Item {
     id: item
 
-    property var page
+    property string thumbnail
     property int pagenumber
 
     Rectangle {
@@ -39,10 +39,10 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        Thumbnail {
-            id: thumbnail
-            page: item.page
+        Image {
+            source: thumbnail
             anchors.fill: parent
+            fillMode: Image.PreserveAspectFit
         }
     }
 

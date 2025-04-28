@@ -26,7 +26,6 @@
 #include "CutImage.hxx"
 #include "PlainImage.hxx"
 #include "RotImage.hxx"
-#include "Thumbnail.hxx"
 #include "ZoomImage.hxx"
 
 #include "Document.hxx"
@@ -52,7 +51,6 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
     qmlRegisterUncreatableType<Page>(
         "Fotokopierer", 1, 0, "ScannedPage", QObject::tr("ScannedPage objects cannot be created"));
-    qmlRegisterType<Thumbnail>("Fotokopierer", 1, 0, "Thumbnail");
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));

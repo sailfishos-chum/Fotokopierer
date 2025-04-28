@@ -29,7 +29,7 @@ class Page : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QDateTime creationTime READ creationTime)
-    Q_PROPERTY(QImage thumbnail READ thumbnail NOTIFY thumbnailChanged)
+    Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
 
 public:
     static const int ThumbnailSize = 300;
@@ -47,7 +47,7 @@ public:
 
     QDateTime creationTime() const;
 
-    QImage thumbnail() const;
+    QString thumbnail();
 
     QString getOriginalImagePath() const;
 
@@ -63,7 +63,7 @@ public slots:
     void remove();
 
 private slots:
-    void setThumbnailImage(const QString& path, const QImage& image);
+    void setThumbnail(const QString& path);
 
 signals:
     void thumbnailChanged();
