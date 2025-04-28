@@ -35,6 +35,13 @@ struct DocumentList::Data {
 DocumentList::DocumentList(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
+}
+
+DocumentList::~DocumentList() = default;
+
+void DocumentList::load()
+{
+    d->docs.clear();
     auto dir = getDocumentDirectory();
     for (auto& path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
         QDir docdir = dir;
@@ -46,8 +53,6 @@ DocumentList::DocumentList(QObject* parent)
         }
     }
 }
-
-DocumentList::~DocumentList() = default;
 
 Document* DocumentList::latestDocument() const
 {
@@ -64,6 +69,7 @@ void DocumentList::addDocument(const QSharedPointer<Document>& doc)
     connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
     connect(doc.data(), &Document::statusChanged, this, &DocumentList::documentStatusChanged);
+    connect(doc.data(), &Document::error, this, &DocumentList::error);
 
     beginInsertRows({}, d->docs.size(), d->docs.size());
     d->docs.push_back(doc);

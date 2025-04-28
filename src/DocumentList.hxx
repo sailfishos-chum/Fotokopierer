@@ -49,6 +49,9 @@ public:
 
     ~DocumentList() override;
 
+    /// Load documents from file.
+    Q_INVOKABLE void load();
+
     /// Create and return a new document.
     ///
     /// On error return NULL.
@@ -62,6 +65,8 @@ public:
 
 signals:
     void latestDocumentChanged();
+
+    void error(const QString& errorMessage);
 
 private:
     void addDocument(const QSharedPointer<Document>& document);

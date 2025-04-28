@@ -205,6 +205,7 @@ void Page::generationFinished()
         // start generation of thumbnail
         (void)thumbnail();
     } catch (GeneratingError& e) {
+        emit error(e.message());
         setStatus(Invalid);
     }
 }
@@ -272,6 +273,11 @@ bool Page::read(const QJsonObject& json)
 
     auto page_thumbnail_path = json[QStringLiteral("thumbnailPath")];
     if (!page_thumbnail_path.isString() && !page_thumbnail_path.isUndefined()) {
+        return false;
+    }
+
+    // Verify that the result file exist.
+    if (!QFileInfo(page_result_path.toString()).exists()) {
         return false;
     }
 

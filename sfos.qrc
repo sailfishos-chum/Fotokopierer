@@ -4,6 +4,7 @@
 	 <file>qml/sfos/CoverPage.qml</file>
 	 <file>qml/sfos/DeletableItem.qml</file>
 	 <file>qml/sfos/DocumentDelegate.qml</file>
+	 <file>qml/sfos/ErrorOverlay.qml</file>
 	 <file>qml/sfos/PageDelegate.qml</file>
 	 <file>qml/sfos/ValueSlider.qml</file>
 	 <file>qml/sfos/pages/CutPage.qml</file>

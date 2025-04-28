@@ -185,7 +185,7 @@ signals:
     void errorPdfExists(const QString &filename);
 
     /// An error has been raised.
-    void error(const QString &msg);
+    void error(const QString &errorMessage);
 
 private:
     int rowCount(const QModelIndex &parent) const override;
