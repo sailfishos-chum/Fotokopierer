@@ -205,6 +205,14 @@ ApplicationWindow {
                 text: "Colored"
                 onClicked: {
                     colormode = "colored"
+                    colimage.filter.colorMode = ColorizeFilter.FullColor
+                }
+            }
+
+            Button {
+                text: "Magic"
+                onClicked: {
+                    colormode = "magic"
                     colimage.filter.colorMode = ColorizeFilter.Colored
                 }
             }
