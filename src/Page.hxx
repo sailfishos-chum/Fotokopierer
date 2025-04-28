@@ -25,6 +25,7 @@
 
 #include <memory>
 
+class Document;
 class ScanImage;
 
 /// A single scanned page.
@@ -84,6 +85,11 @@ public:
     /// The page files reuse (and overwrite) the current files.
     void updateFromImage(const std::shared_ptr<ScanImage>& scanImage);
 
+    /// Make this page a copy of another page.
+    ///
+    /// The page is copied to directory `dir`.
+    void initCopy(const QDir& dir, Document* sourceDoc, Page* source, bool move = false);
+
     bool write(QJsonObject& json, const QDir& docpath) const;
 
     bool read(const QJsonObject& json, const QDir& docpath);
@@ -128,6 +134,8 @@ signals:
     void creationTimeChanged();
 
     void statusChanged();
+
+    void deleteSourcePage(Document* sourceDoc, Page* source);
 
     void generationFinished(const QString& original_path, const QString& result_path);
 

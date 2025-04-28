@@ -117,6 +117,7 @@ ApplicationWindow {
             id: colview
 
             scanner: Scanner
+            colorizeChooser: colorizer.chooser()
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -129,6 +130,7 @@ ApplicationWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: brightnessRow.top
+            visible: colview.colorMode == ColorizeView.Gray || colview.colorMode == ColorizeView.FullColor
 
             Label {
                 text: "Contrast: "
@@ -147,7 +149,8 @@ ApplicationWindow {
             id: brightnessRow
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: detailsRow.top
+            anchors.bottom: colbuttons.top
+            visible: contrastRow.visible
 
             Label {
                 text: "Brightness"
@@ -162,22 +165,73 @@ ApplicationWindow {
             }
         }
 
-        Row {
-            id: detailsRow
+        ColorizeChooserItem {
+            id: colorizer
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: colbuttons.top
+            anchors.bottom: thresholdRow.top
+            height: width
+
+            onChanged: colview.refreshColorization()
+        }
+
+        Row {
+            id: thresholdRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: blockSizeRow.top
+            visible: !contrastRow.visible
 
             Label {
-                text: "Details"
+                text: "Threshold"
             }
             Slider {
-                id: details
+                id: threshold
                 minimumValue: 0
                 maximumValue: 100
                 stepSize: 1
                 value: 50
-                onValueChanged: colview.details = value / 100
+                onValueChanged: colview.threshold = value / 100
+            }
+        }
+
+        Row {
+            id: blockSizeRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: blackLevelRow.top
+            visible: !contrastRow.visible
+
+            Label {
+                text: "BlockSize"
+            }
+            Slider {
+                id: blockSize
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: 1
+                value: 50
+                onValueChanged: colview.blockSize = value / 100
+            }
+        }
+
+        Row {
+            id: blackLevelRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: colbuttons.top
+            visible: !contrastRow.visible
+
+            Label {
+                text: "BlackLevel"
+            }
+            Slider {
+                id: blackLevel
+                minimumValue: 0
+                maximumValue: colorizer.maxBlackLevel
+                stepSize: 1
+                value: 50
+                onValueChanged: colorizer.blackLevel = value
             }
         }
 

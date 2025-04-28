@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.3.0)
+set(FOTOKOPIERER_VERSION 0.3.2)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.14)
 set(FREETYPE_VERSION 2.10.4)
@@ -32,12 +32,14 @@ set(SOURCES
   src/DocumentList.cxx
   src/Document.cxx
   src/Page.cxx
+  src/Clipboard.cxx
 
   src/Scanner.cxx
   src/ScanImage.cxx
   src/ScanImageView.cxx
   src/CutView.cxx
   src/ColorizeView.cxx
+  src/ColorizeChooser.cxx
   src/ZoomImage.cxx
 
   src/Fotokopierer.cxx
@@ -63,6 +65,12 @@ if (SAILFISH_FOUND)
   # configure OpenCV
   set(OpenCV_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/opencv)
 
+  if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL i486)
+    # we disable this flag because otherwise OpenCV will complain about some undefined
+    # _mm_pause function (a compiler intrinsic?)
+    set(OPENCV_EXTRA_CXX_FLAGS "-U__SSE2__")
+  endif()
+
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
@@ -71,6 +79,8 @@ if (SAILFISH_FOUND)
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_BUILD_TYPE=Release
+    -DOPENCV_EXTRA_CXX_FLAGS=${OPENCV_EXTRA_CXX_FLAGS}
     -DBUILD_DOCS=OFF
     -DBUILD_EXAMPLES=OFF
     -DBUILD_FAT_JAVA_LIB=OFF
@@ -80,6 +90,8 @@ if (SAILFISH_FOUND)
     -DBUILD_PERF_TESTS=OFF
     -DBUILD_SHARED_LIBS=OFF
     -DBUILD_TESTS=OFF
+    # we must disable libjpeg-turbo because of a version clash
+    -DBUILD_JPEG_TURBO_DISABLE=ON
     -DBUILD_opencv_apps=OFF
     -DBUILD_opencv_calib3d=OFF
     -DBUILD_opencv_dnn=OFF
@@ -114,6 +126,8 @@ if (SAILFISH_FOUND)
     add_custom_target(opencv-3rdparty)
   endif ()
 
+  link_directories(${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+
   # We must use our own freetype library
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-${FREETYPE_VERSION}-${CMAKE_SYSTEM_PROCESSOR})
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
@@ -130,7 +144,7 @@ if (SAILFISH_FOUND)
     -DBUILD_SHARED_LIBS:BOOL=false
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
 
-  link_directories(${FREETYPE_PREFIX}/lib)
+  link_directories(${FREETYPE_PREFIX}/lib64 ${FREETYPE_PREFIX}/lib)
 
   # configure PoDoFo
   find_package(PNG REQUIRED)
@@ -156,12 +170,15 @@ if (SAILFISH_FOUND)
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
     -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
     -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
-    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib
+    # the following should be libjpeg-turbo in case that would work ...
+    -DLIBJPEG_LIBRARY_NAMES=jpeg)
 
   link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg-turbo PNG::PNG freetype)
+  # use libjpeg-turbo in case that would work ...
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 

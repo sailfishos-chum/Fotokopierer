@@ -31,6 +31,8 @@ class ScanImageView : public QQuickPaintedItem
     Q_PROPERTY(qreal paintedWidth READ paintedWidth NOTIFY paintedSizeChanged)
     Q_PROPERTY(qreal paintedHeight READ paintedHeight NOTIFY paintedSizeChanged)
 
+    Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
+
     Q_PROPERTY(Scanner* scanner READ scanner WRITE setScanner NOTIFY scannerChanged)
 
 public:
@@ -46,14 +48,21 @@ public:
 
     qreal paintedHeight() const;
 
+    bool busy() const;
+
     void paint(QPainter* painter) override;
 
 signals:
     void scannerChanged();
-
+    void busyChanged();
     void paintedSizeChanged();
 
 protected:
+    /// Change the busy marker.
+    void setBusy(bool busy);
+
+    void setPaintedSize(qreal pwidth, qreal pheight);
+
     /// Return the image to be drawn.
     virtual QImage image() const = 0;
 

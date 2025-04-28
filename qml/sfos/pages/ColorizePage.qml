@@ -45,11 +45,27 @@ Dialog {
         id: colview
 
         scanner: Scanner
+        colorizeChooser: colorizer.chooser()
 
         anchors.top: header.bottom
         anchors.bottom: buttons.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
+
+        onScannerChanged: {
+            contrast_slider.value = colview.contrast * 100
+            brightness_slider.value = colview.brightness * 100
+            threshold_slider.value = colview.threshold * 100
+            blocksize_slider.value = colview.blockSize * 100
+            blackLevel_slider.value = colorizer.blackLevel / colorizer.maxBlackLevel * 100
+        }
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
+            running: colview.busy
+        }
     }
 
     DockedPanel {
@@ -60,47 +76,73 @@ Dialog {
         height: Theme.iconSizeLarge
         dock: Dock.Bottom
 
-        RowLayout {
-            id: buttonRow
-            anchors { left: parent.left; right: parent.right }
-            IconButton {
-                icon.source: Qt.resolvedUrl("/icons/icon-m-bw.svg")
-                icon.width: Theme.iconSizeMedium
-                icon.height: Theme.iconSizeMedium
-                icon.color: undefined
-                Layout.fillWidth: true
-                onClicked: { colview.colorMode = ColorizeView.BlackAndWhite }
+        SilicaGridView {
+            id: buttonView
+
+            anchors.fill: parent
+
+            ListModel {
+                id: listModel
+
+                ListElement {
+                    icon: "/icons/icon-m-bw.svg"
+                    colorMode: 1  // ColorMode.BlackAndWhite
+                }
+
+                ListElement {
+                    icon: "/icons/icon-m-gray.svg"
+                    colorMode: 0  // ColorMode.Gray
+                }
+
+                ListElement {
+                    icon: "/icons/icon-m-color.svg"
+                    colorMode: 3  // ColorMode.FullColor
+                }
+
+                ListElement {
+                    icon: "/icons/icon-m-special.svg"
+                    colorMode: 2 // ColorMode.Colored
+                }
+
+                ListElement {
+                    icon: "/icons/icon-m-ctrl.svg"
+                    colorMode: -1
+                }
             }
-            IconButton {
-                icon.source: Qt.resolvedUrl("/icons/icon-m-gray.svg")
-                icon.width: Theme.iconSizeMedium
-                icon.height: Theme.iconSizeMedium
-                icon.color: undefined
-                Layout.fillWidth: true
-                onClicked: { colview.colorMode = ColorizeView.Gray }
-            }
-            IconButton {
-                icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
-                icon.width: Theme.iconSizeMedium
-                icon.height: Theme.iconSizeMedium
-                icon.color: undefined
-                Layout.fillWidth: true
-                onClicked: { colview.colorMode = ColorizeView.FullColor }
-            }
-            IconButton {
-                icon.source: Qt.resolvedUrl("/icons/icon-m-special.svg")
-                icon.width: Theme.iconSizeMedium
-                icon.height: Theme.iconSizeMedium
-                icon.color: undefined
-                Layout.fillWidth: true
-                onClicked: { colview.colorMode = ColorizeView.Colored }
-            }
-            IconButton {
-                icon.source: Qt.resolvedUrl("/icons/icon-m-ctrl.svg")
-                icon.width: Theme.iconSizeMedium
-                icon.height: Theme.iconSizeMedium
-                Layout.fillWidth: true
-                onClicked: { sliders.open = !sliders.open; buttons.open = !buttons.open }
+
+            model: listModel
+
+            cellWidth: width / model.count
+            cellHeight: height
+
+            delegate: BackgroundItem {
+                width: buttonView.cellWidth
+                height: buttonView.cellHeight
+
+                onClicked: {
+                    if (colorMode == -1) {
+                        sliders.open = !sliders.open
+                        buttons.open = !buttons.open
+                    } else {
+                        colview.colorMode = colorMode
+                    }
+                }
+
+                highlightedColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: Theme.rgba(Theme.highlightBackgroundColor, 0.5 * Theme.highlightBackgroundOpacity)
+                    radius: 5
+                    visible: colview.colorMode == colorMode
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    sourceSize.width: Theme.iconSizeMedium
+                    sourceSize.height: Theme.iconSizeMedium
+                    source: Qt.resolvedUrl(icon)
+                }
             }
         }
     }
@@ -126,19 +168,74 @@ Dialog {
             ValueSlider {
                 id: contrast_slider
                 icon: Qt.resolvedUrl("/icons/contrast.svg")
+                visible: colview.colorMode == ColorizeView.Gray || colview.colorMode == ColorizeView.FullColor
                 onValueChanged: colview.contrast = value / 100
             }
 
             ValueSlider {
                 id: brightness_slider
                 icon: Qt.resolvedUrl("/icons/brightness.svg")
+                visible: contrast_slider.visible
                 onValueChanged: colview.brightness = value / 100
             }
 
             ValueSlider {
-                id: details_slider
-                icon: Qt.resolvedUrl("image://theme/icon-m-search")
-                onValueChanged: colview.details = value / 100
+                id: threshold_slider
+                icon: Qt.resolvedUrl("/icons/threshold.svg")
+                visible: !contrast_slider.visible
+                onValueChanged: colview.threshold = value / 100
+            }
+
+            ValueSlider {
+                id: blocksize_slider
+                icon: Qt.resolvedUrl("/icons/blocksize.svg")
+                visible: !contrast_slider.visible
+                onValueChanged: colview.blockSize = value / 100
+            }
+
+            IconButton {
+                id: colorizer_button
+                visible: colview.colorMode == ColorizeView.Colored
+                icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
+                onClicked: {
+                    colorize.open = true
+                    sliders.open = false
+                    blackLevel_slider.value = colorizer.blackLevel / colorizer.maxBlackLevel * 100
+                }
+            }
+        }
+    }
+
+    DockedPanel {
+        id: colorize
+
+        width: parent.width
+        height: closeButton.height + colorizer.height + blackLevel_slider.height
+        dock: Dock.Bottom
+
+        Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            IconButton {
+                icon.source: "image://theme/icon-m-dismiss"
+                anchors.right: parent.right
+                onClicked: { sliders.open = true; colorize.open = false }
+            }
+
+            ColorizeChooserItem {
+                id: colorizer
+                anchors.left: parent.left
+                anchors.right: parent.right
+                markerRadius: Math.min(page.width, page.height) / 25
+                height: width
+                onChanged: colview.refreshColorization()
+            }
+
+            ValueSlider {
+                id: blackLevel_slider
+                icon: Qt.resolvedUrl("/icons/icon-m-bw.svg")
+                onValueChanged: colorizer.blackLevel = value * colorizer.maxBlackLevel / 100
             }
         }
     }
