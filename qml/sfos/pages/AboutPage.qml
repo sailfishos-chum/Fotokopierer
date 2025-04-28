@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019, 2020 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -73,8 +73,31 @@ Page {
                 wrapMode: Text.WordWrap
 
                 text: (qsTr("Icons by %1").arg("Tobias Planitzer"))
+            }
 
-                onLinkActivated: Qt.openUrlExternally(link)
+            Separator {
+                width: parent.width
+                horizontalAlignment: Qt.AlignHCenter
+            }
+
+            Label {
+                width: parent.width
+
+                horizontalAlignment: Text.AlignHCenter
+                anchors.topMargin: Theme.fontSizeLarge
+                font.pixelSize: Theme.fontSizeLarge
+
+                text: "Translations"
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "Åke Engelbrektson (%1)".arg(qsTr("Swedish"))
             }
 
             Separator {
