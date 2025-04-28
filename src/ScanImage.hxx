@@ -52,6 +52,12 @@ public:
 
     ~ScanImage() override;
 
+    /// Return the original image.
+    QImage original() const;
+
+    /// Compute and return the filtered image.
+    QImage computeFilteredImage() const;
+
     Filter* filter(FilterType type);
 
     Q_INVOKABLE bool loadFile(const QString& file_name);
