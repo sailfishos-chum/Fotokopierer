@@ -31,10 +31,16 @@ set(SOURCES
   src/CutImage.cxx
   src/Document.cxx
   src/DocumentList.cxx
+  src/Filter.cxx
+  src/RotateFilter.cxx
+  src/CutFilter.cxx
+  src/ColorizeFilter.cxx
+  src/FilterImage.cxx
   src/Global.cxx
   src/Page.cxx
   src/PlainImage.cxx
   src/RotImage.cxx
+  src/ScanImage.cxx
   src/ZoomImage.cxx
   src/init.cxx)
 
