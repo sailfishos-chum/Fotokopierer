@@ -101,8 +101,7 @@ void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
         default: break;
     }
     auto result_path = dir.filePath(QStringLiteral("%1-result.%2")
-                                        .arg(ctime.toString(FilenameFormat))
-                                        .arg(ext));
+                                        .arg(ctime.toString(FilenameFormat), ext));
 
     updateFromScanner(scanner, original_path, result_path, ctime);
 }
