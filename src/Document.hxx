@@ -55,7 +55,7 @@ public:
     Q_INVOKABLE void addPage(BaseImage *original, BaseImage *result);
 
     /// Delete a page from the document.
-    Q_INVOKABLE void deletePage(Page *page);
+    Q_INVOKABLE void deletePage(int pageIndex);
 
     Q_INVOKABLE bool save() const;
 
