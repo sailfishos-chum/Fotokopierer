@@ -175,7 +175,7 @@ Page {
     }
 
     function _editImage() {
-        Scanner.loadFile(page.original)
+        Scanner.loadPage(page)
         Scanner.deleteOriginalOnClear = false
         pageStack.push(cutpage)
         pageStack.pushAttached(colpage)
