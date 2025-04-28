@@ -84,6 +84,7 @@ protected slots:
     void onNewImage();
 
 private slots:
+    void onImageUpdated();
     void onCutImageChanged();
 
 private:

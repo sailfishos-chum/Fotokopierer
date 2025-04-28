@@ -36,6 +36,7 @@ struct ColorizeView::Data {
 
     QFutureWatcher<QImage> image = QFutureWatcher<QImage>();
     bool hasImage = false;
+    bool need_restart = false;
 
     QMetaObject::Connection cutImageChangedConnection = {};
 };
@@ -43,10 +44,7 @@ struct ColorizeView::Data {
 ColorizeView::ColorizeView(QQuickItem* parent)
     : ScanImageView(parent), d(new Data)
 {
-    connect(&d->image, &QFutureWatcher<QImage>::finished, this, [this]() {
-        d->hasImage = true;
-        update();
-    });
+    connect(&d->image, &QFutureWatcher<QImage>::finished, this, &ColorizeView::onImageUpdated);
 }
 
 ColorizeView::~ColorizeView() = default;
@@ -114,9 +112,13 @@ void ColorizeView::updateView()
 {
     if (!d->scaled.isNull()) {
         d->hasImage = false;
-        d->image.setFuture(QtConcurrent::run([this]() {
-            return computeColorizedImage(d->scaled, d->contrast, d->brightness, d->details, d->colorMode);
-        }));
+        if (d->image.isRunning()) {
+            d->need_restart = true;
+        } else {
+            d->image.setFuture(QtConcurrent::run([this]() {
+                return computeColorizedImage(d->scaled, d->contrast, d->brightness, d->details, d->colorMode);
+            }));
+        }
     }
 }
 
@@ -128,6 +130,7 @@ void ColorizeView::onNewImage()
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
+            d->need_restart = false;
             d->cutImageChangedConnection = connect(d->scanImage.get(), &ScanImage::cutImageChanged, this, &ColorizeView::onCutImageChanged);
 
             // initialize settings
@@ -140,6 +143,16 @@ void ColorizeView::onNewImage()
     }
 
     updateView();
+}
+
+void ColorizeView::onImageUpdated()
+{
+    d->hasImage = true;
+    update();
+    if (d->need_restart) {
+        d->need_restart = false;
+        updateView();
+    }
 }
 
 QImage ColorizeView::image() const
