@@ -56,5 +56,18 @@ bool Fotokopierer::isConvex(QPointF x1, QPointF x2, QPointF x3, QPointF x4)
 
 QString Fotokopierer::newImagePath()
 {
-    return getDocumentDirectory().absoluteFilePath(QDateTime::currentDateTime().toString(FilenameFormat) + QStringLiteral(".jpg"));
+    QDir raw = getDocumentDirectory();
+    if (!raw.cd(QStringLiteral(".raw"))) {
+        raw.mkpath(QStringLiteral(".raw"));
+        if (!raw.cd(QStringLiteral(".raw"))) {
+            return {};
+        }
+    }
+
+    if (!raw.exists(QStringLiteral(".nomedia"))) {
+        QFile nomedia(raw.filePath(QStringLiteral(".nomedia")));
+        nomedia.open(QIODevice::WriteOnly);
+    }
+
+    return raw.absoluteFilePath(QStringLiteral("%1.jpg").arg(QDateTime::currentDateTime().toString(FilenameFormat)));
 }
