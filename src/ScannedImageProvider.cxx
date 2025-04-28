@@ -377,7 +377,6 @@ const cv::Mat& getColorizedImage(ImageSet& img)
             auto itimg = img_col.begin<cv::Point3f>();
             auto itimgend = img_col.end<cv::Point3f>();
             auto itmask = bg_mask.begin<uchar>();
-            auto itmaskend = bg_mask.end<uchar>();
             for (; itimg != itimgend; ++itimg, ++itmask) {
                 if (*itmask == 0) {
                     points.push_back(*itimg);
