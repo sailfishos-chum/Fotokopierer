@@ -216,7 +216,7 @@ Page {
                 width: parent.width / 3
                 icon.source: "image://theme/icon-camera-shutter-release"
                 onClicked: {
-                    camera.imageCapture.capture()
+                    camera.imageCapture.captureToLocation(Fotokopierer.newImagePath())
                 }
             }
 
