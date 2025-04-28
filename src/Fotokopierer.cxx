@@ -19,7 +19,9 @@
 
 #include <QtCore/QDateTime>
 #include <QtCore/QLineF>
+#include <QtCore/QSize>
 #include <QtCore/QStandardPaths>
+#include <QtMultimedia/QCameraImageCapture>
 
 const QString ApplicationName = QStringLiteral("Fotokopierer");
 
@@ -110,4 +112,24 @@ QString Fotokopierer::podofoVersion() const
 QString Fotokopierer::opencvVersion() const
 {
     return QStringLiteral(OPENCV_VERSION);
+}
+
+QSize Fotokopierer::defaultResolution(QObject* capture) const
+{
+    auto captures = capture->findChildren<QCameraImageCapture*>();
+    if (captures.count() > 0) {
+        auto cap = captures[0];
+        auto resolutions = cap->supportedResolutions();
+
+        QSize resolution;
+        for (auto&& r : resolutions) {
+            if (r.width() * 3 == r.height() * 4 && r.width() > resolution.width()) {
+                resolution = r;
+            }
+        }
+
+        return resolution;
+    } else {
+        return {};
+    }
 }
