@@ -28,8 +28,11 @@ Page {
 
     property var document: null // the document, may be null
 
-    // Allowed states are "Normal", "Editing", "Dragging"
+    // Allowed states are "Normal", "Editing", "Dragging", "Marking"
     property string state: "Normal"
+
+    // The number of marked pages in marking mode.
+    property int _nmarked: 0
 
     Loader {
         id: newPage
@@ -40,6 +43,13 @@ Page {
             // ensure that the C++ memory of Scanner is freed
             newPage.source = ""
             Scanner.clear()
+        }
+    }
+
+    on_NmarkedChanged: {
+        if (_nmarked == 0) {
+            // The number of marked pages dropped to 0 -> stop marking state
+            state = "Normal"
         }
     }
 
@@ -57,6 +67,7 @@ Page {
             isAddButton: role_thumbnail ? false : true
             visible: !isAddButton || (docpage.state == "Normal")
             deleting: docpage.state == "Editing"
+            marked: role_selected
 
             onPressed: {
                 if (docpage.state == "Editing") {
@@ -93,6 +104,14 @@ Page {
             onClicked: {
                 if (docpage.state == "Editing" || docpage.state == "Dragging") {
                     docpage.state = "Normal"
+                } else if (docpage.state == "Marking") {
+                    if (role_selected) {
+                        role_selected = false
+                        docpage._nmarked -= 1
+                    } else {
+                        role_selected = true
+                        docpage._nmarked += 1
+                    }
                 } else if (isAddButton) {
                     addPage()
                 } else {
@@ -146,6 +165,12 @@ Page {
         VerticalScrollDecorator {}
 
         PullDownMenu {
+            MenuItem {
+                text: qsTr("Select pages")
+                onClicked: docpage.state = "Marking"
+                enabled: (document ? true : false) && docpage.state == "Normal"
+            }
+
             MenuItem {
                 text: qsTr("Export to pdf")
                 onClicked: document.exportToPdf()
@@ -269,6 +294,7 @@ Page {
             role_thumbnail: false
             role_creationTime: false
             role_page: false
+            role_selected: false
         }
     }
 
@@ -282,7 +308,7 @@ Page {
         interval: 1
         running: false
         repeat: false
-        onTriggered: visualModel.items.insert({"role_thumbnail": false})
+        onTriggered: visualModel.items.insert({"role_thumbnail": false, "role_selected": false})
     }
 
     onDocumentChanged: {
