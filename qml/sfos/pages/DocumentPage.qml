@@ -63,6 +63,13 @@ Page {
 
     DelegateModel {
         id: visualModel
+
+        groups: [DelegateModelGroup {
+            name: "shown"
+            includeByDefault: true
+        }]
+        filterOnGroup: "shown"
+
         delegate: PageDelegate {
             id: pageDelegate
             width: grid.cellWidth
@@ -76,6 +83,12 @@ Page {
             visible: !isAddButton || (docpage.state == "Normal")
             deleting: docpage.state == "Editing"
             marked: role_selected
+
+            property bool hidden: role_selected && deletePagesRemorse.active
+
+            onHiddenChanged: {
+                pageDelegate.DelegateModel.inShown = !hidden
+            }
 
             onPressed: {
                 if (docpage.state == "Editing") {
@@ -157,6 +170,10 @@ Page {
         }
         onCanceled: {
             document.clearSelection()
+            // restore the hidden items
+            for (var i = 0; i < visualModel.items.count; i++) {
+                visualModel.items.get(i).inShown = true
+            }
         }
     }
 
