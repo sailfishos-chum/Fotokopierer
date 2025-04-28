@@ -80,6 +80,15 @@ qreal ScanImageView::paintedHeight() const
     return d->painted_height;
 }
 
+void ScanImageView::setPaintedSize(qreal pwidth, qreal pheight)
+{
+    if (pwidth != d->painted_width || pheight != d->painted_height) {
+        d->painted_width = pwidth;
+        d->painted_height = pheight;
+        emit paintedSizeChanged();
+    }
+}
+
 void ScanImageView::paint(QPainter* painter)
 {
     QImage image = this->image();

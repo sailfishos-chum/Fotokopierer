@@ -23,6 +23,7 @@
 
 #include <QDebug>
 #include <QtGui/QImage>
+#include <QtGui/QPainter>
 
 static QPointF scale(const QPointF& p, int width, int height)
 {
@@ -47,14 +48,115 @@ static QPointF unscale(const QPointF& p, const std::unique_ptr<EdgeDetection>& e
 struct CutView::Data {
     std::unique_ptr<EdgeDetection> edges;
     std::shared_ptr<ScanImage> scanImage;
-    QImage image;
 
-    int doRotate = 0;
-    QPointF rotate_tl, rotate_tr, rotate_bl, rotate_br;
+    QMetaObject::Connection orientationChangedConnection = {};
+    bool updatePaintedSize = false;
 
-    QMetaObject::Connection rotatedImageChangedConnection = {};
-    QMetaObject::Connection startRotatedImageUpdateConnection = {};
-    QMetaObject::Connection finishRotatedImageUpdateConnection = {};
+    QPointF getPoint(int which) const
+    {
+        if (scanImage == nullptr || edges == nullptr) return {};
+
+        auto orien = scanImage->orientation();
+        QPointF pnt;
+        switch ((4 + which - orien) % 4) {
+            case 0: pnt = edges->topLeft(); break;
+            case 1: pnt = edges->topRight(); break;
+            case 2: pnt = edges->bottomRight(); break;
+            case 3: pnt = edges->bottomLeft(); break;
+            default: Q_ASSERT(false); break;
+        };
+
+        pnt = ::scale(pnt, edges);
+
+        switch (orien % 4) {
+            case 0: return pnt;
+            case 1: return {1 - pnt.y(), pnt.x()};
+            case 2: return {1 - pnt.x(), 1 - pnt.y()};
+            case 3: return {pnt.y(), 1 - pnt.x()};
+        }
+
+        return {};
+    }
+
+    bool setPoint(int which, const QPointF& p)
+    {
+        if (scanImage == nullptr || edges == nullptr) return false;
+
+        if (getPoint(which) == p) return false;
+
+        auto orien = scanImage->orientation();
+        QPointF pnt = p;
+        switch (orien % 4) {
+            case 0: break;
+            case 1: pnt = {pnt.y(), 1 - pnt.x()}; break;
+            case 2: pnt = {1 - pnt.x(), 1 - pnt.y()}; break;
+            case 3: pnt = {1 - pnt.y(), pnt.x()}; break;
+        }
+
+        pnt = ::unscale(pnt, edges);
+
+        switch ((4 + which - orien) % 4) {
+            case 0: edges->setTopLeft(pnt); break;
+            case 1: edges->setTopRight(pnt); break;
+            case 2: edges->setBottomRight(pnt); break;
+            case 3: edges->setBottomLeft(pnt); break;
+        };
+
+        return true;
+    }
+
+    QPointF getEdgePoint(int which) const
+    {
+        if (scanImage == nullptr || edges == nullptr) return {};
+
+        auto orien = scanImage->orientation();
+        QPointF pnt;
+        switch ((4 + which - orien) % 4) {
+            case 0: pnt = edges->topPoint(); break;
+            case 1: pnt = edges->rightPoint(); break;
+            case 2: pnt = edges->bottomPoint(); break;
+            case 3: pnt = edges->leftPoint(); break;
+            default: Q_ASSERT(false); break;
+        };
+
+        pnt = ::scale(pnt, edges);
+
+        switch (orien % 4) {
+            case 0: return pnt;
+            case 1: return {1 - pnt.y(), pnt.x()};
+            case 2: return {1 - pnt.x(), 1 - pnt.y()};
+            case 3: return {pnt.y(), 1 - pnt.x()};
+        }
+
+        return {};
+    }
+
+    bool setEdgePoint(int which, const QPointF& p)
+    {
+        if (scanImage == nullptr || edges == nullptr) return false;
+
+        if (getPoint(which) == p) return false;
+
+        auto orien = scanImage->orientation();
+        QPointF pnt = p;
+        switch (orien % 4) {
+            case 0: break;
+            case 1: pnt = {pnt.y(), 1 - pnt.x()}; break;
+            case 2: pnt = {1 - pnt.x(), 1 - pnt.y()}; break;
+            case 3: pnt = {1 - pnt.y(), pnt.x()}; break;
+        }
+
+        pnt = ::unscale(pnt, edges);
+
+        switch ((4 + which - orien) % 4) {
+            case 0: edges->setTopPoint(pnt); break;
+            case 1: edges->setRightPoint(pnt); break;
+            case 2: edges->setBottomPoint(pnt); break;
+            case 3: edges->setLeftPoint(pnt); break;
+        };
+
+        return true;
+    }
 };
 
 CutView::CutView(QQuickItem* parent)
@@ -77,173 +179,129 @@ void CutView::setOrientation(int orientation)
 
 QPointF CutView::topLeft() const
 {
-    return d->edges != nullptr ? ::scale(d->edges->topLeft(), d->edges) : QPointF{};
+    return d->getPoint(0);
 }
 
 void CutView::setTopLeft(QPointF topleft)
 {
-    if (d->edges != nullptr) {
-        auto tl = unscale(topleft, d->edges);
-        if (tl != d->edges->topLeft()) {
-            d->edges->setTopLeft(tl);
-            emit topLeftChanged();
-            emit topChanged();
-            emit leftChanged();
-        }
+    if (d->setPoint(0, topleft)) {
+        emit topLeftChanged();
+        emit topChanged();
+        emit leftChanged();
     }
 }
 
 QPointF CutView::topRight() const
 {
-    return d->edges != nullptr ? ::scale(d->edges->topRight(), d->edges) : QPointF{};
+    return d->getPoint(1);
 }
 
 void CutView::setTopRight(QPointF topright)
 {
-    if (d->edges != nullptr) {
-        auto tr = unscale(topright, d->edges);
-        if (tr != d->edges->topRight()) {
-            d->edges->setTopRight(tr);
-            emit topRightChanged();
-            emit topChanged();
-            emit rightChanged();
-        }
+    if (d->setPoint(1, topright)) {
+        emit topRightChanged();
+        emit topChanged();
+        emit rightChanged();
     }
 }
 
 QPointF CutView::bottomRight() const
 {
-    return d->edges != nullptr ? ::scale(d->edges->bottomRight(), d->edges) : QPointF{};
+    return d->getPoint(2);
 }
 
 void CutView::setBottomRight(QPointF bottomright)
 {
-    if (d->edges != nullptr) {
-        auto br = unscale(bottomright, d->edges);
-        if (br != d->edges->bottomRight()) {
-            d->edges->setBottomRight(br);
-            emit bottomRightChanged();
-            emit bottomChanged();
-            emit rightChanged();
-        }
+    if (d->setPoint(2, bottomright)) {
+        emit bottomRightChanged();
+        emit bottomChanged();
+        emit rightChanged();
     }
 }
 
 QPointF CutView::bottomLeft() const
 {
-    return d->edges != nullptr ? ::scale(d->edges->bottomLeft(), d->edges) : QPointF{};
+    return d->getPoint(3);
 }
 
 void CutView::setBottomLeft(QPointF bottomleft)
 {
-    if (d->edges != nullptr) {
-        auto bl = unscale(bottomleft, d->edges);
-        if (bl != d->edges->bottomLeft()) {
-            d->edges->setBottomLeft(bl);
-            emit bottomLeftChanged();
-            emit bottomChanged();
-            emit leftChanged();
-        }
+    if (d->setPoint(3, bottomleft)) {
+        emit bottomLeftChanged();
+        emit bottomChanged();
+        emit leftChanged();
     }
 }
 
 void CutView::setTop(QPointF top)
 {
-    if (d->edges != nullptr) {
-        auto topPoint = unscale(top, d->edges);
-        if (topPoint != d->edges->topPoint()) {
-            d->edges->setTopPoint(topPoint);
-            emit topChanged();
-            emit topLeftChanged();
-            emit topRightChanged();
-            emit leftChanged();
-            emit rightChanged();
-        }
+    if (d->setEdgePoint(0, top)) {
+        emit topChanged();
+        emit topLeftChanged();
+        emit topRightChanged();
+        emit leftChanged();
+        emit rightChanged();
     }
 }
 
 QPointF CutView::top() const
 {
-    return d->edges != nullptr ? ::scale(d->edges->topPoint(), d->edges) : QPointF{};
-}
-
-void CutView::setBottom(QPointF bottom)
-{
-    if (d->edges != nullptr) {
-        auto bottomPoint = unscale(bottom, d->edges);
-        if (bottomPoint != d->edges->bottomPoint()) {
-            d->edges->setBottomPoint(bottomPoint);
-            emit bottomChanged();
-            emit bottomLeftChanged();
-            emit bottomRightChanged();
-            emit leftChanged();
-            emit rightChanged();
-        }
-    }
-}
-
-QPointF CutView::bottom() const
-{
-    return d->edges != nullptr ? ::scale(d->edges->bottomPoint(), d->edges) : QPointF{};
-}
-
-void CutView::setLeft(QPointF left)
-{
-    if (d->edges != nullptr) {
-        auto leftPoint = unscale(left, d->edges);
-        if (leftPoint != d->edges->leftPoint()) {
-            d->edges->setLeftPoint(leftPoint);
-            emit leftChanged();
-            emit topLeftChanged();
-            emit bottomLeftChanged();
-            emit topChanged();
-            emit bottomChanged();
-        }
-    }
-}
-
-QPointF CutView::left() const
-{
-    return d->edges != nullptr ? ::scale(d->edges->leftPoint(), d->edges) : QPointF{};
+    return d->getEdgePoint(0);
 }
 
 void CutView::setRight(QPointF right)
 {
-    if (d->edges != nullptr) {
-        auto rightPoint = unscale(right, d->edges);
-        if (rightPoint != d->edges->rightPoint()) {
-            d->edges->setRightPoint(rightPoint);
-            emit rightChanged();
-            emit topRightChanged();
-            emit bottomRightChanged();
-            emit topChanged();
-            emit bottomChanged();
-        }
+    if (d->setEdgePoint(1, right)) {
+        emit rightChanged();
+        emit topRightChanged();
+        emit bottomRightChanged();
+        emit topChanged();
+        emit bottomChanged();
     }
 }
 
 QPointF CutView::right() const
 {
-    return d->edges != nullptr ? ::scale(d->edges->rightPoint(), d->edges) : QPointF{};
+    return d->getEdgePoint(1);
+}
+
+void CutView::setBottom(QPointF bottom)
+{
+    if (d->setEdgePoint(2, bottom)) {
+        emit bottomChanged();
+        emit bottomLeftChanged();
+        emit bottomRightChanged();
+        emit leftChanged();
+        emit rightChanged();
+    }
+}
+
+QPointF CutView::bottom() const
+{
+    return d->getEdgePoint(2);
+}
+
+void CutView::setLeft(QPointF left)
+{
+    if (d->setEdgePoint(3, left)) {
+        emit leftChanged();
+        emit topLeftChanged();
+        emit bottomLeftChanged();
+        emit topChanged();
+        emit bottomChanged();
+    }
+}
+
+QPointF CutView::left() const
+{
+    return d->getEdgePoint(3);
 }
 
 void CutView::rotateLeft()
 {
     if (d->scanImage != nullptr) {
         d->scanImage->setOrientation(d->scanImage->orientation() - 1);
-
-        auto tl = topLeft();
-        auto tr = topRight();
-        auto br = bottomRight();
-        auto bl = bottomLeft();
-
-        d->doRotate = 1;
-        d->rotate_tl = {tr.y(), 1 - tr.x()};
-        d->rotate_tr = {br.y(), 1 - br.x()};
-        d->rotate_br = {bl.y(), 1 - bl.x()};
-        d->rotate_bl = {tl.y(), 1 - tl.x()};
-        // force the image to be rotated
-        d->scanImage->rotatedImage();
+        d->updatePaintedSize = true;
     }
 }
 
@@ -251,19 +309,7 @@ void CutView::rotateRight()
 {
     if (d->scanImage != nullptr) {
         d->scanImage->setOrientation(d->scanImage->orientation() + 1);
-
-        auto tl = topLeft();
-        auto tr = topRight();
-        auto br = bottomRight();
-        auto bl = bottomLeft();
-
-        d->doRotate = 1;
-        d->rotate_tl = {1 - bl.y(), bl.x()};
-        d->rotate_tr = {1 - tl.y(), tl.x()};
-        d->rotate_br = {1 - tr.y(), tr.x()};
-        d->rotate_bl = {1 - br.y(), br.x()};
-        // force the image to be rotated
-        d->scanImage->rotatedImage();
+        d->updatePaintedSize = true;
     }
 }
 
@@ -284,6 +330,7 @@ void CutView::selectAll()
         d->edges->setTopRight({static_cast<qreal>(d->edges->width()), 0});
         d->edges->setBottomRight({static_cast<qreal>(d->edges->width()), static_cast<qreal>(d->edges->height())});
         d->edges->setBottomLeft({0, static_cast<qreal>(d->edges->height())});
+
         emit topLeftChanged();
         emit topRightChanged();
         emit bottomRightChanged();
@@ -311,16 +358,50 @@ void CutView::selectAuto()
 
 void CutView::paint(QPainter* painter)
 {
-    ScanImageView::paint(painter);
+    QImage image = d->scanImage->original();
 
-    if (d->doRotate == 2) {
-        // We need postpone the rotation until the repaint is complete because
-        // otherwise paintedWidth and paintedHeight will not be up-to-date
+    auto orien = orientation();
+    auto imgw = image.width();
+    auto imgh = image.height();
 
-        d->edges->setTopLeft(unscale(d->rotate_tl, d->edges));
-        d->edges->setTopRight(unscale(d->rotate_tr, d->edges));
-        d->edges->setBottomRight(unscale(d->rotate_br, d->edges));
-        d->edges->setBottomLeft(unscale(d->rotate_bl, d->edges));
+    if (imgw > 0 && imgh > 0) {
+        auto wratio = static_cast<qreal>(orien % 2 == 0 ? width() : height()) / imgw;
+        auto hratio = static_cast<qreal>(orien % 2 == 0 ? height() : width()) / imgh;
+        auto ratio = std::min(wratio, hratio);
+
+        auto w = imgw * ratio;
+        auto h = imgh * ratio;
+
+        if (orien % 2 == 1) std::swap(w, h);
+
+        setPaintedSize(w, h);
+
+        painter->save();
+        painter->rotate(orien * 90);
+
+        QPointF target;
+        switch (orien) {
+            case 0: target = {(width() - w) / 2, (height() - h) / 2}; break;
+            case 1: target = {height() / 2 - h / 2, -width() / 2 - w / 2}; break;
+            case 2: target = {-width() / 2 - w / 2, -height() / 2 - h / 2}; break;
+            case 3: target = {-height() / 2 - h / 2, width() / 2 - w / 2}; break;
+            default: Q_ASSERT(false);
+        }
+
+        painter->drawImage(QRectF{target, QSize(imgw * ratio, imgh * ratio)}, image);
+
+        painter->restore();
+    }
+
+    if (d->updatePaintedSize) {
+        d->updatePaintedSize = false;
+
+        // We need to postpone the rotation until the repaint is
+        // complete because otherwise paintedWidth and paintedHeight
+        // will not be up-to-date. The problem is that we do not know
+        // `width` and `height` until we actually repaint the widget,
+        // hence we do not now `paintedWidth` and `paintedHeight`
+        // either.
 
         emit topLeftChanged();
         emit topRightChanged();
@@ -331,28 +412,45 @@ void CutView::paint(QPainter* painter)
         emit leftChanged();
         emit rightChanged();
         emit rotationChanged();
-
-        d->doRotate = 0;
     }
 }
 
 void CutView::onNewImage()
 {
-    disconnect(d->rotatedImageChangedConnection);
-    disconnect(d->startRotatedImageUpdateConnection);
-    disconnect(d->finishRotatedImageUpdateConnection);
-    d->rotatedImageChangedConnection = {};
-    d->startRotatedImageUpdateConnection = {};
-    d->finishRotatedImageUpdateConnection = {};
+    disconnect(d->orientationChangedConnection);
+    d->orientationChangedConnection = {};
     if (auto s = scanner(); s != nullptr) {
         d->scanImage = s->currentImage();
         if (d->scanImage != nullptr) {
-            d->rotatedImageChangedConnection = connect(d->scanImage.get(), &ScanImage::rotatedImageChanged, this, &CutView::onRotatedImageChanged);
-            d->startRotatedImageUpdateConnection = connect(d->scanImage.get(), &ScanImage::startRotatedImageUpdate, [this]() { setBusy(true); });
-            d->finishRotatedImageUpdateConnection = connect(d->scanImage.get(), &ScanImage::finishRotatedImageUpdate, [this]() { setBusy(false); });
+            // set up connections for the new ScanImage ...
+            d->orientationChangedConnection = connect(d->scanImage.get(), &ScanImage::orientationChanged, this, &CutView::onOrientationChanged);
+
+            // ... and its edge-detection data structure
+            d->edges = std::make_unique<EdgeDetection>(d->scanImage->original());
+            connect(d->edges.get(), &EdgeDetection::hasAutoDetectionChanged, this, &CutView::hasAutoSelectionChanged);
+            connect(d->edges.get(), &EdgeDetection::isAutoDetectionRunningChanged, this, &CutView::isAutoDetectionRunningChanged);
+
+            emit hasAutoSelectionChanged();
+            emit isAutoDetectionRunningChanged();
+
+            // start right away
+            d->edges->startAutoDetect();
 
             // this means that the settings will be initialized from the scanImage
-            d->doRotate = -1;
+            d->setPoint(0, d->scanImage->topLeft());
+            d->setPoint(1, d->scanImage->topRight());
+            d->setPoint(2, d->scanImage->bottomRight());
+            d->setPoint(3, d->scanImage->bottomLeft());
+
+            emit topLeftChanged();
+            emit topRightChanged();
+            emit bottomRightChanged();
+            emit bottomLeftChanged();
+            emit topChanged();
+            emit bottomChanged();
+            emit leftChanged();
+            emit rightChanged();
+            emit rotationChanged();
         }
     }
 
@@ -361,32 +459,26 @@ void CutView::onNewImage()
 
 QImage CutView::image() const
 {
-    return d->image;
+    return d->scanImage->original();
 }
 
-void CutView::onRotatedImageChanged()
+void CutView::onOrientationChanged()
 {
     if (d->scanImage != nullptr) {
-        d->image = d->scanImage->rotatedImage();
-        d->edges = std::make_unique<EdgeDetection>(d->image);
-        connect(d->edges.get(), &EdgeDetection::hasAutoDetectionChanged, this, &CutView::hasAutoSelectionChanged);
-        connect(d->edges.get(), &EdgeDetection::isAutoDetectionRunningChanged, this, &CutView::isAutoDetectionRunningChanged);
-
-        emit hasAutoSelectionChanged();
-        emit isAutoDetectionRunningChanged();
-
-        d->edges->startAutoDetect();
-        if (d->doRotate == -1) {
-            setTopLeft(d->scanImage->topLeft());
-            setTopRight(d->scanImage->topRight());
-            setBottomRight(d->scanImage->bottomRight());
-            setBottomLeft(d->scanImage->bottomLeft());
-            d->doRotate = 0;
-        } else if (d->doRotate == 1) {
-            d->doRotate = 2;
-        }
         update();
     }
+
+    emit topLeftChanged();
+    emit topRightChanged();
+    emit bottomRightChanged();
+    emit bottomLeftChanged();
+    emit topChanged();
+    emit bottomChanged();
+    emit leftChanged();
+    emit rightChanged();
+    emit rotationChanged();
+
+    emit orientationChanged();
 }
 
 void CutView::updateSnappyEdges()

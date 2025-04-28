@@ -61,6 +61,8 @@ protected:
     /// Change the busy marker.
     void setBusy(bool busy);
 
+    void setPaintedSize(qreal pwidth, qreal pheight);
+
     /// Return the image to be drawn.
     virtual QImage image() const = 0;
 
