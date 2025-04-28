@@ -33,6 +33,8 @@
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
 
+#include <QtDebug>
+
 #include <memory>
 
 const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
