@@ -11,6 +11,7 @@ Frank Fischer <frank-fischer@shadow-soft.de>
 planetos (Icons)
 
 Åke Engelbrektson (Swedish translation)
+holask (Slovak translation)
 
 ## Contact
 
