@@ -86,7 +86,7 @@ void DocumentList::documentChanged()
 {
     auto sender = QObject::sender();
     for (int i = 0; i < d->docs.size(); i++) {
-        auto &doc = d->docs[i];
+        auto &doc = d->docs.at(i);
         if (doc.data() == sender) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailsRole, TitleRole, CreationTimeRole, NumPagesRole});
@@ -106,11 +106,11 @@ QVariant DocumentList::data(const QModelIndex &index, int role) const
         case TitleRole: return d->docs[index.row()]->title();
         case CreationTimeRole: return d->docs[index.row()]->creationTime();
         case NumPagesRole: return d->docs[index.row()]->numPages();
-        case DocumentRole: return QVariant::fromValue(d->docs[index.row()].data());
+        case DocumentRole: return QVariant::fromValue(d->docs.at(index.row()).data());
         case ThumbnailsRole: {
             QStringList thumbs;
             thumbs.reserve(3);
-            auto &doc = d->docs[index.row()];
+            auto &doc = d->docs.at(index.row());
             for (int i = 0, n = std::min(doc->numPages(), 3); i < n; i++) {
                 thumbs.push_back(QUrl::fromLocalFile(doc->page(i).thumbnail()).toString());
             }
