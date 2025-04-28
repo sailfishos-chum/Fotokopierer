@@ -35,28 +35,39 @@ endif
 
 TRANSLATIONS = de sv
 
-.PHONY: all build buildall clean install rpm run deploy-emu
+.PHONY: all
 all: compile
 
+.PHONY: reformat
 reformat:
 	clang-format -i --style=file src/*xx
 
-installdeps:
-	sf
-
+.PHONY: build
 build: reformat lrelease
 	$(sfdk) -c "target=$(target)" build
 
+.PHONY: compile
 compile: reformat lrelease
 	$(sfdk) -c "target=$(target)" build-shell make -C $(build_dir) -j4
 
 .PHONY: make
 make: compile
 
+$(build_dir)/$(program): make
+
+.PHONY: install
 install:
 	$(sfdk) -c "target=$(target)" make-install
 
-rpm: lrelease
+rpm_version := $(shell cat rpm/$(program).yaml | awk '/^Version:/ {print $$2}')
+rpm_release := $(shell cat rpm/$(program).yaml | awk '/^Release:/ {print $$2}' | awk -F% '{print $$1}')
+rpm_file := RPMS/$(program)-$(rpm_version)-$(rpm_release).$(arch).rpm
+
+.PHONY: rpm
+rpm:
+	$(MAKE) lrelease $(rpm_file)
+
+$(rpm_file): $(build_dir)/$(program) rpm/$(program).yaml rpm/$(program).changes
 	touch rpm/*.yaml
 	$(sfdk) -c "target=$(target)" package
 
