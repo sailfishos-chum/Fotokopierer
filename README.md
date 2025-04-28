@@ -4,7 +4,7 @@
 
 Fotokopierer is a document scanning application for [Sailfish OS](https://sailfishos.org) and the Desktop.
 
-## Author
+## Authors
 
 Frank Fischer <frank-fischer@shadow-soft.de>
 
@@ -12,9 +12,11 @@ planetos (Icons)
 
 Åke Engelbrektson (Swedish translation)
 
+holask (Slovak translation)
+
 ## Contact
 
-Talk with the developers on [#fotokopierer][IRC] on [libera.chat](https://libera.chat)
+Talk with the developers in [#fotokopierer][IRC] on [libera.chat](https://libera.chat)
 
 ## License
 
@@ -68,7 +70,7 @@ script will automatically compile all 3rd-party libraries
 ## Download sources    
 
 Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
-Latest release version: [harbour-fotokopierer-0.3.2.tar.gz][STABLE]
+Latest release version: [harbour-fotokopierer-0.4.0.tar.gz][STABLE]
 
 ## Help with translations
 
@@ -93,4 +95,4 @@ This project uses
 [IRC]: https://web.libera.chat/#fotokopierer
 
 [TRUNK]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-trunk.tar.gz?name=harbour-fotokopierer
-[STABLE]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-0.3.2.tar.gz?uuid=v0.3.2
+[STABLE]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-0.4.0.tar.gz?uuid=v0.4.0
