@@ -31,6 +31,17 @@ Page {
             width: parent.width - Theme.paddingLarge * 2
             spacing: Theme.paddingLarge
 
+            PageHeader {
+                title: qsTr("About %1").arg(Fotokopierer.ApplicationName)
+            }
+
+            Image {
+                fillMode: Image.PreserveAspectFit
+                source: Qt.resolvedUrl("/icons/harbour-fotokopierer.svg")
+                width: 2/3 * parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
             Label {
                 id: apptitle
 
