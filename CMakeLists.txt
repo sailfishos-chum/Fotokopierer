@@ -47,7 +47,9 @@ if (SAILFISH_FOUND)
 
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
-    # URL "https://github.com/opencv/opencv/archive/3.4.0.zip"
+    DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
+    URL "https://github.com/opencv/opencv/archive/3.4.0.zip"
+    URL_HASH SHA256=ae8a9f468b7ee3822a62d20d356c69f2b32330a231e738ac2914f332766611b7
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -97,6 +99,9 @@ if (SAILFISH_FOUND)
   set(FREETYPE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/freetype-2.9.1)
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
   ExternalProject_Add(freetype-3rdparty
+    DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
+    URL "https://download.savannah.gnu.org/releases/freetype/freetype-2.9.1.tar.gz"
+    URL_HASH SHA256=ec391504e55498adceb30baceebd147a6e963f636eb617424bcfc47a169898ce
     SOURCE_DIR ${FREETYPE_SOURCE_DIR}
     PREFIX ${FREETYPE_PREFIX}
     LIST_SEPARATOR ,
@@ -117,6 +122,9 @@ if (SAILFISH_FOUND)
 
   set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
   ExternalProject_Add(podofo-3rdparty
+    DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
+    URL "https://downloads.sourceforge.net/project/podofo/podofo/0.9.6/podofo-0.9.6.tar.gz"
+    URL_HASH SHA256=e9163650955ab8e4b9532e7aa43b841bac45701f7b0f9b793a98c8ca3ef14072
     SOURCE_DIR ${PODOFO_SOURCE_DIR}
     PREFIX ${PODOFO_PREFIX}
     DEPENDS freetype-3rdparty opencv
