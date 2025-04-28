@@ -26,6 +26,11 @@ Filter::Filter(ScanImage* image) : QObject(image) {}
 Filter::Filter(ScanImage* image, const std::shared_ptr<Filter>& previous_filter)
     : QObject(image), previous_filter_(previous_filter)
 {
+    if (previous_filter_ != nullptr) {
+        connect(previous_filter_.get(), &Filter::filterChanged, this, &Filter::filterChanged);
+    } else {
+        connect(image, &ScanImage::originalImageChanged, this, &Filter::filterChanged);
+    }
 }
 
 Filter::~Filter() = default;
