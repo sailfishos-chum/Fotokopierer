@@ -41,6 +41,7 @@ QPointF ZoomImage::viewSize() const
 
 void ZoomImage::setViewSize(QPointF viewSize)
 {
+    // all ratio coordinates must be in [0,1]
     viewSize = QPointF{qBound<qreal>(0, viewSize.x(), 1), qBound<qreal>(0, viewSize.y(), 1)};
     if (viewSize != d->viewSize) {
         d->viewSize = viewSize;
@@ -121,14 +122,18 @@ void ZoomImage::paint(QPainter* p)
     auto w = width();
     auto h = height();
 
+    // get the source image
     QImage image = d->source->image();
     auto iw = image.width();
     auto ih = image.height();
 
+    // prepare the clipping path (a circle) so that the picture is only shown
+    // within the preview area.
     auto linewidth = std::min(width(), height()) / 20;
     QPainterPath clip;
     clip.addEllipse(0, 0, width(), height());
 
+    // draw the part of image with clipping, note that we use ration coordinates
     p->setClipPath(clip);
     p->drawImage(QRectF{0, 0, w, h},
                  image,
@@ -136,13 +141,17 @@ void ZoomImage::paint(QPainter* p)
                         ih * (d->center.y() - d->viewSize.y() / 2),
                         iw * d->viewSize.x(),
                         ih * d->viewSize.y()));
+
+    // disable clipping for drawing the boundary
     p->setClipping(false);
 
+    // draw the boundary
     QPen pen(d->border_color);
     pen.setWidth(linewidth);
     p->setPen(pen);
     p->drawEllipse(linewidth / 2, linewidth / 2, w - linewidth, h - linewidth);
 
+    // draw the cross
     p->setPen(d->cross_color);
     p->drawLine(w / 2, h / 2 - h / 6, w / 2, h / 2 + h / 6);
     p->drawLine(w / 2 - w / 6, h / 2, w / 2 + w / 6, h / 2);
