@@ -71,7 +71,7 @@ script will automatically compile all 3rd-party libraries
 
 Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
 
-Latest release version: [harbour-fotokopierer-0.4.2.tar.gz][STABLE]
+Latest release version: [harbour-fotokopierer-0.4.3.tar.gz][STABLE]
 
 ## Help with translations
 
