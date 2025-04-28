@@ -64,9 +64,44 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: qsTr("This application uses\nPoDoFo %1\nOpenCV %2")
+                text: ("<a href=\"http://chiselapp.com/user/fifr/repository/fotokopierer\">" +
+                       qsTr("Homepage") + "</a>")
+
+                onLinkActivated: Qt.openUrlExternally(link)
+            }
+
+            Label {
+                width: parent.width
+
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: (qsTr("Find me on Freenode: ") + 
+                       "<a href=\"https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer\">" +
+                       "#fotokopierer")
+
+                onLinkActivated: Qt.openUrlExternally(link)
+            }
+
+            Separator {
+                width: parent.width
+                horizontalAlignment: Qt.AlignHCenter
+            }
+
+            Label {
+                width: parent.width
+
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                textFormat: Text.RichText
+
+                text: (qsTr("This application uses") +
+                       "<br><a href=\"http://podofo.sourceforge.net\">PoDoFo %1</a>" +
+                       "<br><a href=\"https://opencv.org\">OpenCV %2</a>")
                     .arg(Fotokopierer.PoDoFoVersion)
                     .arg(Fotokopierer.OpenCVVersion)
+
+                onLinkActivated: Qt.openUrlExternally(link)
             }
 
             Separator {
