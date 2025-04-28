@@ -37,8 +37,9 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
-
-#include <podofo/podofo.h>
+#include <QtGui/QPageSize>
+#include <QtGui/QPainter>
+#include <QtGui/QPdfWriter>
 
 #include <memory>
 
@@ -59,6 +60,28 @@ public:
 
     void raise() const override { throw *this; }
     ReadError* clone() const override { return new ReadError(*this); }
+
+    QString message() const { return message_; }
+
+private:
+    QString message_;
+};
+
+/// Error when exporting a pdf document.
+class PdfError : public QException
+{
+public:
+    explicit PdfError(const QString& message)
+        : message_(message) {}
+
+    PdfError(const PdfError&) = default;
+    PdfError(PdfError&&) = default;
+    PdfError& operator=(const PdfError&) = default;
+    PdfError& operator=(PdfError&&) = default;
+    ~PdfError() override = default;
+
+    void raise() const override { throw *this; }
+    PdfError* clone() const override { return new PdfError(*this); }
 
     QString message() const { return message_; }
 
@@ -529,14 +552,14 @@ void Document::ensureNoMedia(const QString& path)
     }
 }
 
-static PoDoFo::PdfString toPdfString(const QString& str)
-{
-    return {str.toUtf8().constData()};
-}
+// static PoDoFo::PdfString toPdfString(const QString& str)
+// {
+//     return {str.toUtf8().constData()};
+// }
 
 void Document::exportToPdf(const QString& filename, bool overwrite)
 {
-    using namespace PoDoFo;
+    // using namespace PoDoFo;
 
     if (d->status != Ready) {
         qWarning() << "Document not ready";
@@ -558,28 +581,30 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
     }
 
     d->pendingPdf.setFuture(QtConcurrent::run([title, pageimages, filename]() {
-        PdfStreamedDocument pdf(filename.toUtf8().constData());
-        PdfPainter painter;
+        QPdfWriter pdf(filename);
 
+        QPainter p;
+
+        bool firstpage = true;
         for (auto& page : pageimages) {
-            PdfImage pageimage(&pdf);
-            pageimage.LoadFromFile(page.toUtf8().data());
+            QImage pageimage(page);
+            pdf.setPageSize(QPageSize(pageimage.size()));
 
-            auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
-            if (pdfpage == nullptr) {
-                PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
-            }
+            if (firstpage) {
+                p.begin(&pdf);
+                firstpage = false;
+            } else if (!pdf.newPage()) {
+                throw PdfError(tr("Cannot create a new page"));
+            };
 
-            painter.SetPage(pdfpage);
-
-            painter.DrawImage(0.0, 0.0, &pageimage);
-
-            painter.FinishPage();
+            p.drawImage(QRect{0, 0, pdf.width(), pdf.height()},
+                        pageimage,
+                        QRect{0, 0, pageimage.width(), pageimage.height()});
         }
+        p.end();
 
-        pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
-        pdf.GetInfo()->SetTitle(toPdfString(title));
-        pdf.Close();
+        pdf.setCreator(ApplicationName);
+        pdf.setTitle(title);
 
         return QUrl::fromLocalFile(filename);
     }));
@@ -595,6 +620,8 @@ void Document::onPdfExportFinished()
     try {
         auto path = d->pendingPdf.result();
         emit exportToPdfFinished(path);
+    } catch (PdfError& e) {
+        emit error(e.message());
     } catch (QUnhandledException& e) {
         emit error(tr("Error creating pdf-file"));
     }
