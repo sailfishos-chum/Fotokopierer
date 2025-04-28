@@ -31,10 +31,10 @@ set(SOURCES
   src/CutImage.cxx
   src/Document.cxx
   src/DocumentList.cxx
+  src/Global.cxx
   src/Page.cxx
   src/PlainImage.cxx
   src/RotImage.cxx
-  src/Util.cxx
   src/ZoomImage.cxx
   src/init.cxx)
 

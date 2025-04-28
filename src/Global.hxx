@@ -22,7 +22,8 @@
 
 class PlainImage;
 
-class Util : public QObject
+/// General utilities exported to QML.
+class Fotokopierer : public QObject
 {
     Q_OBJECT
 

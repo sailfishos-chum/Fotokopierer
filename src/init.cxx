@@ -30,13 +30,13 @@
 
 #include "Document.hxx"
 #include "DocumentList.hxx"
-#include "Util.hxx"
+#include "Global.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
 {
-    qmlRegisterSingletonType<Util>(
+    qmlRegisterSingletonType<Fotokopierer>(
         "Fotokopierer", 1, 0, "Fotokopierer", [](QQmlEngine*, QJSEngine*) -> QObject* {
-            return new Util();
+            return new Fotokopierer();
         });
 
     qmlRegisterSingletonType<Document>(

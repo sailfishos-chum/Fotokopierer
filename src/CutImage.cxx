@@ -24,7 +24,7 @@
 #include <cmath>
 
 #include "Convert.hxx"
-#include "Util.hxx"
+#include "Global.hxx"
 
 struct CutImage::Data {
     QPointF topleft;
@@ -47,7 +47,7 @@ bool CutImage::setCutBox(const QPointF& topleft,
                          const QPointF& bottomright,
                          const QPointF& bottomleft)
 {
-    static Util util;
+    static Fotokopierer util;
 
     if (!util.isConvex(topleft, topright, bottomright, bottomleft)) {
         return false;
