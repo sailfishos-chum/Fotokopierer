@@ -22,6 +22,8 @@ endif()
 include(FindPkgConfig)
 pkg_search_module(SAILFISH sailfishapp)
 
+find_package(OpenSSL 1.1)
+
 if (SAILFISH_FOUND)
   set(TARGET harbour-fotokopierer)
 else()
