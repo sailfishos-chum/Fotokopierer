@@ -66,6 +66,10 @@ Item {
 	 	  id: topleft
 	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
 	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
+		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
 		  onCenterChanged: frame.requestPaint()
 	 }
@@ -90,6 +94,10 @@ Item {
 		  id: topright
 	 	  x: (pane.width  + image.paintedWidth) / 2 - 10 - markerRadius
 	 	  y: (pane.height - image.paintedHeight) / 2 + 10 - markerRadius
+		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
 		  onCenterChanged: frame.requestPaint()
 	 }
@@ -114,6 +122,10 @@ Item {
 		  id: bottomleft
 	 	  x: (pane.width  - image.paintedWidth) / 2 + 10 - markerRadius
 	 	  y: (pane.height + image.paintedHeight) / 2 - 10 - markerRadius
+		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
 		  onCenterChanged: {
 				frame.requestPaint()
@@ -140,6 +152,10 @@ Item {
 		  id: bottomright
 	 	  x: (pane.width  + image.paintedWidth) / 2 - 10- markerRadius
 	 	  y: (pane.height + image.paintedHeight) / 2 - 10 - markerRadius
+		  minX: (pane.width - image.paintedWidth) / 2 - markerRadius
+		  maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
+		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
+		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
 		  onCenterChanged: frame.requestPaint()
 	 }

@@ -18,6 +18,8 @@
 import QtQuick 2.0
 
 Item {
+	 id: root
+
 	 Drag.active: mouseArea.drag.active
 	 Drag.hotSpot.x: width / 2
 	 Drag.hotSpot.y: height / 2
@@ -26,6 +28,11 @@ Item {
 	 property real radius: 10
 	 property color color: "white"
 	 property real linewidth: 1
+
+	 property real minX
+	 property real maxX
+	 property real minY
+	 property real maxY
 
 	 property bool dragActive: false
 
@@ -49,6 +56,11 @@ Item {
 		  id: mouseArea
 		  anchors.fill: parent
 		  drag.target: parent
+
+		  drag.minimumX: root.minX
+		  drag.maximumX: root.maxX
+		  drag.minimumY: root.minY
+		  drag.maximumY: root.maxY
 
 		  onPressed: dragActive = true
 		  onReleased: dragActive = false
