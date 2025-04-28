@@ -48,10 +48,11 @@ public:
                      PageRole };
 
     enum Status {
-        Ready,    ///< Document is ready
-        Invalid,  ///< Document has become invalid (e.g. error during loading)
-        Loading,  ///< Document is being loaded
-        Adding,   ///< A page is being added.
+        Ready,      ///< Document is ready
+        Invalid,    ///< Document has become invalid (e.g. error during loading)
+        Loading,    ///< Document is being loaded
+        Adding,     ///< A page is being added.
+        Exporting,  ///< The document is being exported to pdf
     };
     Q_ENUM(Status)
 
@@ -136,6 +137,18 @@ public slots:
     /// and the current time. It will be the last page of the current document.
     void addPage(const QImage &original, const QImage &result);
 
+    /// Export document as PDF to a file with the given name.
+    ///
+    /// If the file exists and `overwrite` is `true` the file will be replaced.
+    /// If `overwrite` is false the signal `errorPdfExists` is raised.
+    void exportToPdf(const QString &filename, bool overwrite = false);
+
+    /// Export document as PDF to a file with the default file name.
+    ///
+    /// If the file exists and `overwrite` is `true` the file will be replaced.
+    /// If `overwrite` is false the signal `errorPdfExists` is raised.
+    void exportToPdf(bool overwrite = false);
+
 private:
     /// Set the document data.
     void setDocData(DocData &&docdata);
@@ -149,6 +162,9 @@ private slots:
 
     /// The asynchronously loaded document data is ready.
     void setPendingDoc();
+
+    /// Called when the pdf export has been completed.
+    void onPdfExportFinished();
 
 signals:
     void titleChanged();
@@ -164,6 +180,9 @@ signals:
 
     /// Status changed.
     void statusChanged();
+
+    /// Error raised when the exported file already exists.
+    void errorPdfExists(const QString &filename);
 
     /// An error has been raised.
     void error(const QString &msg);

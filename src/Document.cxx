@@ -38,6 +38,8 @@
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
 
+#include <podofo/podofo.h>
+
 #include <memory>
 
 namespace
@@ -77,6 +79,7 @@ struct Document::DocData {
 struct Document::Data {
     DocData doc;                         ///< the document data
     QFutureWatcher<DocData> pendingDoc;  ///< the document data to be read
+    QFutureWatcher<QString> pendingPdf;  ///< the document es being exported to pdf
     Status status = Ready;               ///< the current status
 };
 
@@ -84,6 +87,7 @@ Document::Document(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
     connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingPdf, &QFutureWatcher<QString>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
 
@@ -91,6 +95,7 @@ Document::Document(Document&& doc) noexcept
     : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
     connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingPdf, &QFutureWatcher<QString>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
 
@@ -515,4 +520,82 @@ void Document::ensureNoMedia(const QString& path)
         QFile nomedia(dir.absoluteFilePath(QStringLiteral(".nomedia")));
         nomedia.open(QIODevice::WriteOnly);
     }
+}
+
+static PoDoFo::PdfString toPdfString(const QString& str)
+{
+    return {str.toUtf8().constData()};
+}
+
+void Document::exportToPdf(const QString& filename, bool overwrite)
+{
+    using namespace PoDoFo;
+
+    if (d->status != Ready) {
+        qWarning() << "Document not ready";
+        emit error(tr("Cannot export to pdf, document is not ready"));
+        return;
+    }
+
+    if (QFileInfo(filename).exists() && !overwrite) {
+        emit errorPdfExists(QFileInfo(filename).fileName());
+        return;
+    }
+
+    setStatus(Exporting);
+
+    QString title = d->doc.title;
+    QStringList pageimages;
+    for (auto& page : d->doc.pages) {
+        pageimages.push_back(page->result());
+    }
+
+    d->pendingPdf.setFuture(QtConcurrent::run([title, pageimages, filename]() {
+        try {
+            PdfStreamedDocument pdf(filename.toUtf8().constData());
+            PdfPainter painter;
+
+            for (auto& page : pageimages) {
+                PdfImage pageimage(&pdf);
+                pageimage.LoadFromFile(page.toUtf8().data());
+
+                auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
+                if (pdfpage == nullptr) {
+                    PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
+                }
+
+                painter.SetPage(pdfpage);
+
+                painter.DrawImage(0.0, 0.0, &pageimage);
+
+                painter.FinishPage();
+            }
+
+            pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
+            pdf.GetInfo()->SetTitle(toPdfString(title));
+            pdf.Close();
+
+            return QString();
+        } catch (PdfError& e) {
+            qWarning() << e.what();
+            return tr("Error creating pdf-file %1: %2")
+                .arg(filename)
+                .arg(QString::fromUtf8(e.what()));
+        }
+    }));
+}
+
+void Document::exportToPdf(bool overwrite)
+{
+    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"), overwrite);
+}
+
+void Document::onPdfExportFinished()
+{
+    auto err = d->pendingPdf.result();
+    if (!err.isEmpty()) {
+        emit error(err);
+    }
+
+    setStatus(Ready);
 }

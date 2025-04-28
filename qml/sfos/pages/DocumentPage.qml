@@ -171,6 +171,11 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: qsTr("Export to pdf")
+                onClicked: document.exportToPdf()
+            }
+
+            MenuItem {
                 text: qsTr("Rename")
                 onClicked: pageStack.push(Qt.resolvedUrl("RenamePage.qml"), { document: document })
             }
@@ -240,5 +245,56 @@ Page {
         //         0;
         //     }
         // }
+    }
+
+    Component {
+        id: overwritedlg
+
+        Dialog {
+            property string filename
+
+            DialogHeader {
+                id: header
+
+                width: parent.width
+                anchors.top: parent.top
+            }
+
+            Label {
+                anchors.top: header.bottom
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                font.pixelSize: Theme.fontSizeHuge
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.WordWrap
+
+                text: qsTr("Overwrite existing file <%1>?").arg(filename)
+            }
+
+            onAccepted: document.exportToPdf(true)
+        }
+    }
+
+    onDocumentChanged: {
+        document.errorPdfExists.connect(function (filename) {
+            pageStack.push(overwritedlg, { filename: filename })
+        })
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: Theme.secondaryHighlightColor
+        opacity: 0.5
+        visible: busy.running
+    }
+
+    BusyIndicator {
+        id: busy
+        size: BusyIndicatorSize.Large
+        anchors.centerIn: parent
+        running: document.status == Document.Exporting
     }
 }
