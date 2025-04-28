@@ -8,6 +8,8 @@ Fotokopierer is a document scanning application for [Sailfish OS](https://sailfi
 
 Frank Fischer <frank-fischer@shadow-soft.de>
 
+Tobias Planitzer (Icons)
+
 ## Contact
 
 Talk with the developers in [#fotokopierer][IRC] on [Freenode](http://freenode.net)
