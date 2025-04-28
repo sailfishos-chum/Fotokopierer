@@ -38,7 +38,7 @@ public:
     Filter& operator=(const Filter&) = delete;
     Filter& operator=(Filter&&) = delete;
 
-    virtual ~Filter();
+    ~Filter() override;
 
     ScanImage* image();
 
