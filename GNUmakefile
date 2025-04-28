@@ -19,15 +19,18 @@ mersdk_sb2 := cd $(mer_root_dir)/rpmbuilddir-arm && sb2 -t $(mersdk_target)
 
 
 .PHONY: all build buildall clean install rpm run
-all: build
+all: compile
+
+reformat:
+	clang-format -i --style=file src/*xx
 
 installdeps:
 	$(mersdk_ssh) '$(mersdk_mb2) installdeps'
 
-build:
+build: reformat
 	$(mersdk_ssh) '$(mersdk_mb2) build'
 
-compile:
+compile: reformat
 	$(mersdk_ssh) '$(mersdk_sb2) make'
 
 make:

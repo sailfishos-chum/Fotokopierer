@@ -35,7 +35,8 @@ class ScanImage : public QObject
     Q_PROPERTY(RotateFilter* rotateFilter READ rotateFilter CONSTANT);
     Q_PROPERTY(CutFilter* cutFilter READ cutFilter CONSTANT);
     Q_PROPERTY(ColorizeFilter* ColorizeFilter READ colorizeFilter CONSTANT);
-    Q_PROPERTY(bool deleteOriginalOnClear READ deleteOriginalOnClear WRITE setDeleteOriginalOnClear NOTIFY deleteOriginalOnClearChanged);
+    Q_PROPERTY(bool deleteOriginalOnClear READ deleteOriginalOnClear WRITE setDeleteOriginalOnClear
+                   NOTIFY deleteOriginalOnClearChanged);
 
 public:
     enum class FilterType {

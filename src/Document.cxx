@@ -43,21 +43,23 @@
 
 const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
-namespace {
-    class ReadError : public QException {
-    public:
-        ReadError(const QString& message) : message_(message) {}
-        ReadError(const ReadError&) = default;
+namespace
+{
+class ReadError : public QException
+{
+public:
+    ReadError(const QString &message) : message_(message) {}
+    ReadError(const ReadError &) = default;
 
-        void raise() const { throw *this; }
-        ReadError* clone() const { return new ReadError(*this); }
+    void raise() const { throw *this; }
+    ReadError *clone() const { return new ReadError(*this); }
 
-        QString message() const { return message_; }
+    QString message() const { return message_; }
 
-    private:
-        QString message_;
-    };
-}
+private:
+    QString message_;
+};
+}  // namespace
 
 struct Document::DocData {
     QString title;                        ///< document title
@@ -65,21 +67,22 @@ struct Document::DocData {
     QDateTime creation_time;              ///< time when the document has been created
     QVector<QSharedPointer<Page>> pages;  ///< page of the document
 
-    static DocData fromFile(const QString& filename);
+    static DocData fromFile(const QString &filename);
 };
 
 struct Document::Data {
-    DocData doc;                          ///< the document data
-    QFutureWatcher<DocData> pendingDoc;   ///< the document data to be read
-    Status status = Ready;                ///< the current status
+    DocData doc;                         ///< the document data
+    QFutureWatcher<DocData> pendingDoc;  ///< the document data to be read
+    Status status = Ready;               ///< the current status
 };
 
-Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, [this] () {
+Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data)
+{
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, [this]() {
         setStatus(Ready);
         try {
             setDocData(d->pendingDoc.result());
-        } catch (ReadError& e) {
+        } catch (ReadError &e) {
             emit error(e.message());
         }
     });
@@ -116,7 +119,7 @@ Document Document::create(QObject *parent)
 
     if (!dir.isEmpty()) {
         doc.d->doc.filename = QStringLiteral("%1/%2/doc.json")
-                              .arg(dir, doc.d->doc.creation_time.toString(FilenameFormat));
+                                  .arg(dir, doc.d->doc.creation_time.toString(FilenameFormat));
     }
 
     return doc;
@@ -160,10 +163,10 @@ int Document::rowCount(const QModelIndex &parent) const
     return d->doc.pages.size();
 }
 
-void Document::setDocData(DocData&& docdata)
+void Document::setDocData(DocData &&docdata)
 {
     d->doc = std::move(docdata);
-    for (auto& p : d->doc.pages) {
+    for (auto &p : d->doc.pages) {
         connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
     }
     emit titleChanged();
@@ -326,7 +329,7 @@ bool Document::load(const QString &filename)
 
     try {
         setDocData(DocData::fromFile(filename));
-    } catch (ReadError& e) {
+    } catch (ReadError &e) {
         emit error(e.message());
         qWarning() << "Error reading file: " << e.message();
         return false;
@@ -335,22 +338,20 @@ bool Document::load(const QString &filename)
     return true;
 }
 
-void Document::loadAsync(const QString& filename)
+void Document::loadAsync(const QString &filename)
 {
     if (d->status != Ready) {
         emit error(tr("Cannot load document from '%1', another process is running").arg(filename));
     }
 
     setStatus(Loading);
-    d->pendingDoc.setFuture(QtConcurrent::run([this, filename] () {
-        return DocData::fromFile(filename);
-    }));
+    d->pendingDoc.setFuture(
+        QtConcurrent::run([this, filename]() { return DocData::fromFile(filename); }));
 }
 
-
-Document::DocData Document::DocData::fromFile(const QString& filename)
+Document::DocData Document::DocData::fromFile(const QString &filename)
 {
-    auto tr = [] (const char* source) { return QCoreApplication::translate("Document", source); };
+    auto tr = [](const char *source) { return QCoreApplication::translate("Document", source); };
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {

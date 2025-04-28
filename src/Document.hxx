@@ -41,9 +41,9 @@ public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1, ResultRole, CreationTimeRole };
 
     enum Status {
-        Ready, ///< Document is ready,
-        Loading, ///< Document is being loaded
-        Adding ///< A page is being added.
+        Ready,    ///< Document is ready,
+        Loading,  ///< Document is being loaded
+        Adding    ///< A page is being added.
     };
     Q_ENUM(Status)
 
@@ -91,7 +91,7 @@ public:
     Q_INVOKABLE bool load(const QString &filename);
 
     /// Load document from the given file asynchronously.
-    Q_INVOKABLE void loadAsync(const QString& filename);
+    Q_INVOKABLE void loadAsync(const QString &filename);
 
     /// Return the current status.
     Status status() const;
@@ -111,7 +111,7 @@ public slots:
 
 private:
     /// Set the document data.
-    void setDocData(DocData&& docdata);
+    void setDocData(DocData &&docdata);
 
 private slots:
     /// Change the current status.
