@@ -19,7 +19,6 @@
 
 #include "ColorizeFilter.hxx"
 #include "CutFilter.hxx"
-#include "Document.hxx"
 #include "Filter.hxx"
 #include "RotateFilter.hxx"
 
@@ -128,27 +127,6 @@ bool ScanImage::loadFile(const QString& file_name)
         emit originalImageChanged();
         return true;
     }
-}
-
-void ScanImage::saveAndClear(Document* doc)
-{
-    assert(doc != nullptr);
-
-    connect(this, &ScanImage::addPage, doc, &Document::addPage);
-
-    QImage original = d->original;
-
-    clear();
-
-    d->saveFuture.setFuture(QtConcurrent::run([this, original] {
-        QImage image = original;
-        for (auto& filter : d->filter) {
-            image = filter->apply(std::move(image));
-        }
-
-        // Add a new page.
-        emit addPage(original, image);
-    }));
 }
 
 void ScanImage::clear()
