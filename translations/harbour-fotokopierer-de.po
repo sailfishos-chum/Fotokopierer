@@ -308,7 +308,7 @@ msgctxt "ColorizePage|"
 msgid "Colorize"
 msgstr "Einfärben"
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/CutPage.qml:40
+#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/CutPage.qml:46
 msgctxt "CutPage|"
 msgid "Cut & Rotate"
 msgstr "Zuschneiden & Drehen"
@@ -356,7 +356,7 @@ msgctxt "DocumentsPage|"
 msgid "About %1"
 msgstr "Über %1"
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/NewImagePage.qml:117
+#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/NewImagePage.qml:118
 msgctxt "NewImagePage|"
 msgid "New Picture"
 msgstr "Neues Bild"
@@ -448,13 +448,13 @@ msgctxt "Document|"
 msgid "Error creating pdf-file"
 msgstr "Fehler beim Erstellen der pdf-Datei"
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:162
+#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:161
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
 "Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:167
+#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:166
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"
 msgstr "Seite kann nicht erstellt werden: Fehler beim Speichern des Bildes"

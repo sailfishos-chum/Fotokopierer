@@ -17,7 +17,7 @@ msgctxt "ColorizePage|"
 msgid "Colorize"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/CutPage.qml:40
+#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/CutPage.qml:46
 msgctxt "CutPage|"
 msgid "Cut & Rotate"
 msgstr ""
@@ -164,7 +164,7 @@ msgctxt "DocumentsPage|"
 msgid "About %1"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/NewImagePage.qml:117
+#: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/NewImagePage.qml:118
 msgctxt "NewImagePage|"
 msgid "New Picture"
 msgstr ""
@@ -259,12 +259,12 @@ msgctxt "PageDelegate|"
 msgid "Page %1"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:162
+#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:161
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:167
+#: /home/fifr/JollaProjekte/fotokopierer/devel/src/Page.cxx:166
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"
 msgstr ""

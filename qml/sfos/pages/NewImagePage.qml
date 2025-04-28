@@ -49,7 +49,6 @@ Page {
 
     onPageContainerChanged: {
         if (pageContainer == null) {
-            console.log("NewImagePage closed")
             Scanner.clear()
         }
     }
@@ -94,7 +93,9 @@ Page {
 
     Component {
         id: cutpage
-        CutPage {}
+        CutPage {
+            autoDetectOnInit: true
+        }
     }
 
     Component {
@@ -132,10 +133,7 @@ Page {
         cameraState: Camera.UnloadedState
 
         viewfinder {
-            //resolution: Qt.size(640, 480)
             onResolutionChanged: {
-                console.log("vfres: ", viewfinder.resolution)
-                console.log("vfressup: ", camera.supportedViewfinderResolutions())
             }
         }
 
