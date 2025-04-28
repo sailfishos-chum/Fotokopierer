@@ -134,6 +134,12 @@ Page {
                     icon.height: Theme.iconSizeMedium
                     onClicked: listModel.actions[name]()
                     enabled: name != "auto" || cutview.hasAutoSelection
+
+                    BusyIndicator {
+                        size: BusyIndicatorSize.Medium
+                        anchors.centerIn: parent
+                        running: name == "auto" && cutview.isAutoDetectionRunning
+                    }
                 }
             }
         }
