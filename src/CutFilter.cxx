@@ -135,16 +135,16 @@ QVariantList CutFilter::autoDetectCutRect()
     }
 
     QPointF topleft, topright, bottomright, bottomleft;
-    if (!top_line.intersect(left_line, &topleft)) {
+    if (top_line.intersect(left_line, &topleft) != QLineF::NoIntersection) {
         topleft = {0, 0};
     }
-    if (!top_line.intersect(right_line, &topright)) {
+    if (top_line.intersect(right_line, &topright) != QLineF::NoIntersection) {
         topright = {(qreal)width, 0};
     }
-    if (!bottom_line.intersect(left_line, &bottomleft)) {
+    if (bottom_line.intersect(left_line, &bottomleft) != QLineF::NoIntersection) {
         bottomleft = {0, (qreal)height};
     }
-    if (!bottom_line.intersect(right_line, &bottomright)) {
+    if (bottom_line.intersect(right_line, &bottomright) != QLineF::NoIntersection) {
         bottomright = {(qreal)width, (qreal)height};
     }
 
@@ -172,12 +172,14 @@ void CutFilter::loadJson(QJsonObject& object) {}
 
 QImage CutFilter::apply(QImage&& image)
 {
-    if (image.isNull()) return image;
+    if (image.isNull()) {
+        return image;
+    }
 
     auto rotated = QImageToCvMat(image);
 
-    float w = rotated.cols;
-    float h = rotated.rows;
+    auto w = static_cast<float>(rotated.cols);
+    auto h = static_cast<float>(rotated.rows);
 
     cv::Point2f tl(d->topleft.x() * w, d->topleft.y() * h);
     cv::Point2f tr(d->topright.x() * w, d->topright.y() * h);
@@ -189,10 +191,12 @@ QImage CutFilter::apply(QImage&& image)
                                    QPointF{br.x - w / 2, br.y - h / 2} / 100,
                                    QPointF{bl.x - w / 2, bl.y - h / 2} / 100);
 
-    if (qIsNaN(ratio)) return {};
+    if (qIsNaN(ratio)) {
+        return {};
+    }
 
-    float height = std::max(cv::norm(tr - tl), cv::norm(br - bl));
-    float width = height * ratio;
+    auto height = static_cast<float>(std::max(cv::norm(tr - tl), cv::norm(br - bl)));
+    auto width = static_cast<float>(height * ratio);
 
     cv::Point2f src[4] = {tl, tr, br, bl};
     cv::Point2f dst[4] = {{0, 0}, {width - 1, 0}, {width - 1, height - 1}, {0, height - 1}};
