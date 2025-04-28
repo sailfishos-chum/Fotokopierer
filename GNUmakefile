@@ -1,13 +1,13 @@
 target = harbour-fotokopierer
 
-arch := i486
+sdk_dir := $(HOME)/SailfishOS
+sfdk := $(sdk_dir)/bin/sfdk
+
+arch := $(shell $(sfdk) config | sed -ne 's/^target.*-\([^-]*\)$$/\1/p')
 #arch := armv7hl
 #arch := aarch64
 
 device := jolla
-
-sdk_dir := $(HOME)/SailfishOS
-sfdk := $(sdk_dir)/bin/sfdk
 
 projects_root := $(HOME)/JollaProjekte
 emu_dir := $(sdk_dir)/vmshare/ssh/private_keys/Sailfish_OS-Emulator-latest
@@ -24,7 +24,7 @@ else
 ifeq ($(arch),armv7hl)
   build_dir := rpmbuilddir-arm
 else
-  build_dir := rpmbuilddir-aarch64
+  build_dir := rpmbuilddir-$(arch)
 endif
 endif
 
