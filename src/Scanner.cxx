@@ -76,10 +76,11 @@ QImage Scanner::computeFilteredImage() const
 
 Filter* Scanner::filter(FilterType type)
 {
-    if (type == FilterType::None)
+    if (type == FilterType::None) {
         return nullptr;
-    else
+    } else {
         return d->filter.at(static_cast<int>(type));
+    }
 }
 
 RotateFilter* Scanner::rotateFilter() const
