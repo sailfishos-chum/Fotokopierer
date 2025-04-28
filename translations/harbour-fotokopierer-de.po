@@ -3,6 +3,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: de_DE\n"
+"X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
 
 #~ msgctxt "CameraPage~|"
@@ -318,36 +321,46 @@ msgid "Translations"
 msgstr "Übersetzungen"
 
 #: qml/sfos/pages/AboutPage.qml:103
+msgctxt "AboutPage|"
+msgid "Bulgarian"
+msgstr ""
+
+#: qml/sfos/pages/AboutPage.qml:113
+msgctxt "AboutPage|"
+msgid "French"
+msgstr ""
+
+#: qml/sfos/pages/AboutPage.qml:133
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Swedish"
 msgstr "Schwedisch"
 
-#: qml/sfos/pages/AboutPage.qml:113
+#: qml/sfos/pages/AboutPage.qml:123
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Slovak"
 msgstr "Slowakisch"
 
-#: qml/sfos/pages/AboutPage.qml:128
+#: qml/sfos/pages/AboutPage.qml:148
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Homepage"
 msgstr "Homepage"
 
-#: qml/sfos/pages/AboutPage.qml:139
+#: qml/sfos/pages/AboutPage.qml:159
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Find me on libera.chat: "
 msgstr "Kontaktiere mich auf libera.chat: "
 
-#: qml/sfos/pages/AboutPage.qml:158
+#: qml/sfos/pages/AboutPage.qml:178
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "This application uses"
 msgstr "Dieses Programm verwendet"
 
-#: qml/sfos/pages/AboutPage.qml:180
+#: qml/sfos/pages/AboutPage.qml:200
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
@@ -449,94 +462,94 @@ msgctxt "RenamePage|"
 msgid "Document title"
 msgstr "Dokumenttitel"
 
-#: src/Document.cxx:402
+#: src/Document.cxx:401
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
 msgstr "Seite kann nicht hinzugefügt werden, Dokument ist nicht bereit"
 
-#: src/Document.cxx:507
+#: src/Document.cxx:506
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
 msgstr "Pfad %1 kann nicht erstellt werden"
 
-#: src/Document.cxx:514
+#: src/Document.cxx:513
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
 msgstr "Dokumentdatei %1 kann nicht geschrieben werden: %2"
 
-#: src/Document.cxx:535
+#: src/Document.cxx:534
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
 msgstr "Fehler beim Schreiben der Datei %1"
 
-#: src/Document.cxx:547
-#: src/Document.cxx:566
+#: src/Document.cxx:546
+#: src/Document.cxx:565
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
 msgstr ""
 "Dokument kann nicht von %1 gelesen werden während ein anderer Prozess läuft"
 
-#: src/Document.cxx:584
+#: src/Document.cxx:583
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
 msgstr "Dokumentdatei %1 kann nicht geöffnet werden"
 
-#: src/Document.cxx:601
+#: src/Document.cxx:600
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
 msgstr "Dokumenttitel kann nicht von Datei %1 gelesen werden"
 
-#: src/Document.cxx:607
+#: src/Document.cxx:606
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
 msgstr "Erstellungszeit kann nicht von Datei %1 gelesen werden"
 
-#: src/Document.cxx:614
+#: src/Document.cxx:613
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
 msgstr "Seiten des Dokuments konnten nicht von %1 gelesen werden"
 
-#: src/Document.cxx:621
+#: src/Document.cxx:620
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
 msgstr "Eine Seite konnte nicht von Dokument %1 gelesen werden"
 
-#: src/Document.cxx:632
+#: src/Document.cxx:631
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
 msgstr "Fehler beim lesen der Dokumentdatei %1"
 
-#: src/Document.cxx:683
+#: src/Document.cxx:682
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot export to pdf, document is not ready"
 msgstr "Pdf kann nicht exportiert werden, Dokument ist nicht bereit"
 
-#: src/Document.cxx:758
+#: src/Document.cxx:757
 #, fuzzy
 msgctxt "Document|"
 msgid "Error creating pdf-file"
 msgstr "Fehler beim Erstellen der pdf-Datei"
 
-#: src/Page.cxx:164
+#: src/Page.cxx:163
 #, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
 "Seite kann nicht erstellt werden: Fehler beim Speichern des Originalbildes"
 
-#: src/Page.cxx:169
+#: src/Page.cxx:168
 #, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"

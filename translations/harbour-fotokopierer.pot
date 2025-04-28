@@ -38,78 +38,78 @@ msgstr ""
 #~ msgid "Page could not be created: error saving result image"
 #~ msgstr ""
 
-#: src/Document.cxx:402
+#: src/Document.cxx:401
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
 msgstr ""
 
-#: src/Document.cxx:507
+#: src/Document.cxx:506
 #, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
 msgstr ""
 
-#: src/Document.cxx:514
+#: src/Document.cxx:513
 #, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
 msgstr ""
 
-#: src/Document.cxx:535
+#: src/Document.cxx:534
 #, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
 msgstr ""
 
-#: src/Document.cxx:547
-#: src/Document.cxx:566
+#: src/Document.cxx:546
+#: src/Document.cxx:565
 #, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
 msgstr ""
 
-#: src/Document.cxx:584
+#: src/Document.cxx:583
 #, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
 msgstr ""
 
-#: src/Document.cxx:601
+#: src/Document.cxx:600
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
 msgstr ""
 
-#: src/Document.cxx:607
+#: src/Document.cxx:606
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
 msgstr ""
 
-#: src/Document.cxx:614
+#: src/Document.cxx:613
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
 msgstr ""
 
-#: src/Document.cxx:621
+#: src/Document.cxx:620
 #, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
 msgstr ""
 
-#: src/Document.cxx:632
+#: src/Document.cxx:631
 #, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
 msgstr ""
 
-#: src/Document.cxx:683
+#: src/Document.cxx:682
 msgctxt "Document|"
 msgid "Cannot export to pdf, document is not ready"
 msgstr ""
 
-#: src/Document.cxx:758
+#: src/Document.cxx:757
 msgctxt "Document|"
 msgid "Error creating pdf-file"
 msgstr ""
@@ -234,33 +234,43 @@ msgctxt "AboutPage|"
 msgid "Translations"
 msgstr ""
 
-#: qml/sfos/pages/AboutPage.qml:103
+#: qml/sfos/pages/AboutPage.qml:133
 msgctxt "AboutPage|"
 msgid "Swedish"
 msgstr ""
 
-#: qml/sfos/pages/AboutPage.qml:113
+#: qml/sfos/pages/AboutPage.qml:123
 msgctxt "AboutPage|"
 msgid "Slovak"
 msgstr ""
 
-#: qml/sfos/pages/AboutPage.qml:128
+#: qml/sfos/pages/AboutPage.qml:103
+msgctxt "AboutPage|"
+msgid "Bulgarian"
+msgstr ""
+
+#: qml/sfos/pages/AboutPage.qml:113
+msgctxt "AboutPage|"
+msgid "French"
+msgstr ""
+
+#: qml/sfos/pages/AboutPage.qml:148
 msgctxt "AboutPage|"
 msgid "Homepage"
 msgstr ""
 
-#: qml/sfos/pages/AboutPage.qml:139
+#: qml/sfos/pages/AboutPage.qml:159
 #| msgid "Find me on Freenode: "
 msgctxt "AboutPage|"
 msgid "Find me on libera.chat: "
 msgstr ""
 
-#: qml/sfos/pages/AboutPage.qml:158
+#: qml/sfos/pages/AboutPage.qml:178
 msgctxt "AboutPage|"
 msgid "This application uses"
 msgstr ""
 
-#: qml/sfos/pages/AboutPage.qml:180
+#: qml/sfos/pages/AboutPage.qml:200
 #, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
@@ -288,12 +298,12 @@ msgctxt "PageDelegate|"
 msgid "Page %1"
 msgstr ""
 
-#: src/Page.cxx:164
+#: src/Page.cxx:163
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr ""
 
-#: src/Page.cxx:169
+#: src/Page.cxx:168
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"
 msgstr ""

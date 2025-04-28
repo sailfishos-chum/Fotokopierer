@@ -3,6 +3,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: sv_SE\n"
+"X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
 
 #~ msgctxt "CameraPage~|"
@@ -315,36 +318,46 @@ msgid "Translations"
 msgstr "Översättningar"
 
 #: qml/sfos/pages/AboutPage.qml:103
+msgctxt "AboutPage|"
+msgid "Bulgarian"
+msgstr ""
+
+#: qml/sfos/pages/AboutPage.qml:113
+msgctxt "AboutPage|"
+msgid "French"
+msgstr ""
+
+#: qml/sfos/pages/AboutPage.qml:133
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Swedish"
 msgstr "Svenska"
 
-#: qml/sfos/pages/AboutPage.qml:113
+#: qml/sfos/pages/AboutPage.qml:123
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Slovak"
 msgstr "Slovakiska"
 
-#: qml/sfos/pages/AboutPage.qml:128
+#: qml/sfos/pages/AboutPage.qml:148
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Homepage"
 msgstr "Hemsida"
 
-#: qml/sfos/pages/AboutPage.qml:139
+#: qml/sfos/pages/AboutPage.qml:159
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "Find me on libera.chat: "
 msgstr "Hitta mig på Freenode: "
 
-#: qml/sfos/pages/AboutPage.qml:158
+#: qml/sfos/pages/AboutPage.qml:178
 #, fuzzy
 msgctxt "AboutPage|"
 msgid "This application uses"
 msgstr "Denna app använder"
 
-#: qml/sfos/pages/AboutPage.qml:180
+#: qml/sfos/pages/AboutPage.qml:200
 #, fuzzy, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"
@@ -446,92 +459,92 @@ msgctxt "RenamePage|"
 msgid "Document title"
 msgstr "Dokumenttitel"
 
-#: src/Document.cxx:402
+#: src/Document.cxx:401
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot add page, document is not ready"
 msgstr "Kan inte lägga till sida, dokumentet är inte klart"
 
-#: src/Document.cxx:507
+#: src/Document.cxx:506
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot create path %1"
 msgstr "Kan inte skapa sökvägen %1"
 
-#: src/Document.cxx:514
+#: src/Document.cxx:513
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't write document file %1:%2"
 msgstr "Kan inte skriva dokumentfil %1: %2"
 
-#: src/Document.cxx:535
+#: src/Document.cxx:534
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error writing document file:%1"
 msgstr "Kunde inte skriva dokumentfil: %1"
 
-#: src/Document.cxx:547
-#: src/Document.cxx:566
+#: src/Document.cxx:546
+#: src/Document.cxx:565
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Cannot load document from '%1', another process is running"
 msgstr "Kan inte läsa in dokument från \"%1\", en annan process hindrar."
 
-#: src/Document.cxx:584
+#: src/Document.cxx:583
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Can't open document file %1"
 msgstr "Kan inte öppna dokumentfil %1"
 
-#: src/Document.cxx:601
+#: src/Document.cxx:600
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read document title from document file %1"
 msgstr "Kunde inte läsa titel från dokumentfil %1"
 
-#: src/Document.cxx:607
+#: src/Document.cxx:606
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read creation time from document file %1"
 msgstr "Kunde inte läsa tidsstämpel från dokumentfil %1"
 
-#: src/Document.cxx:614
+#: src/Document.cxx:613
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read pages from document file %1"
 msgstr "Kunde inte läsa sidor från dokumentfil %1"
 
-#: src/Document.cxx:621
+#: src/Document.cxx:620
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Could not read page from document file %1"
 msgstr "Kunde inte läsa sida från dokumentfil %1"
 
-#: src/Document.cxx:632
+#: src/Document.cxx:631
 #, fuzzy, qt-format
 msgctxt "Document|"
 msgid "Error reading page from document file %1"
 msgstr "Kunde inte läsa sida från dokumentfil %1"
 
-#: src/Document.cxx:683
+#: src/Document.cxx:682
 #, fuzzy
 msgctxt "Document|"
 msgid "Cannot export to pdf, document is not ready"
 msgstr "Kan inte exportera till PDF, dokumentet är inte klart"
 
-#: src/Document.cxx:758
+#: src/Document.cxx:757
 #, fuzzy
 msgctxt "Document|"
 msgid "Error creating pdf-file"
 msgstr "Kunde inte skapa PDF-fil"
 
-#: src/Page.cxx:164
+#: src/Page.cxx:163
 #, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving original image"
 msgstr "Sidan kunde inte skapas: Fel när originalbild sparades"
 
-#: src/Page.cxx:169
+#: src/Page.cxx:168
 #, fuzzy
 msgctxt "Page|"
 msgid "Page could not be created: error saving result image"
