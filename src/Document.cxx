@@ -257,6 +257,7 @@ void Document::addPage(QImage original, QImage result)
     QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
 
     connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+    connect(p.data(), &Page::statusChanged, this, &Document::updatePage);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
     d->doc.pages.push_back(p);
