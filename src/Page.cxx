@@ -82,8 +82,8 @@ Page::Page()
     // We send our own signals to replace them when the concurrent work task is
     // finished. This seems to work.
 
-    //connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
-    //connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
+    // connect(&d->result_thumbnail, &QFutureWatcher<QString>::finished, this, &Page::onThumbnailFinished);
+    // connect(&d->generating, &QFutureWatcher<bool>::finished, this, &Page::onGenerationFinished);
     connect(this, &Page::thumbnailFinished, this, &Page::onThumbnailFinished, Qt::QueuedConnection);
     connect(this, &Page::generationFinished, this, &Page::onGenerationFinished, Qt::QueuedConnection);
 }
