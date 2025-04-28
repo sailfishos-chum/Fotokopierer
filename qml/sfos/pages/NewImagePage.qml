@@ -30,6 +30,13 @@ Page {
 
     signal addPage()
 
+    onStatusChanged: {
+        if (status == PageStatus.Activating) {
+            // Remove possibly old image
+            scanImage.clear()
+        }
+    }
+
     onPageContainerChanged: {
         if (pageContainer == null) {
             console.log("NewImagePage closed")
