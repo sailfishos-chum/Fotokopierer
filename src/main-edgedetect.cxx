@@ -21,6 +21,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <QDebug>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QImage>
 #include <QtGui/QKeyEvent>
@@ -79,11 +80,17 @@ public:
 
     void updateEdges()
     {
+        edges = std::make_unique<EdgeDetection>(img_orig_);
+        connect(edges.get(), &EdgeDetection::edgeDetectionFinished, this, &Images::onAutoDetectionFinished);
+
+        edges->setCannyMinValue(minValue_);
+        edges->setCannyMaxValue(maxValue_);
+        edges->startAutoDetect();
+    }
+
+    void onAutoDetectionFinished()
+    {
         QImage image = img_orig_;
-        auto edges = EdgeDetection(image);
-        edges.setCannyMinValue(minValue_);
-        edges.setCannyMaxValue(maxValue_);
-        edges.autoDetect();
 
         QPointF tl, tr, br, bl;
 
@@ -93,28 +100,30 @@ public:
         QPainter p(&image);
 
         p.setPen(QPen(Qt::green, 10));
-        for (auto& l : edges.horizontal_lines()) {
+        for (auto& l : edges->horizontal_lines()) {
             p.drawLine(l);
         }
 
         p.setPen(QPen(Qt::blue, 10));
-        for (auto& l : edges.vertical_lines()) {
+        for (auto& l : edges->vertical_lines()) {
             p.drawLine(l);
         }
 
         p.setPen(QPen(Qt::red, 20));
         p.setBrush(Qt::red);
-        for (auto pnt : edges.points()) {
+        for (auto pnt : edges->points()) {
             p.drawEllipse(pnt, 20, 20);
         }
 
-        p.drawLine(edges.topLeft(), edges.topRight());
-        p.drawLine(edges.topLeft(), edges.bottomLeft());
-        p.drawLine(edges.bottomRight(), edges.topRight());
-        p.drawLine(edges.bottomLeft(), edges.bottomRight());
+        p.drawLine(edges->topLeft(), edges->topRight());
+        p.drawLine(edges->topLeft(), edges->bottomLeft());
+        p.drawLine(edges->bottomRight(), edges->topRight());
+        p.drawLine(edges->bottomLeft(), edges->bottomRight());
 
-        img_gray_ = edges.gray_image();
-        img_bw_ = edges.bw_image();
+#ifndef NDEBUG
+        img_gray_ = edges->gray_image();
+        img_bw_ = edges->bw_image();
+#endif
         img_result_ = image;
 
         update();
@@ -163,6 +172,8 @@ private:
 
     int minValue_ = 10;
     int maxValue_ = 50;
+
+    std::unique_ptr<EdgeDetection> edges;
 };
 
 class MainWindow : public QWidget

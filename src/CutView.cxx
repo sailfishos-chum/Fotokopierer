@@ -267,6 +267,16 @@ void CutView::rotateRight()
     }
 }
 
+bool CutView::hasAutoSelection() const
+{
+    return d->edges != nullptr ? d->edges->hasAutoDetection() : false;
+}
+
+bool CutView::isAutoDetectionRunning() const
+{
+    return d->edges != nullptr ? d->edges->isAutoDetectionRunning() : false;
+}
+
 void CutView::selectAll()
 {
     if (d->edges != nullptr) {
@@ -287,8 +297,7 @@ void CutView::selectAll()
 
 void CutView::selectAuto()
 {
-    if (d->edges != nullptr) {
-        d->edges->autoDetect();
+    if (d->edges != nullptr && d->edges->selectAuto()) {
         emit topLeftChanged();
         emit topRightChanged();
         emit bottomRightChanged();
@@ -359,7 +368,14 @@ void CutView::onRotatedImageChanged()
 {
     if (d->scanImage != nullptr) {
         d->image = d->scanImage->rotatedImage();
-        d->edges = std::make_unique<EdgeDetection>(EdgeDetection::detect_in_image(d->image));
+        d->edges = std::make_unique<EdgeDetection>(d->image);
+        connect(d->edges.get(), &EdgeDetection::hasAutoDetectionChanged, this, &CutView::hasAutoSelectionChanged);
+        connect(d->edges.get(), &EdgeDetection::isAutoDetectionRunningChanged, this, &CutView::isAutoDetectionRunningChanged);
+
+        emit hasAutoSelectionChanged();
+        emit isAutoDetectionRunningChanged();
+
+        d->edges->startAutoDetect();
         if (d->doRotate == -1) {
             setTopLeft(d->scanImage->topLeft());
             setTopRight(d->scanImage->topRight());

@@ -22,24 +22,29 @@
 #include <vector>
 
 #include <Qt>
+#include <QtCore/QObject>
 
 class QImage;
 class QLineF;
 class QPointF;
 
-class EdgeDetection
+class EdgeDetection : public QObject
 {
+    Q_OBJECT
+
 public:
+    EdgeDetection(QObject* parent = nullptr);
+
     /// Initialize edge detection for the given image.
-    EdgeDetection(const QImage& image);
+    EdgeDetection(const QImage& image, QObject* parent = nullptr);
 
     EdgeDetection(const EdgeDetection&) = delete;
 
-    EdgeDetection(EdgeDetection&&) noexcept;
+    EdgeDetection(EdgeDetection&&) noexcept = delete;
 
     EdgeDetection& operator=(const EdgeDetection&) = delete;
 
-    EdgeDetection& operator=(EdgeDetection&&) noexcept;
+    EdgeDetection& operator=(EdgeDetection&&) noexcept = delete;
 
     ~EdgeDetection();
 
@@ -84,8 +89,22 @@ public:
 
     /// Run the edge detection.
     ///
-    /// Must be called after changing a parameter.
-    void autoDetect();
+    /// Once finished, the signal `edgeDetectionFinished` will be
+    /// emitted whether successful or not.
+    void startAutoDetect();
+
+    /// Return whether auto-detection/edge-detection is available.
+    bool hasAutoDetection() const;
+
+    /// Return whether auto-detection is currently running.
+    bool isAutoDetectionRunning() const;
+
+    /// Select the auto-detected area.
+    ///
+    /// Returns `true` if successful.
+    ///
+    /// This function does nothing if `hasAutoDetection` is false and returns `false`.
+    bool selectAuto();
 
     /// Select everything.
     void selectAll();
@@ -99,11 +118,13 @@ public:
     /// Return the original image.
     QImage image() const;
 
+#ifndef NDEBUG
     /// Return the gray image.
     QImage gray_image() const;
 
     /// Return the result image of canny edge detection.
     QImage bw_image() const;
+#endif
 
     /// Return the list of detected vertical lines.
     std::vector<QLineF> vertical_lines() const;
@@ -162,14 +183,19 @@ public:
     /// Return the middle control point of the right edge.
     QPointF rightPoint() const;
 
-    /// Return a new edge list for the given image.
-    static EdgeDetection detect_in_image(const QImage& image);
+signals:
+    void edgeDetectionFinished();
+
+    void hasAutoDetectionChanged();
+
+    void isAutoDetectionRunningChanged();
+
+private slots:
+    void onAutoDetectFinished();
 
 private:
     struct Data;
     std::unique_ptr<Data> d;
-
-    EdgeDetection(std::unique_ptr<Data>&& d);
 };
 
 #endif

@@ -30,6 +30,8 @@ Item {
     property bool valid: true
 
     property alias busy: cutview.busy
+    property alias isAutoDetectionRunning: cutview.isAutoDetectionRunning
+    property alias hasAutoSelection: cutview.hasAutoSelection
 
     // The next properties are used to rotate the selection when the image has
     // been rotated. Because the computation of the rotated image is done
@@ -328,6 +330,14 @@ Item {
     }
 
     function initSelection() {
+        cutview.topLeft = Qt.point(0.1, 0.1)
+        cutview.topRight = Qt.point(0.9, 0.1)
+        cutview.bottomRight = Qt.point(0.9, 0.9)
+        cutview.bottomLeft = Qt.point(0.1, 0.9)
+        restoreSelection()
+    }
+
+    function restoreSelection() {
         topleft.setCenter(unmapPoint(cutview.topLeft))
         topright.setCenter(unmapPoint(cutview.topRight))
         bottomright.setCenter(unmapPoint(cutview.bottomRight))

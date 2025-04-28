@@ -161,7 +161,7 @@ Page {
     Component {
         id: cutpage
         CutPage {
-            autoDetectOnInit: false
+            restoreSelection: true
         }
     }
 
