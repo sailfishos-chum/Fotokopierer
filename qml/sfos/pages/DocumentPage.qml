@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -280,6 +280,7 @@ Page {
                 icon.source: Qt.resolvedUrl("/icons/toolbar-copy.svg")
                 icon.fillMode: Image.PreserveAspectFit
                 icon.height: Theme.iconSizeMedium
+                enabled: document.hasSelectedPages
                 onClicked: {
                     document.copySelectedPages()
                     document.clearSelection()
@@ -301,6 +302,7 @@ Page {
                 icon.source: Qt.resolvedUrl("/icons/toolbar-cut.svg")
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
+                enabled: document.hasSelectedPages
                 onClicked: {
                     document.cutSelectedPages()
                     document.clearSelection()
@@ -321,6 +323,7 @@ Page {
                 icon.source: "image://theme/icon-m-delete"
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
+                enabled: document.hasSelectedPages
                 onClicked: console.log("Delete")
 
             }
