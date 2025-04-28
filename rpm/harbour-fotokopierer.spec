@@ -72,8 +72,8 @@ Url:
 
 # >> macros2
 %global opencv_version 3.4.16
-%global podofo_version 0.9.7
-%global freetype_version 2.11.1
+%global podofo_version 0.9.8
+%global freetype_version 2.13.0
 # Local: {_builddir}
 # OBS: srcpath {_builddir}/{name}-{version}
 %if "%{?vendor}" == "chum"
