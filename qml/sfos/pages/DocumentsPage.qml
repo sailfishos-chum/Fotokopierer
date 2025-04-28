@@ -166,11 +166,14 @@ Page {
 
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
         newPage.item.scanImage = scanImage
-        newPage.item.destination = docpage
+        newPage.item.acceptDestination = Qt.resolvedUrl("DocumentPage.qml")
+        newPage.item.acceptDestinationAction = PageStackAction.Replace
+        newPage.item.acceptDestinationReplaceTarget = docpage
         newPage.item.addPage.connect(function() {
             var doc = DocumentList.newDocument()
             if (doc != null) {
                 doc.addScannedPage(scanImage)
+                newPage.item.acceptDestinationInstance.document = doc
             }
         })
 

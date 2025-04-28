@@ -25,7 +25,11 @@ import Fotokopierer 1.0
 Page {
     id: page
 
-    property Page destination
+    property alias acceptDestination: colpage.acceptDestination
+    property alias acceptDestinationInstance: colpage.acceptDestinationInstance
+    property alias acceptDestinationAction: colpage.acceptDestinationAction
+    property alias acceptDestinationReplaceTarget: colpage.acceptDestinationReplaceTarget
+
     property ScanImage scanImage
 
     signal addPage()
@@ -78,9 +82,6 @@ Page {
         id: colpage
 
         scanImage: page.scanImage
-
-        acceptDestination: destination
-        acceptDestinationAction: PageStackAction.Pop
 
         onAccepted: addPage()
     }
