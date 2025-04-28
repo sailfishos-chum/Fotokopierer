@@ -172,7 +172,7 @@ else()
   message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 endif()
 
-find_package(Qt5 COMPONENTS Core Concurrent Gui Quick)
+find_package(Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick)
 
 # We need to set these directories here ... luckily we know exactly where it goes.
 
@@ -202,7 +202,7 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
   QT_USE_FAST_OPERATOR_PLUS
   )
 
-qt5_use_modules(${TARGET} Core Gui Quick)
+qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)

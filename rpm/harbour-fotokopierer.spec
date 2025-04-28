@@ -28,6 +28,17 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(libpng16)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake
+BuildRequires:  qt5-qtmultimedia-plugin-audio-alsa
+BuildRequires:  qt5-qtmultimedia-plugin-audio-pulseaudio
+BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-gstaudiodecoder
+BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-gstcamerabin
+BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-gstmediacapture
+BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-gstmediaplayer
+BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-irisradio
+BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-irisradio
+BuildRequires:  qt5-qtmultimedia-plugin-playlistformats-m3u
+BuildRequires:  qt5-qtmultimedia-plugin-resourcepolicy-resourceqt
+BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
 %description

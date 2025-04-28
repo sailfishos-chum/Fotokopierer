@@ -74,6 +74,8 @@ public:
     QString podofoVersion() const;
 
     QString opencvVersion() const;
+
+    Q_INVOKABLE QSize defaultResolution(QObject* capture) const;
 };
 
 #endif
