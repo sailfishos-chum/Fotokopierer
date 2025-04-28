@@ -25,6 +25,8 @@ import Fotokopierer 1.0
 Page {
     id: page
 
+    allowedOrientations: Orientation.Portrait
+
     property var acceptDestination
     property var acceptDestinationAction
     property Page acceptDestinationInstance
