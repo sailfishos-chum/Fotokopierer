@@ -128,8 +128,7 @@ void ScanImage::loadJson(const QJsonObject& settings)
     setContrast(static_cast<qreal>(col[QStringLiteral("contrast")].toDouble(0.5)));
     setBrightness(static_cast<qreal>(col[QStringLiteral("brightness")].toDouble(0.5)));
     setDetails(static_cast<qreal>(col[QStringLiteral("details")].toDouble(0.5)));
-
-    auto mode = settings[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
+    auto mode = col[QStringLiteral("mode")].toInt(ColorMode::BlackAndWhite);
     switch (mode) {
         case ColorMode::BlackAndWhite:
         case ColorMode::Gray:
