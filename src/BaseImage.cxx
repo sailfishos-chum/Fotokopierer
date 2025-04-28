@@ -61,15 +61,15 @@ qreal BaseImage::paintedHeight() const
     return d->painted_height;
 }
 
-void BaseImage::setSource(BaseImage* base_image)
+void BaseImage::setSource(BaseImage* source)
 {
-    if (base_image == d->base_image) return;
+    if (source == d->base_image) return;
 
     if (d->base_image != nullptr) {
         disconnect(d->base_image, &BaseImage::imageChanged, this, &BaseImage::updateImage);
     }
 
-    d->base_image = base_image;
+    d->base_image = source;
 
     if (d->base_image != nullptr) {
         connect(d->base_image, &BaseImage::imageChanged, this, &BaseImage::updateImage);
