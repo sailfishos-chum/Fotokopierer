@@ -282,6 +282,9 @@ Page {
         document.errorPdfExists.connect(function (filename) {
             pageStack.push(overwritedlg, { filename: filename })
         })
+        document.exportToPdfFinished.connect(function (path) {
+            Qt.openUrlExternally(path)
+        })
     }
 
     Rectangle {
