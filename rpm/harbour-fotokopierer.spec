@@ -6,6 +6,9 @@
 Name:       harbour-fotokopierer
 
 # >> macros
+%global opencv_version 3.4.16
+%global podofo_version 0.9.7
+%global freetype_version 2.11.1
 # << macros
 
 Summary:    Document Scanner
@@ -15,9 +18,9 @@ Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://chiselapp.com/user/fifr/repository/fotokopierer
 Source0:    %{name}-%{version}.tar.gz
-Source1:    3.4.16.zip
-Source2:    podofo-0.9.7.tar.gz
-Source3:    freetype-2.11.1.tar.gz
+Source1:    %{opencv_version}.zip
+Source2:    podofo-%{podofo_version}.tar.gz
+Source3:    freetype-%{freetype_version}.tar.gz
 Source100:  harbour-fotokopierer.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
@@ -61,13 +64,13 @@ tar -xzf %{SOURCE3}
 # << setup
 
 %build
-# >> build pre
 rm -rf rpmbuilddir-%{_arch}
+# >> build pre
 mkdir rpmbuilddir-%{_arch}
 
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/opencv
 pushd rpmbuilddir-%{_arch}/3rdparty/opencv
-cmake %{_sourcedir}/../3rdparty/opencv-3.4.16 \
+cmake %{_sourcedir}/../3rdparty/opencv-%{opencv_version} \
       -DCMAKE_INSTALL_PREFIX:PATH=%{_builddir}/rpmbuilddir-%{_arch}/usr \
       -DCMAKE_BUILD_TYPE=Release \
       -DOPENCV_EXTRA_CXX_FLAGS="-U__SSE2__" \
@@ -115,7 +118,7 @@ popd
 
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/freetype
 pushd rpmbuilddir-%{_arch}/3rdparty/freetype
-cmake %{_sourcedir}/../3rdparty/freetype-2.11.1 \
+cmake %{_sourcedir}/../3rdparty/freetype-%{freetype_version} \
       -DCMAKE_INSTALL_PREFIX:PATH=%{_builddir}/rpmbuilddir-%{_arch}/usr \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_SHARED_LIBS:BOOL=false \
@@ -127,12 +130,12 @@ popd
 
 mkdir -p rpmbuilddir-%{_arch}/3rdparty/podofo
 pushd rpmbuilddir-%{_arch}/3rdparty/podofo
-cmake %{_sourcedir}/../3rdparty/podofo-0.9.7 \
+cmake %{_sourcedir}/../3rdparty/podofo-%{podofo_version} \
       -DCMAKE_INSTALL_PREFIX:PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr" \
       -DPODOFO_BUILD_LIB_ONLY:BOOL=true \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true \
-      -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libtiff;%{_sourcedir}/../3rdparty/freetype-2.11.1/include/freetype2" \
+      -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;%{_sourcedir}/../3rdparty/freetype-%{freetype_version}/include/freetype2" \
       -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/3rdparty/freetype/lib;%{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib" \
       -DCMAKE_CXX_FLAGS="-isystem %{_builddir}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/libtiff" \
       -DLIBJPEG_LIBRARY_NAMES=jpeg
@@ -144,7 +147,7 @@ popd
 
 pushd rpmbuilddir-%{_arch} &&  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
                                      -DCMAKE_PREFIX_PATH="%{_builddir}/%{name}-%{version}/rpmbuilddir-%{_arch}/3rdparty/opencv;%{_builddir}/rpmbuilddir-%{_arch}/usr" \
-                                     -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-3.4.16/3rdparty/libtiff;%{_builddir}/rpmbuilddir-%{_arch}/usr/include" \
+                                     -DCMAKE_INCLUDE_PATH="%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;%{_sourcedir}/../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;%{_builddir}/rpmbuilddir-%{_arch}/usr/include" \
                                      -DCMAKE_LIBRARY_PATH="%{_builddir}/rpmbuilddir-%{_arch}/usr/lib;%{_builddir}/%{name}-%{version}/rpmbuilddir-%{_arch}/3rdparty/opencv/3rdparty/lib" \
                                      -DCMAKE_INSTALL_PREFIX=/usr %{_builddir}
 popd
