@@ -34,13 +34,14 @@ Page {
     }
 
     PageHeader {
+        id: header
         title: qsTr("Cut & Rotate")
     }
 
     CutImageView {
         id: cutview
 
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: buttons.top
