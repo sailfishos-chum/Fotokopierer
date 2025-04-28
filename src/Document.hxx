@@ -25,6 +25,7 @@
 #include <memory>
 
 class Page;
+class ScanImage;
 
 /// A scanned document
 ///
@@ -77,6 +78,12 @@ public:
     /// Return the i-th page.
     const Page &page(int i) const;
 
+    /// Add a newly scanned page to the document.
+    ///
+    /// The new page will be created with the given original and result image
+    /// and the current time. It will be the last page of the current document.
+    Q_INVOKABLE void addScannedPage(const ScanImage *image);
+
     /// Delete a page from the document.
     Q_INVOKABLE void deletePage(int pageIndex);
 
@@ -117,6 +124,9 @@ private:
 private slots:
     /// Change the current status.
     void setStatus(Status status);
+
+    /// The status of a page has changed.
+    void updatePage();
 
 signals:
     void titleChanged();
