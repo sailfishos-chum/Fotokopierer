@@ -36,8 +36,6 @@
 
 #include <memory>
 
-#include <QDebug>
-
 const QString Document::FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 struct Document::Data {
@@ -195,8 +193,6 @@ void Document::addPage(BaseImage *original, BaseImage *result)
 
 void Document::deletePage(int pageIndex)
 {
-    qDebug() << "Delete Page";
-
     beginRemoveRows({}, pageIndex, pageIndex);
     auto page = d->pages.takeAt(pageIndex);
     page->remove();
