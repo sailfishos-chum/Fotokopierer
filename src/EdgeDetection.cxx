@@ -320,8 +320,6 @@ void EdgeList::Data::filter_by_length(std::vector<QLineF>& edges)
         }
     }
     edges.resize(edges.size() - ndel, edges[0]);
-
-    std::cout << " max_l: " << max_l;
 }
 
 void EdgeList::Data::cluster_edges()
@@ -438,14 +436,6 @@ void EdgeList::Data::find_best_match()
         }
     }
 
-    for (auto i : indices(hlines)) {
-        std::cout << left_lines[i].size() << " " << right_lines[i].size() << std::endl;
-    }
-    std::cout << "---" << std::endl;
-    for (auto i : indices(vlines)) {
-        std::cout << top_lines[i].size() << " " << bottom_lines[i].size() << std::endl;
-    }
-
     for (auto ls : left_lines) std::sort(ls.begin(), ls.end());
     for (auto ls : right_lines) std::sort(ls.begin(), ls.end());
     for (auto ls : top_lines) std::sort(ls.begin(), ls.end());
@@ -464,7 +454,6 @@ void EdgeList::Data::find_best_match()
 
         for (auto l : left_lines[i]) {
             for (auto r : right_lines[i]) {
-                std::cout << i << " " << l << "   " << r << std::endl;
                 std::size_t a = 0, b = 0;
                 while (a < bottom_lines[l].size() && b < bottom_lines[r].size()) {
                     if (bottom_lines[l][a] == bottom_lines[r][b]) {
