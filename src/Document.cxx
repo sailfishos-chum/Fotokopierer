@@ -165,6 +165,18 @@ QDateTime Document::creationTime() const
     return d->doc.creation_time;
 }
 
+QStringList Document::thumbnails() const
+{
+    QStringList thumbnails;
+    thumbnails.reserve(3);
+
+    for (int i = 0; i < qMin(3, d->doc.pages.size()); i++) {
+        thumbnails.push_back(QUrl::fromLocalFile(d->doc.pages.at(i)->thumbnail()).toString());
+    }
+
+    return thumbnails;
+}
+
 int Document::rowCount(const QModelIndex& parent) const
 {
     return d->doc.pages.size();
