@@ -191,8 +191,10 @@ msgid "Homepage"
 msgstr "Hemsida"
 
 #: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/AboutPage.qml:126
+#, fuzzy
+#| msgid "Find me on Freenode: "
 msgctxt "AboutPage|"
-msgid "Find me on Freenode: "
+msgid "Find me on libera.chat: "
 msgstr "Hitta mig på Freenode: "
 
 #: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/AboutPage.qml:145

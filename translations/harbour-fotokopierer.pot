@@ -221,8 +221,9 @@ msgid "Homepage"
 msgstr ""
 
 #: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/AboutPage.qml:126
+#| msgid "Find me on Freenode: "
 msgctxt "AboutPage|"
-msgid "Find me on Freenode: "
+msgid "Find me on libera.chat: "
 msgstr ""
 
 #: /home/fifr/JollaProjekte/fotokopierer/devel/qml/sfos/pages/AboutPage.qml:145
