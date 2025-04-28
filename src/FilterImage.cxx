@@ -55,6 +55,7 @@ void FilterImage::setFilterType(ScanImage::FilterType type)
     if (d->filter_type != type) {
         d->filter_type = type;
         emit filterTypeChanged();
+        updateFilter();
     }
 }
 
@@ -68,6 +69,7 @@ void FilterImage::setImage(ScanImage* image)
     if (d->image != image) {
         d->image = image;
         emit imageChanged();
+        updateFilter();
     }
 }
 
