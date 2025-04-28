@@ -4,10 +4,6 @@
 # 
 
 Name:       harbour-fotokopierer
-
-# >> macros
-# << macros
-
 Summary:    Document Scanner
 Version:    0.1
 Release:    1
@@ -22,7 +18,6 @@ BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
-BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(libpng16)
 BuildRequires:  pkgconfig(zlib)
