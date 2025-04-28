@@ -17,7 +17,7 @@
 
 #include "Convert.hxx"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 #include <QtGui/QImage>
 #include <QtGui/QPixmap>
 

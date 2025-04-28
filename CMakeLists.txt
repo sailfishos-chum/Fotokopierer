@@ -19,7 +19,7 @@ if (POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-find_package(OpenCV COMPONENTS imgproc)
+find_package(OpenCV QUIET COMPONENTS imgproc)
 
 include(ExternalProject)
 
@@ -134,9 +134,12 @@ endif()
 
 
 set(SOURCES
+  src/BaseImage.cxx
+  src/ColorizeImage.cxx
   src/Convert.cxx
-  src/ScannedImage.cxx
-  src/ScannedImageProvider.cxx
+  src/CutImage.cxx
+  src/PlainImage.cxx
+  src/RotImage.cxx
   src/Util.cxx
   src/init.cxx)
 

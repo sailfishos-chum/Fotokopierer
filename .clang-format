@@ -5,10 +5,13 @@ AccessModifierOffset: -4
 AlignAfterOpenBracket: true
 AlwaysBreakTemplateDeclarations: true
 AllowShortFunctionsOnASingleLine: Inline
+AllowShortCaseLabelsOnASingleLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Linux
-ColumnLimit: 80
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
 Standard:        Cpp11
 IndentWidth:     4
 TabWidth:        8

@@ -17,13 +17,35 @@
 
 import QtQuick 2.2
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { CutPage { } }
+    initialPage: Component { Documents { } }
+
+    PlainImage {
+        id: image
+        visible: false
+    }
+
+    CutPage {
+        id: cutpage
+        onStatusChanged: {
+            if (status == PageStatus.Active) {
+                pageContainer.pushAttached(Qt.resolvedUrl("pages/ColorizePage.qml"), {source: cutpage.image})
+            }
+        }
+    }
 
     Component.onCompleted: {
-        pageStack.pushAttached(Qt.resolvedUrl("pages/Documents.qml"))
+        console.log(Qt.application.arguments)
+        if (Qt.application.arguments.length > 1) {
+            console.log("FILE: " + Qt.application.arguments[1])
+            image.loadFile(Qt.application.arguments[1])
+            cutpage.source = image
+        }
+        //pageStack.pushAttached(Qt.resolvedUrl("pages/Documents.qml"))
+        pageStack.pushAttached(cutpage)
     }
 }

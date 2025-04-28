@@ -17,18 +17,22 @@
 
 import QtQuick 2.2
 import Sailfish.Silica 1.0
+import Fotokopierer 1.0
 
 import "../../common"
 
 Page {
     id: page
 
+    property alias source : cutview.source
+
     PageHeader {
         title: qsTr("Cut & Rotate")
     }
 
-    CutImage {
-        id: img
+    CutImageView {
+        id: cutview
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -63,15 +67,27 @@ Page {
                     name: "right"
                 }
 
+                ListElement {
+                    icon: "image://theme/icon-m-crop"
+                    name: "auto"
+                }
+
+                ListElement {
+                    icon: "image://theme/icon-m-display"
+                    name: "all"
+                }
+
                 property var actions : {
-                    "left": function () { img.rotateLeft() },
-                    "right": function () { img.rotateRight() }
+                    "left": function () { cutview.rotateLeft() },
+                    "right": function () { cutview.rotateRight() },
+                    "auto": function () { cutview.selectAuto() },
+                    "all": function () { cutview.selectAll() },
                 }
             }
 
             model: listModel
 
-            cellWidth: grid.width / 2
+            cellWidth: grid.width / 4
             cellHeight: grid.height
 
             delegate: IconButton {

@@ -17,6 +17,7 @@
 
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
+import Fotokopierer 1.0
 
 Item {
     id: zoom
@@ -27,7 +28,7 @@ Item {
     property color color: "white"
     property color crossColor: "green"
 
-    property Image image
+    property RotImage image
 
     width: 100
     height: 100
@@ -66,12 +67,11 @@ Item {
             }
         }
 
-        Image {
+        PlainImage {
             id: zoomimg
-            fillMode: Image.PreserveAspectFit
             width: image.paintedWidth * zoom.scaleFactor
             height: image.paintedHeight * zoom.scaleFactor
-            source: image.source
+            source: image
             x: (-zoom.imagex + (pane.width - image.paintedWidth) / 2) * zoom.scaleFactor - zoombox.anchors.leftMargin
             y: (-zoom.imagey + (pane.height - image.paintedHeight) / 2) * zoom.scaleFactor - zoombox.anchors.rightMargin
         }

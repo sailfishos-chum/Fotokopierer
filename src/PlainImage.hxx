@@ -15,22 +15,44 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-import QtQuick 2.0
-import Sailfish.Silica 1.0
+#ifndef __FOTOKOPIERER_PLAINIMAGE_HXX__
+#define __FOTOKOPIERER_PLAINIMAGE_HXX__
 
-import "../../common"
+#include "BaseImage.hxx"
 
-Page {
-    id: page
+#include <QtCore/QScopedPointer>
 
-    SilicaFlickable {
-        anchors.fill: parent
+/// An image just representing a picture.
+class PlainImage : public BaseImage
+{
+    Q_OBJECT
 
-        /* CutImage { */
-        /*     id: img */
-        /*     anchors.fill: parent */
-        /*     markerColor: Theme.primaryColor */
-        /*     lineColor: Theme.highlightColor */
-        /* } */
-    }
-}
+    Q_PROPERTY(bool scale READ scale WRITE setScale NOTIFY scaleChanged)
+
+public:
+    PlainImage();
+
+    ~PlainImage();
+
+    bool scale() const;
+
+    Q_INVOKABLE void loadFile(const QString& file_name);
+
+public slots:
+    void setScale(bool enabled);
+
+signals:
+    /// Emitted if loading a file failed.
+    void loadFailed();
+
+    void scaleChanged();
+
+protected:
+    QImage transform(const QImage& image);
+
+private:
+    struct Data;
+    QScopedPointer<Data> d;
+};
+
+#endif

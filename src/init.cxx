@@ -22,8 +22,10 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QtQml>
 
-#include "ScannedImage.hxx"
-#include "ScannedImageProvider.hxx"
+#include "ColorizeImage.hxx"
+#include "CutImage.hxx"
+#include "PlainImage.hxx"
+#include "RotImage.hxx"
 #include "Util.hxx"
 
 void init_app(QGuiApplication& app, QQmlEngine& engine)
@@ -32,26 +34,23 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         "Fotokopierer", 1, 0, "Util", [](QQmlEngine*, QJSEngine*) -> QObject* {
             return new Util();
         });
-    qmlRegisterType<ScannedImage>("Fotokopierer", 1, 0, "ScannedImage");
-
-    auto imgprovider = new ScannedImageProvider();
-    ScannedImageProvider::instance = imgprovider;
-    engine.addImageProvider(QLatin1String("Scanned"), imgprovider);
+    qmlRegisterType<ColorizeImage>("Fotokopierer", 1, 0, "ColorizeImage");
+    qmlRegisterType<CutImage>("Fotokopierer", 1, 0, "CutImage");
+    qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
+    qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QLatin1String(QT_VERSION_STR));
 
     QTranslator qtTranslator;
-    qtTranslator.load(
-        QLatin1String("harbour-fotokopierer-") + QLocale::system().name(),
-        QLatin1String(":/translations/"));
+    qtTranslator.load(QLatin1String("harbour-fotokopierer-") + QLocale::system().name(),
+                      QLatin1String(":/translations/"));
     app.installTranslator(&qtTranslator);
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Document Scanner"));
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument(QStringLiteral("file"),
-                                 QStringLiteral("The image file to show"));
+    parser.addPositionalArgument(QStringLiteral("file"), QStringLiteral("The image file to show"));
     parser.process(app);
 }

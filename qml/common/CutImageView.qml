@@ -23,7 +23,8 @@ import Fotokopierer 1.0
 Item {
     id: pane
 
-    property ScannedImage img
+    property alias source : rotimage.source
+    property alias image : cutimage
 
     property real markerRadius: 10
     property color markerColor: "white"
@@ -33,26 +34,37 @@ Item {
 
     property bool valid: true
 
-    property int angle: 0
+    property alias rotation: rotimage.rotation
 
     property point tl : mapPoint(topleft.center)
     property point tr : mapPoint(topright.center)
     property point br : mapPoint(bottomright.center)
     property point bl : mapPoint(bottomleft.center)
 
+    RotImage {
+        id: rotimage
+        anchors.fill: parent
+    }
+
+    CutImage {
+        id: cutimage
+        source: rotimage
+        visible: false
+    }
+
     function rotateLeft() {
-        angle = (angle - 90) % 360
+        rotation -= 1
     }
 
     function rotateRight() {
-        angle = (angle + 90) % 360
+        rotation += 1
     }
 
     function selectAll() {
-        topleft.x = (pane.width - image.paintedWidth) / 2 - markerRadius;
-        topleft.y = (pane.height - image.paintedHeight) / 2 - markerRadius;
-        bottomright.x = (pane.width + image.paintedWidth) / 2 - markerRadius;
-        bottomright.y = (pane.height + image.paintedHeight) / 2 - markerRadius;
+        topleft.x = (pane.width - rotimage.paintedWidth) / 2 - markerRadius;
+        topleft.y = (pane.height - rotimage.paintedHeight) / 2 - markerRadius;
+        bottomright.x = (pane.width + rotimage.paintedWidth) / 2 - markerRadius;
+        bottomright.y = (pane.height + rotimage.paintedHeight) / 2 - markerRadius;
         topright.x = bottomright.x
         topright.y = topleft.y
         bottomleft.x = topleft.x
@@ -60,11 +72,11 @@ Item {
     }
 
     function selectAuto() {
-        var points = img.autoDetectCutRect()
-        var offx = (pane.width - image.paintedWidth) / 2 - markerRadius
-        var offy = (pane.height - image.paintedHeight) / 2 - markerRadius
-        var w = image.paintedWidth
-        var h = image.paintedHeight
+        var points = cutimage.autoDetectCutRect()
+        var offx = (pane.width - rotimage.paintedWidth) / 2 - markerRadius
+        var offy = (pane.height - rotimage.paintedHeight) / 2 - markerRadius
+        var w = rotimage.paintedWidth
+        var h = rotimage.paintedHeight
         topleft.x = points[0].x * w + offx
         topleft.y = points[0].y * h + offy
         topright.x = points[1].x * w + offx
@@ -75,11 +87,12 @@ Item {
         bottomleft.y = points[3].y * h + offy
     }
 
-    Image {
-        id: image
-        anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
-        source: "image://Scanned/" + img.image + "/scaled/" + angle
+    function cutImage() {
+        cutimage.setCutBox(
+            mapPoint(topleft.center),
+            mapPoint(topright.center),
+            mapPoint(bottomright.center),
+            mapPoint(bottomleft.center))
     }
 
     Canvas {
@@ -115,12 +128,12 @@ Item {
     CornerMarker {
         id: topleft
         color: pane.markerColor
-        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        x: (pane.width  - rotimage.paintedWidth) / 2 + 50 - markerRadius
+        y: (pane.height - rotimage.paintedHeight) / 2 + 50 - markerRadius
+        minX: (pane.width - rotimage.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + rotimage.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - rotimage.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + rotimage.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: pane.update(x, y)
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
@@ -129,12 +142,12 @@ Item {
     CornerMarker {
         id: topright
         color: pane.markerColor
-        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-        y: (pane.height - image.paintedHeight) / 2 + 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        x: (pane.width  + rotimage.paintedWidth) / 2 - 50 - markerRadius
+        y: (pane.height - rotimage.paintedHeight) / 2 + 50 - markerRadius
+        minX: (pane.width - rotimage.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + rotimage.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - rotimage.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + rotimage.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: pane.update(x, y)
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
@@ -143,12 +156,12 @@ Item {
     CornerMarker {
         id: bottomleft
         color: pane.markerColor
-        x: (pane.width  - image.paintedWidth) / 2 + 50 - markerRadius
-        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        x: (pane.width  - rotimage.paintedWidth) / 2 + 50 - markerRadius
+        y: (pane.height + rotimage.paintedHeight) / 2 - 50 - markerRadius
+        minX: (pane.width - rotimage.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + rotimage.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - rotimage.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + rotimage.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: pane.update(x, y)
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
@@ -157,12 +170,12 @@ Item {
     CornerMarker {
         id: bottomright
         color: pane.markerColor
-        x: (pane.width  + image.paintedWidth) / 2 - 50 - markerRadius
-        y: (pane.height + image.paintedHeight) / 2 - 50 - markerRadius
-        minX: (pane.width - image.paintedWidth) / 2 - markerRadius
-        maxX: (pane.width + image.paintedWidth) / 2 - markerRadius
-        minY: (pane.height - image.paintedHeight) / 2 - markerRadius
-        maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
+        x: (pane.width  + rotimage.paintedWidth) / 2 - 50 - markerRadius
+        y: (pane.height + rotimage.paintedHeight) / 2 - 50 - markerRadius
+        minX: (pane.width - rotimage.paintedWidth) / 2 - markerRadius
+        maxX: (pane.width + rotimage.paintedWidth) / 2 - markerRadius
+        minY: (pane.height - rotimage.paintedHeight) / 2 - markerRadius
+        maxY: (pane.height + rotimage.paintedHeight) / 2 - markerRadius
         radius: markerRadius
         onCenterChanged: pane.update(x, y)
         onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
@@ -171,7 +184,7 @@ Item {
     ZoomImage {
         id: zoomimg
 
-        image: image
+        image: rotimage
 
         color: pane.markerColor
         crossColor: pane.lineColor
@@ -187,7 +200,7 @@ Item {
     }
 
     function update(x, y) {
-        pane.valid = img.setCutBox(
+        pane.valid = Util.isConvex(
             mapPoint(topleft.center),
             mapPoint(topright.center),
             mapPoint(bottomright.center),
@@ -195,7 +208,7 @@ Item {
         zoomimg.imagex = x
         zoomimg.imagey = y
 
-        if (x < image.width / 2) {
+        if (x < rotimage.width / 2) {
             zoomimg.anchors.left = undefined
             zoomimg.anchors.right = pane.right
         } else {
@@ -203,7 +216,7 @@ Item {
             zoomimg.anchors.left = pane.left
         }
 
-        if (y < image.height / 2) {
+        if (y < rotimage.height / 2) {
             zoomimg.anchors.top = undefined
             zoomimg.anchors.bottom = pane.bottom
         } else {
@@ -215,8 +228,8 @@ Item {
     }
 
     function mapPoint(p) {
-        var x = (p.x - (pane.width - image.paintedWidth) / 2) / image.paintedWidth
-        var y = (p.y - (pane.height - image.paintedHeight) / 2) / image.paintedHeight
+        var x = (p.x - (pane.width - rotimage.paintedWidth) / 2) / rotimage.paintedWidth
+        var y = (p.y - (pane.height - rotimage.paintedHeight) / 2) / rotimage.paintedHeight
         return Qt.point(x, y)
     }
 }

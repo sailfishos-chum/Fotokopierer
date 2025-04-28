@@ -15,22 +15,37 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-import QtQuick 2.0
-import Sailfish.Silica 1.0
+#ifndef __FOTOKOPIERER_ROTIMAGE_HXX__
+#define __FOTOKOPIERER_ROTIMAGE_HXX__
 
-import "../../common"
+#include "BaseImage.hxx"
 
-Page {
-    id: page
+/// An image that can be rotated.
+class RotImage : public BaseImage
+{
+public:
+    Q_OBJECT
 
-    SilicaFlickable {
-        anchors.fill: parent
+    Q_PROPERTY(int rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
 
-        /* CutImage { */
-        /*     id: img */
-        /*     anchors.fill: parent */
-        /*     markerColor: Theme.primaryColor */
-        /*     lineColor: Theme.highlightColor */
-        /* } */
-    }
-}
+public:
+    RotImage();
+
+    ~RotImage();
+
+    int rotation() const;
+
+public slots:
+    void setRotation(int rotation);
+
+signals:
+    void rotationChanged();
+
+protected:
+    QImage transform(const QImage& image);
+
+private:
+    int rotation_;
+};
+
+#endif

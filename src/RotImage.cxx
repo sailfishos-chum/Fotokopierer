@@ -15,22 +15,32 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
-import QtQuick 2.0
-import Sailfish.Silica 1.0
+#include "RotImage.hxx"
 
-import "../../common"
+#include <QtGui/QImage>
 
-Page {
-    id: page
+RotImage::RotImage() : rotation_(0) {}
 
-    SilicaFlickable {
-        anchors.fill: parent
+RotImage::~RotImage() = default;
 
-        /* CutImage { */
-        /*     id: img */
-        /*     anchors.fill: parent */
-        /*     markerColor: Theme.primaryColor */
-        /*     lineColor: Theme.highlightColor */
-        /* } */
+int RotImage::rotation() const
+{
+    return rotation_;
+}
+
+void RotImage::setRotation(int rotation)
+{
+    rotation %= 4;
+    if (rotation != rotation_) {
+        rotation_ = rotation;
+        emit rotationChanged();
+        updateImage();
     }
+}
+
+QImage RotImage::transform(const QImage& image)
+{
+    QTransform transform;
+    transform.rotate(rotation_ * 90.0);
+    return image.transformed(transform);
 }

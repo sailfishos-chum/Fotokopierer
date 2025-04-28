@@ -33,23 +33,24 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if (Qt.application.arguments.length > 1) {
-            img.loadFile(Qt.application.arguments[1])
-            cutimage.img = img
+            plainimage.loadFile(Qt.application.arguments[1])
         }
     }
 
-    ScannedImage {
-        id: img
+    PlainImage {
+        id: plainimage
+        scale: false
+        visible: false
     }
 
     Item {
         id: cutbox;
         anchors.fill: parent
 
-        CutImage {
+        CutImageView {
             id: cutimage
 
-            img: img
+            source: plainimage
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -105,6 +106,7 @@ ApplicationWindow {
             Button {
                 text: "Accept"
                 onClicked: {
+                    cutimage.cutImage()
                     cutbox.visible = false
                     colbox.visible = true
                 }
@@ -117,22 +119,19 @@ ApplicationWindow {
         anchors.fill: parent
         visible: false
 
-        Image {
+        ColorizeImage {
             id: colimage
+
+            source: cutimage.image
 
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: contrastRow.top
 
-            fillMode: Image.PreserveAspectFit
-
-            source: "image://Scanned/" + img.image + "/cut" +
-                "/" + colormode +
-                "/" + contrast.value +
-                "/" + brightness.value +
-                "/" + details.value
-            cache: false
+            brightness: brightness.value / 100
+            contrast: contrast.value / 100
+            details: details.value / 100
         }
 
         Row {
