@@ -16,7 +16,9 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import QtQml.Models 2.2
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
@@ -146,7 +148,10 @@ Page {
     SilicaGridView {
         id: grid
 
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: buttons.top
 
         cellWidth: width / 2
         cellHeight: (height - Theme.itemSizeLarge) / 2
@@ -248,6 +253,67 @@ Page {
         //         0;
         //     }
         // }
+    }
+
+    DockedPanel {
+        id: buttons
+
+        width: parent.width
+        height: Theme.iconSizeLarge
+        dock: Dock.Bottom
+        open: docpage.state == "Marking"
+
+        RowLayout {
+            id: buttonRow
+            anchors { left: parent.left; right: parent.right }
+            IconButton {
+                id: copybutton
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: Qt.resolvedUrl("/icons/toolbar-copy.svg")
+                icon.fillMode: Image.PreserveAspectFit
+                icon.height: Theme.iconSizeMedium
+                onClicked: console.log("Copy")
+
+                ColorOverlay {
+                    anchors.fill: parent
+                    source: parent
+                    color: Theme.primaryColor
+                }
+            }
+
+            IconButton {
+                id: cutbutton
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: Qt.resolvedUrl("/icons/toolbar-cut.svg")
+                icon.height: Theme.iconSizeMedium
+                icon.fillMode: Image.PreserveAspectFit
+                onClicked: console.log("Cut")
+
+                ColorOverlay {
+                    anchors.fill: parent
+                    source: parent
+                    color: Theme.primaryColor
+                }
+            }
+            IconButton {
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: "image://theme/icon-m-delete"
+                icon.height: Theme.iconSizeMedium
+                icon.fillMode: Image.PreserveAspectFit
+                onClicked: console.log("Delete")
+            }
+            IconButton {
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: "image://theme/icon-m-close"
+                icon.height: Theme.iconSizeMedium
+                icon.fillMode: Image.PreserveAspectFit
+                onClicked: console.log("Close")
+            }
+        }
     }
 
     Component {

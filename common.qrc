@@ -6,5 +6,7 @@
 	 <file>icons/brightness.svg</file>
 	 <file>icons/contrast.svg</file>
 	 <file>icons/harbour-fotokopierer.svg</file>
+	 <file>icons/toolbar-copy.svg</file>
+	 <file>icons/toolbar-cut.svg</file>
   </qresource>
 </RCC>

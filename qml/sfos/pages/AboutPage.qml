@@ -72,7 +72,10 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: (qsTr("Icons by %1").arg("Tobias Planitzer"))
+                text: (qsTr("Icons by %1\nCopy icon by %2 of www.flaticon.com\nCut icon by %3 of www.flaticon.com")
+                       .arg("Tobias Planitzer")
+                       .arg("Iconnice")
+                       .arg("Freepik"))
 
                 onLinkActivated: Qt.openUrlExternally(link)
             }
