@@ -45,6 +45,8 @@ public:
 
     std::shared_ptr<Filter> filter(FilterType type);
 
+    Q_INVOKABLE bool loadFile(const QString& file_name);
+
     Q_INVOKABLE void saveAndClear(Document* doc);
 
     QImage originalImage() const;

@@ -49,6 +49,18 @@ std::shared_ptr<Filter> ScanImage::filter(FilterType type)
         return d->filter[static_cast<int>(type)];
 }
 
+bool ScanImage::loadFile(const QString& file_name)
+{
+    QImage image(file_name);
+    if (image.isNull()) {
+        return false;
+    } else {
+        d->original = image;
+        emit originalImageChanged();
+        return true;
+    }
+}
+
 void ScanImage::saveAndClear(Document* doc)
 {
     // Compute the result image.
