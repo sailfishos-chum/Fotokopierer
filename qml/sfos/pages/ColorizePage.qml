@@ -30,6 +30,7 @@ Dialog {
     property alias contrast: contrast_slider.value
     property alias brightness: brightness_slider.value
     property alias details: details_slider.value
+    property alias image: colimg
 
     MouseArea {
         anchors.fill: parent
