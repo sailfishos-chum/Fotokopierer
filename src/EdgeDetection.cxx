@@ -267,10 +267,8 @@ void EdgeDetection::setTopPoint(const QPointF& p)
         top.translate(p - center(top));
     }
 
-    QLineF left(d->quad.tl, d->quad.bl);
-    QLineF right(d->quad.tr, d->quad.br);
-    top.intersect(left, &d->quad.tl);
-    top.intersect(right, &d->quad.tr);
+    top.intersect(d->left_non_snappy, &d->quad.tl);
+    top.intersect(d->right_non_snappy, &d->quad.tr);
     d->project_quadrangle();
 }
 
@@ -287,10 +285,8 @@ void EdgeDetection::setBottomPoint(const QPointF& p)
         bottom.translate(p - center(bottom));
     }
 
-    QLineF left(d->quad.tl, d->quad.bl);
-    QLineF right(d->quad.tr, d->quad.br);
-    bottom.intersect(left, &d->quad.bl);
-    bottom.intersect(right, &d->quad.br);
+    bottom.intersect(d->left_non_snappy, &d->quad.bl);
+    bottom.intersect(d->right_non_snappy, &d->quad.br);
     d->project_quadrangle();
 }
 
@@ -307,11 +303,9 @@ void EdgeDetection::setLeftPoint(const QPointF& p)
         left.translate(p - center(left));
     }
 
-    QLineF top(d->quad.tl, d->quad.tr);
-    QLineF bottom(d->quad.bl, d->quad.br);
     left.translate(p - center(left));
-    left.intersect(top, &d->quad.tl);
-    left.intersect(bottom, &d->quad.bl);
+    left.intersect(d->top_non_snappy, &d->quad.tl);
+    left.intersect(d->bottom_non_snappy, &d->quad.bl);
     d->project_quadrangle();
 }
 
@@ -328,11 +322,9 @@ void EdgeDetection::setRightPoint(const QPointF& p)
         right.translate(p - center(right));
     }
 
-    QLineF top(d->quad.tl, d->quad.tr);
-    QLineF bottom(d->quad.bl, d->quad.br);
     right.translate(p - center(right));
-    right.intersect(top, &d->quad.tr);
-    right.intersect(bottom, &d->quad.br);
+    right.intersect(d->top_non_snappy, &d->quad.tr);
+    right.intersect(d->bottom_non_snappy, &d->quad.br);
     d->project_quadrangle();
 }
 
