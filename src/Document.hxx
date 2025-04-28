@@ -30,18 +30,13 @@ class Document : public QAbstractListModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool enableAddButton READ isAddButtonEnabled WRITE setAddButtonEnabled NOTIFY
-                   addButtonEnabledChanged)
 public:
-    enum PageRoles { PageRole = Qt::UserRole + 1, AddButtonRole };
+    enum PageRoles { PageRole = Qt::UserRole + 1 };
 
 public:
     Document(QObject *parent = nullptr);
 
     ~Document();
-
-    /// True if the documents returns an additional element used for the "Add-Button".
-    bool isAddButtonEnabled() const;
 
     int rowCount(const QModelIndex &parent) const override;
 
@@ -52,12 +47,6 @@ public:
     Q_INVOKABLE bool save() const;
 
     bool load(const QString &filename, QObject *parent = nullptr);
-
-public slots:
-    void setAddButtonEnabled(bool enabled);
-
-signals:
-    void addButtonEnabledChanged();
 
 private:
     struct Data;

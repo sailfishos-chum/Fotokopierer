@@ -33,7 +33,11 @@ Page {
             width: grid.cellWidth
             height: grid.cellHeight
             page: role_page
-            isAddButton: role_isAddButton
+            isAddButton: role_page == null
+        }
+
+        Component.onCompleted: {
+            visualModel.items.insert({"role_page": null})
         }
     }
 
