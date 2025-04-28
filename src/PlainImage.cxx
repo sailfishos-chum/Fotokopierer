@@ -65,13 +65,10 @@ void PlainImage::setMaxSize(int maxSize)
 
 void PlainImage::loadFile(const QString& file_name)
 {
-    qDebug() << "Load plain " << file_name;
     QImage image(file_name);
     if (image.isNull()) {
-        qDebug() << "Failed";
         emit loadFailed();
     } else {
-        qDebug() << "Success";
         d->image = std::move(image);
         emit sourceChanged();
         updateImage();
