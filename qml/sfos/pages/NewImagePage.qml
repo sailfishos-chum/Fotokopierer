@@ -25,10 +25,10 @@ import Fotokopierer 1.0
 Page {
     id: page
 
-    property alias acceptDestination: colpage.acceptDestination
-    property alias acceptDestinationInstance: colpage.acceptDestinationInstance
-    property alias acceptDestinationAction: colpage.acceptDestinationAction
-    property alias acceptDestinationReplaceTarget: colpage.acceptDestinationReplaceTarget
+    property var acceptDestination
+    property var acceptDestinationAction
+    property Page acceptDestinationInstance
+    property Page acceptDestinationReplaceTarget
 
     property ScanImage scanImage
 
@@ -38,6 +38,9 @@ Page {
         if (status == PageStatus.Activating) {
             // Remove possibly old image
             scanImage.clear()
+        }
+        if (status == PageStatus.Active) {
+            camera.cameraState = Camera.ActiveState
         }
     }
 
@@ -65,25 +68,41 @@ Page {
         }
     }
 
-    ImagePickerPage {
+    Component {
         id: picker
+        ImagePickerPage {
+            id: picker
 
-        // Note that this property might become unsupported in future
-        popOnSelection: false
+            // Note that this property might become unsupported in future
+            popOnSelection: false
 
-        onSelectedContentPropertiesChanged: {
-            processImage(selectedContentProperties.filePath, false)
+            onSelectedContentPropertiesChanged: {
+                processImage(selectedContentProperties.filePath, false)
+            }
         }
     }
 
-    CutPage { id: cutpage; image: scanImage }
+    Component {
+        id: cutpage
+        CutPage {
+            image: page.scanImage
+        }
+    }
 
-    ColorizePage {
+    Component {
         id: colpage
+        ColorizePage {
+            scanImage: page.scanImage
+            onAccepted: addPage()
 
-        scanImage: page.scanImage
+            acceptDestination: page.acceptDestination
+            acceptDestinationAction: page.acceptDestinationAction
+            acceptDestinationReplaceTarget: page.acceptDestinationReplaceTarget
 
-        onAccepted: addPage()
+            onAcceptDestinationInstanceChanged: {
+                page.acceptDestinationInstance = acceptDestinationInstance
+            }
+        }
     }
 
     PageHeader {
@@ -93,6 +112,8 @@ Page {
 
     Camera {
         id: camera
+
+        cameraState: Camera.UnloadedState
 
         viewfinder {
             resolution: Qt.size(640, 480)
@@ -137,7 +158,7 @@ Page {
         metaData.orientation: orientation
     }
 
-    Rectangle {
+    Item {
         id: viewArea
 
         anchors.top: header.bottom
@@ -156,6 +177,7 @@ Page {
 
         Rectangle {
             id: focusCircle
+            visible: camera.cameraStatus == Camera.ActiveStatus
             height: Theme.itemSizeHuge
             width: height
             radius: width / 2
@@ -224,9 +246,7 @@ Page {
             IconButton {
                 width: parent.width / 3
                 icon.source: "image://theme/icon-m-image"
-                onClicked: {
-                    pageStack.push(picker)
-                }
+                onClicked: pageStack.push(picker)
             }
         }
     }
