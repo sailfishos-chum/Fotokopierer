@@ -78,23 +78,8 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: pane.update()
-	 }
-
-	 ZoomImage {
-		  image: image
-
-		  color: pane.markerColor
-		  crossColor: pane.lineColor
-
-		  anchors.right: pane.right
-		  anchors.bottom: pane.bottom
-		  anchors.margins: 5
-
-		  imagex: topleft.x
-		  imagey: topleft.y
-
-		  visible: topleft.dragActive
+		  onCenterChanged: pane.update(x, y)
+		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
 	 }
 
 	 CornerMarker {
@@ -107,23 +92,8 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: pane.update()
-	 }
-
-	 ZoomImage {
-		  image: image
-
-		  color: pane.markerColor
-		  crossColor: pane.lineColor
-
-		  anchors.left: pane.left
-		  anchors.bottom: pane.bottom
-		  anchors.margins: 5
-
-		  imagex: topright.x
-		  imagey: topright.y
-
-		  visible: topright.dragActive
+		  onCenterChanged: pane.update(x, y)
+		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
 	 }
 
 	 CornerMarker {
@@ -136,23 +106,8 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: pane.update()
-	 }
-
-	 ZoomImage {
-		  image: image
-
-		  color: pane.markerColor
-		  crossColor: pane.lineColor
-
-		  anchors.right: pane.right
-		  anchors.top: pane.top
-		  anchors.margins: 5
-
-		  imagex: bottomleft.x
-		  imagey: bottomleft.y
-
-		  visible: bottomleft.dragActive
+		  onCenterChanged: pane.update(x, y)
+		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
 	 }
 
 	 CornerMarker {
@@ -165,10 +120,13 @@ Item {
 		  minY: (pane.height - image.paintedHeight) / 2 - markerRadius
 		  maxY: (pane.height + image.paintedHeight) / 2 - markerRadius
 		  radius: markerRadius
-		  onCenterChanged: pane.update()
+		  onCenterChanged: pane.update(x, y)
+		  onDragActiveChanged: { zoomimg.visible = dragActive; pane.update(x, y) }
 	 }
 
 	 ZoomImage {
+		  id: zoomimg
+
 		  image: image
 
 		  color: pane.markerColor
@@ -181,11 +139,30 @@ Item {
 		  imagex: bottomright.x
 		  imagey: bottomright.y
 
-		  visible: bottomright.dragActive
+		  visible: false
 	 }
 
-	 function update() {
+	 function update(x, y) {
 		  pane.valid = Util.isConvex(topleft.center, topright.center, bottomright.center, bottomleft.center)
+		  zoomimg.imagex = x
+		  zoomimg.imagey = y
+
+		  if (x < image.width / 2) {
+				zoomimg.anchors.left = undefined
+				zoomimg.anchors.right = pane.right
+		  } else {
+				zoomimg.anchors.right = undefined
+				zoomimg.anchors.left = pane.left
+		  }
+
+		  if (y < image.height / 2) {
+				zoomimg.anchors.top = undefined
+				zoomimg.anchors.bottom = pane.bottom
+		  } else {
+				zoomimg.anchors.bottom = undefined
+				zoomimg.anchors.top = pane.top
+		  }
+
 		  frame.requestPaint()
 	 }
 }
