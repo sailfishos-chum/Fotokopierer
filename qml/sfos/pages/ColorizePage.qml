@@ -87,7 +87,7 @@ Dialog {
                 onClicked: { image.filter.colorMode = ColorizeFilter.FullColor }
             }
             IconButton {
-                icon.source: Qt.resolvedUrl("/icons/a-icon-m-special.svg")
+                icon.source: Qt.resolvedUrl("/icons/icon-m-special.svg")
                 icon.width: Theme.iconSizeMedium
                 icon.height: Theme.iconSizeMedium
                 icon.color: undefined
@@ -98,7 +98,6 @@ Dialog {
                 icon.source: Qt.resolvedUrl("/icons/icon-m-ctrl.svg")
                 icon.width: Theme.iconSizeMedium
                 icon.height: Theme.iconSizeMedium
-                icon.color: undefined
                 Layout.fillWidth: true
                 onClicked: { sliders.open = !sliders.open; buttons.open = !buttons.open }
             }
