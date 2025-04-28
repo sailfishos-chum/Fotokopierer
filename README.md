@@ -53,6 +53,10 @@ script will automatically compile OpenCV and Podofo.
 
 	cd path/to/fotokopierer
 	mb2 -t SailfishOS-2.1.3.7-i486 build
+    
+## Download sources    
+
+Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
 
 ## Credits
 
@@ -69,3 +73,5 @@ This project uses
 [SFOS]: https://sailfishos.org
 [harbour]: https://harbour.jolla.com/
 [IRC]: https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer
+
+[TRUNK]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-trunk.tar.gz?name=harbour-fotokopierer
