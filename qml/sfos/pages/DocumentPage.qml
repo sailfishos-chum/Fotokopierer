@@ -171,7 +171,7 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("Rename document")
+                text: qsTr("Rename")
                 onClicked: pageStack.push(Qt.resolvedUrl("RenamePage.qml"), { document: document })
             }
         }
