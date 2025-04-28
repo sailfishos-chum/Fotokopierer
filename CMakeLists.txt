@@ -73,13 +73,6 @@ endif ()
 message(STATUS "Found PoDoFo: ${PODOFO_LIBRARIES}")
 
 if (SAILFISH_FOUND)
-  # Additionally find the config-include which is generated in the build directory
-  find_path(PODOFO_INCLUDE_DIRS_CFG NAMES podofo_config.h)
-  if (NOT PODOFO_INCLUDE_DIRS_CFG)
-    message(FATAL_ERROR "Could not find podofo_config.h")
-  endif ()
-  set(PODOFO_INCLUDE_DIRS ${PODOFO_INCLUDE_DIRS} ${PODOFO_INCLUDE_DIRS_CFG})
-
   find_package(PNG REQUIRED)
   find_package(OpenSSL REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
