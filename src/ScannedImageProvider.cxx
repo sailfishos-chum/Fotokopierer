@@ -24,7 +24,6 @@
 #include <QtCore/QMap>
 #include <QtGui/QPixmap>
 
-#include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -120,7 +119,7 @@ QImage ScannedImageProvider::requestImage(const QString& id,
         if (toks.size() == 4 && toks[2] == QLatin1String("rotate")) {
             angle = toks[3].toFloat();
         }
-        set_angle(toks[0], toks[3].toFloat());
+        set_angle(toks[0], angle);
         return cvMatToQImage(img->original);
     } else if (toks[1] == QLatin1String("cut")) {
         auto colormode = Colored;
