@@ -71,7 +71,7 @@ script will automatically compile all 3rd-party libraries
 
 Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
 
-Latest release version: [harbour-fotokopierer-0.4.3.tar.gz][STABLE]
+Latest release version: [harbour-fotokopierer-0.4.4.tar.gz][STABLE]
 
 ## Help with translations
 
@@ -96,4 +96,4 @@ This project uses
 [IRC]: https://web.libera.chat/#fotokopierer
 
 [TRUNK]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-trunk.tar.gz?name=harbour-fotokopierer
-[STABLE]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-0.4.2.tar.gz?uuid=v0.4.2
+[STABLE]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-0.4.4.tar.gz?uuid=v0.4.4
