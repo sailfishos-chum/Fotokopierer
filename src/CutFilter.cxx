@@ -53,7 +53,7 @@ void CutFilter::reset()
     setTopLeft({0, 0});
     setTopRight({1, 0});
     setBottomRight({1, 1});
-    setBottomLeft({1, 1});
+    setBottomLeft({0, 1});
 }
 
 bool CutFilter::updateCut()
