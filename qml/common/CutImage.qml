@@ -23,6 +23,8 @@ import Fotokopierer 1.0
 Item {
     id: pane
 
+    property ScannedImage img
+
     property real markerRadius: 10
     property color markerColor: "white"
 
@@ -71,10 +73,6 @@ Item {
         bottomright.y = points[2].y * h + offy
         bottomleft.x = points[3].x * w + offx
         bottomleft.y = points[3].y * h + offy
-    }
-
-    ScannedImage {
-        id: img
     }
 
     Image {
@@ -189,7 +187,7 @@ Item {
     }
 
     function update(x, y) {
-        pane.valid = img.set_cut_box(
+        pane.valid = img.setCutBox(
             mapPoint(topleft.center),
             mapPoint(topright.center),
             mapPoint(bottomright.center),

@@ -31,6 +31,13 @@ ApplicationWindow {
 
     property string colormode : "colored"
 
+    Component.onCompleted: {
+        if (Qt.application.arguments.length > 1) {
+            img.loadFile(Qt.application.arguments[1])
+            cutimage.img = img
+        }
+    }
+
     ScannedImage {
         id: img
     }
@@ -41,6 +48,8 @@ ApplicationWindow {
 
         CutImage {
             id: cutimage
+
+            img: img
 
             anchors.left: parent.left
             anchors.right: parent.right

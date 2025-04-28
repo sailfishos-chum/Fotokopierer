@@ -21,16 +21,10 @@
 #include <QtCore/QScopedPointer>
 #include <QtQuick/QQuickImageProvider>
 
+class ScannedImage;
+
 class ScannedImageProvider : public QQuickImageProvider
 {
-public:
-    /// The color mode to be used.
-    enum ColorMode {
-        Gray,
-        BlackAndWhite,
-        Colored,
-    };
-
 public:
     ScannedImageProvider();
 
@@ -40,39 +34,13 @@ public:
                         QSize* size,
                         const QSize& requestedSize) override;
 
-    /// Load a (original) image from the given file and return the ID.
+    /// Register a scanned image at this provider.
     ///
-    /// Return an empty string if the image could not be loaded.
-    QString loadImage(const QString& fileName);
+    /// Return the new id of this image.
+    QString registerImage(ScannedImage* image);
 
-    /// Set the rotation angle of a certain image.
-    void setAngle(const QString& image, double angle);
-
-    /// The set corners of the cut quadrangle of a certain image.
-    ///
-    /// The method returns `false` if the corners do not form a valid
-    /// quadrangle (e.g. if it is not convex).
-    bool setCutBox(const QString& image,
-                   const QPointF& topleft,
-                   const QPointF& topright,
-                   const QPointF& bottomright,
-                   const QPointF& bottomleft);
-
-    /// Auto detect cut box.
-    ///
-    /// Sets and returns the corner points.
-    QList<QPointF> autoDetectCutRect(const QString& image);
-
-    /// Set the contrast of the image.
-    void setContrast(const QString& image, double contrast);
-
-    /// Set the brightness of the image.
-    void setBrightness(const QString& image, double brightness);
-
-    void setColorMode(const QString& image, ColorMode colormode);
-
-    /// Set the detail level.
-    void setDetails(const QString& image, double details);
+    /// Unregister a scanned image from this provider.
+    void unregisterImage(ScannedImage* image, const QString& id);
 
 public:
     /// A global instance used throughout the app.

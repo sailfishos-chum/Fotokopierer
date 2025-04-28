@@ -54,8 +54,4 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     parser.addPositionalArgument(QStringLiteral("file"),
                                  QStringLiteral("The image file to show"));
     parser.process(app);
-
-    for (auto img : parser.positionalArguments()) {
-        imgprovider->loadImage(img);
-    }
 }
