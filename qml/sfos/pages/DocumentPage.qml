@@ -35,6 +35,7 @@ Page {
 
     // The number of marked pages in marking mode.
     property int _nmarked: 0
+    property Item _remorse
 
     Loader {
         id: newPage
@@ -325,8 +326,10 @@ Page {
                 icon.fillMode: Image.PreserveAspectFit
                 enabled: document.hasSelectedPages
                 onClicked: {
-                    document.deleteSelectedPages()
-                    document.clearSelection()
+                    _remorse = Remorse.popupAction(docpage, qsTr("Delete pages"), function() {
+                        document.deleteSelectedPages()
+                        document.clearSelection()
+                    })
                     buttons.open = false
                     docpage._nmarked = 0
                 }
