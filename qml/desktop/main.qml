@@ -33,14 +33,13 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if (Qt.application.arguments.length > 1) {
-            plainimage.loadFile(Qt.application.arguments[1])
+            Scanner.loadFile(Qt.application.arguments[1])
         }
     }
 
-    PlainImage {
-        id: plainimage
-        scaling: true
-        visible: false
+    FilterImage {
+        anchors.fill: parent
+        image: Scanner
     }
 
     Item {
@@ -49,8 +48,6 @@ ApplicationWindow {
 
         CutImageView {
             id: cutimage
-
-            source: plainimage
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -119,19 +116,16 @@ ApplicationWindow {
         anchors.fill: parent
         visible: false
 
-        ColorizeImage {
+        FilterImage {
             id: colimage
 
-            source: cutimage.image
+            image: Scanner
+            filterType: Scanner.Colorize
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: contrastRow.top
-
-            brightness: brightness.value / 100
-            contrast: contrast.value / 100
-            details: details.value / 100
+            anchors.top: header.bottom
+            anchors.bottom: buttons.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - 2 * Theme.iconSizeSmall
         }
 
         Row {
