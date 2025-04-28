@@ -50,37 +50,21 @@ CutFilter::~CutFilter() = default;
 
 void CutFilter::reset()
 {
-    setCutBox({0, 0}, {1, 0}, {1, 1}, {0, 1});
+    setTopLeft({0, 0});
+    setTopRight({1, 0});
+    setBottomRight({1, 1});
+    setBottomLeft({1, 1});
 }
 
-bool CutFilter::setCutBox(QPointF topleft,
-                          QPointF topright,
-                          QPointF bottomright,
-                          QPointF bottomleft)
+bool CutFilter::updateCut()
 {
     static Fotokopierer util;
 
-    if (!util.isConvex(topleft, topright, bottomright, bottomleft)) {
+    if (!util.isConvex(d->topleft, d->topright, d->bottomright, d->bottomleft)) {
         return false;
     }
 
-    if (d->topleft != topleft) {
-        d->topleft = topleft;
-        emit topLeftChanged();
-    }
-    if (d->topright != topright) {
-        d->topright = topright;
-        emit topRightChanged();
-    }
-    if (d->bottomleft != bottomleft) {
-        d->bottomleft = bottomleft;
-        emit bottomLeftChanged();
-    }
-    if (d->bottomright != bottomright) {
-        d->bottomright = bottomright;
-        emit bottomRightChanged();
-    }
-
+    /// Emitting this signal will cause the filtered image to be updated.
     emit filterChanged();
     return true;
 }
@@ -265,10 +249,10 @@ static QPointF toPoint(const QJsonValue& value)
 
 void CutFilter::loadJson(const QJsonObject& object)
 {
-    setCutBox(toPoint(object[QStringLiteral("topleft")]),
-              toPoint(object[QStringLiteral("topright")]),
-              toPoint(object[QStringLiteral("bottomright")]),
-              toPoint(object[QStringLiteral("bottomleft")]));
+    setTopLeft(toPoint(object[QStringLiteral("topleft")]));
+    setTopRight(toPoint(object[QStringLiteral("topright")]));
+    setBottomRight(toPoint(object[QStringLiteral("bottomright")]));
+    setBottomLeft(toPoint(object[QStringLiteral("bottomleft")]));
 }
 
 QImage CutFilter::apply(QImage&& image)

@@ -55,15 +55,6 @@ public:
 
     QImage apply(QImage&& image) override;
 
-    /// Set the corner points of the cut box.
-    ///
-    /// If the cut box is not convex return false otherwise return
-    /// true.
-    Q_INVOKABLE bool setCutBox(QPointF topleft,
-                               QPointF topright,
-                               QPointF bottomright,
-                               QPointF bottomleft);
-
     QPointF topLeft() const;
 
     void setTopLeft(const QPointF& topleft);
@@ -85,6 +76,13 @@ public:
     /// The method returns a list of four points (topleft, topright,
     /// bottomright, bottomleft).
     Q_INVOKABLE QVariantList autoDetectCutRect();
+
+public slots:
+    /// Apply the current cut area to the image.
+    ///
+    /// The function returns true if the action has been successful. It returns
+    /// false if the current box is invalid (i.e. non-convex).
+    bool updateCut();
 
 signals:
     void topLeftChanged();

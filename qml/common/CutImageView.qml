@@ -106,11 +106,12 @@ Item {
     }
 
     function cutImage() {
-        Scanner.cutFilter.setCutBox(
-            mapPoint(topleft.center),
-            mapPoint(topright.center),
-            mapPoint(bottomright.center),
-            mapPoint(bottomleft.center))
+        var f = Scanner.cutFilter
+        f.topLeft = mapPoint(topleft.center)
+        f.topRight = mapPoint(topright.center)
+        f.bottomRight = mapPoint(bottomright.center)
+        f.bottomLeft = mapPoint(bottomleft.center)
+        Scanner.cutFilter.updateCut()
     }
 
     Canvas {
