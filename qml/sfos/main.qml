@@ -22,4 +22,5 @@ import "pages"
 ApplicationWindow
 {
     initialPage: Component { DocumentsPage { } }
+    cover: Qt.resolvedUrl("CoverPage.qml")
 }

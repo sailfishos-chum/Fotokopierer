@@ -1,6 +1,7 @@
 <RCC>
   <qresource>
 	 <file>qml/sfos/main.qml</file>
+	 <file>qml/sfos/CoverPage.qml</file>
 	 <file>qml/sfos/DeletableItem.qml</file>
 	 <file>qml/sfos/DocumentDelegate.qml</file>
 	 <file>qml/sfos/PageDelegate.qml</file>
