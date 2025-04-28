@@ -33,10 +33,6 @@ Page {
     // Allowed states are "Normal", "Editing", "Dragging", "Marking"
     property string state: "Normal"
 
-    // The number of marked pages in marking mode.
-    property int _nmarked: 0
-    property Item _remorse
-
     Loader {
         id: newPage
     }
@@ -49,10 +45,13 @@ Page {
         }
     }
 
-    on_NmarkedChanged: {
-        if (_nmarked == 0) {
-            // The number of marked pages dropped to 0 -> stop marking state
-            state = "Normal"
+    Connections {
+        target: document
+        onHasSelectedPagesChanged: {
+            if (!document.hasSelectedPages) {
+                // The number of marked pages dropped to 0 -> stop marking state
+                state = "Normal"
+            }
         }
     }
 
@@ -110,10 +109,8 @@ Page {
                 } else if (docpage.state == "Marking") {
                     if (role_selected) {
                         role_selected = false
-                        docpage._nmarked -= 1
                     } else {
                         role_selected = true
-                        docpage._nmarked += 1
                     }
                 } else if (isAddButton) {
                     addPage()
@@ -143,6 +140,17 @@ Page {
                 anchors.centerIn: parent
                 running: (role_page ? true : false) && role_page.status != DocPage.Ready
             }
+        }
+    }
+
+    RemorsePopup {
+        id: deletePagesRemorse
+        onTriggered: {
+            document.deleteSelectedPages()
+            document.clearSelection()
+        }
+        onCanceled: {
+            document.clearSelection()
         }
     }
 
@@ -269,7 +277,7 @@ Page {
         width: parent.width
         height: Theme.iconSizeLarge
         dock: Dock.Bottom
-        open: docpage.state == "Marking"
+        open: docpage.state == "Marking" && !deletePagesRemorse.active
 
         RowLayout {
             id: buttonRow
@@ -285,8 +293,6 @@ Page {
                 onClicked: {
                     document.copySelectedPages()
                     document.clearSelection()
-                    buttons.open = false
-                    docpage._nmarked = 0
                 }
 
                 ColorOverlay {
@@ -307,8 +313,6 @@ Page {
                 onClicked: {
                     document.cutSelectedPages()
                     document.clearSelection()
-                    buttons.open = false
-                    docpage._nmarked = 0
                 }
 
                 ColorOverlay {
@@ -326,12 +330,7 @@ Page {
                 icon.fillMode: Image.PreserveAspectFit
                 enabled: document.hasSelectedPages
                 onClicked: {
-                    _remorse = Remorse.popupAction(docpage, qsTr("Delete pages"), function() {
-                        document.deleteSelectedPages()
-                        document.clearSelection()
-                    })
-                    buttons.open = false
-                    docpage._nmarked = 0
+                    deletePagesRemorse.execute()
                 }
 
             }
@@ -343,8 +342,6 @@ Page {
                 icon.fillMode: Image.PreserveAspectFit
                 onClicked: {
                     document.clearSelection()
-                    buttons.open = false
-                    docpage._nmarked = 0
                 }
             }
         }
