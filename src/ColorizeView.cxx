@@ -132,10 +132,10 @@ void ColorizeView::onNewImage()
 
             // initialize settings
 
-            d->contrast = d->scanImage->contrast();
-            d->brightness = d->scanImage->brightness();
-            d->details = d->scanImage->details();
-            d->colorMode = d->scanImage->colorMode();
+            setContrast(d->scanImage->contrast());
+            setBrightness(d->scanImage->brightness());
+            setDetails(d->scanImage->details());
+            setColorMode(d->scanImage->colorMode());
         }
     }
 
