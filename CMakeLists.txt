@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.3.0)
+set(FOTOKOPIERER_VERSION 0.3.1)
 set(PODOFO_VERSION 0.9.7)
 set(OPENCV_VERSION 3.4.14)
 set(FREETYPE_VERSION 2.10.4)
@@ -71,6 +71,7 @@ if (SAILFISH_FOUND)
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_BUILD_TYPE=Release
     -DBUILD_DOCS=OFF
     -DBUILD_EXAMPLES=OFF
     -DBUILD_FAT_JAVA_LIB=OFF
@@ -80,6 +81,8 @@ if (SAILFISH_FOUND)
     -DBUILD_PERF_TESTS=OFF
     -DBUILD_SHARED_LIBS=OFF
     -DBUILD_TESTS=OFF
+    # we must disable libjpeg-turbo because of a version clash
+    -DBUILD_JPEG_TURBO_DISABLE=ON
     -DBUILD_opencv_apps=OFF
     -DBUILD_opencv_calib3d=OFF
     -DBUILD_opencv_dnn=OFF
@@ -137,7 +140,7 @@ if (SAILFISH_FOUND)
   find_package(OpenSSL REQUIRED)
   pkg_search_module(FONTCONFIG REQUIRED fontconfig)
 
-  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg-turbo,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include/freetype2)
+  set(PODOFO_3RDPARTY_INCLUDE_PATH ${OpenCV_SOURCE_DIR}/3rdparty/libjpeg,${OpenCV_SOURCE_DIR}/3rdparty/libtiff,${FREETYPE_PREFIX}/include/freetype2)
   set(PODOFO_3RDPARTY_CMAKE_CXX_FLAGS "-isystem ${OpenCV_PREFIX}/src/opencv-build/3rdparty/libtiff")
 
   set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
@@ -156,12 +159,15 @@ if (SAILFISH_FOUND)
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
     -DCMAKE_CXX_FLAGS=${PODOFO_3RDPARTY_CMAKE_CXX_FLAGS}
     -DCMAKE_INCLUDE_PATH=${PODOFO_3RDPARTY_INCLUDE_PATH}
-    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib)
+    -DCMAKE_LIBRARY_PATH=${FREETYPE_PREFIX}/lib,${OpenCV_PREFIX}/src/opencv-build/3rdparty/lib
+    # the following should be libjpeg-turbo in case that would work ...
+    -DLIBJPEG_LIBRARY_NAMES=jpeg)
 
   link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg-turbo PNG::PNG freetype)
+  # use libjpeg-turbo in case that would work ...
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 

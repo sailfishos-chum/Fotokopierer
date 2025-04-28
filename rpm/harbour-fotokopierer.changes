@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sun Jun 6 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.1-1
+- fix exporting jpg pictures to pdf (library version clash)
+
 * Sat Jun 5 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.0-1
 - improve paper detection
 - allow to move edges of the selection
