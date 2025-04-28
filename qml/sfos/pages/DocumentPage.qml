@@ -328,7 +328,8 @@ Page {
         }
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
         newPage.item.scanImage = scanImage
-        newPage.item.destination = docpage
+        newPage.item.acceptDestination = docpage
+        newPage.item.acceptDestinationAction = PageStackAction.Pop
         newPage.item.addPage.connect(function() {
             document.addScannedPage(scanImage)
         })
