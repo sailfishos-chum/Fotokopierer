@@ -21,6 +21,20 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { DocumentsPage { } }
-    cover: Qt.resolvedUrl("CoverPage.qml")
+    id: app
+
+    DocumentsPage {
+        id: docs
+    }
+
+    initialPage: docs
+
+    cover: Component {
+        CoverPage {
+            onNewPicture: {
+                app.activate()
+                docs.addDocument()
+            }
+        }
+    }
 }
