@@ -417,19 +417,12 @@ void EdgeList::Data::find_best_match()
             auto& v = vlines[j];
             if (distances_to_intersection(h, v, alpha, beta)) {
                 if (alpha <= 0 && beta <= 0) {
-                    //points.push_back(QPointF{h.x1() + alpha * (h.x2() - h.x1()), h.y1() + alpha * (h.y2() - h.y1())});
                     left_lines[i].push_back(j);
-                }
-                if (alpha <= 0 && beta >= 1) {
-                    //points.push_back(QPointF{h.x1() + alpha * (h.x2() - h.x1()), h.y1() + alpha * (h.y2() - h.y1())});
+                } else if (alpha <= 0 && beta >= 1) {
                     bottom_lines[j].push_back(i);
-                }
-                if (alpha >= 1 && beta <= 0) {
-                    //points.push_back(QPointF{h.x1() + alpha * (h.x2() - h.x1()), h.y1() + alpha * (h.y2() - h.y1())});
+                } else if (alpha >= 1 && beta <= 0) {
                     right_lines[i].push_back(j);
-                }
-                if (alpha >= 1 && beta >= 1) {
-                    //points.push_back(QPointF{h.x1() + alpha * (h.x2() - h.x1()), h.y1() + alpha * (h.y2() - h.y1())});
+                } else if (alpha >= 1 && beta >= 1) {
                     bottom_lines[j].push_back(i);
                 }
             }
