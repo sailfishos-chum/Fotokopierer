@@ -480,14 +480,16 @@ cv::Mat computeColorizedImage(const cv::Mat& image, qreal contrast_, qreal brigh
     img_col.setTo(cv::Scalar(255, 255, 255), bg_mask);
 
     // Convert to HSV for color filtering
-    cv::Mat img_hsv, img_result, img_this_color;
+    cv::Mat img_hsv;
     cv::cvtColor(img_col, img_hsv, cv::COLOR_BGR2HSV);
-    cv::cvtColor(img_col, img_result, cv::COLOR_BGR2HSV);
+    img_col.release();
 
+    cv::Mat img_result = img_hsv.clone();
     // Colorize everything non-white to black
     img_result.setTo(cv::Scalar(0, 0, 0), ~bg_mask);
 
     // colorize by hue
+    cv::Mat img_this_color;
     for (int i = 15; i < 180; i += 30) {
         cv::inRange(img_hsv, cv::Scalar(std::max(i, 15) - 15, 50, 50), cv::Scalar(i + 15, 255, 255), img_this_color);
         img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
@@ -496,13 +498,16 @@ cv::Mat computeColorizedImage(const cv::Mat& image, qreal contrast_, qreal brigh
             img_result.setTo(cv::Scalar(i, 255, 255), img_this_color);
         }
     }
+    img_hsv.release();
+    img_this_color.release();
 
     // convert result back to BGR
     cv::cvtColor(img_result, img_col, cv::COLOR_HSV2BGR);
+    img_result.release();
 
     // and to QImage
     cv::Mat colorized;
     img_col.convertTo(colorized, CV_8U);
-    img_col.release();
+
     return colorized;
 }
