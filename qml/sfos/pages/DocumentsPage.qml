@@ -119,6 +119,19 @@ Page {
 
             propagateComposedEvents: true
 
+            onClicked: {
+                if (docpage.editing) {
+                    var index = grid.indexAt(mouse.x, mouse.y)
+                    if (index == -1 || index == visualModel.count - 1) {
+                        docpage.editing = false
+                    } else {
+                        mouse.accepted = false
+                    }
+                } else {
+                    mouse.accepted = false
+                }
+            }
+
             onPressAndHold: {
                 if (visualModel.count > 1) {
                     docpage.editing = true
