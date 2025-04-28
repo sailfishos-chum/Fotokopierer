@@ -349,6 +349,7 @@ void Document::cutSelectedPages()
 
 void Document::pastePages()
 {
+    Clipboard::instance()->paste(this);
 }
 
 Page* Document::newPage()
