@@ -293,6 +293,8 @@ void Document::addScannedPage(ScanImage *image)
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
     d->doc.pages.push_back(page);
     endInsertRows();
+
+    emit pagesChanged();
 }
 
 void Document::updatePage()
