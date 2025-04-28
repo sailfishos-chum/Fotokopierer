@@ -264,9 +264,8 @@ void Document::updateThumbnail()
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailRole});
             save();
+            emit pagesChanged();
             return;
         }
     }
-
-    emit pagesChanged();
 }
