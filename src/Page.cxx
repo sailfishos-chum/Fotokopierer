@@ -74,8 +74,8 @@ struct Page::Data {
 
 static bool fixPath(const QString& filePath, const QDir& docpath, QString& result);
 
-Page::Page(QObject* parent)
-    : QObject(parent), d(new Data)
+Page::Page()
+    : d(new Data)
 {
     // TODO: For some reason, that I do not understand, the 'finished' signal is not emitted.
     // We send our own signals to replace them when the concurrent work task is
@@ -118,11 +118,26 @@ void Page::updateFromScanner(const Scanner* scanner)
     if (!d->thumbnail_path.isEmpty()) {
         QFile(d->thumbnail_path).remove();
     }
+    // the result file is old and might be renamed (different image type)
+    if (!result_path.isEmpty()) {
+        QFile(result_path).remove();
+    }
 
     // Remove existing data (because it is regenerated).
     setOriginal({});
     setResult({});
     setThumbnail({});
+
+    // Compute the new result path.
+    auto ext = QStringLiteral("png");
+    switch (scanner->colorizeFilter()->colorMode()) {
+        case ColorizeFilter::FullColor:
+        case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
+        default: break;
+    }
+
+    QFileInfo fi(result_path);
+    result_path = QStringLiteral("%1/%2.%3").arg(fi.path(), fi.completeBaseName(), ext);
 
     updateFromScanner(scanner, original_path, result_path, d->creation_time);
 }

@@ -2,14 +2,14 @@ cmake_policy(SET CMP0048 NEW)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(FOTOKOPIERER_VERSION 0.2.6)
-set(PODOFO_VERSION 0.9.6)
-set(OPENCV_VERSION 3.4.0)
-set(FREETYPE_VERSION 2.9.1)
+set(FOTOKOPIERER_VERSION 0.3.0)
+set(PODOFO_VERSION 0.9.7)
+set(OPENCV_VERSION 3.4.14)
+set(FREETYPE_VERSION 2.10.4)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -34,6 +34,7 @@ set(SOURCES
   src/CutFilter.cxx
   src/Document.cxx
   src/DocumentList.cxx
+  src/EdgeDetection.cxx
   src/Filter.cxx
   src/FilterImage.cxx
   src/Fotokopierer.cxx
@@ -64,7 +65,7 @@ if (SAILFISH_FOUND)
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
     URL "https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip"
-    URL_HASH SHA256=ae8a9f468b7ee3822a62d20d356c69f2b32330a231e738ac2914f332766611b7
+    URL_HASH SHA256=302d3fe23b09d608d14b10212ed25649d9b6c7a2f817ccb1c8005172a479dedb
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -116,8 +117,8 @@ if (SAILFISH_FOUND)
   set(FREETYPE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/freetype)
   ExternalProject_Add(freetype-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://download.savannah.gnu.org/releases/freetype/freetype-2.9.1.tar.gz"
-    URL_HASH SHA256=ec391504e55498adceb30baceebd147a6e963f636eb617424bcfc47a169898ce
+    URL "https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE_VERSION}.tar.gz"
+    URL_HASH SHA256=5eab795ebb23ac77001cfb68b7d4d50b5d6c7469247b0b01b2c953269f658dac
     SOURCE_DIR ${FREETYPE_SOURCE_DIR}
     PREFIX ${FREETYPE_PREFIX}
     LIST_SEPARATOR ,
@@ -141,7 +142,7 @@ if (SAILFISH_FOUND)
   ExternalProject_Add(podofo-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
     URL "https://downloads.sourceforge.net/project/podofo/podofo/${PODOFO_VERSION}/podofo-${PODOFO_VERSION}.tar.gz"
-    URL_HASH SHA256=e9163650955ab8e4b9532e7aa43b841bac45701f7b0f9b793a98c8ca3ef14072
+    URL_HASH SHA256=7cf2e716daaef89647c54ffcd08940492fd40c385ef040ce7529396bfadc1eb8
     SOURCE_DIR ${PODOFO_SOURCE_DIR}
     PREFIX ${PODOFO_PREFIX}
     DEPENDS freetype-3rdparty opencv
@@ -158,7 +159,7 @@ if (SAILFISH_FOUND)
   link_directories(${PODOFO_PREFIX}/lib)
 
   set(PODOFO_INCLUDE_DIRS ${PODOFO_PREFIX}/include)
-  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg PNG::PNG freetype)
+  set(PODOFO_LIBRARIES podofo ${FONTCONFIG_LIBRARIES} OpenSSL::Crypto libtiff libjpeg-turbo PNG::PNG freetype)
 else()
   set(TARGET fotokopierer)
 
@@ -187,6 +188,10 @@ if (SAILFISH_FOUND)
 else()
   qt5_add_resources(RESOURCES desktop.qrc)
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
+
+  add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
+  qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
+  target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 endif()
 
 set_property(TARGET ${TARGET} PROPERTY
@@ -209,8 +214,10 @@ qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+
 # install(DIRECTORY qml DESTINATION share/${TARGET})
 # install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
+
 install(FILES ${TARGET}.desktop DESTINATION share/applications)
 install(FILES icons/86x86/${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
 install(FILES icons/108x108/${TARGET}.png DESTINATION share/icons/hicolor/108x108/apps)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +23,8 @@ import Fotokopierer 1.0
 import "../common"
 
 ApplicationWindow {
+    id: main
+
     visible: true
     title: "Fotokopierer"
 
@@ -33,14 +35,8 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if (Qt.application.arguments.length > 1) {
-            plainimage.loadFile(Qt.application.arguments[1])
+            Scanner.loadFile(Qt.application.arguments[1])
         }
-    }
-
-    PlainImage {
-        id: plainimage
-        scaling: true
-        visible: false
     }
 
     Item {
@@ -49,8 +45,6 @@ ApplicationWindow {
 
         CutImageView {
             id: cutimage
-
-            source: plainimage
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -119,19 +113,16 @@ ApplicationWindow {
         anchors.fill: parent
         visible: false
 
-        ColorizeImage {
+        FilterImage {
             id: colimage
 
-            source: cutimage.image
+            image: Scanner
+            filterType: Scanner.Colorize
 
-            anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: contrastRow.top
-
-            brightness: brightness.value / 100
-            contrast: contrast.value / 100
-            details: details.value / 100
+            anchors.top: parent.top
+            anchors.bottom: colbuttons.top
         }
 
         Row {
@@ -149,6 +140,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colimage.filter.contrast = value / 100
             }
         }
 
@@ -167,6 +159,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colimage.filter.brightness = value / 100
             }
         }
 
@@ -185,6 +178,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colimage.filter.details = value / 100
             }
         }
 
@@ -196,17 +190,34 @@ ApplicationWindow {
 
             Button {
                 text: "B&W"
-                onClicked: colormode = "bw"
+                onClicked: {
+                    colormode = "bw"
+                    colimage.filter.colorMode = ColorizeFilter.BlackAndWhite
+                }
             }
 
             Button {
                 text: "Gray"
-                onClicked: colormode = "gray"
+                onClicked: {
+                    colormode = "gray"
+                    colimage.filter.colorMode = ColorizeFilter.Gray
+                }
             }
 
             Button {
                 text: "Colored"
-                onClicked: colormode = "colored"
+                onClicked: {
+                    colormode = "colored"
+                    colimage.filter.colorMode = ColorizeFilter.FullColor
+                }
+            }
+
+            Button {
+                text: "Magic"
+                onClicked: {
+                    colormode = "magic"
+                    colimage.filter.colorMode = ColorizeFilter.Colored
+                }
             }
 
             Button {

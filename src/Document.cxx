@@ -278,7 +278,7 @@ Page* Document::newPage()
         dir.mkpath(QStringLiteral("."));
     }
 
-    QSharedPointer<Page> page(new Page(this));
+    QSharedPointer<Page> page(new Page());
     connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
     connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
