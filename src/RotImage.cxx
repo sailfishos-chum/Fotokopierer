@@ -19,21 +19,21 @@
 
 #include <QtGui/QImage>
 
-RotImage::RotImage(QQuickItem* parent) : BaseImage(parent), rotation_(0) {}
+RotImage::RotImage(QQuickItem* parent) : BaseImage(parent), orientation_(0) {}
 
 RotImage::~RotImage() = default;
 
-int RotImage::rotation() const
+int RotImage::orientation() const
 {
-    return rotation_;
+    return orientation_;
 }
 
-void RotImage::setRotation(int rotation)
+void RotImage::setOrientation(int orientation)
 {
-    rotation %= 4;
-    if (rotation != rotation_) {
-        rotation_ = rotation;
-        emit rotationChanged();
+    orientation %= 4;
+    if (orientation != orientation_) {
+        orientation_ = orientation;
+        emit orientationChanged();
         updateImage();
     }
 }
@@ -41,6 +41,6 @@ void RotImage::setRotation(int rotation)
 QImage RotImage::transform(const QImage& image)
 {
     QTransform transform;
-    transform.rotate(rotation_ * 90.0);
+    transform.rotate(orientation_ * 90.0);
     return image.transformed(transform);
 }

@@ -26,26 +26,26 @@ class RotImage : public BaseImage
 public:
     Q_OBJECT
 
-    Q_PROPERTY(int rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
+    Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 
 public:
     RotImage(QQuickItem* parent = nullptr);
 
     ~RotImage();
 
-    int rotation() const;
+    int orientation() const;
 
 public slots:
-    void setRotation(int rotation);
+    void setOrientation(int orientation);
 
 signals:
-    void rotationChanged();
+    void orientationChanged();
 
 protected:
     QImage transform(const QImage& image);
 
 private:
-    int rotation_;
+    int orientation_;
 };
 
 #endif

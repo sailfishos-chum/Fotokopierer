@@ -32,7 +32,7 @@ Item {
 
     property bool valid: true
 
-    property alias rotation: rotimage.rotation
+    property alias orientation: rotimage.orientation
 
     property point tl : mapPoint(topleft.center)
     property point tr : mapPoint(topright.center)
@@ -51,11 +51,11 @@ Item {
     }
 
     function rotateLeft() {
-        rotation -= 1
+        orientation -= 1
     }
 
     function rotateRight() {
-        rotation += 1
+        orientation += 1
     }
 
     function selectAll() {
