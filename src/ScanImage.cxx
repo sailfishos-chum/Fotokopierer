@@ -312,8 +312,8 @@ QImage ScanImage::rotatedImage(bool wait) const
 void ScanImage::onRotatedReady()
 {
     d->rotatedReady = true;
-    emit finishRotatedImageUpdate();
     emit rotatedImageChanged();
+    emit finishRotatedImageUpdate();
 }
 
 QImage ScanImage::cutImage(bool wait) const
@@ -339,8 +339,8 @@ QImage ScanImage::cutImage(bool wait) const
 void ScanImage::onCutReady()
 {
     d->cutReady = true;
-    emit finishCutImageUpdate();
     emit cutImageChanged();
+    emit finishCutImageUpdate();
 }
 
 QImage ScanImage::colorizedImage(bool wait) const
@@ -366,8 +366,8 @@ QImage ScanImage::colorizedImage(bool wait) const
 void ScanImage::onColorizedReady()
 {
     d->colorizedReady = true;
-    emit finishColorizedImageUpdate();
     emit colorizedImageChanged();
+    emit finishColorizedImageUpdate();
 }
 
 QImage ScanImage::Data::computeCutImage(const QImage& image) const
