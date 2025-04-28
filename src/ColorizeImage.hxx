@@ -18,10 +18,10 @@
 #ifndef __FOTOKOPIERER_COLORIZEIMAGE_HXX__
 #define __FOTOKOPIERER_COLORIZEIMAGE_HXX__
 
-#include "BaseImage.hxx"
+#include "AsyncImage.hxx"
 
 /// This class can be used to modify the colors of an image.
-class ColorizeImage : public BaseImage
+class ColorizeImage : public AsyncImage
 {
     Q_OBJECT
 

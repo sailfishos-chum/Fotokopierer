@@ -18,12 +18,12 @@
 #ifndef __FOTOKOPIERER_CUTIMAGE_HXX__
 #define __FOTOKOPIERER_CUTIMAGE_HXX__
 
-#include "BaseImage.hxx"
+#include "AsyncImage.hxx"
 
 #include <QtCore/QScopedPointer>
 
 /// An image from which an quadrangle can be cut.
-class CutImage : public BaseImage
+class CutImage : public AsyncImage
 {
     Q_OBJECT
 

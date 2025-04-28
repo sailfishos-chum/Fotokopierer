@@ -61,6 +61,10 @@ public slots:
     /// Set the source image.
     void setSource(BaseImage* source);
 
+protected slots:
+    /// Set the result image.
+    void setImage(const QImage& image);
+
 signals:
     /// The source image has been changed.
     void sourceChanged();
@@ -73,8 +77,6 @@ signals:
 
     void paintedSizeChanged();
 
-    void startTransform(const QImage& image);
-
 protected:
     /// Called to apply this image's transformation to `image`.
     ///
@@ -83,10 +85,7 @@ protected:
 
 protected slots:
     /// Called to trigger a new transformation when the source image had been changed.
-    void updateImage();
-
-private slots:
-    void finishTransform(const QImage& image);
+    virtual void updateImage();
 
 private:
     struct Data;

@@ -134,6 +134,7 @@ endif()
 
 
 set(SOURCES
+  src/AsyncImage.cxx
   src/BaseImage.cxx
   src/BaseImageTransformWorker.cxx
   src/ColorizeImage.cxx
