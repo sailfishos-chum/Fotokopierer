@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package(Qt5 COMPONENTS Quick)
+find_package(Qt5 COMPONENTS Core Gui Quick)
 
 include(FindPkgConfig)
 pkg_search_module(SAILFISH sailfishapp)
@@ -156,7 +156,7 @@ else ()
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
 endif()
 
-qt5_use_modules(${TARGET} Quick)
+qt5_use_modules(${TARGET} Core Gui Quick)
 
 if (NOT OpenCV_FOUND)
   add_dependencies(podofo-3rdparty opencv)
