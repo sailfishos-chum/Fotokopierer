@@ -1,0 +1,9 @@
+build*/
+rpmbuilddir/
+installroot/
+3rdparty/
+RPMS/
+rpm/*.spec.*
+*.qmlc
+*.list
+*~
