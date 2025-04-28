@@ -132,7 +132,7 @@ inline cv::Mat QImageToCvMat(const QImage &inImage, bool inCloneImageData)
         }
 
         // 8-bit, 1 channel
-        case QImage::Format_Indexed8: {
+        case QImage::Format_Grayscale8: {
             cv::Mat mat(inImage.height(),
                         inImage.width(),
                         CV_8UC1,
@@ -143,9 +143,8 @@ inline cv::Mat QImageToCvMat(const QImage &inImage, bool inCloneImageData)
         }
 
         default:
-            qWarning()
-                << "ASM::QImageToCvMat() - QImage format not handled in switch:"
-                << inImage.format();
+            qWarning() << "ASM::QImageToCvMat() - QImage format not handled in switch:"
+                       << inImage.format();
             break;
     }
 
