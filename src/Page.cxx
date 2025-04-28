@@ -83,6 +83,8 @@ struct Page::Data {
     QString original_path;
     QString result_path;
     QString thumbnail_path;
+
+    bool loading = false;
 };
 
 Page::Page(QObject* parent) : QObject(parent), d(new Data) {}
@@ -118,14 +120,18 @@ QString Page::thumbnail()
         }
     }
 
-    // thumbnail does not exist, try to create it from the result image
-    if (!d->thumbnail_path.isEmpty()) {
-        d->thumbnail_path = QString();
+    if (!d->loading) {
+        d->loading = true;
+        // thumbnail does not exist, try to create it from the result image
+        if (!d->thumbnail_path.isEmpty()) {
+            d->thumbnail_path = QString();
+        }
+        LoadThread* thr = new LoadThread(d->result_path);
+        connect(thr, &LoadThread::imageLoaded, this, &Page::setThumbnail);
+        connect(thr, &LoadThread::finished, thr, &QObject::deleteLater);
+        connect(thr, &LoadThread::finished, thr, [this]() { d->loading = false; });
+        thr->start();
     }
-    LoadThread* thr = new LoadThread(d->result_path);
-    connect(thr, &LoadThread::imageLoaded, this, &Page::setThumbnail);
-    connect(thr, &LoadThread::finished, thr, &QObject::deleteLater);
-    thr->start();
 
     return {};
 }
