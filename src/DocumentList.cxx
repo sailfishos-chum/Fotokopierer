@@ -35,6 +35,13 @@ struct DocumentList::Data {
 DocumentList::DocumentList(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
+}
+
+DocumentList::~DocumentList() = default;
+
+void DocumentList::load()
+{
+    d->docs.clear();
     auto dir = getDocumentDirectory();
     for (auto& path : QDir(dir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot)) {
         QDir docdir = dir;
@@ -46,8 +53,6 @@ DocumentList::DocumentList(QObject* parent)
         }
     }
 }
-
-DocumentList::~DocumentList() = default;
 
 Document* DocumentList::latestDocument() const
 {

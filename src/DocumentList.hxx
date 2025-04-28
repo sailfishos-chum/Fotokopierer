@@ -49,6 +49,9 @@ public:
 
     ~DocumentList() override;
 
+    /// Load documents from file.
+    Q_INVOKABLE void load();
+
     /// Create and return a new document.
     ///
     /// On error return NULL.

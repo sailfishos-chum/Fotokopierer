@@ -193,8 +193,8 @@ void Document::setPendingDoc()
         setDocData(d->pendingDoc.result());
         setStatus(Ready);
     } catch (ReadError& e) {
-        setStatus(Invalid);
         emit error(e.message());
+        setStatus(Invalid);
     }
 }
 
