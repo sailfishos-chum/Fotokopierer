@@ -40,6 +40,8 @@ public:
 
     ~CutFilter() override;
 
+    void reset() override;
+
     QString name() const override;
 
     QJsonObject saveJson() const override;

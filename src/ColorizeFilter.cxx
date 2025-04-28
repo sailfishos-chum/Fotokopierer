@@ -100,6 +100,13 @@ ColorizeFilter::ColorMode ColorizeFilter::colorMode() const
     return d->colormode;
 }
 
+void ColorizeFilter::reset()
+{
+    setContrast(0.5);
+    setBrightness(0.5);
+    setDetails(0.5);
+}
+
 QString ColorizeFilter::name() const
 {
     return QStringLiteral("colorize");

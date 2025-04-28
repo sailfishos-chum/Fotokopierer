@@ -45,6 +45,11 @@ void RotateFilter::setOrientation(int orientation)
     }
 }
 
+void RotateFilter::reset()
+{
+    setOrientation(0);
+}
+
 QString RotateFilter::name() const
 {
     return QStringLiteral("rotate");

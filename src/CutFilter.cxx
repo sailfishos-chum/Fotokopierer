@@ -48,6 +48,11 @@ CutFilter::CutFilter(Scanner* image, Filter* previous_filter)
 
 CutFilter::~CutFilter() = default;
 
+void CutFilter::reset()
+{
+    setCutBox({0, 0}, {1, 0}, {1, 1}, {0, 1});
+}
+
 bool CutFilter::setCutBox(QPointF topleft,
                           QPointF topright,
                           QPointF bottomright,

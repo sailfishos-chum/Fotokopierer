@@ -44,6 +44,9 @@ public:
 
     QImage filteredImage();
 
+    /// Reset filter to default settings.
+    virtual void reset() = 0;
+
     /// Return the name of this filter.
     ///
     /// The name should be unique among all filter types.
