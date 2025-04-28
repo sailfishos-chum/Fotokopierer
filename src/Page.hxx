@@ -80,6 +80,11 @@ public:
 
     Status status() const;
 
+    /// Initialize this page from the results of a Scanner.
+    ///
+    /// The page files are stored in the document directory `dir`.
+    void loadFromScanner(const QDir& dir, const Scanner* scanner);
+
     bool write(QJsonObject& json) const;
 
     bool read(const QJsonObject& json);

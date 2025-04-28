@@ -92,12 +92,20 @@ Page::Page(const QDateTime& creation_time,
 Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
     : Page(parent)
 {
+    loadFromScanner(dir, scanner);
+}
+
+Page::~Page() = default;
+
+void Page::loadFromScanner(const QDir& dir, const Scanner* scanner)
+{
     setStatus(Generating);
+
+    remove();
 
     auto ctime = QDateTime::currentDateTime();
 
-    auto original_path =
-        dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
+    auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
 
     auto ext = QStringLiteral("png");
     switch (scanner->colorizeFilter()->colorMode()) {
@@ -105,10 +113,9 @@ Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
         case ColorizeFilter::Gray: ext = QStringLiteral("jpg"); break;
         default: break;
     }
-    auto result_path =
-        dir.filePath(QStringLiteral("%1-result.%2")
-                         .arg(ctime.toString(FilenameFormat))
-                         .arg(ext));
+    auto result_path = dir.filePath(QStringLiteral("%1-result.%2")
+                                        .arg(ctime.toString(FilenameFormat))
+                                        .arg(ext));
 
     d->creation_time = ctime;
     d->original_path = original_path;
@@ -133,8 +140,6 @@ Page::Page(const QDir& dir, const Scanner* scanner, QObject* parent)
         return true;
     }));
 }
-
-Page::~Page() = default;
 
 Page::Status Page::status() const
 {
@@ -201,9 +206,15 @@ QString Page::result() const
 
 void Page::remove()
 {
-    QFile(d->original_path).remove();
-    QFile(d->result_path).remove();
-    QFile(d->thumbnail_path).remove();
+    if (!d->original_path.isEmpty()) {
+        QFile(d->original_path).remove();
+    }
+    if (!d->result_path.isEmpty()) {
+        QFile(d->result_path).remove();
+    }
+    if (!d->thumbnail_path.isEmpty()) {
+        QFile(d->thumbnail_path).remove();
+    }
 }
 
 void Page::onGenerationFinished()
