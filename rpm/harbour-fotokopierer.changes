@@ -8,8 +8,14 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
-* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-2
+- Fix version number
+
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-1
 - Fix position of zoom
+
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-3
+- Build against SailfishOS 3.0.2.8
 
 * Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
 - Update translation
