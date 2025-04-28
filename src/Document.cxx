@@ -63,6 +63,11 @@ void Document::setTitle(const QString &title)
     }
 }
 
+QDateTime Document::creationTime() const
+{
+    return d->creation_time;
+}
+
 int Document::rowCount(const QModelIndex &parent) const
 {
     return d->pages.size();

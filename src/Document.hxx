@@ -19,6 +19,7 @@
 #define __FOTOKOPIERER_DOCUMENT_HXX__
 
 #include <QtCore/QAbstractListModel>
+#include <QtCore/QDateTime>
 
 #include <memory>
 
@@ -33,6 +34,7 @@ class Document : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
 
 public:
     enum PageRoles { ThumbnailRole = Qt::UserRole + 1, CreationTimeRole };
@@ -46,6 +48,9 @@ public:
 
     /// Return the document title.
     QString title() const;
+
+    /// Return the document creation time.
+    QDateTime creationTime() const;
 
     /// Add a newly scanned page to the document.
     ///
@@ -69,6 +74,8 @@ public slots:
 
 signals:
     void titleChanged();
+
+    void creationTimeChanged();
 
     void error(const QString &msg);
 
