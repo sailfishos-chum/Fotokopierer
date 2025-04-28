@@ -160,7 +160,7 @@ int EdgeList::blurRadius() const
 
 void EdgeList::setContrastFactor(qreal factor)
 {
-    d->contrastFactor = qMax(0.0, factor);
+    d->contrastFactor = qMax(static_cast<qreal>(0), factor);
 }
 
 qreal EdgeList::contrastFactor() const
