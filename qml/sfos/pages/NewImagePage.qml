@@ -23,7 +23,7 @@ import Fotokopierer 1.0
 ImagePickerPage {
     property Page destination
 
-    signal addPage(PlainImage original, ColorizeImage result)
+    signal addPage()
 
     // Note that this property might become unsupported in future
     popOnSelection: false
@@ -32,20 +32,20 @@ ImagePickerPage {
 
     CutPage { id: cutpage; image: scanImage }
 
-    // ColorizePage {
-    //     id: colpage
-    //     source: cutpage.image
-    //     acceptDestination: destination
-    //     acceptDestinationAction: PageStackAction.Pop
+    ColorizePage {
+        id: colpage
 
-    //     onAccepted: {
-    //         addPage(plain, colpage.image)
-    //     }
-    // }
+        scanImage: scanImage
+
+        acceptDestination: destination
+        acceptDestinationAction: PageStackAction.Pop
+
+        onAccepted: addPage()
+    }
 
     onSelectedContentPropertiesChanged: {
         scanImage.loadFile(selectedContentProperties.filePath)
         pageStack.push(cutpage)
-        // pageStack.pushAttached(colpage)
+        pageStack.pushAttached(colpage)
     }
 }
