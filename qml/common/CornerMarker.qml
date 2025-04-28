@@ -44,9 +44,6 @@ Item {
 		  border.width: parent.linewidth
 	 }
 
-
-	 property point center : Qt.point(x + width / 2, y + width / 2)
-
 	 MouseArea {
 		  id: mouseArea
 		  anchors.fill: parent
