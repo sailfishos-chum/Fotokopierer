@@ -100,28 +100,12 @@ Page {
                 } else if (isAddButton) {
                     addPage()
                 } else {
-                    openPage()
+                    var title = qsTr("Page %1 of %2 (%3)").arg(pagenumber).arg(visualModel.count - 1).arg(creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
+                    openPage(role_result, title)
                 }
             }
 
             onItemMoved: visualModel.model.move(from, to)
-
-            function addPage() {
-                newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-                newPage.item.scanImage = scanImage
-                newPage.item.destination = docpage
-                newPage.item.addPage.connect(function() {
-                    document.addScannedPage(scanImage)
-                })
-                pageStack.push(newPage.item)
-            }
-
-            function openPage() {
-                pageStack.push(Qt.resolvedUrl("PagePage.qml"), {
-                    "image": role_result,
-                    "title": qsTr("Page %1 of %2 (%3)").arg(pagenumber).arg(visualModel.count - 1).arg(creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat)),
-                })
-            }
 
             onDeletePage: {
                 docpage.dragging = false
@@ -298,5 +282,22 @@ Page {
             anchors.centerIn: parent
             running: parent.visible
         }
+    }
+
+    function addPage() {
+        newPage.source = Qt.resolvedUrl("NewImagePage.qml")
+        newPage.item.scanImage = scanImage
+        newPage.item.destination = docpage
+        newPage.item.addPage.connect(function() {
+            document.addScannedPage(scanImage)
+        })
+        pageStack.push(newPage.item)
+    }
+
+    function openPage(page, title) {
+        pageStack.push(Qt.resolvedUrl("PagePage.qml"), {
+            "image": page,
+            "title": title,
+        })
     }
 }
