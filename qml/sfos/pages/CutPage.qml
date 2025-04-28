@@ -24,14 +24,14 @@ import "../../common"
 Page {
     id: page
 
-    property bool autoDetectOnInit: false
+    property bool restoreSelection: false
 
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            if (autoDetectOnInit) {
-                cutview.selectAuto()
+            if (restoreSelection) {
+                cutview.restoreSelection()
             } else {
                 cutview.initSelection()
             }
