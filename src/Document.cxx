@@ -552,15 +552,8 @@ void Document::ensureNoMedia(const QString& path)
     }
 }
 
-// static PoDoFo::PdfString toPdfString(const QString& str)
-// {
-//     return {str.toUtf8().constData()};
-// }
-
 void Document::exportToPdf(const QString& filename, bool overwrite)
 {
-    // using namespace PoDoFo;
-
     if (d->status != Ready) {
         qWarning() << "Document not ready";
         emit error(tr("Cannot export to pdf, document is not ready"));
