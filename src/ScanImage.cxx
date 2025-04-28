@@ -113,6 +113,7 @@ void ScanImage::saveAndClear(Document* doc)
     emit originalImageChanged();
 
     qDebug() << "Done saveAndClear";
+    emit imageSaved();
 }
 
 QImage ScanImage::originalImage() const

@@ -67,6 +67,8 @@ public:
 signals:
     void originalImageChanged();
 
+    void imageSaved();
+
 private:
     struct Data;
     std::unique_ptr<Data> d;
