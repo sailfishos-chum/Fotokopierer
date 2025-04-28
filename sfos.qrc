@@ -5,7 +5,7 @@
 	 <file>qml/sfos/ValueSlider.qml</file>
 	 <file>qml/sfos/pages/CutPage.qml</file>
 	 <file>qml/sfos/pages/ColorizePage.qml</file>
-	 <file>qml/sfos/pages/Document.qml</file>
-	 <file>qml/sfos/pages/Documents.qml</file>
+	 <file>qml/sfos/pages/DocumentPage.qml</file>
+	 <file>qml/sfos/pages/DocumentsPage.qml</file>
   </qresource>
 </RCC>

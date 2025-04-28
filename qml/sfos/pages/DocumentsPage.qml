@@ -60,7 +60,7 @@ Page {
             }
 
             onClicked: {
-                pageStack.push(Qt.resolvedUrl("Document.qml"), {"document": role_document})
+                pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": role_document})
             }
         }
     }

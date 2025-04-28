@@ -21,5 +21,5 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { Documents { } }
+    initialPage: Component { DocumentsPage { } }
 }
