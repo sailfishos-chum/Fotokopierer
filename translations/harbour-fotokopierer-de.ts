@@ -66,7 +66,7 @@ Cut-Icon von %3 (www.flaticon.com)</translation>
     <message>
         <location line="+22"/>
         <source>Licensed under the %1</source>
-        <translation>Lizensiert unter %1</translation>
+        <translation>Lizenziert unter %1</translation>
     </message>
 </context>
 <context>
