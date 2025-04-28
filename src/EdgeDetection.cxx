@@ -33,6 +33,11 @@ using namespace fifr::util;
 
 namespace
 {
+constexpr qreal operator"" _qr(long double a)
+{
+    return static_cast<qreal>(a);
+}
+
 /// A quadrangle represented by its corner points.
 struct Quadrangle {
     QPointF tl, tr, br, bl;
@@ -45,7 +50,7 @@ void transpose(QLineF& l)
 
 QPointF center(const QLineF& line)
 {
-    return {0.5 * (line.x1() + line.x2()), 0.5 * (line.y1() + line.y2())};
+    return {0.5_qr * (line.x1() + line.x2()), 0.5_qr * (line.y1() + line.y2())};
 }
 
 }  // namespace
@@ -668,7 +673,7 @@ void EdgeDetection::Data::find_snappy_edges()
 
         for (auto x : indices(hsnappy)) {
             for (auto y : indices(hsnappy[x])) {
-                auto dist = std::abs(QPointF::dotProduct(n, {(x + 0.5) * s, (y + 0.5) * s}) - b);
+                auto dist = std::abs(QPointF::dotProduct(n, {(x + 0.5_qr) * s, (y + 0.5_qr) * s}) - b);
 
                 if (dist <= snappy_dist && dist < hdists[x][y]) {
                     hdists[x][y] = dist;
@@ -685,7 +690,7 @@ void EdgeDetection::Data::find_snappy_edges()
 
         for (auto x : indices(vsnappy)) {
             for (auto y : indices(vsnappy[x])) {
-                auto dist = std::abs(QPointF::dotProduct(n, {(x + 0.5) * s, (y + 0.5) * s}) - b);
+                auto dist = std::abs(QPointF::dotProduct(n, {(x + 0.5_qr) * s, (y + 0.5_qr) * s}) - b);
 
                 if (dist <= snappy_dist && dist < vdists[x][y]) {
                     vdists[x][y] = dist;
@@ -712,8 +717,8 @@ void EdgeDetection::Data::project_quadrangle()
 
 bool EdgeDetection::Data::get_snappy_line(const QPointF& p, bool horizontal, QLineF& sline) const
 {
-    auto x = static_cast<int>(p.x() / snappy_size);
-    auto y = static_cast<int>(p.y() / snappy_size);
+    auto x = static_cast<std::size_t>(p.x() / snappy_size);
+    auto y = static_cast<std::size_t>(p.y() / snappy_size);
 
     auto& snappy = horizontal ? hsnappy : vsnappy;
     auto& lines = horizontal ? hlines : vlines;
