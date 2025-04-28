@@ -27,6 +27,8 @@ Page {
     property alias source : cutview.source
     property alias image : cutview.image
 
+    canNavigateForward: cutview.valid
+
     onStatusChanged: {
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
