@@ -47,7 +47,9 @@ struct Document::Data {
 
 Document::Document(QObject *parent) : QAbstractListModel(parent), d(new Data) {}
 
-Document::Document(Document &&doc) noexcept : QAbstractListModel(doc.parent()), d(std::move(doc.d)) {}
+Document::Document(Document &&doc) noexcept : QAbstractListModel(doc.parent()), d(std::move(doc.d))
+{
+}
 
 Document::~Document() = default;
 
