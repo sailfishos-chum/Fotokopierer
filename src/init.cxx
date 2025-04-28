@@ -28,10 +28,11 @@
 #include "RotImage.hxx"
 #include "ZoomImage.hxx"
 
-#include "ScanImage.hxx"
-#include "RotateFilter.hxx"
-#include "CutFilter.hxx"
 #include "ColorizeFilter.hxx"
+#include "CutFilter.hxx"
+#include "FilterImage.hxx"
+#include "RotateFilter.hxx"
+#include "ScanImage.hxx"
 
 #include "Document.hxx"
 #include "DocumentList.hxx"
@@ -54,6 +55,7 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
     qmlRegisterType<PlainImage>("Fotokopierer", 1, 0, "PlainImage");
     qmlRegisterType<RotImage>("Fotokopierer", 1, 0, "RotImage");
     qmlRegisterType<ZoomImage>("Fotokopierer", 1, 0, "ZoomImage");
+    qmlRegisterType<FilterImage>("Fotokopierer", 1, 0, "FilterImage");
     qmlRegisterType<ScanImage>("Fotokopierer", 1, 0, "ScanImage");
     qmlRegisterUncreatableType<Document>(
         "Fotokopierer",
@@ -62,9 +64,24 @@ void init_app(QGuiApplication& app, QQmlEngine& engine)
         "Document",
         QStringLiteral("Document cannot be used as QML component"));
 
-    qmlRegisterUncreatableType<RotateFilter>("Fotokopierer", 1, 0, "RotateFilter", QStringLiteral("RotateFilter cannot be used as QML component"));
-    qmlRegisterUncreatableType<CutFilter>("Fotokopierer", 1, 0, "CutFilter", QStringLiteral("RotateFilter cannot be used as QML component"));
-    qmlRegisterUncreatableType<ColorizeFilter>("Fotokopierer", 1, 0, "ColorizeFilter", QStringLiteral("RotateFilter cannot be used as QML component"));
+    qmlRegisterUncreatableType<RotateFilter>(
+        "Fotokopierer",
+        1,
+        0,
+        "RotateFilter",
+        QStringLiteral("RotateFilter cannot be used as QML component"));
+    qmlRegisterUncreatableType<CutFilter>(
+        "Fotokopierer",
+        1,
+        0,
+        "CutFilter",
+        QStringLiteral("RotateFilter cannot be used as QML component"));
+    qmlRegisterUncreatableType<ColorizeFilter>(
+        "Fotokopierer",
+        1,
+        0,
+        "ColorizeFilter",
+        QStringLiteral("RotateFilter cannot be used as QML component"));
 
     app.setApplicationName(QStringLiteral("Fotokopierer"));
     app.setApplicationVersion(QStringLiteral(QT_VERSION_STR));
