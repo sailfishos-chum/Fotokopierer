@@ -334,6 +334,7 @@ Item {
         bottom.setCenter(unmapPoint(cutview.bottom))
         left.setCenter(unmapPoint(cutview.left))
         right.setCenter(unmapPoint(cutview.right))
+        cutview.updateSnappyEdges()
         frame.requestPaint()
     }
 
