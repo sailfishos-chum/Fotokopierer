@@ -196,6 +196,6 @@ private:
     std::unique_ptr<Data> d;
 };
 
-cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode);
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode, cv::Mat* hsv = nullptr, cv::Mat* mask = nullptr);
 
 #endif

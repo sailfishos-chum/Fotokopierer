@@ -456,7 +456,7 @@ cv::Mat ScanImage::Data::computeColorizedImage(const cv::Mat& image) const
     return ::computeColorizedImage(image, params, colorMode);
 }
 
-cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode)
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode, cv::Mat* hsv, cv::Mat* mask)
 {
     auto img_cut = image;
 
@@ -508,6 +508,10 @@ cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params
     }
     img_gray.release();
 
+    if (mask != nullptr) {
+        *mask = ~bg_mask;
+    }
+
     if (colorMode == ColorizeView::BlackAndWhite) {
         return bg_mask;
     }
@@ -524,6 +528,10 @@ cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params
     cv::Mat img_hsv;
     cv::cvtColor(img_col, img_hsv, cv::COLOR_BGR2HSV);
     img_col.release();
+
+    if (hsv != nullptr) {
+        *hsv = img_hsv;
+    }
 
     cv::Mat img_result = img_hsv.clone();
     // Colorize everything non-white to black
