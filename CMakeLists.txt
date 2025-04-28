@@ -1,8 +1,11 @@
 cmake_policy(SET CMP0048 NEW)
 
-project (fotokopierer VERSION 0.1 LANGUAGES CXX)
+project (fotokopierer VERSION 0.1.0 LANGUAGES CXX)
 
 cmake_minimum_required(VERSION 3.0)
+
+set(PODOFO_VERSION 0.9.6)
+set(OPENCV_VERSION 3.4.0)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -24,23 +27,30 @@ else()
 endif()
 
 set(SOURCES
+  src/ColorizeFilter.cxx
   src/Convert.cxx
+  src/CutFilter.cxx
   src/Document.cxx
   src/DocumentList.cxx
   src/Filter.cxx
-  src/RotateFilter.cxx
-  src/CutFilter.cxx
-  src/ColorizeFilter.cxx
   src/FilterImage.cxx
   src/Fotokopierer.cxx
   src/Page.cxx
+  src/RotateFilter.cxx
   src/ScanImage.cxx
   src/ZoomImage.cxx
   src/init.cxx)
 
+set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
+  FOTOKOPIERER_AUTHOR="Frank Fischer"
+  FOTOKOPIERER_VERSION="${CMAKE_PROJECT_VERSION}"
+  PODOFO_VERSION="${PODOFO_VERSION}"
+  OPENCV_VERSION="${OPENCV_VERSION}"
+  )
+
 if (SAILFISH_FOUND)
-  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-3.4.0)
-  set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-0.9.6)
+  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION})
+  set(PODOFO_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/podofo-${PODOFO_VERSION})
 
   include(ExternalProject)
 
@@ -50,7 +60,7 @@ if (SAILFISH_FOUND)
   ExternalProject_Add(opencv
     SOURCE_DIR ${OpenCV_SOURCE_DIR}
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://github.com/opencv/opencv/archive/3.4.0.zip"
+    URL "https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip"
     URL_HASH SHA256=ae8a9f468b7ee3822a62d20d356c69f2b32330a231e738ac2914f332766611b7
     PREFIX ${OpenCV_PREFIX}
     CMAKE_ARGS
@@ -126,7 +136,7 @@ if (SAILFISH_FOUND)
   set(PODOFO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/podofo)
   ExternalProject_Add(podofo-3rdparty
     DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://downloads.sourceforge.net/project/podofo/podofo/0.9.6/podofo-0.9.6.tar.gz"
+    URL "https://downloads.sourceforge.net/project/podofo/podofo/${PODOFO_VERSION}/podofo-${PODOFO_VERSION}.tar.gz"
     URL_HASH SHA256=e9163650955ab8e4b9532e7aa43b841bac45701f7b0f9b793a98c8ca3ef14072
     SOURCE_DIR ${PODOFO_SOURCE_DIR}
     PREFIX ${PODOFO_PREFIX}
