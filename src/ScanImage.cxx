@@ -470,7 +470,7 @@ QImage computeColorizedImage(const QImage& image, qreal contrast_, qreal brightn
     // Threshold filter for background mask.
     cv::Mat bg_mask;
     {
-        int details = std::max(details_ * 50, 3.0);
+        int details = std::max(details_ * 50, static_cast<qreal>(3));
         if (details % 2 == 0) {
             details += 1;
         }

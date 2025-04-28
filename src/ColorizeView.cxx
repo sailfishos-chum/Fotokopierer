@@ -58,7 +58,7 @@ qreal ColorizeView::contrast() const
 
 void ColorizeView::setContrast(qreal contrast)
 {
-    contrast = qBound(0.0, contrast, 1.0);
+    contrast = qBound(static_cast<qreal>(0.0), contrast, static_cast<qreal>(1.0));
     if (contrast != d->contrast) {
         d->contrast = contrast;
         emit contrastChanged();
@@ -73,7 +73,7 @@ qreal ColorizeView::brightness() const
 
 void ColorizeView::setBrightness(qreal brightness)
 {
-    brightness = qBound(0.0, brightness, 1.0);
+    brightness = qBound(static_cast<qreal>(0.0), brightness, static_cast<qreal>(1.0));
     if (brightness != d->brightness) {
         d->brightness = brightness;
         emit brightnessChanged();
@@ -88,7 +88,7 @@ qreal ColorizeView::details() const
 
 void ColorizeView::setDetails(qreal details)
 {
-    details = qBound(0.0, details, 1.0);
+    details = qBound(static_cast<qreal>(0.0), details, static_cast<qreal>(1.0));
     if (details != d->details) {
         d->details = details;
         emit detailsChanged();
