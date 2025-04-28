@@ -52,10 +52,13 @@ QString RotateFilter::name() const
 
 QJsonObject RotateFilter::saveJson() const
 {
-    return {};
+    return {{QStringLiteral("orientation"), orientation_}};
 }
 
-void RotateFilter::loadJson(const QJsonObject& object) {}
+void RotateFilter::loadJson(const QJsonObject& object)
+{
+    setOrientation(object[QStringLiteral("orientation")].toInt(0));
+}
 
 QImage RotateFilter::apply(QImage&& image)
 {
