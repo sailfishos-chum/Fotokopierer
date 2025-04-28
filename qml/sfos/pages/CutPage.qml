@@ -77,12 +77,14 @@ Page {
                 }
 
                 ListElement {
-                    icon: "image://theme/icon-m-crop"
+                    // icon: "image://theme/icon-m-crop"
+                    text: "auto"
                     name: "auto"
                 }
 
                 ListElement {
-                    icon: "image://theme/icon-m-display"
+                    // icon: "image://theme/icon-m-display"
+                    text: "max"
                     name: "all"
                 }
 
@@ -99,11 +101,23 @@ Page {
             cellWidth: grid.width / 4
             cellHeight: grid.height
 
-            delegate: IconButton {
+            delegate: Item {
                 width: grid.cellWidth
                 height: grid.cellHeight
-                icon.source: model.icon
-                onClicked: listModel.actions[name]()
+
+                Button {
+                    visible: model.text
+                    anchors.fill: parent
+                    text: model.text
+                    onClicked: listModel.actions[name]()
+                }
+
+                IconButton {
+                    visible: model.icon
+                    anchors.fill: parent
+                    icon.source: model.icon
+                    onClicked: listModel.actions[name]()
+                }
             }
         }
     }
