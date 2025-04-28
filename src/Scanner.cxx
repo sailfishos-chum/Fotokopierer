@@ -139,16 +139,19 @@ bool Scanner::loadPage(Page* page)
         return false;
     }
 
-    if (!loadFile(page->original())) {
+    if (!loadFile(page->original(), page->settings())) {
         return false;
     }
-
-    loadJson(page->settings());
 
     return true;
 }
 
 bool Scanner::loadFile(const QString& file_name)
+{
+    return loadFile(file_name, {});
+}
+
+bool Scanner::loadFile(const QString& file_name, const QJsonObject& settings)
 {
     QImageReader imageReader(file_name);
     imageReader.setAutoTransform(true);
@@ -163,6 +166,14 @@ bool Scanner::loadFile(const QString& file_name)
             d->scaled = image.scaledToWidth(qMin(image.width(), 1000));
         } else {
             d->scaled = image.scaledToHeight(qMin(image.height(), 1000));
+        }
+
+        if (settings.isEmpty()) {
+            for (auto f : d->filter) {
+                f->reset();
+            }
+        } else {
+            loadJson(settings);
         }
         emit originalImageChanged();
         return true;

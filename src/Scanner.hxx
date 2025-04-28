@@ -70,6 +70,8 @@ public:
 
     Q_INVOKABLE bool loadFile(const QString& file_name);
 
+    bool loadFile(const QString& file_name, const QJsonObject& settings);
+
     Q_INVOKABLE void clear();
 
     QImage originalImage() const;
