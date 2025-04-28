@@ -23,6 +23,7 @@ Item {
 
     property alias blackLevel: colorizer.blackLevel
     property real _radius: Math.min(width, height) / 2
+    property real markerRadius: Math.min(width, height) / 25
 
     signal updateTouchPoints()
     signal changed()
@@ -36,7 +37,7 @@ Item {
     Repeater {
         model: 6
         CornerMarker {
-            radius: 10
+            radius: markerRadius
             minX: 0
             maxX: root.width
             minY: 0
