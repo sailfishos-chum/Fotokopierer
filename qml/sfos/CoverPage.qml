@@ -21,16 +21,16 @@ import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
 CoverBackground {
-    property var _document: DocumentList.latestDocument
-    property var _thumbnails: _document ? _document.thumbnails : []
-    property var _numPages: _document ? _document.numPages : 0
+    property var document // document to show, usually the document opened last
+    property var _thumbnails: document ? document.thumbnails : []
+    property var _numPages: document ? document.numPages : 0
 
     signal newPicture()
 
     Label {
         id: nodoc
 
-        visible: !_document
+        visible: !document
 
         anchors.top: parent.top
         anchors.bottom: coverActionArea.top
@@ -46,24 +46,46 @@ CoverBackground {
         text: qsTr("Take a new picture")
     }
 
-    Label {
-        id: pages
-
-        visible: _document
+    Column {
+        id: info
+        visible: document
 
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: Theme.fontSizeMedium
+        width: parent.width
 
-        text: qsTr("Pages: %1").arg(_numPages)
+        Label {
+            id: doctitle
+
+            width: parent.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: Theme.fontSizeMedium
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+
+            text: document ? document.title : ""
+        }
+
+        Label {
+            id: pages
+
+            width: parent.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: Theme.fontSizeSmall
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            truncationMode: TruncationMode.Fade
+
+            text: qsTr("Pages: %2").arg(_numPages)
+        }
     }
 
     Item {
-        visible: _document
+        visible: document
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: pages.bottom
+        anchors.top: info.bottom
         anchors.bottom: coverActionArea.top
 
         Item {

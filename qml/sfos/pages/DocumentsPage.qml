@@ -28,6 +28,7 @@ Page {
 
     property bool editing: false
     property bool deleting: false
+    property var lastDocument: DocumentList.latestDocument
 
     ScanImage {
         id: scanImage
@@ -78,7 +79,11 @@ Page {
                 docpage.editing = false
                 docpage.deleting = true
                 remorse.execute(docDelegate, qsTr("Delete document"), function () {
+                    var update_lastDocument = role_document == lastDocument
                     DocumentList.deleteDocument(docDelegate.DelegateModel.itemsIndex)
+                    if (update_lastDocument) {
+                        lastDocument = DocumentList.latestDocument
+                    }
                 })
             }
 
@@ -165,6 +170,7 @@ Page {
     }
 
     function openDocument(document) {
+        lastDocument = document
         pageStack.push(Qt.resolvedUrl("DocumentPage.qml"), {"document": document})
     }
 }
