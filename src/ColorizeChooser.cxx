@@ -154,7 +154,7 @@ void ColorizeChooser::paint(QPainter* painter)
         d->needSort = false;
     }
 
-    int cur_segment = 0;
+    std::size_t cur_segment = 0;
     int cur_angle = (d->anglesSorted.front() + d->anglesSorted.back()) / 2 - 180;
     if (cur_angle < 0) cur_angle += 360;
     auto cur_color = QColor::fromHsvF(cur_angle / 360.0, 1, 1);
