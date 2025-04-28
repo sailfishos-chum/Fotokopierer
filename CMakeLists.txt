@@ -9,7 +9,7 @@ set(FREETYPE_VERSION 2.10.4)
 
 project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -34,6 +34,7 @@ set(SOURCES
   src/CutFilter.cxx
   src/Document.cxx
   src/DocumentList.cxx
+  src/EdgeDetection.cxx
   src/Filter.cxx
   src/FilterImage.cxx
   src/Fotokopierer.cxx
@@ -187,6 +188,10 @@ if (SAILFISH_FOUND)
 else()
   qt5_add_resources(RESOURCES desktop.qrc)
   add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
+
+  add_executable(edgedetect src/main-edgedetect.cxx src/Convert.cxx src/EdgeDetection.cxx)
+  qt5_use_modules(edgedetect Core Gui Multimedia Quick Widgets)
+  target_link_libraries(edgedetect ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 endif()
 
 set_property(TARGET ${TARGET} PROPERTY
@@ -209,8 +214,10 @@ qt5_use_modules(${TARGET} Core Gui Multimedia Quick)
 target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS} ${PODOFO_LIBRARIES})
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+
 # install(DIRECTORY qml DESTINATION share/${TARGET})
 # install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
+
 install(FILES ${TARGET}.desktop DESTINATION share/applications)
 install(FILES icons/86x86/${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
 install(FILES icons/108x108/${TARGET}.png DESTINATION share/icons/hicolor/108x108/apps)

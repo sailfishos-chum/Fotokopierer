@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,6 +32,11 @@ class CutFilter : public Filter
     Q_PROPERTY(QPointF topRight READ topRight WRITE setTopRight NOTIFY topRightChanged)
     Q_PROPERTY(QPointF bottomRight READ bottomRight WRITE setBottomRight NOTIFY bottomRightChanged)
     Q_PROPERTY(QPointF bottomLeft READ bottomLeft WRITE setBottomLeft NOTIFY bottomLeftChanged)
+
+    Q_PROPERTY(QPointF top READ top WRITE setTop NOTIFY topChanged)
+    Q_PROPERTY(QPointF bottom READ bottom WRITE setBottom NOTIFY bottomChanged)
+    Q_PROPERTY(QPointF left READ left WRITE setLeft NOTIFY leftChanged)
+    Q_PROPERTY(QPointF right READ right WRITE setRight NOTIFY rightChanged)
 
 public:
     explicit CutFilter(Scanner* image);
@@ -71,6 +76,34 @@ public:
 
     void setBottomLeft(QPointF bottomleft);
 
+    void setTop(QPointF top);
+
+    QPointF top() const;
+
+    void setBottom(QPointF bottom);
+
+    QPointF bottom() const;
+
+    void setLeft(QPointF left);
+
+    QPointF left() const;
+
+    void setRight(QPointF right);
+
+    QPointF right() const;
+
+    /// Rotate the selection counterclockwise.
+    Q_INVOKABLE void rotateLeft();
+
+    /// Rotate the selection clockwise.
+    Q_INVOKABLE void rotateRight();
+
+    /// Fix the current selection as new state for snappy edges.
+    Q_INVOKABLE void fixSnappyEdges();
+
+    /// Select everything.
+    Q_INVOKABLE QVariantList selectAll();
+
     /// Return the auto-detected cut box.
     ///
     /// The method returns a list of four points (topleft, topright,
@@ -89,6 +122,11 @@ signals:
     void topRightChanged();
     void bottomRightChanged();
     void bottomLeftChanged();
+
+    void topChanged();
+    void bottomChanged();
+    void leftChanged();
+    void rightChanged();
 
 private:
     struct Data;

@@ -5,6 +5,7 @@ sfdk := $(sdk_dir)/bin/sfdk
 
 arch := i486
 #arch := armv7hl
+arch := i486
 #arch := aarch64
 
 # Select the latest available target for the given architecture
