@@ -9,7 +9,7 @@ Name:       harbour-fotokopierer
 # << macros
 
 Summary:    Document Scanner
-Version:    0.4.8
+Version:    0.4.9
 Release:    1%{?dist}
 Group:      Qt/Qt
 License:    GPLv3+
@@ -95,46 +95,46 @@ pushd rpmbuilddir-%{_arch}
 mkdir -p 3rdparty/opencv
 pushd 3rdparty/opencv
 test -f Makefile || %cmake ../../../3rdparty/opencv-%{opencv_version} \
-    -DCMAKE_INSTALL_PREFIX:PATH=$PWD/../../usr \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DOPENCV_EXTRA_CXX_FLAGS="-U__SSE2__" \
-    -DBUILD_DOCS=OFF \
-    -DBUILD_EXAMPLES=OFF \
-    -DBUILD_FAT_JAVA_LIB=OFF \
-    -DBUILD_ITT=OFF \
-    -DBUILD_JAVA=OFF \
-    -DBUILD_PACKAGE=OFF \
-    -DBUILD_PERF_TESTS=OFF \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DBUILD_TESTS=OFF \
-    -DBUILD_PROTOBUF=On \
-    -DBUILD_TIFF=OFF \
-    -DBUILD_JPEG=OFF \
-    -DBUILD_JPEG_TURBO_DISABLE=ON \
-    -DBUILD_opencv_apps=OFF \
-    -DBUILD_opencv_calib3d=OFF \
-    -DBUILD_opencv_dnn=OFF \
-    -DBUILD_opencv_features2d=OFF \
-    -DBUILD_opencv_flann=OFF \
-    -DBUILD_opencv_highgui=OFF \
-    -DBUILD_opencv_imgcodecs=OFF \
-    -DBUILD_opencv_ml=OFF \
-    -DBUILD_opencv_objdetect=OFF \
-    -DBUILD_opencv_photo=OFF \
-    -DBUILD_opencv_python2=OFF \
-    -DBUILD_opencv_python_bindings_generator=OFF \
-    -DBUILD_opencv_shape=OFF \
-    -DBUILD_opencv_stitching=OFF \
-    -DBUILD_opencv_superres=OFF \
-    -DBUILD_opencv_ts=OFF \
-    -DBUILD_opencv_video=OFF \
-    -DBUILD_opencv_videoio=OFF \
-    -DBUILD_opencv_videostab=OFF \
-    -DBUILD_opencv_world=OFF \
-    -DENABLE_PRECOMPILED_HEADERS=OFF \
-    -DWITH_JASPER=OFF \
-    -DWITH_OPENEXR=OFF \
-    -DWITH_WEBP=OFF
+-DCMAKE_INSTALL_PREFIX:PATH=$PWD/../../usr \
+-DCMAKE_BUILD_TYPE=Release \
+-DOPENCV_EXTRA_CXX_FLAGS="-U__SSE2__" \
+-DBUILD_DOCS=OFF \
+-DBUILD_EXAMPLES=OFF \
+-DBUILD_FAT_JAVA_LIB=OFF \
+-DBUILD_ITT=OFF \
+-DBUILD_JAVA=OFF \
+-DBUILD_PACKAGE=OFF \
+-DBUILD_PERF_TESTS=OFF \
+-DBUILD_SHARED_LIBS=OFF \
+-DBUILD_TESTS=OFF \
+-DBUILD_PROTOBUF=On \
+-DBUILD_TIFF=OFF \
+-DBUILD_JPEG=OFF \
+-DBUILD_JPEG_TURBO_DISABLE=ON \
+-DBUILD_opencv_apps=OFF \
+-DBUILD_opencv_calib3d=OFF \
+-DBUILD_opencv_dnn=OFF \
+-DBUILD_opencv_features2d=OFF \
+-DBUILD_opencv_flann=OFF \
+-DBUILD_opencv_highgui=OFF \
+-DBUILD_opencv_imgcodecs=OFF \
+-DBUILD_opencv_ml=OFF \
+-DBUILD_opencv_objdetect=OFF \
+-DBUILD_opencv_photo=OFF \
+-DBUILD_opencv_python2=OFF \
+-DBUILD_opencv_python_bindings_generator=OFF \
+-DBUILD_opencv_shape=OFF \
+-DBUILD_opencv_stitching=OFF \
+-DBUILD_opencv_superres=OFF \
+-DBUILD_opencv_ts=OFF \
+-DBUILD_opencv_video=OFF \
+-DBUILD_opencv_videoio=OFF \
+-DBUILD_opencv_videostab=OFF \
+-DBUILD_opencv_world=OFF \
+-DENABLE_PRECOMPILED_HEADERS=OFF \
+-DWITH_JASPER=OFF \
+-DWITH_OPENEXR=OFF \
+-DWITH_WEBP=OFF
 make %{?_smp_mflags}
 make libjpeg libtiff %{?_smp_mflags}
 make install
@@ -143,10 +143,10 @@ popd
 mkdir -p 3rdparty/freetype
 pushd 3rdparty/freetype
 test -f Makefile || %cmake ../../../3rdparty/freetype-%{freetype_version} \
-    -DCMAKE_INSTALL_PREFIX:PATH=$PWD/../../usr \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS:BOOL=false \
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
+-DCMAKE_INSTALL_PREFIX:PATH=$PWD/../../usr \
+-DCMAKE_BUILD_TYPE=Release \
+-DBUILD_SHARED_LIBS:BOOL=false \
+-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
 make %{?_smp_mflags}
 make install
 popd
@@ -154,23 +154,23 @@ popd
 mkdir -p 3rdparty/podofo
 pushd 3rdparty/podofo
 test -f Makefile || %cmake ../../../3rdparty/podofo-%{podofo_version} \
-    -DCMAKE_INSTALL_PREFIX:PATH=$PWD/../../usr \
-    -DPODOFO_BUILD_LIB_ONLY:BOOL=true \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true \
-    -DCMAKE_INCLUDE_PATH="$PWD/../../../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;$PWD/../../../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;$PWD/../../usr/include/freetype" \
-    -DCMAKE_LIBRARY_PATH="$PWD/../../usr/lib;$PWD/../../3rdparty/opencv/3rdparty/lib" \
-    -DCMAKE_CXX_FLAGS="-isystem $PWD/../../3rdparty/opencv/3rdparty/libtiff" \
-    -DLIBJPEG_LIBRARY_NAMES="jpeg,libjpeg"
+-DCMAKE_INSTALL_PREFIX:PATH=$PWD/../../usr \
+-DPODOFO_BUILD_LIB_ONLY:BOOL=true \
+-DCMAKE_BUILD_TYPE=Release \
+-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true \
+-DCMAKE_INCLUDE_PATH="$PWD/../../../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;$PWD/../../../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;$PWD/../../usr/include/freetype" \
+-DCMAKE_LIBRARY_PATH="$PWD/../../usr/lib;$PWD/../../3rdparty/opencv/3rdparty/lib" \
+-DCMAKE_CXX_FLAGS="-isystem $PWD/../../3rdparty/opencv/3rdparty/libtiff" \
+-DLIBJPEG_LIBRARY_NAMES="jpeg,libjpeg"
 make %{?_smp_mflags}
 make install
 popd
 
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_PREFIX_PATH="$PWD/3rdparty/opencv;$PWD/usr" \
-    -DCMAKE_INCLUDE_PATH="$PWD/../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;$PWD/../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;$PWD/usr/include" \
-    -DCMAKE_LIBRARY_PATH="$PWD/usr/lib;$PWD/3rdparty/opencv/3rdparty/lib" \
-    -DCMAKE_INSTALL_PREFIX=/usr ..
+-DCMAKE_PREFIX_PATH="$PWD/3rdparty/opencv;$PWD/usr" \
+-DCMAKE_INCLUDE_PATH="$PWD/../3rdparty/opencv-%{opencv_version}/3rdparty/libjpeg;$PWD/../3rdparty/opencv-%{opencv_version}/3rdparty/libtiff;$PWD/usr/include" \
+-DCMAKE_LIBRARY_PATH="$PWD/usr/lib;$PWD/3rdparty/opencv/3rdparty/lib" \
+-DCMAKE_INSTALL_PREFIX=/usr ..
 make %{?_smp_mflags}
 
 popd

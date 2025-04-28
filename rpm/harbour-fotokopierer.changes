@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Mon Sep 18 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.9-1
+- add MediaIndexing permission
+
 * Fri Sep 8 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.8-1
 - add Dutch translation
 - update FreeType to 2.13.2
