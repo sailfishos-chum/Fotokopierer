@@ -121,7 +121,8 @@ Document Document::create(QObject* parent)
 
     if (!dir.isEmpty()) {
         doc.d->doc.filename = QStringLiteral("%1/%2/doc.json")
-                                  .arg(dir, doc.d->doc.creation_time.toString(FilenameFormat));
+                                  .arg(dir)
+                                  .arg(doc.d->doc.creation_time.toString(FilenameFormat));
     }
 
     return doc;
@@ -368,7 +369,7 @@ bool Document::save() const
 
     QFile file(d->doc.filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << tr("Can't write document file %1:%2").arg(d->doc.filename, file.error());
+        qWarning() << tr("Can't write document file %1:%2").arg(d->doc.filename).arg(file.error());
         return false;
     }
     QJsonObject doc;
