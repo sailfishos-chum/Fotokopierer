@@ -79,10 +79,7 @@ Item {
 
 		  anchors.right: pane.right
 		  anchors.bottom: pane.bottom
-		  anchors.leftMargin: 5
-		  anchors.rightMargin: 5
-		  anchors.topMargin: 5
-		  anchors.bottomMargin: 5
+		  anchors.margins: 5
 
 		  imagex: topleft.x
 		  imagey: topleft.y
@@ -107,10 +104,7 @@ Item {
 
 		  anchors.left: pane.left
 		  anchors.bottom: pane.bottom
-		  anchors.leftMargin: 5
-		  anchors.rightMargin: 5
-		  anchors.topMargin: 5
-		  anchors.bottomMargin: 5
+		  anchors.margins: 5
 
 		  imagex: topright.x
 		  imagey: topright.y
@@ -137,10 +131,7 @@ Item {
 
 		  anchors.right: pane.right
 		  anchors.top: pane.top
-		  anchors.leftMargin: 5
-		  anchors.rightMargin: 5
-		  anchors.topMargin: 5
-		  anchors.bottomMargin: 5
+		  anchors.margins: 5
 
 		  imagex: bottomleft.x
 		  imagey: bottomleft.y
@@ -165,10 +156,7 @@ Item {
 
 		  anchors.left: pane.left
 		  anchors.top: pane.top
-		  anchors.leftMargin: 5
-		  anchors.rightMargin: 5
-		  anchors.topMargin: 5
-		  anchors.bottomMargin: 5
+		  anchors.margins: 5
 
 		  imagex: bottomright.x
 		  imagey: bottomright.y
