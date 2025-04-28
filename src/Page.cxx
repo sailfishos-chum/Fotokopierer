@@ -159,7 +159,9 @@ QString Page::thumbnail()
     if (d->status == Ready) {
         setStatus(Thumbnail);
         // thumbnail does not exist, try to create it from the result image
-        if (!d->thumbnail_path.isEmpty()) d->thumbnail_path.clear();
+        if (!d->thumbnail_path.isEmpty()) {
+            d->thumbnail_path.clear();
+        }
 
         d->result_thumbnail.setFuture(
             QtConcurrent::run(this, &Page::updateThumbnail, d->result_path));
@@ -217,7 +219,9 @@ QString Page::updateThumbnail(const QString& filename) const
     // load original file
     QImage img(filename);
 
-    if (img.isNull()) return {};
+    if (img.isNull()) {
+        return {};
+    }
 
     // scale down
     QImage scaled;
@@ -248,18 +252,28 @@ bool Page::write(QJsonObject& json) const
 bool Page::read(const QJsonObject& json)
 {
     auto page_creation_time = json[QStringLiteral("creationTime")];
-    if (!page_creation_time.isString()) return false;
+    if (!page_creation_time.isString()) {
+        return false;
+    }
     auto page_ctime = QDateTime::fromString(page_creation_time.toString(), FilenameFormat);
-    if (page_ctime.isNull()) return false;
+    if (page_ctime.isNull()) {
+        return false;
+    }
 
     auto page_original_path = json[QStringLiteral("originalPath")];
-    if (!page_original_path.isString()) return false;
+    if (!page_original_path.isString()) {
+        return false;
+    }
 
     auto page_result_path = json[QStringLiteral("resultPath")];
-    if (!page_result_path.isString()) return false;
+    if (!page_result_path.isString()) {
+        return false;
+    }
 
     auto page_thumbnail_path = json[QStringLiteral("thumbnailPath")];
-    if (!page_thumbnail_path.isString() && !page_thumbnail_path.isUndefined()) return false;
+    if (!page_thumbnail_path.isString() && !page_thumbnail_path.isUndefined()) {
+        return false;
+    }
 
     d->creation_time = page_ctime;
     d->original_path = page_original_path.toString();
