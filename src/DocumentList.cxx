@@ -18,10 +18,12 @@
 #include "DocumentList.hxx"
 
 #include "Document.hxx"
+#include "Page.hxx"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QUrl>
 
 struct DocumentList::Data {
     QList<QSharedPointer<Document>> docs;
@@ -49,6 +51,14 @@ QVariant DocumentList::data(const QModelIndex &index, int role) const
         case CreationTimeRole: return d->docs[index.row()]->creationTime();
         case NumPagesRole: return d->docs.size();
         case DocumentRole: return QVariant::fromValue(d->docs[index.row()].data());
+        case ThumbnailsRole: {
+            QVariantList thumbs;
+            auto &doc = d->docs[index.row()];
+            for (int i = 0, n = std::min(doc->numPages(), 3); i < n; i++) {
+                thumbs.push_back(QUrl::fromLocalFile(doc->page(i).thumbnail()));
+            }
+            return thumbs;
+        }
     }
     return {};
 }
@@ -58,6 +68,7 @@ QHash<int, QByteArray> DocumentList::roleNames() const
     static QHash<int, QByteArray> role_names = {{TitleRole, "role_title"},
                                                 {CreationTimeRole, "role_creationTime"},
                                                 {NumPagesRole, "role_numPages"},
-                                                {DocumentRole, "role_document"}};
+                                                {DocumentRole, "role_document"},
+                                                {ThumbnailsRole, "role_thumbnails"}};
     return role_names;
 }

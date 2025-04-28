@@ -31,7 +31,8 @@ public:
         TitleRole = Qt::UserRole + 1,
         CreationTimeRole,
         NumPagesRole,
-        DocumentRole
+        DocumentRole,
+        ThumbnailsRole,
     };
 
 public:
