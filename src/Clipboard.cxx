@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,7 +20,7 @@
 #include "Document.hxx"
 #include "Page.hxx"
 
-Q_GLOBAL_STATIC(Clipboard, clipboard);
+Q_GLOBAL_STATIC(Clipboard, clipboard)
 
 struct Clipboard::Data {
     Document* doc = nullptr;
