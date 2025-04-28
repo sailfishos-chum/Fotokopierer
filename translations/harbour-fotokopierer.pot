@@ -239,23 +239,28 @@ msgctxt "AboutPage|"
 msgid "Swedish"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:118
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:113
+msgctxt "AboutPage|"
+msgid "Slovak"
+msgstr ""
+
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:128
 msgctxt "AboutPage|"
 msgid "Homepage"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:129
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:139
 #| msgid "Find me on Freenode: "
 msgctxt "AboutPage|"
 msgid "Find me on libera.chat: "
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:148
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:158
 msgctxt "AboutPage|"
 msgid "This application uses"
 msgstr ""
 
-#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:170
+#: /home/fifr/JollaProjekte/fotokopierer/release/qml/sfos/pages/AboutPage.qml:180
 #, qt-format
 msgctxt "AboutPage|"
 msgid "Licensed under the %1"

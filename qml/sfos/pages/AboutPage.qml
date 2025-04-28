@@ -103,6 +103,16 @@ Page {
                 text: "Åke Engelbrektson (%1)".arg(qsTr("Swedish"))
             }
 
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "holask (%1)".arg(qsTr("Slovak"))
+            }
+
             Separator {
                 width: parent.width
                 horizontalAlignment: Qt.AlignHCenter
