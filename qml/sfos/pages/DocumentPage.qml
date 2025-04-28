@@ -297,6 +297,7 @@ Page {
                     color: Theme.primaryColor
                 }
             }
+
             IconButton {
                 height: buttons.height
                 Layout.fillWidth: true
@@ -304,6 +305,7 @@ Page {
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
                 onClicked: console.log("Delete")
+
             }
             IconButton {
                 height: buttons.height
@@ -311,7 +313,10 @@ Page {
                 icon.source: "image://theme/icon-m-close"
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
-                onClicked: console.log("Close")
+                onClicked: {
+                    document.clearSelection()
+                    buttons.open = false
+                }
             }
         }
     }
