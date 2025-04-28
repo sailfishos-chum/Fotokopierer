@@ -65,13 +65,13 @@ void BaseImage::setSource(BaseImage* base_image)
 {
     if (base_image == d->base_image) return;
 
-    if (d->base_image) {
+    if (d->base_image != nullptr) {
         disconnect(d->base_image, &BaseImage::imageChanged, this, &BaseImage::updateImage);
     }
 
     d->base_image = base_image;
 
-    if (d->base_image) {
+    if (d->base_image != nullptr) {
         connect(d->base_image, &BaseImage::imageChanged, this, &BaseImage::updateImage);
     }
 
@@ -97,7 +97,7 @@ QImage BaseImage::image() const
 
 QImage BaseImage::sourceImage() const
 {
-    return d->base_image ? d->base_image->image() : QImage{};
+    return d->base_image != nullptr ? d->base_image->image() : QImage{};
 }
 
 void BaseImage::updateImage()
