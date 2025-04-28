@@ -70,7 +70,7 @@ Page {
 
 
             thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
-            pagenumber: DelegateModel.itemsIndex
+            pagenumber: DelegateModel.itemsIndex + 1
             creationTime: role_creationTime || new Date()
 
             dragEnabled: docpage.editing || docpage.dragging
