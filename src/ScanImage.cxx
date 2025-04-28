@@ -149,7 +149,7 @@ int ScanImage::orientation() const
 
 void ScanImage::setOrientation(int orientation)
 {
-    orientation %= 4;
+    orientation = (orientation + 4) % 4;
     if (orientation != d->orientation) {
         d->orientation = orientation;
         d->rotatedReady = false;
