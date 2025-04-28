@@ -34,10 +34,30 @@ DocumentList::DocumentList(QObject *parent) : QAbstractListModel(parent), d(new 
     auto doc = QSharedPointer<Document>(new Document());
     doc->load(QStandardPaths::locate(QStandardPaths::HomeLocation,
                                      QStringLiteral("fotokopierer/doc1/doc.json")));
-    d->docs.push_back(doc);
+    addDocument(doc);
 }
 
 DocumentList::~DocumentList() = default;
+
+void DocumentList::addDocument(const QSharedPointer<Document> &doc)
+{
+    d->docs.push_back(doc);
+    connect(doc.data(), &Document::pagesChanged, this, &DocumentList::documentChanged);
+    connect(doc.data(), &Document::titleChanged, this, &DocumentList::documentChanged);
+    connect(doc.data(), &Document::creationTimeChanged, this, &DocumentList::documentChanged);
+}
+
+void DocumentList::documentChanged()
+{
+    auto sender = QObject::sender();
+    for (int i = 0; i < d->docs.size(); i++) {
+        auto &doc = d->docs[i];
+        if (doc.data() == sender) {
+            auto idx = index(i);
+            emit dataChanged(idx, idx, {ThumbnailsRole, TitleRole, CreationTimeRole, NumPagesRole});
+        }
+    }
+}
 
 int DocumentList::rowCount(const QModelIndex &parent) const
 {
