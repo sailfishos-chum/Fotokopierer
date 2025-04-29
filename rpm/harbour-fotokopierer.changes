@@ -8,6 +8,10 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Tue Apr 29 2025 Frank Fischer <frank-fischer@shadow-soft.de> 1.0.0-1
+- Rework build process
+- update FreeType to 2.13.3
+
 * Fri Sep 8 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.8-1
 - add Dutch translation
 - update FreeType to 2.13.2

@@ -63,7 +63,7 @@ Links:
 
 %global opencv_version 3.4.16
 %global podofo_version 0.9.8
-%global freetype_version 2.13.2
+%global freetype_version 2.13.3
 
 %prep
 %setup -q -n %{name}-%{version}

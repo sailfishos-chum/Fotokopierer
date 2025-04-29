@@ -48,18 +48,20 @@ Note that the OS version and target might differ for you.
 
 ### Build with static libraries in the Sailfish OS build engine
 
-You need to download the sources of OpenCV, Podofo and FreeType (the CMake file will automatically download them):
+You need to download the sources of OpenCV, Podofo and FreeType:
 
-- [https://github.com/opencv/opencv/archive/opencv-3.4.16.zip](https://github.com/opencv/opencv/archive/3.4.16.zip)
+- [https://github.com/opencv/opencv/archive/3.4.16.zip](https://github.com/opencv/opencv/archive/3.4.16.zip)
 - [http://sourceforge.net/projects/podofo/files/podofo/0.9.8/podofo-0.9.8.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.9.8/podofo-0.9.8.tar.gz/download)
-- [https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.gz)
+- [https://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz)
 
-Put all archives to the `rpm/` directory.
+Extract all archives to the `3rdparty/` directory.
 
-    cd path/to/fotokopierer/rpm
-	cp path/to/opencv-3.4.16.zip .
-	cp path/to/podofo-0.9.8.tar.gz .
-	cp path/to/freetype-2.13.2.tar.gz .
+    cd path/to/fotokopierer
+	mkdir -p 3rdparty
+	cd 3rdparty
+	unzip path/to/opencv-3.4.16.zip
+	tar -xzf path/to/podofo-0.9.8.tar.gz
+	tar -xzf path/to/freetype-2.13.3.tar.gz
 
 Finally, build the project using the build engine:
 
