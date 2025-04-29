@@ -6,7 +6,7 @@ project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package (Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick REQUIRED)
+find_package (Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick LinguistTools REQUIRED)
 
 include(FindPkgConfig)
 pkg_search_module(SAILFISH sailfishapp REQUIRED)
@@ -18,8 +18,6 @@ set(OPENCV_VERSION "3.4.16")
 set(PODOFO_VERSION "0.9.8")
 set(FREETYPE_VERSION "2.13.2")
 
-qt5_add_resources(RESOURCES common.qrc translations.qrc)
-qt5_add_resources(RESOURCES sfos.qrc)
 add_executable(harbour-fotokopierer
 	src/main-sfos.cxx
     src/Clipboard.cxx
@@ -36,8 +34,7 @@ add_executable(harbour-fotokopierer
     src/ScanImage.cxx
     src/ScanImageView.cxx
     src/Scanner.cxx
-    src/ZoomImage.cxx
-    ${RESOURCES})
+	src/ZoomImage.cxx)
 
 target_compile_definitions(harbour-fotokopierer PRIVATE
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
@@ -133,21 +130,32 @@ set_property(TARGET harbour-fotokopierer APPEND PROPERTY COMPILE_DEFINITIONS
 
 qt5_use_modules(harbour-fotokopierer Core Gui Multimedia Quick)
 
+FILE(GLOB TsFiles "translations/*.ts")
+qt5_add_translation(QmFiles ${TsFiles})
+add_custom_target(translations ALL DEPENDS ${QmFiles})
+add_dependencies(harbour-fotokopierer translations)
+
 ###############################
 # Installation
 
 install(TARGETS harbour-fotokopierer
     RUNTIME DESTINATION bin
 )
-install(DIRECTORY qml
-	DESTINATION share/harbour-fotokopierer
+install(DIRECTORY qml/common
+	DESTINATION share/harbour-fotokopierer/qml
 )
-install(DIRECTORY translations
-	DESTINATION share/harbour-fotokopierer
-    FILES_MATCHING PATTERN "*.qm"
+install(DIRECTORY qml/sfos
+	DESTINATION share/harbour-fotokopierer/qml
+)
+install(FILES ${QmFiles}
+	DESTINATION share/harbour-fotokopierer/translations
 )
 install(FILES harbour-fotokopierer.desktop
     DESTINATION share/applications
+)
+install(DIRECTORY icons
+	DESTINATION share/harbour-fotokopierer
+	FILES_MATCHING PATTERN "*.svg"
 )
 install(FILES icons/86x86/harbour-fotokopierer.png
     DESTINATION share/icons/hicolor/86x86/apps
@@ -163,7 +171,6 @@ install(FILES icons/172x172/harbour-fotokopierer.png
 )
 
 # Get the other files reachable from the project tree in Qt Creator
-FILE(GLOB TsFiles "translations/*.ts")
 add_custom_target(distfiles
     SOURCES
 		harbour-fotokopierer.desktop

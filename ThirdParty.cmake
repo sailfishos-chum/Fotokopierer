@@ -38,6 +38,7 @@ function (build_external_project target dir_name maketargets)
     execute_process(COMMAND ${CMAKE_COMMAND}
         --build .
         --config ${CMAKE_BUILD_TYPE}
+        --parallel ${CMAKE_BUILD_PARALLEL_LEVEL}
         WORKING_DIRECTORY "${TARGET_DIR}/build")
 
 endfunction()
@@ -93,6 +94,7 @@ list(APPEND OPENCV_OPTIONS -D BUILD_opencv_videoio=OFF)
 list(APPEND OPENCV_OPTIONS -D BUILD_opencv_videostab=OFF)
 list(APPEND OPENCV_OPTIONS -D BUILD_opencv_world=OFF)
 list(APPEND OPENCV_OPTIONS -D ENABLE_PRECOMPILED_HEADERS=OFF)
+list(APPEND OPENCV_OPTIONS -D WITH_CAROTENE=OFF)
 list(APPEND OPENCV_OPTIONS -D WITH_JASPER=OFF)
 list(APPEND OPENCV_OPTIONS -D WITH_OPENEXR=OFF)
 list(APPEND OPENCV_OPTIONS -D WITH_QUIRC=OFF)

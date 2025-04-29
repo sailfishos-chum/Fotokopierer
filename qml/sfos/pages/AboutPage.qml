@@ -37,7 +37,7 @@ Page {
 
             Image {
                 fillMode: Image.PreserveAspectFit
-                source: Qt.resolvedUrl("/icons/harbour-fotokopierer.svg")
+                source: Qt.resolvedUrl("../../../icons/harbour-fotokopierer.svg")
                 width: Math.min(2/3 * parent.width, 2/3 * parent.height)
                 height: width
                 anchors.horizontalCenter: parent.horizontalCenter

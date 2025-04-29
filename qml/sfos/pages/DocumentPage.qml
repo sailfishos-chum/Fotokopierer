@@ -309,7 +309,7 @@ Page {
                 id: copybutton
                 height: buttons.height
                 Layout.fillWidth: true
-                icon.source: Qt.resolvedUrl("/icons/toolbar-copy.svg")
+                icon.source: Qt.resolvedUrl("../../../icons/toolbar-copy.svg")
                 icon.fillMode: Image.PreserveAspectFit
                 icon.height: Theme.iconSizeMedium
                 enabled: document.hasSelectedPages
@@ -329,7 +329,7 @@ Page {
                 id: cutbutton
                 height: buttons.height
                 Layout.fillWidth: true
-                icon.source: Qt.resolvedUrl("/icons/toolbar-cut.svg")
+                icon.source: Qt.resolvedUrl("../../../icons/toolbar-cut.svg")
                 icon.height: Theme.iconSizeMedium
                 icon.fillMode: Image.PreserveAspectFit
                 enabled: document.hasSelectedPages
