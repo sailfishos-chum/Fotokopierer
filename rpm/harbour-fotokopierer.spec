@@ -61,6 +61,9 @@ Links:
   Bugtracker: https://codeberg.org/fifr/Fotokopierer/issues
 %endif
 
+%global opencv_version 3.4.16
+%global podofo_version 0.9.8
+%global freetype_version 2.13.2
 
 %prep
 %setup -q -n %{name}-%{version}
