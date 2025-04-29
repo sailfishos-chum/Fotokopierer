@@ -37,7 +37,7 @@ function (build_external_project target dir_name maketargets)
 
     execute_process(COMMAND ${CMAKE_COMMAND}
         --build .
-        --config ${CMAKE_BUILD_TYPE}
+        --config $<$<CONFIG:Debug>,Debug,Release>
         --parallel ${CMAKE_BUILD_PARALLEL_LEVEL}
         WORKING_DIRECTORY "${TARGET_DIR}/build")
 
