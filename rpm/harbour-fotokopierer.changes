@@ -11,6 +11,7 @@
 * Tue Apr 29 2025 Frank Fischer <frank-fischer@shadow-soft.de> 1.0.0-1
 - Rework build process
 - update FreeType to 2.13.3
+- update PoDoFo to 0.10.4
 
 * Fri Sep 8 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.8-1
 - add Dutch translation

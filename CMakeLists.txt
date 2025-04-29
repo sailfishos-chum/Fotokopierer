@@ -15,7 +15,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(OPENCV_VERSION "3.4.16")
-set(PODOFO_VERSION "0.9.8")
+set(PODOFO_VERSION "0.10.4")
 set(FREETYPE_VERSION "2.13.3")
 
 add_executable(harbour-fotokopierer
@@ -48,48 +48,28 @@ include(./ThirdParty.cmake)
 
 find_package(OpenCV REQUIRED core imgproc PATHS "${THIRD_PARTY_INSTALL_DIR}/OpenCV" NO_DEFAULT_PATH)
 
-###############################
-# PoDoFo
+##############################
 
-find_path(PODOFO_INCLUDE_DIRS NAMES podofo/podofo.h PATHS ${THIRD_PARTY_INSTALL_DIR}/PoDoFo/include)
-if (NOT PODOFO_INCLUDE_DIRS)
-  message(FATAL_ERROR "Could not find the PoDoFo include directory")
-endif ()
+# PoDoFo and depedencies
 
-find_library(PODOFO_LIBRARIES NAMES podofo PATHS ${THIRD_PARTY_INSTALL_DIR}/PoDoFo/lib)
-if (NOT PODOFO_LIBRARIES)
-  message(FATAL_ERROR "Could not find the PoDoFo library")
-endif ()
-
-# Read the version from podofo_config.h
-file(READ "${PODOFO_INCLUDE_DIRS}/podofo/base/podofo_config.h" podofo_ver)
-
-string(REGEX MATCH "PODOFO_VERSION_MAJOR +([0-9]+)" _ ${podofo_ver})
-set(PODOFO_VERSION_MAJOR ${CMAKE_MATCH_1})
-string(REGEX MATCH "PODOFO_VERSION_MINOR +([0-9]+)" _ ${podofo_ver})
-set(PODOFO_VERSION_MINOR ${CMAKE_MATCH_1})
-string(REGEX MATCH "PODOFO_VERSION_PATCH +([0-9]+)" _ ${podofo_ver})
-set(PODOFO_VERSION_PATCH ${CMAKE_MATCH_1})
-set(PODOFO_VERSION "${PODOFO_VERSION_MAJOR}.${PODOFO_VERSION_MINOR}.${PODOFO_VERSION_PATCH}")
-
-message(STATUS "Found PoDoFo ${PODOFO_VERSION}: ${PODOFO_LIBRARIES}")
-
-###############################
-
-# Additional (static) libraries
-
-set(CMAKE_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libjpeg;${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libtiff)
+set(CMAKE_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libjpeg;${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libtiff;${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff)
 set(CMAKE_LIBRARY_PATH ${THIRD_PARTY_INSTALL_DIR}/OpenCV/share/OpenCV/3rdparty/lib)
 
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(OpenSSL REQUIRED)
-
+find_package(Fontconfig REQUIRED)
+find_package(LibXml2 REQUIRED)
 find_package(FreeType REQUIRED PATHS "${THIRD_PARTY_INSTALL_DIR}/FreeType" NO_DEFAULT_PATH)
 
-pkg_search_module(FONTCONFIG REQUIRED fontconfig)
-set(PODOFO_LIBRARIES ${PODOFO_LIBRARIES} fontconfig OpenSSL::Crypto PNG::PNG TIFF::TIFF ${JPEG_LIBRARIES} Freetype::Freetype)
+include_directories(SYSTEM ${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff)
+set(PODOFO_BUILD_LIB_ONLY TRUE CACHE BOOL "" FORCE)
+set(PODOFO_BUILD_STATIC TRUE CACHE BOOL "" FORCE)
+add_subdirectory(3rdparty/podofo-${PODOFO_VERSION} EXCLUDE_FROM_ALL)
+set_property(TARGET podofo_static PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+set_property(TARGET podofo_private PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+set(PODOFO_LIBRARIES podofo::podofo)
 
 ##############################
 

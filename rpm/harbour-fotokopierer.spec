@@ -23,6 +23,7 @@ BuildRequires:  pkgconfig(libpng16)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake
 BuildRequires:  ninja
+BuildRequires:  libxml2-devel
 BuildRequires:  qt5-qttools-linguist
 BuildRequires:  qt5-qtmultimedia-plugin-audio-alsa
 BuildRequires:  qt5-qtmultimedia-plugin-audio-pulseaudio
@@ -62,7 +63,7 @@ Links:
 %endif
 
 %global opencv_version 3.4.16
-%global podofo_version 0.9.8
+%global podofo_version 0.10.4
 %global freetype_version 2.13.3
 
 %prep

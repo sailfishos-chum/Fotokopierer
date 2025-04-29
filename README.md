@@ -26,7 +26,7 @@ Licensed under GNU GPLv3
 
 ## Build
 
-Fotokopierer needs the [OpenCV][OpenCV] 3.4.16, [Podofo][Podofo] 0.9.8
+Fotokopierer needs the [OpenCV][OpenCV] 3.4.16, [Podofo][Podofo] 0.10.4
 and [FreeType][FreeType] libraries. These libraries can be either used
 as shared libraries installed on your system or can be compiled and
 statically linked. In order to build Fotokopierer for the official
@@ -51,7 +51,7 @@ Note that the OS version and target might differ for you.
 You need to download the sources of OpenCV, Podofo and FreeType:
 
 - [https://github.com/opencv/opencv/archive/3.4.16.zip](https://github.com/opencv/opencv/archive/3.4.16.zip)
-- [http://sourceforge.net/projects/podofo/files/podofo/0.9.8/podofo-0.9.8.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.9.8/podofo-0.9.8.tar.gz/download)
+- [http://sourceforge.net/projects/podofo/files/podofo/0.10.4/podofo-0.10.4.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.10.4/podofo-0.10.4.tar.gz/download)
 - [https://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz)
 
 Extract all archives to the `3rdparty/` directory.
@@ -60,7 +60,7 @@ Extract all archives to the `3rdparty/` directory.
 	mkdir -p 3rdparty
 	cd 3rdparty
 	unzip path/to/opencv-3.4.16.zip
-	tar -xzf path/to/podofo-0.9.8.tar.gz
+	tar -xzf path/to/podofo-0.10.4.tar.gz
 	tar -xzf path/to/freetype-2.13.3.tar.gz
 
 Finally, build the project using the build engine:

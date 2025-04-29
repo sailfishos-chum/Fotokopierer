@@ -120,23 +120,6 @@ build_external_project(FreeType "freetype-${FREETYPE_VERSION}" all ${FREETYPE_OP
 
 #------------------------------------------------------------------------------------------
 
-# PoDoFo
-
-set(PODOFO_OPTIONS "")
-list(APPEND PODOFO_OPTIONS -D CMAKE_INSTALL_PREFIX:PATH=${THIRD_PARTY_INSTALL_DIR}/PoDoFo)
-list(APPEND PODOFO_OPTIONS -D CMAKE_PREFIX_PATH:PATH=${THIRD_PARTY_INSTALL_DIR}/FreeType)
-list(APPEND PODOFO_OPTIONS -D CMAKE_BUILD_TYPE=Release)
-list(APPEND PODOFO_OPTIONS -D CMAKE_POSITION_INDEPENDENT_CODE:BOOL=true)
-list(APPEND PODOFO_OPTIONS -D PODOFO_BUILD_LIB_ONLY:BOOL=true)
-list(APPEND PODOFO_OPTIONS -D "CMAKE_INCLUDE_PATH:PATH=${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libjpeg|${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libtiff|${THIRD_PARTY_INSTALL_DIR}/include/freetype2/freetype")
-list(APPEND PODOFO_OPTIONS -D "CMAKE_LIBRARY_PATH:PATH=${THIRD_PARTY_INSTALL_DIR}/FreeType/lib|${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/lib")
-list(APPEND PODOFO_OPTIONS -D "CMAKE_CXX_FLAGS=-isystem\\ ${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff")
-list(APPEND PODOFO_OPTIONS -D LIBJPEG_LIBRARY_NAMES="jpeg,libjpeg")
-
-build_external_project(PoDoFo "podofo-${PODOFO_VERSION}" all ${PODOFO_OPTIONS})
-
-#------------------------------------------------------------------------------------------
-
 # Add additional paths for 3rdparty libs (by OpenCV)
 
 list(APPEND CMAKE_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libjpeg)
