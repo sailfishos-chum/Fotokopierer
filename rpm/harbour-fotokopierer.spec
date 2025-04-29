@@ -10,7 +10,6 @@ Source0:    %{name}-%{version}.tar.gz
 Source1:    %{opencv_version}.zip
 Source2:    podofo-%{podofo_version}.tar.gz
 Source3:    freetype-%{freetype_version}.tar.gz
-Source100:  harbour-fotokopierer.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
