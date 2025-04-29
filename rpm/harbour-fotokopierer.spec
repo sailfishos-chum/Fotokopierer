@@ -24,6 +24,7 @@ BuildRequires:  pkgconfig(libpng16)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake
 BuildRequires:  ninja
+BuildRequires:  qt5-qttools-linguist
 BuildRequires:  qt5-qtmultimedia-plugin-audio-alsa
 BuildRequires:  qt5-qtmultimedia-plugin-audio-pulseaudio
 BuildRequires:  qt5-qtmultimedia-plugin-mediaservice-gstaudiodecoder
