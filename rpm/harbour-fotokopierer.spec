@@ -68,7 +68,7 @@ Links:
 %prep
 %setup -q -n %{name}-%{version}
 
-%mkdir -p 3rdparty
+mkdir -p 3rdparty
 pushd 3rdparty
 test -d opencv-%{opencv_version} || unzip %{SOURCE1}
 test -d podofo-%{podofo_version} || tar -xzf %{SOURCE2}
