@@ -1,7 +1,7 @@
 Name:       harbour-fotokopierer
 
 Summary:    Document Scanner
-Version:    0.4.8
+Version:    1.0.0
 Release:    1%{?dist}
 Group:      Qt/Qt
 License:    GPLv3+
