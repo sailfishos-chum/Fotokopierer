@@ -4,6 +4,7 @@ installroot/
 3rdparty/
 RPMS/
 rpm/*.spec.*
+translations/*.qm
 *.qmlc
 *.list
 *~

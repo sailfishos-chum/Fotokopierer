@@ -85,27 +85,27 @@ Dialog {
                 id: listModel
 
                 ListElement {
-                    icon: "/icons/icon-m-bw.svg"
+                    icon: "../../../icons/icon-m-bw.svg"
                     colorMode: 1  // ColorMode.BlackAndWhite
                 }
 
                 ListElement {
-                    icon: "/icons/icon-m-gray.svg"
+                    icon: "../../../icons/icon-m-gray.svg"
                     colorMode: 0  // ColorMode.Gray
                 }
 
                 ListElement {
-                    icon: "/icons/icon-m-color.svg"
+                    icon: "../../../icons/icon-m-color.svg"
                     colorMode: 3  // ColorMode.FullColor
                 }
 
                 ListElement {
-                    icon: "/icons/icon-m-special.svg"
+                    icon: "../../../icons/icon-m-special.svg"
                     colorMode: 2 // ColorMode.Colored
                 }
 
                 ListElement {
-                    icon: "/icons/icon-m-ctrl.svg"
+                    icon: "../../../icons/icon-m-ctrl.svg"
                     colorMode: -1
                 }
             }
@@ -167,28 +167,28 @@ Dialog {
 
             ValueSlider {
                 id: contrast_slider
-                icon: Qt.resolvedUrl("/icons/contrast.svg")
+                icon: Qt.resolvedUrl("../../../icons/contrast.svg")
                 visible: colview.colorMode == ColorizeView.Gray || colview.colorMode == ColorizeView.FullColor
                 onValueChanged: colview.contrast = value / 100
             }
 
             ValueSlider {
                 id: brightness_slider
-                icon: Qt.resolvedUrl("/icons/brightness.svg")
+                icon: Qt.resolvedUrl("../../../icons/brightness.svg")
                 visible: contrast_slider.visible
                 onValueChanged: colview.brightness = value / 100
             }
 
             ValueSlider {
                 id: threshold_slider
-                icon: Qt.resolvedUrl("/icons/threshold.svg")
+                icon: Qt.resolvedUrl("../../../icons/threshold.svg")
                 visible: !contrast_slider.visible
                 onValueChanged: colview.threshold = value / 100
             }
 
             ValueSlider {
                 id: blocksize_slider
-                icon: Qt.resolvedUrl("/icons/blocksize.svg")
+                icon: Qt.resolvedUrl("../../../icons/blocksize.svg")
                 visible: !contrast_slider.visible
                 onValueChanged: colview.blockSize = value / 100
             }
@@ -196,7 +196,7 @@ Dialog {
             IconButton {
                 id: colorizer_button
                 visible: colview.colorMode == ColorizeView.Colored
-                icon.source: Qt.resolvedUrl("/icons/icon-m-color.svg")
+                icon.source: Qt.resolvedUrl("../../../icons/icon-m-color.svg")
                 onClicked: {
                     colorize.open = true
                     sliders.open = false
@@ -234,7 +234,7 @@ Dialog {
 
             ValueSlider {
                 id: blackLevel_slider
-                icon: Qt.resolvedUrl("/icons/icon-m-bw.svg")
+                icon: Qt.resolvedUrl("../../../icons/icon-m-bw.svg")
                 onValueChanged: colorizer.blackLevel = value * colorizer.maxBlackLevel / 100
             }
         }

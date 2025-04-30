@@ -702,36 +702,25 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
         for (auto& page : pageimages) {
             try {
-                PdfImage pageimage(&pdf);
-                pageimage.LoadFromFile(page.toUtf8().data());
+                auto pageimage = pdf.CreateImage();
+                pageimage->Load(page.toUtf8().data());
 
-                auto pdfpage = pdf.CreatePage({0.0, 0.0, pageimage.GetWidth(), pageimage.GetHeight()});
-                if (pdfpage == nullptr) {
-                    PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
-                }
+                auto& pages = pdf.GetPages();
+                auto& pdfpage = pages.CreatePage({0.0, 0.0, static_cast<double>(pageimage->GetWidth()), static_cast<double>(pageimage->GetHeight())});
 
-                painter.SetPage(pdfpage);
-
-                painter.DrawImage(0.0, 0.0, &pageimage);
-
-                painter.FinishPage();
+                painter.SetCanvas(pdfpage);
+                painter.DrawImage(*pageimage, 0.0, 0.0);
+                painter.FinishDrawing();
             } catch (PdfError& e) {
                 qWarning() << "Error exporting pdf: " << e.what() << " while processing " << page;
-                auto fmts = PdfImage::GetSupportedFormats();
-                QStringList formats;
-                for (auto fmt = fmts; *fmt != nullptr; ++fmt) {
-                    formats << QString::fromLatin1(*fmt);
-                }
-                qWarning() << "Supported image formats: " << formats.join(QStringLiteral(", "));
-
                 e.PrintErrorMsg();
 
                 throw;
             }
         }
 
-        pdf.GetInfo()->SetCreator(toPdfString(ApplicationName));
-        pdf.GetInfo()->SetTitle(toPdfString(title));
+        pdf.GetMetadata().SetCreator(toPdfString(ApplicationName));
+        pdf.GetMetadata().SetTitle(toPdfString(title));
         pdf.Close();
 
         return QUrl::fromLocalFile(filename);

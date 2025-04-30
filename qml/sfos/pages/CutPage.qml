@@ -93,12 +93,12 @@ Page {
                 }
 
                 ListElement {
-                    icon: "/icons/icon-m-size-auto.svg"
+                    icon: "../../../icons/icon-m-size-auto.svg"
                     name: "auto"
                 }
 
                 ListElement {
-                    icon: "/icons/icon-m-size-max.svg"
+                    icon: "../../../icons/icon-m-size-max.svg"
                     name: "all"
                 }
 

@@ -37,7 +37,7 @@ Page {
 
             Image {
                 fillMode: Image.PreserveAspectFit
-                source: Qt.resolvedUrl("/icons/harbour-fotokopierer.svg")
+                source: Qt.resolvedUrl("../../../icons/harbour-fotokopierer.svg")
                 width: Math.min(2/3 * parent.width, 2/3 * parent.height)
                 height: width
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -154,21 +154,8 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: ("<a href=\"http://chiselapp.com/user/fifr/repository/fotokopierer\">" +
+                text: ("<a href=\"http://codeberg.org/fifr/Fotokopierer\">" +
                        qsTr("Homepage") + "</a>")
-
-                onLinkActivated: Qt.openUrlExternally(link)
-            }
-
-            Label {
-                width: parent.width
-
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-
-                text: (qsTr("Find me on libera.chat: ") +
-                       "<a href=\"https://web.libera.chat/#fotokopierer\">" +
-                       "#fotokopierer")
 
                 onLinkActivated: Qt.openUrlExternally(link)
             }
