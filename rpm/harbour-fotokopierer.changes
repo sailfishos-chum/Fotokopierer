@@ -8,6 +8,9 @@
 # * date Author's Name <author's email> version-release
 # - Summary of changes
 
+* Sat May 03 2025 Frank Fischer <frank-fischer@shadow-soft.de> 1.0.1-1
+- Fix exporting pdf files with new PoDofo
+
 * Wed Apr 30 2025 Frank Fischer <frank-fischer@shadow-soft.de> 1.0.0-1
 - Rework build process
 - update FreeType to 2.13.3

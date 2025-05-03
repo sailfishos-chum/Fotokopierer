@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021, 2025 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -75,9 +75,9 @@ struct PageData {
     PageData(const QSharedPointer<Page>& page)
         : page(page) {}
     PageData(const PageData&) = default;
-    PageData(PageData&&) = default;
+    PageData(PageData&&) noexcept = default;
     PageData& operator=(const PageData&) = default;
-    PageData& operator=(PageData&&) = default;
+    PageData& operator=(PageData&&) noexcept = default;
     ~PageData() = default;
 
     Page& operator*() { return *page.data(); }
@@ -697,13 +697,13 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
     }
 
     d->pendingPdf.setFuture(QtConcurrent::run([title, pageimages, filename]() {
-        PdfStreamedDocument pdf(filename.toUtf8().constData());
+        PdfMemDocument pdf;
         PdfPainter painter;
 
         for (auto& page : pageimages) {
             try {
                 auto pageimage = pdf.CreateImage();
-                pageimage->Load(page.toUtf8().data());
+                pageimage->Load(page.toStdString());
 
                 auto& pages = pdf.GetPages();
                 auto& pdfpage = pages.CreatePage({0.0, 0.0, static_cast<double>(pageimage->GetWidth()), static_cast<double>(pageimage->GetHeight())});
@@ -721,7 +721,7 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
         pdf.GetMetadata().SetCreator(toPdfString(ApplicationName));
         pdf.GetMetadata().SetTitle(toPdfString(title));
-        pdf.Close();
+        pdf.Save(filename.toStdString());
 
         return QUrl::fromLocalFile(filename);
     }));

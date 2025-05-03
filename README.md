@@ -4,6 +4,14 @@
 
 Fotokopierer is a document scanning application for [Sailfish OS](https://sailfishos.org) and the Desktop.
 
+## Screenshots
+
+
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot1.png" alt="Documents grid" title="Documents grid" width="24%">
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot2.png" alt="Cut image" title="Cut image" width="24%">
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot3.png" alt="Colorized image" title="Colorized image" width="24%">
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot4.png" alt="Colorizing image" title="Colorizing image" width="24%">
+
 ## Authors
 
 Frank Fischer <frank-fischer@shadow-soft.de>
@@ -76,7 +84,7 @@ otherwise the build will fail.
 
 Latest development version: [Fotokopierer-main.tar.gz][TRUNK]
 
-Latest release version: [Fotokopierer-v1.0.0.tar.gz][STABLE]
+Latest release version: [Fotokopierer-v1.0.1.tar.gz][STABLE]
 
 ## Help with translations
 
@@ -102,4 +110,4 @@ This project uses
 [IRC]: https://web.libera.chat/#fotokopierer
 
 [TRUNK]: https://codeberg.org/fifr/Fotokopierer/archive/main.tar.gz
-[STABLE]: https://codeberg.org/fifr/Fotokopierer/archive/v1.0.0.tar.gz 
+[STABLE]: https://codeberg.org/fifr/Fotokopierer/archive/v1.0.1.tar.gz 
