@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021, 2025 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -75,9 +75,9 @@ struct PageData {
     PageData(const QSharedPointer<Page>& page)
         : page(page) {}
     PageData(const PageData&) = default;
-    PageData(PageData&&) = default;
+    PageData(PageData&&) noexcept = default;
     PageData& operator=(const PageData&) = default;
-    PageData& operator=(PageData&&) = default;
+    PageData& operator=(PageData&&) noexcept = default;
     ~PageData() = default;
 
     Page& operator*() { return *page.data(); }
