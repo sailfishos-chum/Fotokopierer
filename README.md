@@ -84,7 +84,7 @@ otherwise the build will fail.
 
 Latest development version: [Fotokopierer-main.tar.gz][TRUNK]
 
-Latest release version: [Fotokopierer-v1.0.0.tar.gz][STABLE]
+Latest release version: [Fotokopierer-v1.0.1.tar.gz][STABLE]
 
 ## Help with translations
 
@@ -110,4 +110,4 @@ This project uses
 [IRC]: https://web.libera.chat/#fotokopierer
 
 [TRUNK]: https://codeberg.org/fifr/Fotokopierer/archive/main.tar.gz
-[STABLE]: https://codeberg.org/fifr/Fotokopierer/archive/v1.0.0.tar.gz 
+[STABLE]: https://codeberg.org/fifr/Fotokopierer/archive/v1.0.1.tar.gz 
