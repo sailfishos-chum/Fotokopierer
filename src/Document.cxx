@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021, 2025 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,9 +16,6 @@
  */
 
 #include "Document.hxx"
-
-#include "Fotokopierer.hxx"
-#include "Page.hxx"
 
 #include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QCoreApplication>
@@ -37,11 +34,21 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QUrl>
 #include <QtCore/QVector>
+#include <QtQml/QQmlEngine>
+
+#ifdef USE_PODOFO
+#include <podofo/podofo.h>
+#else
 #include <QtGui/QPageSize>
 #include <QtGui/QPainter>
 #include <QtGui/QPdfWriter>
+#endif
 
 #include <memory>
+
+#include "Clipboard.hxx"
+#include "Fotokopierer.hxx"
+#include "Page.hxx"
 
 namespace
 {
@@ -67,6 +74,8 @@ private:
     QString message_;
 };
 
+#ifdef USE_PODOFO
+#else
 /// Error when exporting a pdf document.
 class PdfError : public QException
 {
@@ -75,9 +84,9 @@ public:
         : message_(message) {}
 
     PdfError(const PdfError&) = default;
-    PdfError(PdfError&&) = default;
+    PdfError(PdfError&&) noexcept = default;
     PdfError& operator=(const PdfError&) = default;
-    PdfError& operator=(PdfError&&) = default;
+    PdfError& operator=(PdfError&&) noexcept = default;
     ~PdfError() override = default;
 
     void raise() const override { throw *this; }
@@ -88,13 +97,35 @@ public:
 private:
     QString message_;
 };
+#endif
+
+struct PageData {
+    QSharedPointer<Page> page;
+    bool selected = false;
+
+    PageData() = default;
+    PageData(const QSharedPointer<Page>& page)
+        : page(page) {}
+    PageData(const PageData&) = default;
+    PageData(PageData&&) noexcept = default;
+    PageData& operator=(const PageData&) = default;
+    PageData& operator=(PageData&&) noexcept = default;
+    ~PageData() = default;
+
+    Page& operator*() { return *page.data(); }
+    Page& operator*() const { return *page.data(); }
+
+    Page* operator->() { return page.data(); }
+    Page* operator->() const { return page.data(); }
+};
+
 }  // namespace
 
 struct Document::DocData {
-    QString title;                        ///< document title
-    QString filename;                     ///< filename of the document data
-    QDateTime creation_time;              ///< time when the document has been created
-    QVector<QSharedPointer<Page>> pages;  ///< page of the document
+    QString title;            ///< document title
+    QString filename;         ///< filename of the document data
+    QDateTime creation_time;  ///< time when the document has been created
+    QVector<PageData> pages;  ///< page of the document
 
     static DocData fromFile(Document* document, const QString& filename);
 };
@@ -104,12 +135,13 @@ struct Document::Data {
     QFutureWatcher<DocData> pendingDoc;  ///< the document data to be read
     QFutureWatcher<QUrl> pendingPdf;     ///< the document es being exported to pdf
     Status status = Ready;               ///< the current status
+    int nselected = 0;                   ///< the number of selected pages
 };
 
 Document::Document(QObject* parent)
     : QAbstractListModel(parent), d(new Data)
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::onPendingDocFinished);
     connect(&d->pendingPdf, &QFutureWatcher<QUrl>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
@@ -117,7 +149,7 @@ Document::Document(QObject* parent)
 Document::Document(Document&& doc) noexcept
     : QAbstractListModel(doc.parent()), d(std::move(doc.d))
 {
-    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::setPendingDoc);
+    connect(&d->pendingDoc, &QFutureWatcher<DocData>::finished, this, &Document::onPendingDocFinished);
     connect(&d->pendingPdf, &QFutureWatcher<QString>::finished, this, &Document::onPdfExportFinished);
     connect(this, &Document::creationTimeChanged, this, &Document::defaultTitleChanged);
 }
@@ -210,7 +242,12 @@ int Document::rowCount(const QModelIndex& parent) const
     return d->doc.pages.size();
 }
 
-void Document::setPendingDoc()
+QDir Document::directory() const
+{
+    return QFileInfo(d->doc.filename).dir();
+}
+
+void Document::onPendingDocFinished()
 {
     try {
         setDocData(d->pendingDoc.result());
@@ -225,7 +262,10 @@ void Document::setDocData(DocData&& docdata)
 {
     d->doc = std::move(docdata);
     for (auto& p : d->doc.pages) {
-        connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
+        connect(p.page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+        connect(p.page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
+        connect(p.page.data(), &Page::error, this, &Document::error);
+        connect(p.page.data(), &Page::deleteSourcePage, this, &Document::onDeleteSourcePage);
     }
     emit titleChanged();
 }
@@ -253,7 +293,13 @@ QVariant Document::data(const QModelIndex& index, int role) const
         }
         case PageRole: {
             if (index.column() == 0 && index.row() < d->doc.pages.size()) {
-                return QVariant::fromValue(d->doc.pages.at(index.row()).data());
+                return QVariant::fromValue(d->doc.pages.at(index.row()).page.data());
+            }
+            break;
+        }
+        case SelectionRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                return QVariant::fromValue(d->doc.pages.at(index.row()).selected);
             }
             break;
         }
@@ -262,12 +308,33 @@ QVariant Document::data(const QModelIndex& index, int role) const
     return {};
 }
 
+bool Document::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    switch (role) {
+        case SelectionRole: {
+            if (index.column() == 0 && index.row() < d->doc.pages.size()) {
+                auto selected = value.toBool();
+                auto& page = d->doc.pages[index.row()];
+                if (selected != page.selected) {
+                    d->nselected += selected ? 1 : -1;
+                    page.selected = selected;
+                    emit dataChanged(index, index, {SelectionRole});
+                    emit selectedPagesChanged();
+                }
+            }
+            break;
+        }
+    }
+    return false;
+}
+
 QHash<int, QByteArray> Document::roleNames() const
 {
     static const QHash<int, QByteArray> roles = {{ThumbnailRole, "role_thumbnail"},
                                                  {ResultRole, "role_result"},
                                                  {CreationTimeRole, "role_creationTime"},
-                                                 {PageRole, "role_page"}};
+                                                 {PageRole, "role_page"},
+                                                 {SelectionRole, "role_selected"}};
     return roles;
 }
 
@@ -283,98 +350,153 @@ void Document::move(int from, int to)
     }
 }
 
-void Document::addPage(const QImage& original, const QImage& result)
+bool Document::hasSelectedPages() const
 {
-    if (original.isNull()) {
-        qWarning() << "Page could not be created: no original image";
-        emit error(tr("Page could not be created: no original image"));
-        return;
+    return d->nselected != 0;
+}
+
+int Document::numSelectedPages() const
+{
+    return d->nselected;
+}
+
+void Document::clearSelection()
+{
+    for (int i = 0; i < d->doc.pages.count(); i++) {
+        auto& p = d->doc.pages[i];
+        if (p.selected) {
+            p.selected = false;
+            auto idx = index(i, 0);
+            emit dataChanged(idx, idx, {SelectionRole});
+        }
     }
-
-    if (result.isNull()) {
-        qWarning() << "Page could not be created: no result image";
-        emit error(tr("Page could not be created: no result image"));
-        return;
+    if (d->nselected != 0) {
+        d->nselected = 0;
+        emit selectedPagesChanged();
     }
+}
 
-    auto ctime = QDateTime::currentDateTime();
-    auto dir = QFileInfo(d->doc.filename).dir();
-    if (!dir.exists()) {
-        dir.mkpath(QStringLiteral("."));
+void Document::copySelectedPages()
+{
+    QVector<Page*> pages;
+    for (auto& p : d->doc.pages) {
+        if (p.selected) {
+            pages.push_back(p.page.data());
+        }
     }
+    Clipboard::instance()->copy(this, pages);
+}
 
-    auto original_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-original.jpg"));
-    auto result_path = dir.filePath(ctime.toString(FilenameFormat) + QStringLiteral("-result.png"));
+void Document::cutSelectedPages()
+{
+    QVector<Page*> pages;
+    for (auto& p : d->doc.pages) {
+        if (p.selected) {
+            pages.push_back(p.page.data());
+        }
+    }
+    Clipboard::instance()->cut(this, pages);
+}
 
-    if (!original.save(original_path)) {
-        qWarning() << "Page could not be created: error saving original image";
-        emit error(tr("Page could not be created: error saving original image"));
-        return;
-    };
+void Document::onDeleteSourcePage(Document* sourceDocument, Page* source)
+{
+    sourceDocument->deletePage(source);
+}
 
-    if (!result.save(result_path)) {
-        qWarning() << "Page could not be created: error saving result image";
-        emit error(tr("Page could not be created: error saving result image"));
-        return;
-    };
+void Document::deleteSelectedPages()
+{
+    int ndeleted = 0;
+    for (int i = 0; i < d->doc.pages.size(); i++) {
+        if (d->doc.pages[i].selected) {
+            beginRemoveRows({}, i - ndeleted, i - ndeleted);
+            d->doc.pages[i]->remove();
+            endRemoveRows();
+            ndeleted += 1;
+        } else if (ndeleted > 0) {
+            d->doc.pages[i - ndeleted] = d->doc.pages[i];
+        }
+    }
+    d->doc.pages.resize(d->doc.pages.size() - ndeleted);
 
-    QSharedPointer<Page> p(new Page(ctime, original_path, result_path, {}, this));
-
-    connect(p.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
-    connect(p.data(), &Page::statusChanged, this, &Document::updatePage);
-    connect(p.data(), &Page::error, this, &Document::error);
-
-    beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(p);
-    endInsertRows();
-
+    emit pagesChanged();
     save();
-    emit pagesChanged();
 }
 
-void Document::addScannedPage(ScanImage* image)
+void Document::pastePages()
 {
-    if (d->status != Ready) {
+    Clipboard::instance()->paste(this);
+}
+
+Page* Document::newPage()
+{
+    if (d->status != Ready && d->status != Adding) {
         emit error(tr("Cannot add page, document is not ready"));
-        return;
+        return nullptr;
     }
 
-    setStatus(Adding);
-
-    auto dir = QFileInfo(d->doc.filename).dir();
+    auto dir = directory();
     if (!dir.exists()) {
         dir.mkpath(QStringLiteral("."));
     }
 
-    QSharedPointer<Page> page(new Page(dir, image, this));
-    connect(page.data(), &Page::thumbnailChanged, this, &Document::updateThumbnail);
-    connect(page.data(), &Page::statusChanged, this, &Document::updatePage);
+    QSharedPointer<Page> page(new Page(), &QObject::deleteLater);
+    connect(page.data(), &Page::thumbnailChanged, this, &Document::onThumbnailUpdated);
+    connect(page.data(), &Page::statusChanged, this, &Document::onPageUpdated);
     connect(page.data(), &Page::error, this, &Document::error);
+    connect(page.data(), &Page::deleteSourcePage, this, &Document::onDeleteSourcePage);
 
     beginInsertRows({}, d->doc.pages.size(), d->doc.pages.size());
-    d->doc.pages.push_back(page);
+    d->doc.pages.push_back({page});
     endInsertRows();
 
     emit pagesChanged();
+
+    QQmlEngine::setObjectOwnership(page.data(), QQmlEngine::CppOwnership);
+
+    return page.data();
 }
 
-void Document::updatePage()
+Page* Document::newCopiedPage(Document* sourceDoc, Page* source, bool move)
+{
+    if (source == nullptr) {
+        return nullptr;
+    }
+
+    auto page = newPage();
+    if (page != nullptr) {
+        page->initCopy(directory(), sourceDoc, source, move);
+    }
+
+    return page;
+}
+
+void Document::onPageUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
-    // TODO: this only works reliably if at most one page is modified at the same time
+
+    // If there has been an error, remove the page.
     if (page->status() == Page::Invalid) {
-        setStatus(Ready);
         for (int i = 0; i < d->doc.pages.size(); i++) {
-            if (page == d->doc.pages[i]) {
+            if (page == d->doc.pages[i].page) {
                 deletePage(i);
                 break;
             }
         }
-    } else if (page->status() != Page::Ready) {
-        setStatus(Adding);
-    } else {
-        setStatus(Ready);
     }
+
+    // Now check if there is at least one non-ready page.
+
+    // TODO: this may be a little inefficient, because we iterate over all pages.
+    // Hopefully there aren't too many of them in a single document.
+    for (auto& p : d->doc.pages) {
+        if (p->status() != Page::Ready) {
+            setStatus(Adding);
+            return;
+        }
+    }
+
+    // All pages are ready, so the document is ready, too.
+    setStatus(Ready);
 }
 
 void Document::deletePage(int pageIndex)
@@ -385,6 +507,16 @@ void Document::deletePage(int pageIndex)
     endRemoveRows();
     emit pagesChanged();
     save();
+}
+
+void Document::deletePage(Page* page)
+{
+    for (int pageIndex = 0; pageIndex < d->doc.pages.count(); pageIndex++) {
+        if (d->doc.pages[pageIndex].page == page) {
+            deletePage(pageIndex);
+            break;
+        }
+    }
 }
 
 void Document::remove()
@@ -398,11 +530,12 @@ void Document::remove()
 
 bool Document::save() const
 {
-    QFileInfo finfo(d->doc.filename);
+    QFileInfo doc_fileinfo(d->doc.filename);
+    QDir docpath = doc_fileinfo.absoluteDir();
 
-    if (!finfo.dir().exists()) {
-        if (!finfo.dir().mkpath(QStringLiteral("."))) {
-            qWarning() << tr("Cannot create path %1").arg(finfo.dir().path());
+    if (!docpath.exists()) {
+        if (!docpath.mkpath(QStringLiteral("."))) {
+            qWarning() << tr("Cannot create path %1").arg(docpath.path());
             return false;
         }
     }
@@ -415,13 +548,13 @@ bool Document::save() const
     QJsonObject doc;
 
     doc[QStringLiteral("title")] = d->doc.title;
-    doc[QStringLiteral("filename")] = d->doc.filename;
+    doc[QStringLiteral("filename")] = doc_fileinfo.fileName();
     doc[QStringLiteral("creationTime")] = d->doc.creation_time.toString(FilenameFormat);
 
     QJsonArray pages;
     for (auto& page : d->doc.pages) {
         QJsonObject p;
-        if (!page->write(p)) {
+        if (!page->write(p, docpath)) {
             return false;
         }
         pages << p;
@@ -434,7 +567,7 @@ bool Document::save() const
         return false;
     }
 
-    ensureNoMedia(QFileInfo(d->doc.filename).absolutePath());
+    ensureNoMedia(doc_fileinfo.absolutePath());
 
     return true;
 }
@@ -475,10 +608,19 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
 {
     auto tr = [](const char* source) { return QCoreApplication::translate("Document", source); };
 
+    qDebug() << "Load document " << filename;
+
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         throw ReadError(tr("Can't open document file %1").arg(filename));
     }
+
+    auto doc_fileinfo = QFileInfo(file);
+    auto docpath = doc_fileinfo.absolutePath();
+    auto docfile = doc_fileinfo.absoluteFilePath();
+
+    qDebug() << "Document directory: " << docpath;
+    qDebug() << "Document file: " << docfile;
 
     auto docdata = file.readAll();
     auto doc = QJsonDocument::fromJson(docdata);
@@ -486,54 +628,60 @@ Document::DocData Document::DocData::fromFile(Document* document, const QString&
 
     auto title = json[QStringLiteral("title")];
     if (!title.isString() && !title.isNull()) {
+        qDebug() << QStringLiteral("Could not read document title from document file %1").arg(filename);
         throw ReadError(tr("Could not read document title from document file %1").arg(filename));
     }
 
     auto creation_time = json[QStringLiteral("creationTime")];
     if (!creation_time.isString()) {
+        qDebug() << QStringLiteral("Could not read creation time from document file %1").arg(filename);
         throw ReadError(tr("Could not read creation time from document file %1").arg(filename));
     }
     auto ctime = QDateTime::fromString(creation_time.toString(), FilenameFormat);
 
     auto pages = json[QStringLiteral("pages")];
     if (!pages.isArray()) {
+        qDebug() << QStringLiteral("Could not read pages from document file %1").arg(filename);
         throw ReadError(tr("Could not read pages from document file %1").arg(filename));
     }
 
-    QVector<QSharedPointer<Page>> docpages;
+    QVector<PageData> docpages;
     for (auto&& page : pages.toArray()) {
         if (!page.isObject()) {
+            qDebug() << QStringLiteral("Could not read page from document file %1").arg(filename);
             throw ReadError(tr("Could not read page from document file %1").arg(filename));
         }
-        QSharedPointer<Page> p(new Page);
+        QSharedPointer<Page> p(new Page, &QObject::deleteLater);
 
-        connect(p.data(), &Page::thumbnailChanged, document, &Document::updateThumbnail);
-        connect(p.data(), &Page::statusChanged, document, &Document::updatePage);
+        connect(p.data(), &Page::thumbnailChanged, document, &Document::onThumbnailUpdated);
+        connect(p.data(), &Page::statusChanged, document, &Document::onPageUpdated);
         connect(p.data(), &Page::error, document, &Document::error);
+        connect(p.data(), &Page::deleteSourcePage, document, &Document::onDeleteSourcePage);
 
-        if (!p->read(page.toObject())) {
+        if (!p->read(page.toObject(), docpath)) {
+            qDebug() << QStringLiteral("Error reading page from document file %1").arg(filename);
             throw ReadError(tr("Error reading page from document file %1").arg(filename));
         }
         p->moveToThread(QCoreApplication::instance()->thread());
-        docpages.push_back(p);
+        docpages.push_back({std::move(p)});
     }
 
-    ensureNoMedia(QFileInfo(file).absolutePath());
+    ensureNoMedia(docpath);
 
     DocData d;
     d.title = title.isString() ? title.toString() : ctime.toString();
-    d.filename = filename;
+    d.filename = docfile;
     d.creation_time = ctime;
     d.pages = docpages;
     return d;
 }
 
-void Document::updateThumbnail()
+void Document::onThumbnailUpdated()
 {
     Page* page = qobject_cast<Page*>(sender());
 
     for (int i = 0; i < d->doc.pages.size(); i++) {
-        if (page == d->doc.pages[i]) {
+        if (page == d->doc.pages[i].page) {
             auto idx = index(i);
             emit dataChanged(idx, idx, {ThumbnailRole});
             save();
@@ -552,6 +700,13 @@ void Document::ensureNoMedia(const QString& path)
     }
 }
 
+#ifdef USE_PODOFO
+static PoDoFo::PdfString toPdfString(const QString& str)
+{
+    return {str.toUtf8().constData()};
+}
+#endif
+
 void Document::exportToPdf(const QString& filename, bool overwrite)
 {
     if (d->status != Ready) {
@@ -560,7 +715,7 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
         return;
     }
 
-    if (QFileInfo(filename).exists() && !overwrite) {
+    if (QFileInfo::exists(filename) && !overwrite) {
         emit errorPdfExists(QFileInfo(filename).fileName());
         return;
     }
@@ -574,11 +729,39 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
     }
 
     d->pendingPdf.setFuture(QtConcurrent::run([title, pageimages, filename]() {
-        QPdfWriter pdf(filename);
+#ifdef USE_PODOFO
+        using namespace PoDoFo;
+        PdfMemDocument pdf;
+        PdfPainter painter;
 
+        for (auto& page : pageimages) {
+            try {
+                auto pageimage = pdf.CreateImage();
+                pageimage->Load(page.toStdString());
+
+                auto& pages = pdf.GetPages();
+                auto& pdfpage = pages.CreatePage({0.0, 0.0, static_cast<double>(pageimage->GetWidth()), static_cast<double>(pageimage->GetHeight())});
+
+                painter.SetCanvas(pdfpage);
+                painter.DrawImage(*pageimage, 0.0, 0.0);
+                painter.FinishDrawing();
+            } catch (PdfError& e) {
+                qWarning() << "Error exporting pdf: " << e.what() << " while processing " << page;
+                e.PrintErrorMsg();
+
+                throw;
+            }
+        }
+
+        pdf.GetMetadata().SetCreator(toPdfString(ApplicationName));
+        pdf.GetMetadata().SetTitle(toPdfString(title));
+        pdf.Save(filename.toStdString());
+#else
+        QPdfWriter pdf(filename);
         QPainter p;
 
         bool firstpage = true;
+
         for (auto& page : pageimages) {
             QImage pageimage(page);
             pdf.setPageSize(QPageSize(pageimage.size()));
@@ -598,14 +781,20 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
         pdf.setCreator(ApplicationName);
         pdf.setTitle(title);
-
+#endif
+ 
         return QUrl::fromLocalFile(filename);
     }));
 }
 
 void Document::exportToPdf(bool overwrite)
 {
-    exportToPdf(getDocumentDirectory().filePath(d->doc.title) + QStringLiteral(".pdf"), overwrite);
+    QString filename = d->doc.title;
+    // replace some illegal characters in the filename
+    filename.replace(QLatin1Char(':'), QLatin1Char('_'));
+    filename.replace(QLatin1Char('/'), QLatin1Char('_'));
+    filename.replace(QLatin1Char('\\'), QLatin1Char('_'));
+    exportToPdf(getDocumentDirectory().filePath(filename) + QStringLiteral(".pdf"), overwrite);
 }
 
 void Document::onPdfExportFinished()
@@ -613,8 +802,13 @@ void Document::onPdfExportFinished()
     try {
         auto path = d->pendingPdf.result();
         emit exportToPdfFinished(path);
+#ifdef USE_PODOFO
+    } catch (PoDoFo::PdfError& e) {
+        emit error(QString::fromUtf8(e.what()));
+#else
     } catch (PdfError& e) {
         emit error(e.message());
+#endif
     } catch (QUnhandledException& e) {
         emit error(tr("Error creating pdf-file"));
     }

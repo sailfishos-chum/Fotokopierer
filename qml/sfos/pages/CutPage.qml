@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,11 +24,18 @@ import "../../common"
 Page {
     id: page
 
-    property alias image: cutview.scanImage
+    property bool restoreSelection: false
 
     canNavigateForward: cutview.valid
 
     onStatusChanged: {
+        if (status == PageStatus.Active) {
+            if (restoreSelection) {
+                cutview.restoreSelection()
+            } else {
+                cutview.initSelection()
+            }
+        }
         if (status == PageStatus.Deactivating) {
             cutview.cutImage()
         }
@@ -46,8 +53,17 @@ Page {
         anchors.bottom: buttons.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 2 * Theme.iconSizeSmall
-        markerColor: Theme.primaryColor
+        markerColor: Theme.lightPrimaryColor
         lineColor: Theme.highlightColor
+
+        onBusyChanged: console.log("set busy indicator to " + cutview.busy)
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Small
+            anchors.top: parent.top
+            anchors.right: parent.right
+            running: cutview.busy
+        }
     }
 
     DockedPanel {
@@ -77,14 +93,12 @@ Page {
                 }
 
                 ListElement {
-                    // icon: "image://theme/icon-m-crop"
-                    text: "auto"
+                    icon: "../../../icons/icon-m-size-auto.svg"
                     name: "auto"
                 }
 
                 ListElement {
-                    // icon: "image://theme/icon-m-display"
-                    text: "max"
+                    icon: "../../../icons/icon-m-size-max.svg"
                     name: "all"
                 }
 
@@ -115,8 +129,17 @@ Page {
                 IconButton {
                     visible: model.icon ? true : false
                     anchors.fill: parent
-                    icon.source: model.icon || ""
+                    icon.source: Qt.resolvedUrl(model.icon) || ""
+                    icon.width: Theme.iconSizeMedium
+                    icon.height: Theme.iconSizeMedium
                     onClicked: listModel.actions[name]()
+                    enabled: name != "auto" || cutview.hasAutoSelection
+
+                    BusyIndicator {
+                        size: BusyIndicatorSize.Medium
+                        anchors.centerIn: parent
+                        running: name == "auto" && cutview.isAutoDetectionRunning
+                    }
                 }
             }
         }

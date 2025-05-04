@@ -1,134 +1,111 @@
-cmake_policy(SET CMP0048 NEW)
+cmake_minimum_required(VERSION 3.5)
 
-cmake_minimum_required(VERSION 3.0)
+set(FOTOKOPIERER_VERSION 1.0.1)
 
-set(FOTOKOPIERER_VERSION 0.1.0)
-set(OPENCV_VERSION 3.4.0)
+project(fotokopierer VERSION ${FOTOKOPIERER_VERSION} LANGUAGES CXX)
 
-project(fotokopierer VERSION 0.1.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_STANDARD 14)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-if (POLICY CMP0071)
-  cmake_policy(SET CMP0071 NEW)
-endif()
+find_package (Qt5 COMPONENTS Core Concurrent Gui Multimedia Quick LinguistTools REQUIRED)
 
 include(FindPkgConfig)
-pkg_search_module(SAILFISH sailfishapp)
+pkg_search_module(SAILFISH sailfishapp REQUIRED)
 
-if (SAILFISH_FOUND)
-  set(TARGET harbour-fotokopierer)
-else()
-  set(TARGET fotokopierer)
-endif()
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(SOURCES
-  src/ColorizeFilter.cxx
-  src/Convert.cxx
-  src/CutFilter.cxx
-  src/Document.cxx
-  src/DocumentList.cxx
-  src/Filter.cxx
-  src/FilterImage.cxx
-  src/Fotokopierer.cxx
-  src/Page.cxx
-  src/RotateFilter.cxx
-  src/ScanImage.cxx
-  src/ZoomImage.cxx
-  src/init.cxx)
+set(WITH_PODOFO On CACHE BOOL "Build and use PoDoFo pdf library")
+
+set(OPENCV_VERSION "3.4.20")
+
+if (WITH_PODOFO)
+    set(PODOFO_VERSION "0.10.4")
+    set(FREETYPE_VERSION "2.13.3")
+endif ()
+
+add_executable(harbour-fotokopierer
+	src/main-sfos.cxx
+    src/Clipboard.cxx
+    src/ColorizeChooser.cxx
+    src/ColorizeView.cxx
+    src/Convert.cxx
+    src/CutView.cxx
+    src/Document.cxx
+    src/DocumentList.cxx
+    src/EdgeDetection.cxx
+    src/Fotokopierer.cxx
+    src/init.cxx
+    src/Page.cxx
+    src/ScanImage.cxx
+    src/ScanImageView.cxx
+    src/Scanner.cxx
+	src/ZoomImage.cxx)
+
+target_compile_definitions(harbour-fotokopierer PRIVATE
+    $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
+)
+target_include_directories(harbour-fotokopierer PRIVATE
+    $<BUILD_INTERFACE:
+    ${SAILFISH_INCLUDE_DIRS}
+>)
+
+include(./ThirdParty.cmake)
+
+find_package(OpenCV REQUIRED core imgproc PATHS "${THIRD_PARTY_INSTALL_DIR}/OpenCV" NO_DEFAULT_PATH)
+
+##############################
+
+# PoDoFo and depedencies
+
+if (WITH_PODOFO)
+    set(CMAKE_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libjpeg;${CMAKE_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION}/3rdparty/libtiff;${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff)
+    set(CMAKE_LIBRARY_PATH ${THIRD_PARTY_INSTALL_DIR}/OpenCV/share/OpenCV/3rdparty/lib)
+
+    find_package(PNG REQUIRED)
+    find_package(JPEG REQUIRED)
+    find_package(TIFF REQUIRED)
+    find_package(OpenSSL REQUIRED)
+    find_package(Fontconfig REQUIRED)
+    find_package(LibXml2 REQUIRED)
+    find_package(FreeType REQUIRED PATHS "${THIRD_PARTY_INSTALL_DIR}/FreeType" NO_DEFAULT_PATH)
+
+    include_directories(SYSTEM ${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff)
+    set(PODOFO_BUILD_LIB_ONLY TRUE CACHE BOOL "" FORCE)
+    set(PODOFO_BUILD_STATIC TRUE CACHE BOOL "" FORCE)
+    add_subdirectory(3rdparty/podofo-${PODOFO_VERSION} EXCLUDE_FROM_ALL)
+    set_property(TARGET podofo_static PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+    set_property(TARGET podofo_private PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+    set(PODOFO_LIBRARIES podofo::podofo)
+
+    set_property(SOURCE src/Document.cxx APPEND PROPERTY COMPILE_DEFINITIONS USE_PODOFO=1)
+endif ()
+##############################
+
+# Add dependencies to app
+
+add_dependencies(harbour-fotokopierer ${OpenCV_LIBS})
+target_link_libraries(harbour-fotokopierer
+    Qt5::Quick
+    ${SAILFISH_LDFLAGS}
+    ${PODOFO_LIBRARIES}
+    ${OpenCV_LIBS}
+)
 
 set_property(SOURCE src/Fotokopierer.cxx APPEND PROPERTY COMPILE_DEFINITIONS
   FOTOKOPIERER_AUTHOR="Frank Fischer"
   FOTOKOPIERER_VERSION="${FOTOKOPIERER_VERSION}"
-  OPENCV_VERSION="${OPENCV_VERSION}"
+  PODOFO_VERSION="${PODOFO_VERSION}"
+  OPENCV_VERSION="${OpenCV_VERSION}"
+  FREETYPE_VERSION="${FREETYPE_VERSION}"
   )
 
-if (SAILFISH_FOUND)
-  set(OpenCV_SOURCE_DIR ${PROJECT_SOURCE_DIR}/3rdparty/opencv-${OPENCV_VERSION})
-
-  include(ExternalProject)
-
-  # configure OpenCV
-  set(OpenCV_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/opencv)
-
-  ExternalProject_Add(opencv
-    SOURCE_DIR ${OpenCV_SOURCE_DIR}
-    DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/3rdparty
-    URL "https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip"
-    URL_HASH SHA256=ae8a9f468b7ee3822a62d20d356c69f2b32330a231e738ac2914f332766611b7
-    PREFIX ${OpenCV_PREFIX}
-    CMAKE_ARGS
-    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    -DBUILD_DOCS=OFF
-    -DBUILD_EXAMPLES=OFF
-    -DBUILD_FAT_JAVA_LIB=OFF
-    -DBUILD_ITT=OFF
-    -DBUILD_JAVA=OFF
-    -DBUILD_PACKAGE=OFF
-    -DBUILD_PERF_TESTS=OFF
-    -DBUILD_SHARED_LIBS=OFF
-    -DBUILD_TESTS=OFF
-    -DBUILD_opencv_apps=OFF
-    -DBUILD_opencv_calib3d=OFF
-    -DBUILD_opencv_dnn=OFF
-    -DBUILD_opencv_features2d=OFF
-    -DBUILD_opencv_flann=OFF
-    -DBUILD_opencv_highgui=OFF
-    -DBUILD_opencv_imgcodecs=OFF
-    -DBUILD_opencv_ml=OFF
-    -DBUILD_opencv_objdetect=OFF
-    -DBUILD_opencv_photo=OFF
-    -DBUILD_opencv_python2=OFF
-    -DBUILD_opencv_python_bindings_generator=OFF
-    -DBUILD_opencv_shape=OFF
-    -DBUILD_opencv_stitching=OFF
-    -DBUILD_opencv_superres=OFF
-    -DBUILD_opencv_ts=OFF
-    -DBUILD_opencv_video=OFF
-    -DBUILD_opencv_videoio=OFF
-    -DBUILD_opencv_videostab=OFF
-    -DBUILD_opencv_world=OFF
-    -DWITH_JASPER=OFF
-    -DWITH_OPENEXR=OFF
-    -DWITH_WEBP=OFF)
-
-  list(INSERT CMAKE_PREFIX_PATH 0 ${OpenCV_PREFIX})
-  find_package(OpenCV QUIET COMPONENTS core imgproc)
-
-  if (NOT OpenCV_FOUND)
-    add_custom_target(opencv-3rdparty ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR} DEPENDS opencv)
-  else()
-    add_custom_target(opencv-3rdparty)
-  endif ()
-else()
-  set(TARGET fotokopierer)
-
-  find_package(OpenCV REQUIRED core imgproc)
-endif()
-
-find_package(Qt5 COMPONENTS Core Concurrent Gui Quick)
-
-# We need to set these directories here ... luckily we know exactly where it goes.
-
-qt5_add_resources(RESOURCES common.qrc translations.qrc)
-if (SAILFISH_FOUND)
-  qt5_add_resources(RESOURCES sfos.qrc)
-  add_executable(${TARGET} src/main-sfos.cxx ${SOURCES} ${RESOURCES})
-  add_dependencies(${TARGET} opencv-3rdparty)
-else()
-  qt5_add_resources(RESOURCES desktop.qrc)
-  add_executable(${TARGET} src/main-desktop.cxx ${SOURCES} ${RESOURCES})
-endif()
-
-set_property(TARGET ${TARGET} PROPERTY
+set_property(TARGET harbour-fotokopierer PROPERTY
   INCLUDE_DIRECTORIES
   "${SAILFISH_INCLUDE_DIRS}"
-  "${OpenCV_INCLUDE_DIRS}")
-set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
+  "${OpenCV_INCLUDE_DIRS}"
+  "${PODOFO_INCLUDE_DIRS}")
+
+set_property(TARGET harbour-fotokopierer APPEND PROPERTY COMPILE_DEFINITIONS
   QT_DEPRECATED_WARNINGS
   QT_NO_URL_CAST_FROM_STRING
   QT_NO_CAST_TO_ASCII
@@ -137,13 +114,90 @@ set_property(TARGET ${TARGET} APPEND PROPERTY COMPILE_DEFINITIONS
   QT_STRICT_ITERATORS
   QT_USE_FAST_CONCATENATION
   QT_USE_FAST_OPERATOR_PLUS
-  )
+)
 
-qt5_use_modules(${TARGET} Core Gui Quick)
-target_link_libraries(${TARGET} ${SAILFISH_LDFLAGS} ${OpenCV_LIBS})
+qt5_use_modules(harbour-fotokopierer Core Gui Multimedia Quick)
 
-install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
-# install(DIRECTORY qml DESTINATION share/${TARGET})
-# install(DIRECTORY translations DESTINATION share/${TARGET} FILES_MATCHING PATTERN "*.qm")
-install(FILES ${TARGET}.desktop DESTINATION share/applications)
-install(FILES ${TARGET}.png DESTINATION share/icons/hicolor/86x86/apps)
+FILE(GLOB TsFiles "translations/*.ts")
+qt5_add_translation(QmFiles ${TsFiles})
+add_custom_target(translations ALL DEPENDS ${QmFiles})
+add_dependencies(harbour-fotokopierer translations)
+
+###############################
+# Installation
+
+install(TARGETS harbour-fotokopierer
+    RUNTIME DESTINATION bin
+)
+install(DIRECTORY qml/common
+	DESTINATION share/harbour-fotokopierer/qml
+)
+install(DIRECTORY qml/sfos
+	DESTINATION share/harbour-fotokopierer/qml
+)
+install(FILES ${QmFiles}
+	DESTINATION share/harbour-fotokopierer/translations
+)
+install(FILES harbour-fotokopierer.desktop
+    DESTINATION share/applications
+)
+install(DIRECTORY icons
+	DESTINATION share/harbour-fotokopierer
+	FILES_MATCHING PATTERN "*.svg"
+)
+install(FILES icons/86x86/harbour-fotokopierer.png
+    DESTINATION share/icons/hicolor/86x86/apps
+)
+install(FILES icons/108x108/harbour-fotokopierer.png
+    DESTINATION share/icons/hicolor/108x108/apps
+)
+install(FILES icons/128x128/harbour-fotokopierer.png
+    DESTINATION share/icons/hicolor/128x128/apps
+)
+install(FILES icons/172x172/harbour-fotokopierer.png
+    DESTINATION share/icons/hicolor/172x172/apps
+)
+
+# Get the other files reachable from the project tree in Qt Creator
+add_custom_target(distfiles
+    SOURCES
+		harbour-fotokopierer.desktop
+        qml/common/ColorizeChooserItem.qml
+        qml/common/CornerMarker.qml
+        qml/common/CutImageView.qml
+        qml/common/DragDelegate.qml
+        qml/sfos/CoverPage.qml
+        qml/sfos/DeletableItem.qml
+        qml/sfos/DocumentDelegate.qml
+        qml/sfos/ErrorOverlay.qml
+        qml/sfos/main.qml
+        qml/sfos/PageDelegate.qml
+        qml/sfos/pages/AboutPage.qml
+        qml/sfos/pages/ColorizePage.qml
+        qml/sfos/pages/CutPage.qml
+        qml/sfos/pages/DocumentPage.qml
+        qml/sfos/pages/DocumentsPage.qml
+        qml/sfos/pages/NewImagePage.qml
+        qml/sfos/pages/PagePage.qml
+        qml/sfos/pages/RenamePage.qml
+        qml/sfos/ValueSlider.qml
+		rpm/harbour-fotokopierer.changes
+		rpm/harbour-fotokopierer.spec
+        ${TsFiles})
+
+# Tell Qt Creator where the application executable(s) would be located on the
+# device.
+#
+# It is not necessary to list other deployables than executables (runtime
+# targets) here. The deployment process of Sailfish OS projects is opaque to
+# Qt Creator and the information contained in QtCreatorDeployment.txt is only
+# used to locate the executable associated with the active run configuration
+# on the device in order to run it.
+#
+# Search the Qt Creator Manual to learn about the QtCreatorDeployment.txt file
+# format.
+file(WRITE "${CMAKE_BINARY_DIR}/QtCreatorDeployment.txt"
+    "${CMAKE_INSTALL_PREFIX}
+${CMAKE_BINARY_DIR}/fotokopierer:bin
+")
+

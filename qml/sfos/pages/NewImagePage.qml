@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,6 +15,7 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
+import Nemo.Configuration 1.0
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtMultimedia 5.6
@@ -25,28 +26,36 @@ import Fotokopierer 1.0
 Page {
     id: page
 
-    property Page destination
-    property ScanImage scanImage
+    allowedOrientations: Orientation.Portrait
+
+    property var acceptDestination
+    property var acceptDestinationAction
+    property Page acceptDestinationInstance
+    property Page acceptDestinationReplaceTarget
+
+    property bool _haveResolution: false
 
     signal addPage()
 
     onStatusChanged: {
         if (status == PageStatus.Activating) {
             // Remove possibly old image
-            scanImage.clear()
+            Scanner.clear()
+        }
+        if (status == PageStatus.Active) {
+            camera.cameraState = Camera.ActiveState
         }
     }
 
     onPageContainerChanged: {
         if (pageContainer == null) {
-            console.log("NewImagePage closed")
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
     function processImage(imagePath, deleteOnCancel) {
-        scanImage.loadFile(imagePath)
-        scanImage.deleteOriginalOnClear = deleteOnCancel
+        Scanner.loadFile(imagePath)
+        Scanner.deleteOriginalOnClear = deleteOnCancel
         pageStack.push(cutpage)
         pageStack.pushAttached(colpage)
     }
@@ -61,28 +70,47 @@ Page {
         }
     }
 
-    ImagePickerPage {
+    // from harbour-advanced-camera
+    function strToSize(siz) {
+        var w = parseInt(siz.substring(0, siz.indexOf("x")))
+        var h = parseInt(siz.substring(siz.indexOf("x") + 1))
+        return Qt.size(w, h)
+    }
+
+    Component {
         id: picker
+        ImagePickerPage {
+            id: picker
 
-        // Note that this property might become unsupported in future
-        popOnSelection: false
+            // Note that this property might become unsupported in future
+            popOnSelection: false
 
-        onSelectedContentPropertiesChanged: {
-            processImage(selectedContentProperties.filePath, false)
+            onSelectedContentPropertiesChanged: {
+                processImage(selectedContentProperties.filePath, false)
+            }
         }
     }
 
-    CutPage { id: cutpage; image: scanImage }
+    Component {
+        id: cutpage
+        CutPage {
+            restoreSelection: false
+        }
+    }
 
-    ColorizePage {
+    Component {
         id: colpage
+        ColorizePage {
+            onAccepted: addPage()
 
-        scanImage: page.scanImage
+            acceptDestination: page.acceptDestination
+            acceptDestinationAction: page.acceptDestinationAction
+            acceptDestinationReplaceTarget: page.acceptDestinationReplaceTarget
 
-        acceptDestination: destination
-        acceptDestinationAction: PageStackAction.Pop
-
-        onAccepted: addPage()
+            onAcceptDestinationInstanceChanged: {
+                page.acceptDestinationInstance = acceptDestinationInstance
+            }
+        }
     }
 
     PageHeader {
@@ -90,15 +118,28 @@ Page {
         title: qsTr("New Picture")
     }
 
+    ConfigurationGroup {
+        id: jollaCameraSettings
+        path: "/apps/jolla-camera/primary/image"
+
+        property string viewfinderResolution
+        property string viewfinderResolution_16_9
+        property string viewfinderResolution_4_3
+    }
+
     Camera {
         id: camera
 
+        cameraState: Camera.UnloadedState
+
         viewfinder {
-            resolution: Qt.size(640, 480)
+            onResolutionChanged: {
+            }
         }
 
         imageCapture {
-            resolution: Qt.size(4000, 3000)
+            resolution: Qt.size(640, 480)
+
             onImageCaptured: {
                 //photoPreview.source = preview
                 console.log("image captured: " + preview)
@@ -134,9 +175,60 @@ Page {
         }
 
         metaData.orientation: orientation
+
+        onCameraStatusChanged: {
+            if (cameraStatus == Camera.ActiveStatus && !_haveResolution) {
+                var res = Fotokopierer.defaultResolution(imageCapture, 16, 9)
+                if (res.width > 0) {
+                    imageCapture.setResolution(res)
+                    if (jollaCameraSettings.viewfinderResolution_16_9) {
+                        viewfinder.resolution = strToSize(jollaCameraSettings.viewfinderResolution_16_9)
+                    } else if (jollaCameraSettings.viewfinderResolution) {
+                        viewfinder.resolution = strToSize(jollaCameraSettings.viewfinderResolution)
+                    } else {
+                        // The following code comes from harbour-advancedcamera
+                        var supportedResolutions = camera.supportedViewfinderResolutions()
+                        if (supportedResolutions.length > 0) {
+                            var currentRatio = 16/9
+                            var bestMatch = 0
+                            for (var i = 0; i < supportedResolutions.length; i++) {
+                                var w = supportedResolutions[i].width;
+                                var h = supportedResolutions[i].height;
+                                if (w > Screen.height || h > Screen.width) {
+                                    continue
+                                }
+                                if (currentRatio > 0) {
+                                    var ratio = w / h
+                                    var bestMatchRatio = supportedResolutions[bestMatch].width / supportedResolutions[bestMatch].height
+                                    if (Math.abs(ratio - currentRatio) < Math.abs(bestMatchRatio - currentRatio)) {
+                                        bestMatch = i; // better match to aspect ratio
+                                    } else if (Math.abs(ratio - currentRatio) == Math.abs(bestMatchRatio - currentRatio) &&
+                                               w > supportedResolutions[bestMatch].width && h > supportedResolutions[bestMatch].height) {
+                                        bestMatch = i; // same aspect ratio, better resolution
+                                    }
+                                } else {
+                                    if (w > supportedResolutions[bestMatch].width && h > supportedResolutions[bestMatch].height) {
+                                        bestMatch = i; // just select best resolution
+                                    }
+                                }
+                            }
+                            console.log("Choosing view finder resolution: " + supportedResolutions[bestMatch].width + "x" + supportedResolutions[bestMatch].height)
+                            viewfinder.resolution = Qt.size(supportedResolutions[bestMatch].width, supportedResolutions[bestMatch].height)
+                        } else {
+                            console.log("Found no resolution: " + res)
+                            viewfinder.resolution = Qt.size(Screen.height, Screen.width)
+                        }
+                    }
+                } else {
+                    console.log("Found no resolution: " + res)
+                    viewfinder.resolution = Qt.size(Screen.height, Screen.width)
+                }
+                _haveResolution = true
+            }
+        }
     }
 
-    Rectangle {
+    Item {
         id: viewArea
 
         anchors.top: header.bottom
@@ -147,14 +239,16 @@ Page {
         VideoOutput {
             anchors.fill: parent
 
-            fillMode: VideoOutput.Stretch
-            orientation: camera.orientation
+            visible: camera.cameraStatus == Camera.ActiveStatus && _haveResolution
+            fillMode: VideoOutput.PreserveAspectCrop
+            orientation: 0
             focus: visible
             source: camera
         }
 
         Rectangle {
             id: focusCircle
+            visible: camera.cameraStatus == Camera.ActiveStatus
             height: Theme.itemSizeHuge
             width: height
             radius: width / 2
@@ -167,6 +261,12 @@ Page {
                 x: -focusCircle.width / 2
                 y: -focusCircle.height / 2
             }
+        }
+
+        BusyIndicator {
+            size: BusyIndicatorSize.Large
+            anchors.centerIn: parent
+            running: camera.cameraStatus != Camera.ActiveStatus
         }
 
         MouseArea {
@@ -223,9 +323,7 @@ Page {
             IconButton {
                 width: parent.width / 3
                 icon.source: "image://theme/icon-m-image"
-                onClicked: {
-                    pageStack.push(picker)
-                }
+                onClicked: pageStack.push(picker)
             }
         }
     }

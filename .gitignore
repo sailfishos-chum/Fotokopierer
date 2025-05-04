@@ -11,6 +11,7 @@ translations/*.qm
 .*~
 compile_commands.json
 .ccls-cache/
+compile_flags.txt
 
 ########################
 # github / Qt          #

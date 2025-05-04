@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,12 +15,12 @@
  * along with this program.  If not, see  <http://www.gnu.org/licenses/>
  */
 
+#include <sailfishapp.h>
+
 #include <QtCore/QTranslator>
 #include <QtGui/QGuiApplication>
-
 #include <QtQuick/QQuickView>
-
-#include <sailfishapp.h>
+#include <memory>
 
 #include "init.hxx"
 
@@ -28,9 +28,9 @@
 
 int main(int argc, char* argv[])
 {
-    QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
+    std::unique_ptr<QGuiApplication> app(SailfishApp::application(argc, argv));
 
-    QScopedPointer<QQuickView> view(SailfishApp::createView());
+    std::unique_ptr<QQuickView> view(SailfishApp::createView());
 
     QTranslator translator;
     if (translator.load(QLocale(),
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
     init_app(*app, *view->engine());
 
-    view->setSource(QUrl(QStringLiteral("qrc:///qml/sfos/main.qml")));
+    view->setSource(SailfishApp::pathTo(QStringLiteral("qml/sfos/main.qml")));
     view->show();
 
     return app->exec();

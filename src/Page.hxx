@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,9 +21,10 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QObject>
-#include <QtCore/QScopedPointer>
 #include <QtGui/QImage>
+#include <memory>
 
+class Document;
 class ScanImage;
 
 /// A single scanned page.
@@ -31,9 +32,11 @@ class Page : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QDateTime creationTime READ creationTime CONSTANT)
+    Q_PROPERTY(QDateTime creationTime READ creationTime NOTIFY creationTimeChanged)
+    Q_PROPERTY(QString original READ original NOTIFY originalChanged)
     Q_PROPERTY(QString thumbnail READ thumbnail NOTIFY thumbnailChanged)
     Q_PROPERTY(QString result READ result NOTIFY resultChanged)
+    Q_PROPERTY(QUrl resultUrl READ resultUrl NOTIFY resultChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 
 public:
@@ -50,18 +53,7 @@ public:
     Q_ENUM(Status)
 
 public:
-    explicit Page(QObject* parent = nullptr);
-
-    Page(const QDateTime& creation_time,
-         const QString& original_path,
-         const QString& result_path,
-         const QString& thumbnail_path,
-         QObject* parent);
-
-    /// Create a new page from a scanned image.
-    ///
-    /// The document is placed in the given directory.
-    Page(const QDir& dir, const ScanImage* scanImage, QObject* parent);
+    explicit Page();
 
     Page(const Page&) = delete;
     Page(Page&&) = delete;
@@ -74,43 +66,86 @@ public:
 
     QString thumbnail();
 
-    QString getOriginalImagePath() const;
+    QString original() const;
 
     QString result() const;
 
+    QUrl resultUrl() const;
+
     Status status() const;
 
-    bool write(QJsonObject& json) const;
+    /// Initialize this page from the results of a Scanner.
+    ///
+    /// The page files are stored in the document directory `dir`.
+    void newFromImage(const QDir& dir, const std::shared_ptr<ScanImage>& scanImage);
 
-    bool read(const QJsonObject& json);
+    /// Initialize this page from the results of a Scanner.
+    ///
+    /// The page files reuse (and overwrite) the current files.
+    void updateFromImage(const std::shared_ptr<ScanImage>& scanImage);
+
+    /// Make this page a copy of another page.
+    ///
+    /// The page is copied to directory `dir`.
+    void initCopy(const QDir& dir, Document* sourceDoc, Page* source, bool move = false);
+
+    bool write(QJsonObject& json, const QDir& docpath) const;
+
+    bool read(const QJsonObject& json, const QDir& docpath);
+
+    /// Return the filter settings of this page.
+    QJsonObject settings() const;
 
 public slots:
     /// Delete all files associated with this page.
     void remove();
 
 private:
-    QString updateThumbnail(const QString& filename) const;
+    void updateImage(const std::shared_ptr<ScanImage>& scanImage,
+                     const QString& original_path,
+                     const QString& result_path,
+                     const QDateTime& creation_time);
+
+    QString updateThumbnail(const QString& filename);
 
 private slots:
-    void generationFinished();
+    void onGenerationFinished(const QString& original_path, const QString& result_path);
 
-    void thumbnailFinished();
+    void onThumbnailFinished(const QString& thumbnail_path);
 
     void setStatus(Page::Status status);
 
+    void setOriginal(const QString& original);
+
+    void setResult(const QString& result);
+
+    void setThumbnail(const QString& thumbnail);
+
+    void setCreationTime(const QDateTime& creation_time);
+
 signals:
-    void thumbnailChanged();
+    void originalChanged();
 
     void resultChanged();
 
+    void thumbnailChanged();
+
+    void creationTimeChanged();
+
     void statusChanged();
+
+    void deleteSourcePage(Document* sourceDoc, Page* source);
+
+    void generationFinished(const QString& original_path, const QString& result_path);
+
+    void thumbnailFinished(const QString& thumbnail_path);
 
     /// An error occurred.
     void error(const QString& errorMessage);
 
 private:
     struct Data;
-    QScopedPointer<Data> d;
+    std::unique_ptr<Data> d;
 };
 
 #endif

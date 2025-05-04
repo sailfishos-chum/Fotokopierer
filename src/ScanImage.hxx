@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,35 +19,60 @@
 #define __FOTOKOPIERER_SCANIMAGE_HXX__
 
 #include <QtCore/QObject>
-
 #include <memory>
+#include <opencv2/core.hpp>
 
-class Filter;
-class RotateFilter;
-class CutFilter;
-class ColorizeFilter;
+#include "ColorizeView.hxx"
 
+class Document;
+class Page;
+
+/// A scanned image.
+///
+/// This is basically the model representing a scanned image in
+/// memory. It should be show by one of the corresponding views that
+/// allow to modify some of the properties.
 class ScanImage : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(RotateFilter* rotateFilter READ rotateFilter CONSTANT);
-    Q_PROPERTY(CutFilter* cutFilter READ cutFilter CONSTANT);
-    Q_PROPERTY(ColorizeFilter* ColorizeFilter READ colorizeFilter CONSTANT);
-    Q_PROPERTY(bool deleteOriginalOnClear READ deleteOriginalOnClear WRITE setDeleteOriginalOnClear
-                   NOTIFY deleteOriginalOnClearChanged);
+    Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
+
+    Q_PROPERTY(QPointF topLeft READ topLeft WRITE setTopLeft NOTIFY topLeftChanged)
+    Q_PROPERTY(QPointF topRight READ topRight WRITE setTopRight NOTIFY topRightChanged)
+    Q_PROPERTY(QPointF bottomRight READ bottomRight WRITE setBottomRight NOTIFY bottomRightChanged)
+    Q_PROPERTY(QPointF bottomLeft READ bottomLeft WRITE setBottomLeft NOTIFY bottomLeftChanged)
+
+    Q_PROPERTY(double contrast READ contrast WRITE setContrast NOTIFY contrastChanged)
+    Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged)
+    Q_PROPERTY(double threshold READ threshold WRITE setThreshold NOTIFY thresholdChanged)
+    Q_PROPERTY(double blockSize READ blockSize WRITE setBlockSize NOTIFY blockSizeChanged)
+    Q_PROPERTY(ColorMode colorMode READ colorMode WRITE setColorMode NOTIFY colorModeChanged)
 
 public:
-    enum class FilterType {
-        None = -1,
-        Rotate = 0,
-        Cut = 1,
-        Colorize = 2,
+    /// The color mode to be used.
+    using ColorMode = ColorizeView::ColorMode;
+
+    struct Parameters {
+        static constexpr double DefaultContrast = 0.5;
+        static constexpr double DefaultBrightness = 0.5;
+        static constexpr double DefaultThreshold = 0.8;
+        static constexpr double DefaultBlockSize = 0.1;
+        static constexpr std::array<qreal, 6> DefaultAngles = {30, 90, 150, 210, 270, 330};
+        static const int DefaultBlackLevel = 50;
+
+        double contrast = DefaultContrast;      ///< Contrast in [0,1]
+        double brightness = DefaultBrightness;  ///< Brightness in [0,1]
+
+        double threshold_c = DefaultThreshold;  ///< Value between [0,1] mapped to [-15,15]
+        double blocksize = DefaultBlockSize;    ///< Relative block size
+
+        std::array<qreal, 6> angles = DefaultAngles;
+        int blackLevel = DefaultBlackLevel;
     };
-    Q_ENUM(FilterType);
 
 public:
-    ScanImage(QObject* parent = nullptr);
+    ScanImage(const QImage& original, QObject* parent = nullptr);
 
     ScanImage(const ScanImage&) = delete;
     ScanImage(ScanImage&&) = delete;
@@ -57,41 +82,129 @@ public:
     ~ScanImage() override;
 
     /// Return the original image.
-    QImage original() const;
+    cv::Mat original() const;
 
-    /// Compute and return the filtered image.
-    QImage computeFilteredImage() const;
+    /// Return the cut image.
+    ///
+    /// If the image has changed in the meantime it could be recomputed
+    /// and a `cutImageChanged` signal will be emitted later.
+    ///
+    /// If `wait` is `true` the function will not return before the
+    /// image is ready.
+    cv::Mat cutImage(bool wait = false) const;
 
-    Filter* filter(FilterType type);
+    /// Return the colorized image.
+    ///
+    /// If the image has changed in the meantime it could be recomputed
+    /// and a `colorizedImageChanged` signal will be emitted later.
+    ///
+    /// If `wait` is `true` the function will not return before the
+    /// image is ready.
+    cv::Mat colorizedImage(bool wait = false) const;
 
-    Q_INVOKABLE bool loadFile(const QString& file_name);
+    /// Return the orientation/rotation of the image.
+    int orientation() const;
 
-    Q_INVOKABLE void clear();
+    /// Change the orientation of the image.
+    void setOrientation(int orientation);
 
-    QImage originalImage() const;
+    QPointF topLeft() const;
 
-    RotateFilter* rotateFilter() const;
+    void setTopLeft(QPointF topleft);
 
-    CutFilter* cutFilter() const;
+    QPointF topRight() const;
 
-    ColorizeFilter* colorizeFilter() const;
+    void setTopRight(QPointF topright);
 
-    void setDeleteOriginalOnClear(bool enabled);
+    QPointF bottomRight() const;
 
-    bool deleteOriginalOnClear() const;
+    void setBottomRight(QPointF bottomright);
+
+    QPointF bottomLeft() const;
+
+    void setBottomLeft(QPointF bottomleft);
+
+    /// Return the contrast level.
+    double contrast() const;
+
+    /// Set the contrast level in [0,1].
+    void setContrast(double contrast);
+
+    /// Return the brightness level.
+    double brightness() const;
+
+    /// Set the brightness level in [0,1].
+    void setBrightness(double brightness);
+
+    /// Return the black/white threshold level.
+    double threshold() const;
+
+    /// Set the threshold level in [0,1].
+    void setThreshold(double threshold);
+
+    /// Return the blocksize for b/w thresholding.
+    double blockSize() const;
+
+    /// Set the blocksize for b/w thresholding in [0,1] (relative size).
+    void setBlockSize(double blockSize);
+
+    /// Return all parameters.
+    Parameters parameters() const;
+
+    /// Set all parameters at once.
+    void setParameters(Parameters params);
+
+    /// Return the colormode.
+    ColorMode colorMode() const;
+
+    /// Set the color mode.
+    void setColorMode(ColorMode colormode);
+
+    /// Apply image cut.
+    void applyCut();
+
+    /// Apply image colorization.
+    void applyColorize();
+
+    /// Return all filter settings as a JSON object.
+    QJsonObject saveJson() const;
+
+    /// Load all filter settings from a JSON object.
+    void loadJson(const QJsonObject& settings);
 
 signals:
-    void originalImageChanged();
+    void orientationChanged();
 
-    void addPage(QImage original, QImage result);
+    void topLeftChanged();
+    void topRightChanged();
+    void bottomRightChanged();
+    void bottomLeftChanged();
 
-    void imageSaved();
+    void contrastChanged();
+    void brightnessChanged();
 
-    void deleteOriginalOnClearChanged();
+    void thresholdChanged();
+    void blockSizeChanged();
+
+    void colorModeChanged();
+
+    void startCutImageUpdate() const;
+    void finishCutImageUpdate();
+    void cutImageChanged();
+
+    void startColorizedImageUpdate() const;
+    void finishColorizedImageUpdate();
+    void colorizedImageChanged();
+
+private slots:
+    void onCutReady();
+    void onColorizedReady();
 
 private:
     struct Data;
     std::unique_ptr<Data> d;
 };
+
+cv::Mat computeColorizedImage(const cv::Mat& image, ScanImage::Parameters params, ScanImage::ColorMode colorMode, cv::Mat* hsv = nullptr, cv::Mat* mask = nullptr);
 
 #endif

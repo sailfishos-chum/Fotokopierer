@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019, 2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +23,8 @@ import Fotokopierer 1.0
 import "../common"
 
 ApplicationWindow {
+    id: main
+
     visible: true
     title: "Fotokopierer"
 
@@ -33,14 +35,8 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if (Qt.application.arguments.length > 1) {
-            plainimage.loadFile(Qt.application.arguments[1])
+            Scanner.loadFile(Qt.application.arguments[1])
         }
-    }
-
-    PlainImage {
-        id: plainimage
-        scaling: true
-        visible: false
     }
 
     Item {
@@ -49,8 +45,6 @@ ApplicationWindow {
 
         CutImageView {
             id: cutimage
-
-            source: plainimage
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -119,19 +113,16 @@ ApplicationWindow {
         anchors.fill: parent
         visible: false
 
-        ColorizeImage {
-            id: colimage
+        ColorizeView {
+            id: colview
 
-            source: cutimage.image
+            scanner: Scanner
+            colorizeChooser: colorizer.chooser()
 
-            anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: contrastRow.top
-
-            brightness: brightness.value / 100
-            contrast: contrast.value / 100
-            details: details.value / 100
+            anchors.top: parent.top
+            anchors.bottom: colbuttons.top
         }
 
         Row {
@@ -139,6 +130,7 @@ ApplicationWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: brightnessRow.top
+            visible: colview.colorMode == ColorizeView.Gray || colview.colorMode == ColorizeView.FullColor
 
             Label {
                 text: "Contrast: "
@@ -149,6 +141,7 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colview.contrast = value / 100
             }
         }
 
@@ -156,7 +149,8 @@ ApplicationWindow {
             id: brightnessRow
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: detailsRow.top
+            anchors.bottom: colbuttons.top
+            visible: contrastRow.visible
 
             Label {
                 text: "Brightness"
@@ -167,24 +161,77 @@ ApplicationWindow {
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colview.brightness = value / 100
             }
         }
 
-        Row {
-            id: detailsRow
+        ColorizeChooserItem {
+            id: colorizer
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: colbuttons.top
+            anchors.bottom: thresholdRow.top
+            height: width
+
+            onChanged: colview.refreshColorization()
+        }
+
+        Row {
+            id: thresholdRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: blockSizeRow.top
+            visible: !contrastRow.visible
 
             Label {
-                text: "Details"
+                text: "Threshold"
             }
             Slider {
-                id: details
+                id: threshold
                 minimumValue: 0
                 maximumValue: 100
                 stepSize: 1
                 value: 50
+                onValueChanged: colview.threshold = value / 100
+            }
+        }
+
+        Row {
+            id: blockSizeRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: blackLevelRow.top
+            visible: !contrastRow.visible
+
+            Label {
+                text: "BlockSize"
+            }
+            Slider {
+                id: blockSize
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: 1
+                value: 50
+                onValueChanged: colview.blockSize = value / 100
+            }
+        }
+
+        Row {
+            id: blackLevelRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: colbuttons.top
+            visible: !contrastRow.visible
+
+            Label {
+                text: "BlackLevel"
+            }
+            Slider {
+                id: blackLevel
+                minimumValue: 0
+                maximumValue: colorizer.maxBlackLevel
+                stepSize: 1
+                value: 50
+                onValueChanged: colorizer.blackLevel = value
             }
         }
 
@@ -196,17 +243,34 @@ ApplicationWindow {
 
             Button {
                 text: "B&W"
-                onClicked: colormode = "bw"
+                onClicked: {
+                    colormode = "bw"
+                    colview.colorMode = ColorizeView.BlackAndWhite
+                }
             }
 
             Button {
                 text: "Gray"
-                onClicked: colormode = "gray"
+                onClicked: {
+                    colormode = "gray"
+                    colview.colorMode = ColorizeView.Gray
+                }
             }
 
             Button {
                 text: "Colored"
-                onClicked: colormode = "colored"
+                onClicked: {
+                    colormode = "colored"
+                    colview.colorMode = ColorizeView.FullColor
+                }
+            }
+
+            Button {
+                text: "Magic"
+                onClicked: {
+                    colormode = "magic"
+                    colview.colorMode = ColorizeView.Colored
+                }
             }
 
             Button {

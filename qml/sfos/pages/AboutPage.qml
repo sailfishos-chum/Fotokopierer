@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019-2023 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -37,8 +37,9 @@ Page {
 
             Image {
                 fillMode: Image.PreserveAspectFit
-                source: Qt.resolvedUrl("/icons/harbour-fotokopierer.svg")
-                width: 2/3 * parent.width
+                source: Qt.resolvedUrl("../../../icons/harbour-fotokopierer.svg")
+                width: Math.min(2/3 * parent.width, 2/3 * parent.height)
+                height: width
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
@@ -64,6 +65,84 @@ Page {
                     .arg(Fotokopierer.Author)
             }
 
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: (qsTr("Icons by %1\nCopy icon by %2 of www.flaticon.com\nCut icon by %3 of www.flaticon.com")
+                       .arg("planetos")
+                       .arg("Iconnice")
+                       .arg("Freepik"))
+            }
+
+            Separator {
+                width: parent.width
+                horizontalAlignment: Qt.AlignHCenter
+            }
+
+            Label {
+                width: parent.width
+
+                horizontalAlignment: Text.AlignHCenter
+                anchors.topMargin: Theme.fontSizeLarge
+                font.pixelSize: Theme.fontSizeLarge
+
+                text: qsTr("Translations")
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "G. Yavorov, Standjata (%1)".arg(qsTr("Bulgarian"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "Godfried Cobben (%1)".arg(qsTr("Dutch"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "pherjung (%1)".arg(qsTr("French"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "holask (%1)".arg(qsTr("Slovak"))
+            }
+
+            Label {
+                width: parent.width
+
+                anchors.topMargin: Theme.fontSizeLarge
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+
+                text: "Åke Engelbrektson (%1)".arg(qsTr("Swedish"))
+            }
+
             Separator {
                 width: parent.width
                 horizontalAlignment: Qt.AlignHCenter
@@ -75,21 +154,8 @@ Page {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
 
-                text: ("<a href=\"http://chiselapp.com/user/fifr/repository/fotokopierer\">" +
+                text: ("<a href=\"http://codeberg.org/fifr/Fotokopierer\">" +
                        qsTr("Homepage") + "</a>")
-
-                onLinkActivated: Qt.openUrlExternally(link)
-            }
-
-            Label {
-                width: parent.width
-
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-
-                text: (qsTr("Find me on Freenode: ") + 
-                       "<a href=\"https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer\">" +
-                       "#fotokopierer")
 
                 onLinkActivated: Qt.openUrlExternally(link)
             }
@@ -107,8 +173,12 @@ Page {
                 textFormat: Text.RichText
 
                 text: (qsTr("This application uses") +
-                       "<br><a href=\"https://opencv.org\">OpenCV %1</a>")
-                    .arg(Fotokopierer.OpenCVVersion)
+                       "<br><a href=\"https://opencv.org\">OpenCV %1</a>" +
+                       "<br><a href=\"http://podofo.sourceforge.net\">PoDoFo %2</a>" +
+                       "<br><a href=\"https://www.freetype.org\">FreeType %3</a>")
+                     .arg(Fotokopierer.OpenCVVersion)
+                     .arg(Fotokopierer.PoDoFoVersion)
+                     .arg(Fotokopierer.FreeTypeVersion)
 
                 onLinkActivated: Qt.openUrlExternally(link)
             }

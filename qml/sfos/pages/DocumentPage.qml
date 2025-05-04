@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,7 +16,9 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import QtQml.Models 2.2
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import Fotokopierer 1.0
 
@@ -26,13 +28,10 @@ import "../../common"
 Page {
     id: docpage
 
-    property var document
-    property bool editing: false
-    property bool dragging: false
+    property var document: null // the document, may be null
 
-    ScanImage {
-        id: scanImage
-    }
+    // Allowed states are "Normal", "Editing", "Dragging", "Marking"
+    property string state: "Normal"
 
     Loader {
         id: newPage
@@ -40,31 +39,60 @@ Page {
 
     onStatusChanged: {
         if (status == PageStatus.Active) {
-            // ensure that the C++ memory of ScanImage is freed
+            // ensure that the C++ memory of Scanner is freed
             newPage.source = ""
-            scanImage.clear()
+            Scanner.clear()
+        } else if (status == PageStatus.Activating) {
+            state = "Normal"
+        } else if (status == PageStatus.Deactivating) {
+            if (document) {
+                document.clearSelection()
+            }
+        }
+    }
+
+    Connections {
+        target: document
+        onHasSelectedPagesChanged: {
+            if (!document.hasSelectedPages) {
+                // The number of marked pages dropped to 0 -> stop marking state
+                state = "Normal"
+            }
         }
     }
 
     DelegateModel {
         id: visualModel
+
+        groups: [DelegateModelGroup {
+            name: "shown"
+            includeByDefault: true
+        }]
+        filterOnGroup: "shown"
+
         delegate: PageDelegate {
             id: pageDelegate
             width: grid.cellWidth
             height: grid.cellHeight
 
-            thumbnail: role_thumbnail != null && role_thumbnail != "" ? role_thumbnail : "image://theme/icon-l-image"
+            thumbnail: (role_thumbnail && role_thumbnail != "") ? role_thumbnail : "image://theme/icon-l-image"
             pagenumber: DelegateModel.itemsIndex + 1
             creationTime: role_creationTime || new Date()
 
-            isAddButton: role_thumbnail == null
-            visible: !isAddButton || (!docpage.editing && !docpage.dragging)
-            deleting: docpage.editing
+            isAddButton: role_thumbnail ? false : true
+            visible: !isAddButton || (docpage.state == "Normal")
+            deleting: docpage.state == "Editing"
+            marked: role_selected
+
+            property bool hidden: role_selected && deletePagesRemorse.active
+
+            onHiddenChanged: {
+                pageDelegate.DelegateModel.inShown = !hidden
+            }
 
             onPressed: {
-                if (docpage.editing) {
-                    docpage.editing = false
-                    docpage.dragging = true
+                if (docpage.state == "Editing") {
+                    docpage.state = "Dragging"
                     startDragging()
                 }
             }
@@ -84,34 +112,41 @@ Page {
                 id: endDraggingTimer
                 interval: 0
                 repeat: false
-                onTriggered: docpage.dragging = false
+                onTriggered: docpage.state = "Normal"
             }
 
             onReleased: {
-                if (docpage.dragging) {
+                if (docpage.state == "Dragging") {
                     endDraggingTimer.start()
                     endDragging()
                 }
             }
 
             onClicked: {
-                if (docpage.editing || docpage.dragging) {
-                    docpage.editing = false
+                if (docpage.state == "Editing" || docpage.state == "Dragging") {
+                    docpage.state = "Normal"
+                } else if (docpage.state == "Marking") {
+                    if (role_selected) {
+                        role_selected = false
+                    } else {
+                        role_selected = true
+                    }
                 } else if (isAddButton) {
                     addPage()
                 } else {
                     var title = qsTr("Page %1 of %2 (%3)").arg(pagenumber).arg(visualModel.count - 1).arg(creationTime.toLocaleString(Qt.locale(), Locale.ShortFormat))
-                    openPage(role_result, title)
+                    openPage(role_page, title)
                 }
             }
 
             onItemMoved: visualModel.model.move(from, to)
 
             onDeletePage: {
-                docpage.dragging = false
-                docpage.editing = false
+                docpage.state = "Normal"
                 remorse.execute(pageDelegate, qsTr("Delete page"), function () {
-                    document.deletePage(pageDelegate.DelegateModel.itemsIndex)
+                    if (document) {
+                        document.deletePage(pageDelegate.DelegateModel.itemsIndex)
+                    }
                 })
             }
 
@@ -122,20 +157,33 @@ Page {
             BusyIndicator {
                 size: BusyIndicatorSize.Large
                 anchors.centerIn: parent
-                running: role_page != null && role_page.status != DocPage.Ready
+                running: (role_page ? true : false) && role_page.status != DocPage.Ready
             }
         }
+    }
 
-        Component.onCompleted: {
-            visualModel.model = document
-            visualModel.items.insert({"role_thumbnail": null})
+    RemorsePopup {
+        id: deletePagesRemorse
+        onTriggered: {
+            document.deleteSelectedPages()
+            document.clearSelection()
+        }
+        onCanceled: {
+            document.clearSelection()
+            // restore the hidden items
+            for (var i = 0; i < visualModel.items.count; i++) {
+                visualModel.items.get(i).inShown = true
+            }
         }
     }
 
     SilicaGridView {
         id: grid
 
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: buttons.top
 
         cellWidth: width / 2
         cellHeight: (height - Theme.itemSizeLarge) / 2
@@ -146,7 +194,7 @@ Page {
 
         header: PageHeader {
             id: head
-            title: document.title
+            title: document ? document.title : ""
         }
 
         model: visualModel
@@ -155,13 +203,28 @@ Page {
 
         PullDownMenu {
             MenuItem {
+                text: PageClipboard.empty ?
+                      qsTr("Paste pages") : qsTr("Paste pages (%1)").arg(PageClipboard.numPages)
+                onClicked: document.pastePages()
+                enabled: !PageClipboard.empty
+            }
+
+            MenuItem {
+                text: qsTr("Select pages")
+                onClicked: docpage.state = "Marking"
+                enabled: (document ? true : false) && docpage.state == "Normal"
+            }
+
+            MenuItem {
                 text: qsTr("Export to pdf")
                 onClicked: document.exportToPdf()
+                enabled: document ? true : false
             }
 
             MenuItem {
                 text: qsTr("Rename")
                 onClicked: pageStack.push(Qt.resolvedUrl("RenamePage.qml"), { document: document })
+                enabled: document ? true : false
             }
         }
 
@@ -171,10 +234,10 @@ Page {
             propagateComposedEvents: true
 
             onClicked: {
-                if (docpage.editing) {
+                if (docpage.state == "Editing") {
                     var index = grid.indexAt(grid.contentX + mouse.x, grid.contentY + mouse.y)
                     if (index == -1 || index == visualModel.count - 1) {
-                        docpage.editing = false
+                        docpage.state = "Normal"
                     } else {
                         mouse.accepted = false
                     }
@@ -184,10 +247,10 @@ Page {
             }
 
             onPressed: {
-                if (docpage.editing) {
+                if (docpage.state == "Editing") {
                     var index = grid.indexAt(grid.contentX + mouse.x, grid.contentY + mouse.y)
                     if (index == -1 || index == visualModel.count - 1) {
-                        docpage.editing = false
+                        docpage.state = "Normal"
                     } else {
                         mouse.accepted = false
                     }
@@ -196,7 +259,7 @@ Page {
 
             onPressAndHold: {
                 if (visualModel.count > 1) {
-                    docpage.editing = true
+                    docpage.state = "Editing"
                 }
             }
         }
@@ -231,6 +294,82 @@ Page {
         // }
     }
 
+    DockedPanel {
+        id: buttons
+
+        width: parent.width
+        height: Theme.iconSizeLarge
+        dock: Dock.Bottom
+        open: docpage.state == "Marking" && !deletePagesRemorse.active
+
+        RowLayout {
+            id: buttonRow
+            anchors { left: parent.left; right: parent.right }
+            IconButton {
+                id: copybutton
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: Qt.resolvedUrl("../../../icons/toolbar-copy.svg")
+                icon.fillMode: Image.PreserveAspectFit
+                icon.height: Theme.iconSizeMedium
+                enabled: document.hasSelectedPages
+                onClicked: {
+                    document.copySelectedPages()
+                    document.clearSelection()
+                }
+
+                ColorOverlay {
+                    anchors.fill: parent
+                    source: parent
+                    color: Theme.primaryColor
+                }
+            }
+
+            IconButton {
+                id: cutbutton
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: Qt.resolvedUrl("../../../icons/toolbar-cut.svg")
+                icon.height: Theme.iconSizeMedium
+                icon.fillMode: Image.PreserveAspectFit
+                enabled: document.hasSelectedPages
+                onClicked: {
+                    document.cutSelectedPages()
+                    document.clearSelection()
+                }
+
+                ColorOverlay {
+                    anchors.fill: parent
+                    source: parent
+                    color: Theme.primaryColor
+                }
+            }
+
+            IconButton {
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: "image://theme/icon-m-delete"
+                icon.height: Theme.iconSizeMedium
+                icon.fillMode: Image.PreserveAspectFit
+                enabled: document.hasSelectedPages
+                onClicked: {
+                    deletePagesRemorse.execute()
+                }
+
+            }
+            IconButton {
+                height: buttons.height
+                Layout.fillWidth: true
+                icon.source: "image://theme/icon-m-close"
+                icon.height: Theme.iconSizeMedium
+                icon.fillMode: Image.PreserveAspectFit
+                onClicked: {
+                    document.clearSelection()
+                }
+            }
+        }
+    }
+
     Component {
         id: overwritedlg
 
@@ -262,20 +401,63 @@ Page {
         }
     }
 
+    // This is a dummy model only showing the "AddPage". It is used if document
+    // == null, i.e. if no document is associated with this page.
+    //
+    // The only purpose is a nice peek right before accepting a new image (this
+    // is the only situation where the page is shown without an associated
+    // model).
+    ListModel {
+        id: emptymodel
+
+        ListElement {
+            role_thumbnail: false
+            role_creationTime: false
+            role_page: false
+            role_selected: false
+        }
+    }
+
+    // This timer is only used as a workaround for an unexpected crash.
+    //
+    // If the "AddPage" is added immediately when the document has been changed,
+    // the program crashed. We use the timer to delay the addition of the
+    // "AddPage", probably so that the DelegateModel is properly initialized.
+    Timer {
+        id: addpagetimer
+        interval: 1
+        running: false
+        repeat: false
+        onTriggered: {
+            visualModel.items.insert({"role_thumbnail": false, "role_selected": false})
+            visualModel.items.get(visualModel.items.count - 1).inShown = true
+        }
+    }
+
     onDocumentChanged: {
-        document.errorPdfExists.connect(function (filename) {
-            pageStack.push(overwritedlg, { filename: filename })
-        })
-        document.exportToPdfFinished.connect(function (path) {
-            Qt.openUrlExternally(path)
-        })
+        // remove the "AddPage" (if exists)
+        if (visualModel.items.count > 0) {
+            visualModel.items.remove(0, visualModel.items.count)
+        }
+        if (document) {
+            // a document has been specified, use as model and connect signals
+            visualModel.model = document
+            document.errorPdfExists.connect(_onPdfExists)
+            document.exportToPdfFinished.connect(_onExportToPdfFinished)
+            // add the "AddPage" (we use the timer as adding the page
+            // immediately crashes the program)
+            addpagetimer.running = true
+        } else {
+            // no document has been specified, use the dummy model
+            visualModel.model = emptymodel
+        }
     }
 
     Rectangle {
         anchors.fill: parent
         color: Theme.secondaryHighlightColor
         opacity: 0.5
-        visible: document.status == Document.Exporting
+        visible: (document && document.status == Document.Exporting) ? true : false
 
         BusyIndicator {
             size: BusyIndicatorSize.Large
@@ -285,19 +467,30 @@ Page {
     }
 
     function addPage() {
+        if (!document) {
+            return
+        }
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-        newPage.item.scanImage = scanImage
-        newPage.item.destination = docpage
+        newPage.item.acceptDestination = docpage
+        newPage.item.acceptDestinationAction = PageStackAction.Pop
         newPage.item.addPage.connect(function() {
-            document.addScannedPage(scanImage)
+            Scanner.addPage(document)
         })
         pageStack.push(newPage.item)
     }
 
     function openPage(page, title) {
         pageStack.push(Qt.resolvedUrl("PagePage.qml"), {
-            "image": page,
+            "page": page,
             "title": title,
         })
+    }
+
+    function _onPdfExists(filename) {
+        pageStack.push(overwritedlg, { filename: filename })
+    }
+
+    function _onExportToPdfFinished(path) {
+        Qt.openUrlExternally(path)
     }
 }

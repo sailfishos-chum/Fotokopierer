@@ -4,13 +4,29 @@
 
 Fotokopierer is a document scanning application for [Sailfish OS](https://sailfishos.org) and the Desktop.
 
-## Author
+## Screenshots
+
+
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot1.png" alt="Documents grid" title="Documents grid" width="24%">
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot2.png" alt="Cut image" title="Cut image" width="24%">
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot3.png" alt="Colorized image" title="Colorized image" width="24%">
+<img src="https://codeberg.org/fifr/Fotokopierer/raw/branch/main/images/screenshot4.png" alt="Colorizing image" title="Colorizing image" width="24%">
+
+## Authors
 
 Frank Fischer <frank-fischer@shadow-soft.de>
 
-## Contact
+planetos (Icons)
 
-Talk with the developers in [#fotokopierer][IRC] on [Freenode](http://freenode.net)
+G. Yavorov, Standjata (Bulgarian translation)
+
+Godfried Cobben (Dutch translation)
+
+pherjung (French translation)
+
+holask (Slovak translation)
+
+Åke Engelbrektson (Swedish translation)
 
 ## License
 
@@ -18,43 +34,57 @@ Licensed under GNU GPLv3
 
 ## Build
 
-Fotokopierer needs the [OpenCV][OpenCV] 3.4.0 library. These
-libraries can be either used as shared libraries installed on your
-system or can be compiled and statically linked. In order to build
-Fotokopierer for the official [Sailfish OS app store][harbour], you
-*must* statically link against these libraries.
+Fotokopierer needs the [OpenCV][OpenCV] 3.4.20, [Podofo][Podofo]
+0.10.4 and [FreeType][FreeType] libraries. These libraries can be
+either used as shared libraries installed on your system or can be
+compiled and statically linked. In order to build Fotokopierer for the
+official [Sailfish OS app store][harbour], you *must* statically link
+against these libraries.
 
 In all cases you need [CMake][cmake] to build Fotokopierer.
 
-### Build with shared libraries in the Sailfish OS build engine
+### Get static 3rparty libraries
 
-	cd path/to/fotokopierer
-	mb2 -t SailfishOS-2.1.3.7-i486 build
+You need to download the sources of OpenCV, Podofo and FreeType:
 
-Note that the OS version and target might differ for you.
+- [https://github.com/opencv/opencv/archive/refs/tags/3.4.20.tar.gz](https://github.com/opencv/opencv/archive/refs/tags/3.4.20.tar.gz)
+- [http://sourceforge.net/projects/podofo/files/podofo/0.10.4/podofo-0.10.4.tar.gz/download](http://sourceforge.net/projects/podofo/files/podofo/0.10.4/podofo-0.10.4.tar.gz/download)
+- [https://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.3.tar.gz)
 
-### Build with static libraries in the Sailfish OS build engine
-
-You need to download the sources of OpenCV (the CMake file will automatically download them):
-
-- [https://github.com/opencv/opencv/archive/3.4.0.zip](https://github.com/opencv/opencv/archive/3.4.0.zip)
-
-Extract both archives to the `3rdparty` subdirectory.
+Extract all archives to the `3rdparty/` directory.
 
     cd path/to/fotokopierer
-	mkdir 3rdparty
+	mkdir -p 3rdparty
 	cd 3rdparty
-	unzip path/to/opencv-3.4.0.zip
+	tar -xzf path/to/opencv-3.4.20.tar.gz
+	tar -xzf path/to/podofo-0.10.4.tar.gz
+	tar -xzf path/to/freetype-2.13.3.tar.gz
+	
+### Building the package	
 
-Finally, build the project as with shared libraries. The CMake build
-script will automatically compile OpenCV.
+The easiest way is to open the project in the SailfishOS SDK IDE
+(QtCreator). Note that the build process is quite complicated due to
+the required 3rd-party libraries. When you open the project in IDE
+**for the first time** the following will happen:
 
-	cd path/to/fotokopierer
-	mb2 -t SailfishOS-2.1.3.7-i486 build
-    
+1. The IDE configures the project using cmake. This will also compile
+   certain 3rd-party libraries (OpenCV, FreeType). **Note that this
+   happens during the configuration step** and might take a while
+   (OpenCV is big).
+2. Compile the project in the usual way. This will compiler other
+   3rd-party libraries (PoDoFo) so it may also take some time.
+   
+Note that the build engine has only limited memory. This memory might
+get exhausted during a parallel build. There it may necessary to limit
+the number of parallel build steps (by configuring the "CMake build
+step" and adding "-j2" or even "-j1" to the "Tool arguments" field),
+otherwise the build will fail.
+
 ## Download sources    
 
-Latest development version: [harbour-fotokopierer.tar.gz][TRUNK]
+Latest development version: [Fotokopierer-main.tar.gz][TRUNK]
+
+Latest release version: [Fotokopierer-v1.0.1.tar.gz][STABLE]
 
 ## Help with translations
 
@@ -64,14 +94,20 @@ Translate to another language at [POEditor](https://poeditor.com/join/project/EO
 
 This project uses
 
-- Conversion between Qt and OpenCV images by [Andy Maloney](https://github.com/asmaloney/asmOpenCV)
+- Conversion between Qt and OpenCV images by 
+  [Andy Maloney](https://github.com/asmaloney/asmOpenCV)
 - [OpenCV][OpenCV] for image processing
+- [Podofo][Podofo] for PDF-handling
+- [FreeType][FreeType] for font rendering in PDF files
 
 
 [CMake]: https://cmake.org
 [OpenCV]: https://opencv.org
+[Podofo]: http://podofo.sourceforge.net
+[FreeType]: https://www.freetype.org
 [SFOS]: https://sailfishos.org
 [harbour]: https://harbour.jolla.com/
-[IRC]: https://kiwiirc.com/nextclient/irc.freenode.net/#fotokopierer
+[IRC]: https://web.libera.chat/#fotokopierer
 
-[TRUNK]: http://chiselapp.com/user/fifr/repository/fotokopierer/tarball/harbour-fotokopierer-trunk.tar.gz?name=harbour-fotokopierer
+[TRUNK]: https://codeberg.org/fifr/Fotokopierer/archive/main.tar.gz
+[STABLE]: https://codeberg.org/fifr/Fotokopierer/archive/v1.0.1.tar.gz 

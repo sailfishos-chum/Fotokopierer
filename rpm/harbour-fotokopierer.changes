@@ -1,0 +1,126 @@
+# Rename this file as sample.changes to include changelog
+# entries in your RPM file.
+#
+# Add new changelog entries following the format below.
+# Add newest entries to the top of the list.
+# Separate entries from each other with a blank line.
+
+# * date Author's Name <author's email> version-release
+# - Summary of changes
+
+* Sat May 03 2025 Frank Fischer <frank-fischer@shadow-soft.de> 1.0.1-1
+- Fix exporting pdf files with new PoDofo
+
+* Wed Apr 30 2025 Frank Fischer <frank-fischer@shadow-soft.de> 1.0.0-1
+- Rework build process
+- update FreeType to 2.13.3
+- update PoDoFo to 0.10.4
+- update OpenCV to 3.4.20
+
+* Fri Sep 8 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.8-1
+- add Dutch translation
+- update FreeType to 2.13.2
+
+* Sat May 20 2023 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.7-1
+- fix linking podofo against libjpeg in rpm build
+- add package icon for chum
+- update FreeType to 2.13.0
+- update PoDoFo to 0.9.8
+
+* Sun May 1 2022 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.6-1
+- move build of 3rd-party packages from CMakeLists.txt to rpm (for obs)
+
+* Mon Mar 21 2022 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.5-1
+- update OpenCV to 3.4.16
+- update FreeType to 2.11.1
+- add Bulgarian translation
+- add French translation
+
+* Sat Nov 13 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.4-1
+- nothing new, just had to increase the version to make harbour happy
+
+* Thu Nov 11 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.3-2
+- build everything with openssl 1.1
+
+* Mon Nov 1 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.3-1
+- fix setting of viewfinder resolution
+
+* Fri Jul 2 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.2-1
+- fix segmentation fault when cancelling a taken image
+
+* Fri Jun 25 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.1-1
+- fix missing add button in document page
+- update Slovak and Swedish translations
+
+* Thu Jun 24 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.4.0-1
+- add copy & paste for pages
+- access parameters for black/white mode directly
+- add custom color mapping for colorization mode
+- several small ui improvements
+- add Slovak translation by holask
+
+* Wed Jun 9 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.2-1
+- replace some forbidden characters in pdf file name
+
+* Sun Jun 6 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.1-1
+- fix exporting jpg pictures to pdf (library version clash)
+- fix i486 build of OpenCV for 3.4 target
+
+* Sat Jun 5 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.3.0-1
+- improve paper detection
+- allow to move edges of the selection
+- improve magic colorization
+- update OpenCV to 3.4.14
+- update PoDoFo to 0.9.7
+- update FreeType to 2.10.4
+- rewrite view related C++ classes
+- new IRC channel now on libera.chat
+
+* Tue Jun 1 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.6-1
+- use relative paths in document files
+- add workaround for absolute paths in old document files
+- add tribute to freetype
+
+* Mon May 31 2021 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.5-1
+- fix some camera issues on Xperia 10 II
+- first build for aarch64
+
+* Tue Apr 21 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.4-1
+- New icons
+
+* Sun Apr 19 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.3-2
+- Fix German translation file
+
+* Sun Apr 19 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.3-1
+- Add Swedish translation
+
+* Sat Apr 18 2020 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.2-1
+- Fix wrong resolution and orientation in camera preview
+- Add new icons by Tobias Planitzer
+
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-2
+- Fix version number
+
+* Tue May 28 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2.1-1
+- Fix position of zoom
+
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-3
+- Build against SailfishOS 3.0.2.8
+
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-2
+- Update translation
+
+* Mon May 27 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.2-1
+- Selection is rotated when the image is rotated
+- Add mode for using full colors
+- Full color and gray pictures are stored as jpg to save memory
+- Open document page after capturing the first new picture
+- Allow to re-edit scanned images later
+- Fix camera problem on Jolla 1
+- UI improvements
+- General code improvements
+
+* Sat May 18 2019 Frank Fischer <frank-fischer@shadow-soft.de> 0.1.0-1
+- First alpha release
+
+

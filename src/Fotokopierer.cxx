@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2019-2021 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,7 +19,9 @@
 
 #include <QtCore/QDateTime>
 #include <QtCore/QLineF>
+#include <QtCore/QSize>
 #include <QtCore/QStandardPaths>
+#include <QtMultimedia/QCameraImageCapture>
 
 const QString ApplicationName = QStringLiteral("Fotokopierer");
 
@@ -29,6 +31,9 @@ const QString FilenameFormat = QStringLiteral("yyyy_MM_dd-HH_mm_ss");
 
 const QString DocumentRoot = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
                              QStringLiteral("/Fotokopierer");
+
+static const int MaxResolutionWidth = 4000;
+static const int MaxResolutionHeight = 3000;
 
 QDir getDocumentDirectory()
 {
@@ -102,7 +107,45 @@ QString Fotokopierer::licenseTitle() const
     return QStringLiteral("GNU GPLv3");
 }
 
+QString Fotokopierer::podofoVersion() const
+{
+    return QStringLiteral(PODOFO_VERSION);
+}
+
 QString Fotokopierer::opencvVersion() const
 {
     return QStringLiteral(OPENCV_VERSION);
+}
+
+QString Fotokopierer::freetypeVersion() const
+{
+    return QStringLiteral(FREETYPE_VERSION);
+}
+
+QSize Fotokopierer::defaultResolution(QObject* capture, int desiredWidth, int desiredHeight) const
+{
+    if (capture == nullptr) {
+        return {};
+    }
+
+    auto captures = capture->findChildren<QCameraImageCapture*>();
+    auto desiredRatio = static_cast<double>(qMax(1, qMax(desiredWidth, desiredHeight))) /
+                        static_cast<double>(qMax(1, qMin(desiredWidth, desiredHeight)));
+    auto bestRatioDist = std::numeric_limits<double>::infinity();
+
+    if (captures.count() > 0) {
+        QSize resolution;
+        for (auto&& r : captures[0]->supportedResolutions()) {
+            auto ratio = static_cast<double>(r.width()) / static_cast<double>(r.height());
+            auto ratioDist = ratio > desiredRatio ? ratio / desiredRatio : desiredRatio / ratio;
+            if ((ratioDist < bestRatioDist + 1e-3 && r.width() > resolution.width()) || ratioDist < bestRatioDist - 1e-1) {
+                resolution = r;
+                bestRatioDist = ratioDist;
+            }
+        }
+
+        return resolution;
+    } else {
+        return {};
+    }
 }

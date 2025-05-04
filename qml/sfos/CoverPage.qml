@@ -98,6 +98,7 @@ CoverBackground {
 
                 delegate: Image {
                     source: _thumbnails[_thumbnails.length - index - 1]
+                    cache: false
 
                     anchors.fill: parent
                     anchors.leftMargin: (_thumbnails.length - index - 1) * 0.05 * parent.width

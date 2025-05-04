@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Frank Fischer <frank-fischer@shadow-soft.de>
+ * Copyright (c) 2018, 2019 Frank Fischer <frank-fischer@shadow-soft.de>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,19 +30,15 @@ Page {
     property bool deleting: false
     property var lastDocument: DocumentList.latestDocument
 
-    ScanImage {
-        id: scanImage
-    }
-
     Loader {
         id: newPage
     }
 
     onStatusChanged: {
-        // ensure that the C++ memory of ScanImage is freed
+        // ensure that the C++ memory of Scanner is freed
         if (status == PageStatus.Active) {
             newPage.source = ""
-            scanImage.clear()
+            Scanner.clear()
         }
     }
 
@@ -165,12 +161,14 @@ Page {
         pageStack.pop(docpage, PageStackAction.Immediate)
 
         newPage.source = Qt.resolvedUrl("NewImagePage.qml")
-        newPage.item.scanImage = scanImage
-        newPage.item.destination = docpage
+        newPage.item.acceptDestination = Qt.resolvedUrl("DocumentPage.qml")
+        newPage.item.acceptDestinationAction = PageStackAction.Replace
+        newPage.item.acceptDestinationReplaceTarget = docpage
         newPage.item.addPage.connect(function() {
             var doc = DocumentList.newDocument()
             if (doc != null) {
-                doc.addScannedPage(scanImage)
+                Scanner.addPage(doc)
+                newPage.item.acceptDestinationInstance.document = doc
             }
         })
 
