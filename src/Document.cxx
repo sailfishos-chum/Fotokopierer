@@ -36,14 +36,6 @@
 #include <QtCore/QVector>
 #include <QtQml/QQmlEngine>
 
-#ifdef USE_PODOFO
-#include <podofo/podofo.h>
-#else
-#include <QtGui/QPageSize>
-#include <QtGui/QPainter>
-#include <QtGui/QPdfWriter>
-#endif
-
 #include <memory>
 
 #include "Clipboard.hxx"
@@ -73,31 +65,6 @@ public:
 private:
     QString message_;
 };
-
-#ifdef USE_PODOFO
-#else
-/// Error when exporting a pdf document.
-class PdfError : public QException
-{
-public:
-    explicit PdfError(const QString& message)
-        : message_(message) {}
-
-    PdfError(const PdfError&) = default;
-    PdfError(PdfError&&) noexcept = default;
-    PdfError& operator=(const PdfError&) = default;
-    PdfError& operator=(PdfError&&) noexcept = default;
-    ~PdfError() override = default;
-
-    void raise() const override { throw *this; }
-    PdfError* clone() const override { return new PdfError(*this); }
-
-    QString message() const { return message_; }
-
-private:
-    QString message_;
-};
-#endif
 
 struct PageData {
     QSharedPointer<Page> page;
@@ -700,13 +667,6 @@ void Document::ensureNoMedia(const QString& path)
     }
 }
 
-#ifdef USE_PODOFO
-static PoDoFo::PdfString toPdfString(const QString& str)
-{
-    return {str.toUtf8().constData()};
-}
-#endif
-
 void Document::exportToPdf(const QString& filename, bool overwrite)
 {
     if (d->status != Ready) {
@@ -729,61 +689,7 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
     }
 
     d->pendingPdf.setFuture(QtConcurrent::run([title, pageimages, filename]() {
-#ifdef USE_PODOFO
-        using namespace PoDoFo;
-        PdfMemDocument pdf;
-        PdfPainter painter;
-
-        for (auto& page : pageimages) {
-            try {
-                auto pageimage = pdf.CreateImage();
-                pageimage->Load(page.toStdString());
-
-                auto& pages = pdf.GetPages();
-                auto& pdfpage = pages.CreatePage({0.0, 0.0, static_cast<double>(pageimage->GetWidth()), static_cast<double>(pageimage->GetHeight())});
-
-                painter.SetCanvas(pdfpage);
-                painter.DrawImage(*pageimage, 0.0, 0.0);
-                painter.FinishDrawing();
-            } catch (PdfError& e) {
-                qWarning() << "Error exporting pdf: " << e.what() << " while processing " << page;
-                e.PrintErrorMsg();
-
-                throw;
-            }
-        }
-
-        pdf.GetMetadata().SetCreator(toPdfString(ApplicationName));
-        pdf.GetMetadata().SetTitle(toPdfString(title));
-        pdf.Save(filename.toStdString());
-#else
-        QPdfWriter pdf(filename);
-        QPainter p;
-
-        bool firstpage = true;
-
-        for (auto& page : pageimages) {
-            QImage pageimage(page);
-            pdf.setPageMargins({0, 0, 0, 0});
-            pdf.setPageSize(QPageSize(pageimage.size()));
-
-            if (firstpage) {
-                p.begin(&pdf);
-                firstpage = false;
-            } else if (!pdf.newPage()) {
-                throw PdfError(tr("Cannot create a new page"));
-            };
-
-            p.drawImage(QRect{0, 0, pdf.width(), pdf.height()},
-                        pageimage,
-                        QRect{0, 0, pageimage.width(), pageimage.height()});
-        }
-        p.end();
-
-        pdf.setCreator(ApplicationName);
-        pdf.setTitle(title);
-#endif
- 
+        doExportToPdf(filename, title, pageimages);
         return QUrl::fromLocalFile(filename);
     }));
 }
@@ -801,15 +707,10 @@ void Document::exportToPdf(bool overwrite)
 void Document::onPdfExportFinished()
 {
     try {
-        auto path = d->pendingPdf.result();
-        emit exportToPdfFinished(path);
-#ifdef USE_PODOFO
-    } catch (PoDoFo::PdfError& e) {
-        emit error(QString::fromUtf8(e.what()));
-#else
-    } catch (PdfError& e) {
-        emit error(e.message());
-#endif
+        auto path = doGetPendingPdf(d->pendingPdf);
+        if (!path.isEmpty()) {
+            emit exportToPdfFinished(path);
+        }
     } catch (QUnhandledException& e) {
         emit error(tr("Error creating pdf-file"));
     }

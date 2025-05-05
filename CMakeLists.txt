@@ -77,7 +77,9 @@ if (WITH_PODOFO)
     set_property(TARGET podofo_private PROPERTY POSITION_INDEPENDENT_CODE TRUE)
     set(PODOFO_LIBRARIES podofo::podofo)
 
-    set_property(SOURCE src/Document.cxx APPEND PROPERTY COMPILE_DEFINITIONS USE_PODOFO=1)
+    target_sources(harbour-fotokopierer PRIVATE src/Document-podofo.cxx)
+else ()
+    target_sources(harbour-fotokopierer PRIVATE src/Document-qpdfwriter.cxx)
 endif ()
 ##############################
 

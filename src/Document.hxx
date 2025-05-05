@@ -20,6 +20,7 @@
 
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QDateTime>
+#include <QtCore/QFutureWatcher>
 #include <QtGui/QImage>
 #include <memory>
 
@@ -178,6 +179,12 @@ public slots:
 private:
     /// Set the document data.
     void setDocData(DocData &&docdata);
+
+    /// Do the pdf export according to the used backend.
+    static void doExportToPdf(const QString& filename, const QString& title, const QStringList& pageimages);
+
+    /// Fetch the pending pdf result, check for backend specific exceptions.
+    QUrl doGetPendingPdf(const QFutureWatcher<QUrl>& pendingPdf);
 
 private slots:
     /// Change the current status.
