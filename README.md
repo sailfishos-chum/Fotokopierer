@@ -34,16 +34,16 @@ Licensed under GNU GPLv3
 
 ## Build
 
-Fotokopierer needs the [OpenCV][OpenCV] 3.4.20, [Podofo][Podofo]
-0.10.4 and [FreeType][FreeType] libraries. These libraries can be
-either used as shared libraries installed on your system or can be
-compiled and statically linked. In order to build Fotokopierer for the
-official [Sailfish OS app store][harbour], you *must* statically link
-against these libraries.
+Fotokopierer needs the [OpenCV][OpenCV] 3.4.20 and, optionally, the
+[Podofo][Podofo] 0.10.4 and [FreeType][FreeType] libraries. These libraries can
+be either used as shared libraries installed on your system or can be compiled
+and statically linked. In order to build Fotokopierer for the official
+[Sailfish OS app store][harbour], you *must* statically link against these
+libraries.
 
 In all cases you need [CMake][cmake] to build Fotokopierer.
 
-### Get static 3rparty libraries
+### Get static 3rdparty libraries
 
 You need to download the sources of OpenCV, Podofo and FreeType:
 
@@ -62,6 +62,7 @@ Extract all archives to the `3rdparty/` directory.
 	
 ### Building the package	
 
+#### From the IDE
 The easiest way is to open the project in the SailfishOS SDK IDE
 (QtCreator). Note that the build process is quite complicated due to
 the required 3rd-party libraries. When you open the project in IDE
@@ -79,6 +80,43 @@ get exhausted during a parallel build. There it may necessary to limit
 the number of parallel build steps (by configuring the "CMake build
 step" and adding "-j2" or even "-j1" to the "Tool arguments" field),
 otherwise the build will fail.
+
+#### From the command line
+Fotokopierer has a `justfile` performing the necessary steps. In order
+to compile/build the package for a certain architecture, run
+
+- `just cmake release i486` ... run `cmake`
+- `just make release i486` ... run `make`
+- `just build release i486` ... build the app
+- `just package release i486` ... create an rpm package
+- `just allrpms` ... create rpm packages for i486, armv7hl and aarch64
+- `just emulator` ... build the app and run in the emulator
+
+### Choosing the pdf backend
+
+Fotokopierer can be built with (default) or without the [PoDoFo][Podofo]
+library using the following cmake configuration option:
+
+    # Using PoDoFo for pdf export
+    cmake -DWITH_PODOFO:BOOL=On
+
+or   
+ 
+    # Using QPdfWriter for pdf eport
+    cmake -DWITH_PODOFO:BOOL=Off
+ 
+Using PoDoFo has the following advantages and disadvantages
+
+1. Advantages:
+   - generates much smaller pdf files due to better image compression
+     (sometimes 2-3 times smaller)
+
+2. Disadvantages:
+   - requires PoDoFo and FreeType (and libjpeg and libtiff) to be statically
+     linked
+   - more complicated build process
+   - larger executable
+   - much longer compile times
 
 ## Download sources    
 
