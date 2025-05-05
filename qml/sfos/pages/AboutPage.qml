@@ -174,8 +174,8 @@ Page {
 
                 text: (qsTr("This application uses") +
                        "<br><a href=\"https://opencv.org\">OpenCV %1</a>" +
-                       "<br><a href=\"http://podofo.sourceforge.net\">PoDoFo %2</a>" +
-                       "<br><a href=\"https://www.freetype.org\">FreeType %3</a>")
+                       (Fotokopierer.PoDoFoVersion === "" ? "" : "<br><a href=\"http://podofo.sourceforge.net\">PoDoFo %2</a>") +
+                       (Fotokopierer.FreeTypeVersion === "" ? "" : "<br><a href=\"https://www.freetype.org\">FreeType %3</a>"))
                      .arg(Fotokopierer.OpenCVVersion)
                      .arg(Fotokopierer.PoDoFoVersion)
                      .arg(Fotokopierer.FreeTypeVersion)
