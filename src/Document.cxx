@@ -764,6 +764,7 @@ void Document::exportToPdf(const QString& filename, bool overwrite)
 
         for (auto& page : pageimages) {
             QImage pageimage(page);
+            pdf.setPageMargins({0, 0, 0, 0});
             pdf.setPageSize(QPageSize(pageimage.size()));
 
             if (firstpage) {
