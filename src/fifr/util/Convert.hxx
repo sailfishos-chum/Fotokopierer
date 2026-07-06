@@ -38,7 +38,8 @@
 # endif
 # if __has_include(<version>)
 #   include <version>
-# elif __has_include(<optional>)
+# endif
+# if __has_include(<optional>)
 #   include <optional>
 # endif
 # if __cpp_lib_optional >= 201606
