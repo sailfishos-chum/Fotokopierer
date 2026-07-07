@@ -42,6 +42,8 @@ BuildRequires:  qt5-qtmultimedia-plugin-resourcepolicy-resourceqt
 BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
+Buildrequires: freetype >= %{freetype_version}
+
 %description
 A camera-scanning application for Sailfish OS.
 
