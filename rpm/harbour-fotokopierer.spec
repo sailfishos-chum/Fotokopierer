@@ -63,7 +63,7 @@ Links:
 %endif
 
 %global opencv_version 3.4.20
-%global podofo_version 0.10.4
+%global podofo_version 0.10.6
 %global freetype_version 2.13.3
 
 %prep
