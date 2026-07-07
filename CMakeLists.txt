@@ -77,6 +77,8 @@ set(PODOFO_LIBRARIES podofo::podofo)
 
 # Add dependencies to app
 
+SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static" )
+
 add_dependencies(harbour-fotokopierer ${OpenCV_LIBS})
 target_link_libraries(harbour-fotokopierer
     Qt5::Quick
