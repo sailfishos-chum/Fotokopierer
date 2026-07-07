@@ -11,9 +11,9 @@ Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://codeberg.org/fifr/Fotokopierer
 Source0:    %{name}-%{version}.tar.gz
-Source1:    opencv-%{opencv_version}.tar.gz
+#Source1:    opencv-%{opencv_version}.tar.gz
 Source2:    podofo-%{podofo_version}.tar.gz
-Source3:    freetype-%{freetype_version}.tar.gz
+#Source3:    freetype-%{freetype_version}.tar.gz
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
@@ -76,9 +76,9 @@ Links:
 
 mkdir -p 3rdparty
 pushd 3rdparty
-test -d opencv-%{opencv_version} || tar -xzf %{SOURCE1}
+#test -d opencv-%%{opencv_version} || tar -xzf %%{SOURCE1}
 test -d podofo-%{podofo_version} || tar -xzf %{SOURCE2}
-test -d freetype-%{freetype_version} || tar -xzf %{SOURCE3}
+#test -d freetype-%%{freetype_version} || tar -xzf %%{SOURCE3}
 popd
 
 %build
