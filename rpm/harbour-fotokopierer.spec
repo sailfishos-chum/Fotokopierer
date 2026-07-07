@@ -46,6 +46,7 @@ Buildrequires: pkgconfig(freetype2) >= %{freetype_version}
 #Buildrequires: pkgconfig(opencv) >= %%{opencv_version}
 Buildrequires: pkgconfig(opencv4)
 Buildrequires: pkgconfig(libjpeg)
+Buildrequires: pkgconfig(libtiff-4)
 
 %description
 A camera-scanning application for Sailfish OS.
