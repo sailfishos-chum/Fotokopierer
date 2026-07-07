@@ -46,7 +46,8 @@ target_include_directories(harbour-fotokopierer PRIVATE
 
 include(./ThirdParty.cmake)
 
-find_package(OpenCV REQUIRED core imgproc PATHS "${THIRD_PARTY_INSTALL_DIR}/OpenCV" NO_DEFAULT_PATH)
+#find_package(OpenCV REQUIRED core imgproc PATHS "${THIRD_PARTY_INSTALL_DIR}/OpenCV" NO_DEFAULT_PATH)
+find_package(OpenCV REQUIRED core imgproc)
 
 ##############################
 
