@@ -16,7 +16,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(OPENCV_VERSION "3.4.20")
 set(PODOFO_VERSION "0.10.6")
-set(FREETYPE_VERSION "2.13.3")
+#set(FREETYPE_VERSION "2.13.3")
 
 add_executable(harbour-fotokopierer
 	src/main-sfos.cxx

@@ -42,7 +42,7 @@ BuildRequires:  qt5-qtmultimedia-plugin-resourcepolicy-resourceqt
 BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
-Buildrequires: freetype >= %{freetype_version}
+Buildrequires: pkgconfig(freetype2) >= %{freetype_version}
 
 %description
 A camera-scanning application for Sailfish OS.
@@ -80,7 +80,9 @@ popd
 
 %build
 
-%cmake
+%cmake \
+    -DFREETYPE_VERSION=$(pkg-config --modversion freetype2) \
+    %{nil}
 
 %cmake_build
 
