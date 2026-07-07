@@ -43,7 +43,8 @@ BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
 Buildrequires: pkgconfig(freetype2) >= %{freetype_version}
-Buildrequires: pkgconfig(opencv) >= %{opencv_version}
+#Buildrequires: pkgconfig(opencv) >= %{opencv_version}
+Buildrequires: pkgconfig(opencv)
 
 %description
 A camera-scanning application for Sailfish OS.
