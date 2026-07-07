@@ -63,7 +63,7 @@ find_package(OpenSSL REQUIRED)
 find_package(Fontconfig REQUIRED)
 find_package(LibXml2 REQUIRED)
 #find_package(FreeType REQUIRED PATHS "${THIRD_PARTY_INSTALL_DIR}/FreeType" NO_DEFAULT_PATH)
-find_package(FreeType REQUIRED)
+find_package(Freetype REQUIRED)
 
 include_directories(SYSTEM ${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff)
 set(PODOFO_BUILD_LIB_ONLY TRUE CACHE BOOL "" FORCE)
