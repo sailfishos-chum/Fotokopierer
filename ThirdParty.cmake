@@ -46,7 +46,7 @@ endfunction()
 #------------------------------------------------------------------------------------------
 
 #set(THIRD_PARTY_DIR "${CMAKE_CURRENT_LIST_DIR}/3rdparty")
-set(THIRD_PARTY_DIR "/usr/src/debug"))
+set(THIRD_PARTY_DIR "/usr/src/debug")
 set(THIRD_PARTY_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rdparty")
 
 #------------------------------------------------------------------------------------------
