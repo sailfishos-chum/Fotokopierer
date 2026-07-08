@@ -47,7 +47,7 @@ target_include_directories(harbour-fotokopierer PRIVATE
 include(./ThirdParty.cmake)
 
 #find_package(OpenCV REQUIRED core imgproc PATHS "${THIRD_PARTY_INSTALL_DIR}/OpenCV" NO_DEFAULT_PATH)
-find_package(OpenCV REQUIRED core imgproc)
+#find_package(OpenCV REQUIRED core imgproc)
 
 ##############################
 
@@ -63,7 +63,7 @@ find_package(OpenSSL REQUIRED)
 find_package(Fontconfig REQUIRED)
 find_package(LibXml2 REQUIRED)
 #find_package(FreeType REQUIRED PATHS "${THIRD_PARTY_INSTALL_DIR}/FreeType" NO_DEFAULT_PATH)
-find_package(Freetype REQUIRED)
+#find_package(Freetype REQUIRED)
 
 include_directories(SYSTEM ${CMAKE_BINARY_DIR}/ExternalProjects/OpenCV/build/OpenCV-prefix/src/OpenCV-build/3rdparty/libtiff)
 set(PODOFO_BUILD_LIB_ONLY TRUE CACHE BOOL "" FORCE)
