@@ -72,7 +72,7 @@ Links:
   Bugtracker: https://codeberg.org/fifr/Fotokopierer/issues
 %endif
 
-%define __requires_exclude ^libjpeg|libopencv_core|libopencv_imgproc|libtiff|libfreetype.*$
+%define __requires_exclude ^libcrypto|libjpeg|libopencv_core|libopencv_imgproc|libtiff|libfreetype.*$
 
 %prep
 %setup -q -n %{name}-%{version}
