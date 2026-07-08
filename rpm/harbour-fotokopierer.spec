@@ -42,9 +42,10 @@ BuildRequires:  qt5-qtmultimedia-plugin-resourcepolicy-resourceqt
 BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
-Buildrequires: pkgconfig(freetype2) >= %{freetype_version}
+#Buildrequires: pkgconfig(freetype2) >= %{freetype_version}
 #Buildrequires: pkgconfig(opencv) >= %%{opencv_version}
-Buildrequires: pkgconfig(opencv4)
+#Buildrequires: pkgconfig(opencv4)
+Buildrequires: freetype-debugsource
 Buildrequires: opencv-debugsource
 Buildrequires: pkgconfig(libjpeg)
 Buildrequires: pkgconfig(libtiff-4)
