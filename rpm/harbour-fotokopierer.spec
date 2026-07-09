@@ -1,8 +1,8 @@
 Name:       harbour-fotokopierer
 
-%global opencv_version 3.4.20
+#%%global opencv_version 3.4.20
 %global podofo_version 0.10.6
-%global freetype_version 2.13.3
+#%%global freetype_version 2.13.3
 
 Summary:    Document Scanner
 Version:    1.0.1
@@ -11,9 +11,9 @@ Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://codeberg.org/fifr/Fotokopierer
 Source0:    %{name}-%{version}.tar.gz
-#Source1:    opencv-%{opencv_version}.tar.gz
+#Source1:    opencv-%%{opencv_version}.tar.gz
 Source2:    podofo-%{podofo_version}.tar.gz
-#Source3:    freetype-%{freetype_version}.tar.gz
+#Source3:    freetype-%%{freetype_version}.tar.gz
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
@@ -42,9 +42,8 @@ BuildRequires:  qt5-qtmultimedia-plugin-resourcepolicy-resourceqt
 BuildRequires:  qt5-qtmultimedia-plugin-video-eglvideonode
 BuildRequires:  desktop-file-utils
 
-#Buildrequires: pkgconfig(freetype2) >= %{freetype_version}
-#Buildrequires: pkgconfig(opencv) >= %%{opencv_version}
-#Buildrequires: pkgconfig(opencv4)
+Buildrequires: pkgconfig(freetype2)
+Buildrequires: pkgconfig(opencv4)
 Buildrequires: freetype-debugsource
 Buildrequires: opencv-debugsource
 Buildrequires: pkgconfig(libjpeg)
