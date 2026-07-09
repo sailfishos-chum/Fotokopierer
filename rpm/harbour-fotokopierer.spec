@@ -84,6 +84,9 @@ pushd 3rdparty
 #test -d opencv-%%{opencv_version} || tar -xzf %%{SOURCE1}
 test -d podofo-%{podofo_version} || tar -xzf %{SOURCE2}
 #test -d freetype-%%{freetype_version} || tar -xzf %%{SOURCE3}
+cp -r /usr/src/debug/opencv-* .
+cp -r /usr/src/debug/freetype-* .
+ls -l
 popd
 
 %build
