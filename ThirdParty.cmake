@@ -10,7 +10,7 @@ function (build_external_project target dir_name maketargets)
         include(ExternalProject)
         ExternalProject_add(${target}
             SOURCE_DIR \"${THIRD_PARTY_DIR}/${dir_name}\"
-	    BUILD_COMMAND cmake --build ${HOME}/_build -- ${maketargets}
+            BUILD_COMMAND cmake --build . -- ${maketargets}
             CMAKE_GENERATOR \"${CMAKE_GENERATOR}\"
             CMAKE_GENERATOR_PLATFORM \"${CMAKE_GENERATOR_PLATFORM}\"
             CMAKE_GENERATOR_TOOLSET \"${CMAKE_GENERATOR_TOOLSET}\"
